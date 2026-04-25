@@ -8,6 +8,7 @@ Maintainers: see **`docs/skeleton-MAINTAINERS.md`** and **`.cursor/rules/skeleto
 
 ### Template
 
+- Add **`scripts/serve-docs.sh`**: creates `.venv`, installs **`requirements-docs.txt`**, runs **`python -m mkdocs serve`** so docs work without a global **`mkdocs`** on `PATH`.
 - Add **`./init-skeleton`** / **`./sync-skeleton`**, submodule nesting workflow, **`DEPRECATED_PATHS`**, maintainer docs, and git hook policy for changelog discipline.
 - Ship **`feature-request`**, **`identify-frontier`**, **`develop-frontier`**, **`finish-feature`**, **`finish-frontier`**, **`commit-with-ai-metrics`** Cursor skills, matching **`.claude/commands/`** slash files, **`cursor-claude-doc-sync.mdc`**, and expanded **`docs/ai-context.md`** §2b–§7 / finish-frontier merge notes so the full FR → ticket → parallel frontier workflow is documented in-tree.
 

@@ -48,5 +48,6 @@ tasks/feature-history/FR-0000-bootstrap/README.md|tasks/feature-history/FR-0000-
 .claude/commands/commit-with-metrics.md|.claude/commands/commit-with-metrics.md
 scripts/init-skeleton.sh|scripts/init-skeleton.sh
 scripts/sync-skeleton.sh|scripts/sync-skeleton.sh
+scripts/serve-docs.sh|scripts/serve-docs.sh
 .githooks/pre-commit|.githooks/pre-commit
 .githooks/README.md|.githooks/README.md

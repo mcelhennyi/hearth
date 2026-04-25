@@ -91,7 +91,8 @@ main() {
   done
 
   chmod +x "$root/push-skeleton" "$root/init-skeleton" "$root/sync-skeleton" \
-    "$root/scripts/init-skeleton.sh" "$root/scripts/sync-skeleton.sh" 2>/dev/null || true
+    "$root/scripts/init-skeleton.sh" "$root/scripts/sync-skeleton.sh" \
+    "$root/scripts/serve-docs.sh" 2>/dev/null || true
 
   rm -f "$root/SKELETON_REPO"
 
