@@ -12,7 +12,7 @@
 
 ### Parallel streams (optional)
 
-Use when **more than one** ticket id or **`FR-NNNN`** is actively developed in parallel. Each stream: own worktree; update **only** your **Progress** row for your ticket.
+Use when **more than one** ticket id or **`FR-NNNN`** is actively developed in parallel. Each stream: own `.worktrees/FR-NNNN-<slug>/...` worktree and feature-prefixed branch; update **only** your **Progress** row for your ticket.
 
 | Stream label | Ticket(s) | `FR-NNNN` (if any) | Branch / worktree | Owner / note |
 |----------------|------------|--------------------|-------------------|--------------|

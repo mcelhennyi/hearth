@@ -32,7 +32,7 @@ The user has (or will) run **`./init-skeleton`** from a **clone of the skeleton*
 7. **CI target** — e.g. GitHub Actions, none yet.
 8. **Docs stack** — e.g. none, MkDocs, other.
 9. **Traceability prefix** — replaces **`PROJ`** in `@PROJ-<AREA>-<NUMBER>` examples (three to six uppercase alnum, team-defined).
-10. **Worktrees** — default: keep `worktrees/` in `.gitignore` (ticket workflow).
+10. **Worktrees** — default: keep `.worktrees/` in `.gitignore`; feature worktrees live at `.worktrees/FR-NNNN-<slug>/feature/`, with ticket/stage child worktrees under the same feature folder.
 
 ## Steps
 

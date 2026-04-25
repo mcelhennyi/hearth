@@ -20,7 +20,7 @@ Follow the Cursor project skill **`.cursor/skills/feature-request/SKILL.md`**.
 
 1. **Before develop:** land tickets (**`T-FR-NNNN-xx`**) in **`tasks/feature-history/FR-NNNN-<slug>/tickets.md`**, **`tasks/feature-history/TICKET-SOURCES.md`**, **`docs/design/tickets-initial.md`** (DAG index), and **`tasks/ticket-progress.md`** (or a PR-ready “Proposed patch” in `20-tickets-dag.md` if you cannot commit yet).
 2. **Parallel handoff (optional, recommended):** `/identify-frontier`
-3. **Implement:** `/develop-frontier`
+3. **Implement:** `/develop-frontier` (feature worktree at **`.worktrees/FR-NNNN-<slug>/feature/`**; ticket/stage child worktrees under the same feature folder)
 4. **Integrate:** `/finish-feature` (default; feature branch → **PR to `main`**) or `/finish-frontier` (direct **`main`**)
 
 **Doc site during design / VAL:** when **`docs/`** or **`mkdocs.yml`** change, use **`./develop help`** and run **`./develop up`** (Docker Compose) or **`./develop local`** (venv on the host); use **`./develop build`** for a static check. Optional **`develop.conf`**; see root **`README.md`** and **`.cursor/skills/feature-request/SKILL.md`** (local dev / Docker section).

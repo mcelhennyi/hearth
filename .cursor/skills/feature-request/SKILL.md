@@ -19,9 +19,9 @@ does **not** replace them.
 | Step | Command / skill | Role |
 |------|------------------|------|
 | Parallel handoff for **tickets** (`T-FR-NNNN-xx`) | `identify-frontier` / `/identify-frontier` | Recomputes who can run in parallel from **`tasks/feature-history/**/tickets.md`** + **`ticket-progress.md`** (DAG hints in **`tickets-initial.md`**). |
-| Implement parallel set | `develop-frontier` / `/develop-frontier` | One worktree per ticket; **TEST→DEV→VAL** per ticket. |
-| Merge tickets → feature branch → PR | `finish-feature` / `/finish-feature` | Merges **`feat/T-FR-*`** into **`feat/FR-NNNN-<slug>`**, validates, **PR to `main`** for human review; **never** auto-deletes remote branches. |
-| Merge to `main` (integration) | `finish-frontier` / `/finish-frontier` | Direct integration of parallel ticket branches into **`main`** when not using the feature-branch line. |
+| Implement parallel set | `develop-frontier` / `/develop-frontier` | One child worktree per ticket under **`.worktrees/FR-NNNN-<slug>/`**; **TEST→DEV→VAL** per ticket. |
+| Merge tickets → feature branch → PR | `finish-feature` / `/finish-feature` | Merges feature-prefixed ticket/stage branches into **`feat/FR-NNNN-<slug>`**, validates, **PR to `main`** for human review; **never** auto-deletes remote branches. |
+| Merge to `main` (integration) | `finish-frontier` / `/finish-frontier` | Direct integration of parallel ticket/stage branches into **`main`** when not using the feature-branch line. |
 | Commits (optional) | `commit-with-ai-metrics` / `/commit-with-metrics` | Conventional commit + optional metrics footer. |
 | Doc site (MkDocs) — preview / static build | **`./develop`** (`./develop help`) | When **`docs/`** or **`mkdocs.yml`** change: use **`./develop up`** (Docker Compose, bind-mounted repo, live reload) or **`./develop local`** (host venv via **`./scripts/serve-docs.sh`**). Run **`./develop build`** for a containerized static build before closeout or as doc **VAL** when tickets touch docs. Set **`DEVELOP_*`** in optional **`develop.conf`** (from **`develop.conf.example`**) if service names or ports differ. **Aligns** with **Docker for VAL** in **`docs/ai-context.md`**. |
 
@@ -78,7 +78,7 @@ tasks/feature-history/FR-NNNN-<slug>/
 - **Serial runs:** append stages to **`serial-diary.md`** (and/or per-stage files). One narrative chain.
 - **Parallel design or implementation subagents:** each stream writes **`parallel/<stream>.md`** (e.g. `parallel/T-FR-0007-01-worktree-foo.md`) to avoid edit conflicts. Do **not** overwrite **`serial-diary.md`** from parallel streams.
 - **Continue / resume handoffs:** write under **`handoffs/`** (e.g. **`handoffs/2026-04-25-continue.md`**) — this is the **canonical** place for “what the next agent should do” **for this `FR-NNNN`**. A short pointer in **`tasks/handoffs/`** is optional, not a substitute.
-- **Git (implementation):** create **`feat/FR-NNNN-<slug>`** from **`main`** when starting build-out; merge all **`feat/T-FR-NNNN-xx-*`** ticket branches **into** the feature branch; use **`/finish-feature`** to open the **PR → `main`**.
+- **Git (implementation):** create **`feat/FR-NNNN-<slug>`** from **`main`** when starting build-out and check it out at **`.worktrees/FR-NNNN-<slug>/feature/`**. Create every ticket/stage branch from that feature branch, name it with both feature and ticket/stage (for example **`feat/FR-NNNN-<slug>/T-FR-NNNN-xx-short-name`**), place its worktree under **`.worktrees/FR-NNNN-<slug>/<ticket-or-stage-slug>/`**, merge it **into** the feature branch, then use **`/finish-feature`** to open the **PR → `main`**.
 
 If you need a one-off “prompt log”, add `prompts/prompts-log.md` and link it from the README.
 
@@ -149,7 +149,7 @@ If the user forbids direct repo edits, keep a “Proposed patch” section under
 
 1. **Optional but recommended:** Run **`/identify-frontier`** (or the skill) to write **`tasks/handoffs/…-parallel-frontier.md`** (global queue). Also append a **feature-scoped** summary under **`handoffs/YYYY-MM-DD-identify-note.md`** in **this** `FR-NNNN` folder so the next worker reads one place.
 2. Update **`tasks/ticket-progress.md` → Current focus** per **`develop-frontier`**: `Session status` = `developing`, list worktrees and ticket ids.
-3. Run **`/develop-frontier`** (or the skill) to launch **one subagent per parallel-capable ticket**, each in **`worktrees/<slug>/`**, **TEST→DEV→VAL** in order **inside** each ticket.
+3. Run **`/develop-frontier`** (or the skill) to launch **one subagent per parallel-capable ticket**, each in a child worktree under **`.worktrees/FR-NNNN-<slug>/`** on a feature-prefixed ticket/stage branch, **TEST→DEV→VAL** in order **inside** each ticket.
 4. For each parallel subagent, ensure **`parallel/…-diary.md`** gets an entry when that stream starts and when it ends.
 5. When a ticket or stream edits **`docs/`** and the project ships **`./develop`**: prefer **`./develop build`** (or **`./develop up`** to manually verify) for doc **VAL** in line with **`docs/ai-context.md`** (run verification in **Docker** / **Dev Container** for consistency).
 
@@ -167,7 +167,7 @@ After each develop chunk or when the user returns:
 ## Stage — Finish implementation (prompt, then run)
 
 1. **Ask:** “All targeted tickets for this **`FR-NNNN`** are VAL-done. Merge via **`/finish-feature`** (feature branch → **PR to `main`**) or **`/finish-frontier`** (direct **`main`** integration)?”
-2. **Default for `FR-NNNN` product work:** run **`/finish-feature`** — merges **`feat/T-FR-*`** into **`feat/FR-NNNN-<slug>`**, validates, opens **PR** for human review. **Do not** push **`main`** from automation here.
+2. **Default for `FR-NNNN` product work:** run **`/finish-feature`** — merges feature-prefixed ticket/stage branches into **`feat/FR-NNNN-<slug>`**, validates, opens **PR** for human review. **Do not** push **`main`** from automation here.
 3. **Alternate:** **`/finish-frontier`** when the team explicitly integrates parallel tickets straight into **`main`**. Follow that skill’s **revalidation** / **`broken-main`** gate.
 4. After merge: run **Diary consolidation** → update **`DIARY.md`** (newest-first stack); **do not delete** remote **`feat/*`** branches.
 

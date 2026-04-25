@@ -1,11 +1,11 @@
 ---
 name: finish-frontier
 description: >-
-  Commits and pushes parallel ticket worktrees, rebases each feature branch onto
-  origin/main in sequence, merges them into the integration main checkout, and
-  pushes main. Respects per-feature tickets.md and global tickets-initial DAG. Use when closing a parallel frontier (multi-ticket worktrees),
-  after handoffs like tasks/handoffs/*parallel-frontier*, or when the user says
-  finish frontier.
+  Commits and pushes parallel ticket/stage worktrees, rebases each feature branch
+  onto origin/main in sequence, merges them into the integration main checkout,
+  and pushes main. Respects per-feature tickets.md and global tickets-initial DAG.
+  Use when closing a parallel frontier (multi-ticket worktrees), after handoffs
+  like tasks/handoffs/*parallel-frontier*, or when the user says finish frontier.
 ---
 
 # Finish frontier
@@ -25,7 +25,7 @@ For each ticket worktree:
 1. `git status` — commit if dirty; message scoped to the **`T-FR-NNNN-xx`** ticket.
 2. `git push -u origin HEAD`.
 
-Do **not** commit nested worktree directories into the integration clone; keep **`worktrees/`** gitignored or use external paths per **`docs/ai-context.md`**.
+Do **not** commit nested worktree directories into the integration clone; keep **`.worktrees/`** gitignored per **`docs/ai-context.md`**.
 
 ## 2 — Rebase each feature branch onto `origin/main` (sequential)
 

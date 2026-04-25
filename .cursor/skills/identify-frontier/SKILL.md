@@ -69,7 +69,7 @@ With {list VAL-DONE deps}, these tickets are eligible and mutually non-blocking:
 |--------|-------|------|
 | … | … | … |
 
-So **up to N parallel streams** are dependency-valid: `feat/T-FR-NNNN-xx-…` per ticket.
+So **up to N parallel streams** are dependency-valid: `feat/FR-NNNN-<slug>/T-FR-NNNN-xx-…` per ticket, each under `.worktrees/FR-NNNN-<slug>/...`.
 
 **Examples of what stays blocked until more VAL-done rows exist:**
 

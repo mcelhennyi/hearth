@@ -19,8 +19,8 @@ build/
 *.swp
 *.swo
 
-# Per-ticket git worktrees (see docs/ai-context.md)
-worktrees/
+# Repo-local git worktrees (see docs/ai-context.md)
+.worktrees/
 
 # Logs
 *.log

@@ -23,7 +23,9 @@ Use with **`docs/ai-context.md`**. This file mirrors Cursor-facing rules for Cla
 
 ## Worktrees and session beacon
 
-- **Implementation tickets** (**`T-FR-NNNN-xx`**) may use a **dedicated** git worktree under **`worktrees/<slug>/`**.
+- Store local git worktrees under **`.worktrees/`**.
+- Each feature uses **`.worktrees/FR-NNNN-<slug>/feature/`** on **`feat/FR-NNNN-<slug>`**.
+- Each implementation ticket or stage uses a child worktree under that feature folder on a feature-prefixed branch such as **`feat/FR-NNNN-<slug>/T-FR-NNNN-xx-short-name`**.
 - Keep **`tasks/ticket-progress.md` → Current focus** updated (**Active ticket**, **Branch / worktree**, **Session status**).
 
 ## Subagents (large work)

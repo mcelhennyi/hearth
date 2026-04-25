@@ -27,7 +27,7 @@ Implementation ticket **definitions** (headings, phases, **Deps:**) live in **`t
 
 **Reserved:** **`FR-0000`** — repository / platform bootstrap; starter definitions may live in **`tasks/feature-history/FR-0000-bootstrap/tickets.md`**.
 
-**Branches / worktrees:** Prefer slugs that include the full ticket id, e.g. **`feat/T-FR-0007-01-auth-api`**, worktree **`worktrees/T-FR-0007-01-auth-api/`**.
+**Branches / worktrees:** Keep local worktrees under **`.worktrees/FR-NNNN-<slug>/`**. The feature branch is **`feat/FR-NNNN-<slug>`** at **`.worktrees/FR-NNNN-<slug>/feature/`**; ticket/stage branches include both feature and ticket/stage names, e.g. **`feat/FR-0007-auth-overhaul/T-FR-0007-01-auth-api`** at **`.worktrees/FR-0007-auth-overhaul/T-FR-0007-01-auth-api/`**.
 
 **`Deps:`** list other tickets by **full id** or `none`.
 

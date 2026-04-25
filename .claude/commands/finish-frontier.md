@@ -1,6 +1,6 @@
 ---
 description: >-
-  Commits and pushes parallel ticket worktrees, rebases each feature branch onto
+  Commits and pushes parallel ticket/stage worktrees, rebases each feature branch onto
   origin/main in sequence, merges them into the integration main checkout, and
   pushes main only after mandatory post-merge revalidation.
 ---
@@ -24,7 +24,7 @@ For each ticket worktree:
 1. `git status` and commit if dirty (message scoped to the **`T-FR-NNNN-xx`** ticket).
 2. `git push -u origin HEAD`.
 
-Do **not** commit nested `worktrees/` directories into the integration clone; keep worktree paths handled per **`docs/ai-context.md`**.
+Do **not** commit nested `.worktrees/` directories into the integration clone; keep worktree paths handled per **`docs/ai-context.md`**.
 
 ## 2 — Rebase each feature branch onto `origin/main` (sequential)
 
@@ -69,4 +69,4 @@ After union conflict resolution, run full integrated validation:
 
 Pass explicit branch names and worktree paths in the user message if they differ from the active frontier handoff.
 
-**When closing one product feature** (ticket branches already target **`feat/FR-NNNN-<slug>`**), prefer **`/finish-feature`** instead of this command.
+**When closing one product feature** (ticket/stage branches already target **`feat/FR-NNNN-<slug>`**), prefer **`/finish-feature`** instead of this command.
