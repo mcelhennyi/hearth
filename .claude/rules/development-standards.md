@@ -2,6 +2,8 @@
 
 Use with **`docs/ai-context.md`**. This file mirrors Cursor-facing rules for Claude Code sessions.
 
+**Documentation as source of truth** (design vs process, escalation tags): **`docs/ai-context.md`** and **`docs-authority-and-escalation.md`** (mirrors **`.cursor/rules/docs-authority-and-escalation.mdc`**).
+
 ## Code style
 
 - **Stack-specific rules:** **`.cursor/rules/stack-conventions.mdc`** once the project chooses languages and frameworks.

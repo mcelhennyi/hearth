@@ -10,7 +10,7 @@ This tree is **process and tooling only**. It does not choose languages, framewo
 
 | Area | Purpose |
 |------|---------|
-| [`docs/`](docs/) | Authoritative process docs; start with [`docs/ai-context.md`](docs/ai-context.md) |
+| [`docs/`](docs/) | **Process** SSOT: [`docs/ai-context.md`](docs/ai-context.md). **Product/system** SSOT: [`docs/design/`](docs/design/) (and published docs site when you add one) — see [`docs/design/documentation-style.md`](docs/design/documentation-style.md) |
 | [`tasks/`](tasks/) | Ticket progress, handoffs, feature history, and lessons |
 | [`.cursor/`](.cursor/) | Cursor rules and skills (including **`init-project`**) |
 | [`.claude/`](.claude/) | Claude Code rules and conventions |

@@ -4,7 +4,8 @@ Conventions for **documentation** and **traceability**. **Stack-specific** rules
 
 ## Authority
 
-- **`docs/design/`** is authoritative for behavior and architecture **when those documents exist**. If code and docs disagree, **fix the code** unless the design is provably wrong — then use the amendment process in **`docs/ai-context.md`** (`DESIGN-GAP`, `DESIGN-FLAW`, `CODE-DEFECT`).
+- **`docs/design/`** (and your published documentation site when you maintain one from this repo) is the **source of truth** for product and system behavior **to the extent it is written down**: interfaces, architecture, and acceptance-level requirements. Code implements that truth; it does not replace it.
+- If code and design disagree, **fix the code** unless the design is provably wrong — then use the amendment process in **`docs/ai-context.md`** (`DESIGN-GAP`, `DESIGN-FLAW`, `CODE-DEFECT`). **`.cursor/rules/docs-authority-and-escalation.mdc`** (and **`.claude/rules/docs-authority-and-escalation.md`**) restate this for agents; keep them aligned with **`docs/ai-context.md`**.
 
 ## Traceability
 

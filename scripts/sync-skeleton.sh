@@ -28,6 +28,27 @@ validate_dep_path() {
   return 0
 }
 
+syncignore_file() {
+  local root="$1"
+  if [[ -f "$root/.skeleton/.syncignore" ]]; then
+    echo "$root/.skeleton/.syncignore"
+  fi
+}
+
+is_syncignored() {
+  local root="$1"
+  local rel="$2"
+  local sf line
+  sf="$(syncignore_file "$root")"
+  [[ -n "${sf:-}" ]] || return 1
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+    [[ -z "$line" || "$line" == \#* ]] && continue
+    [[ "$line" == "$rel" ]] && return 0
+  done <"$sf"
+  return 1
+}
+
 main() {
   local root mf dep
   root="$(repo_root)"
@@ -36,7 +57,8 @@ main() {
   [[ -f .gitmodules ]] && grep -qF '[submodule ".skeleton"]' .gitmodules 2>/dev/null \
     || die "no .skeleton submodule (.gitmodules missing or submodule not registered)"
 
-  [[ -d .skeleton/.git ]] || die ".skeleton is not a git checkout (run: git submodule update --init .skeleton)"
+  # Submodules may use a .git *file* (gitdir: …) or a .git *directory* (old layout).
+  [[ -d .skeleton/.git || -f .skeleton/.git ]] || die ".skeleton is not a git checkout (run: git submodule update --init .skeleton)"
 
   echo "sync-skeleton: updating submodule .skeleton ..."
   git submodule update --init .skeleton
@@ -47,6 +69,10 @@ main() {
 
   mf="$root/.skeleton/skeleton.manifest"
   [[ -f "$mf" ]] || die "missing .skeleton/skeleton.manifest"
+
+  if [[ -f "$root/.skeleton/.syncignore" ]]; then
+    echo "sync-skeleton: applying ignore list from .skeleton/.syncignore ..."
+  fi
 
   local depfile="$root/.skeleton/DEPRECATED_PATHS"
   if [[ -f "$depfile" ]]; then
@@ -78,12 +104,20 @@ main() {
     src="$(echo "$src" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
     dst="$(echo "$dst" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
     [[ "$src" == "SKELETON_REPO" || "$dst" == "SKELETON_REPO" ]] && continue
+    if is_syncignored "$root" "$src"; then
+      echo "sync-skeleton: skipped (syncignore) $src"
+      continue
+    fi
     [[ -f "$root/.skeleton/$dst" ]] || die "missing .skeleton/$dst"
     mkdir -p "$(dirname "$root/$src")"
     cp -f "$root/.skeleton/$dst" "$root/$src"
   done < <(list_manifest_pairs "$mf")
 
   for f in init-skeleton sync-skeleton scripts/init-skeleton.sh scripts/sync-skeleton.sh; do
+    if is_syncignored "$root" "$f"; then
+      echo "sync-skeleton: skipped (syncignore) $f"
+      continue
+    fi
     if [[ -f "$root/.skeleton/$f" ]]; then
       mkdir -p "$(dirname "$root/$f")"
       cp -f "$root/.skeleton/$f" "$root/$f"
@@ -104,10 +138,12 @@ main() {
     src="${line%%|*}"
     src="$(echo "$src" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
     [[ "$src" == "SKELETON_REPO" ]] && continue
+    is_syncignored "$root" "$src" && continue
     [[ -f "$root/$src" ]] && git add -f "$root/$src"
   done < <(list_manifest_pairs "$mf")
 
   for f in init-skeleton sync-skeleton scripts/init-skeleton.sh scripts/sync-skeleton.sh; do
+    is_syncignored "$root" "$f" && continue
     [[ -f "$root/$f" ]] && git add -f "$root/$f"
   done
 

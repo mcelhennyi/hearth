@@ -31,6 +31,8 @@ From the **project root** (after init):
 3. Overwrites root files listed in **`skeleton.manifest`** with copies from **`.skeleton/`**.
 4. Stages the submodule pointer and updated root files (`git add`); you **`git commit`** when satisfied.
 
+**Agent shortcut:** the **`sync-skeleton`** Cursor skill (`.cursor/skills/sync-skeleton/SKILL.md`) and Claude **`/sync-skeleton`** command (`.claude/commands/sync-skeleton.md`) walk through the same steps — run **`./sync-skeleton`** from the project root, then review **`git status`**.
+
 ## Maintainer rules (this skeleton repository)
 
 When **`SKELETON_REPO`** exists at the **root** of this checkout, you are in the **canonical skeleton** tree.
@@ -82,7 +84,8 @@ If you improved **generic** process files at the **repo root**, use **`./push-sk
 | Path | Role |
 |------|------|
 | `./develop` | Optional **`develop.conf`**; **`help`**, doc preview via Compose, **`local`** = **`./scripts/serve-docs.sh`** (see root **`develop.conf.example`**) |
-| `docs/ai-context.md` | Session bootstrap, worktrees, **`FR-NNNN`** / frontier workflow (**§2b–§7**) |
+| `docs/ai-context.md` | Session bootstrap, worktrees, **`FR-NNNN`** / frontier workflow (**§2b–§7**); process SSOT; docs-as-source-of-truth escalation |
+| `.cursor/rules/docs-authority-and-escalation.mdc` | Design vs code authority (mirror: `.claude/rules/docs-authority-and-escalation.md`) |
 | `tasks/ticket-progress.md` | Active ticket / phase / session beacon |
 | `.cursor/skills/feature-request/SKILL.md` | **`FR-NNNN`** intake → design → **`tickets.md`** → optional implement |
 | `.cursor/skills/feature-request/reference-templates.md` | Markdown tables / diary / handoff templates |

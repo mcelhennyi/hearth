@@ -18,6 +18,7 @@ Custom slash commands live in **`.claude/commands/`**:
 | **`/finish-feature`** | Merge ticket branches into **`feat/FR-NNNN-<slug>`**, validate, **PR → `main`**; do not auto-delete remote **`feat/*`**. |
 | **`/finish-frontier`** | Merge parallel ticket branches into **`main`** per policy. |
 | **`/commit-with-metrics`** | Commit with optional AI metrics footer — **`.cursor/skills/commit-with-ai-metrics/SKILL.md`**. |
+| **`/sync-skeleton`** | Update **`.skeleton/`** submodule and **`skeleton.manifest`** root copies; run **`./sync-skeleton`** — **`.cursor/skills/sync-skeleton/SKILL.md`**, **`.skeleton/INIT.MD`**. |
 
 **“Identify” disambiguation:** spoken **identify (FR)** = register **`FR-NNNN`** + intake; **`/identify-frontier`** = parallel **tickets** only after **`tickets.md`** exists.
 

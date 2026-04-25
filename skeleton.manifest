@@ -27,6 +27,7 @@ tasks/feature-history/TICKET-SOURCES.md|tasks/feature-history/TICKET-SOURCES.md
 tasks/feature-history/FR-0000-bootstrap/tickets.md|tasks/feature-history/FR-0000-bootstrap/tickets.md
 tasks/feature-history/FR-0000-bootstrap/README.md|tasks/feature-history/FR-0000-bootstrap/README.md
 .cursor/rules/main.mdc|.cursor/rules/main.mdc
+.cursor/rules/docs-authority-and-escalation.mdc|.cursor/rules/docs-authority-and-escalation.mdc
 .cursor/rules/stack-conventions.mdc|.cursor/rules/stack-conventions.mdc
 .cursor/rules/skeleton-repo-maintenance.mdc|.cursor/rules/skeleton-repo-maintenance.mdc
 .cursor/rules/cursor-claude-doc-sync.mdc|.cursor/rules/cursor-claude-doc-sync.mdc
@@ -38,7 +39,9 @@ tasks/feature-history/FR-0000-bootstrap/README.md|tasks/feature-history/FR-0000-
 .cursor/skills/finish-feature/SKILL.md|.cursor/skills/finish-feature/SKILL.md
 .cursor/skills/finish-frontier/SKILL.md|.cursor/skills/finish-frontier/SKILL.md
 .cursor/skills/commit-with-ai-metrics/SKILL.md|.cursor/skills/commit-with-ai-metrics/SKILL.md
+.cursor/skills/sync-skeleton/SKILL.md|.cursor/skills/sync-skeleton/SKILL.md
 .claude/rules/development-standards.md|.claude/rules/development-standards.md
+.claude/rules/docs-authority-and-escalation.md|.claude/rules/docs-authority-and-escalation.md
 .claude/commands/feature-request.md|.claude/commands/feature-request.md
 .claude/commands/feature-request-continue.md|.claude/commands/feature-request-continue.md
 .claude/commands/identify-frontier.md|.claude/commands/identify-frontier.md
@@ -46,6 +49,7 @@ tasks/feature-history/FR-0000-bootstrap/README.md|tasks/feature-history/FR-0000-
 .claude/commands/finish-feature.md|.claude/commands/finish-feature.md
 .claude/commands/finish-frontier.md|.claude/commands/finish-frontier.md
 .claude/commands/commit-with-metrics.md|.claude/commands/commit-with-metrics.md
+.claude/commands/sync-skeleton.md|.claude/commands/sync-skeleton.md
 scripts/init-skeleton.sh|scripts/init-skeleton.sh
 scripts/sync-skeleton.sh|scripts/sync-skeleton.sh
 scripts/serve-docs.sh|scripts/serve-docs.sh

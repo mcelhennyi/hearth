@@ -1,6 +1,8 @@
 # AI development context
 
-Single source of truth for **AI-assisted development**: session flow, worktrees, tickets, documentation authority, and collaboration norms. **Cursor** (`.cursor/rules/main.mdc`) and **Claude Code** (`CLAUDE.md`) should reference this file.
+**Single source of truth for AI-assisted development *process***: session flow, worktrees, tickets, collaboration norms, and how spec ↔ code conflicts are handled. **Cursor** (`.cursor/rules/main.mdc`) and **Claude Code** (`CLAUDE.md`) should reference this file.
+
+**Product and system design** live under **`docs/design/`** (and, if you publish a docs site from this repo, treat that site as the **primary source of truth** for business + system design the same way you would authoritative pages under **`docs/design/`**). This file does not duplicate those specs; it tells agents how to use them.
 
 This document is **stack-agnostic**. Language-specific rules belong in **`.cursor/rules/stack-conventions.mdc`** (or equivalent) once you choose a stack.
 
@@ -32,7 +34,14 @@ Skim **`tasks/handoffs/`** and **`tasks/feature-history/REGISTRY.md`** for recen
 
 ## Docs authority and escalation
 
-Design under **`docs/design/`** is authoritative for behavior and architecture **when those documents exist**. If code and docs disagree, **fix the code** unless the design is wrong — then escalate:
+### Documentation as source of truth
+
+- **Design docs are intended to be correct** for the behavior and interfaces they describe. When documentation and code disagree, **fix the code**, not the doc. The design is the authority for specified behavior (aligned with a **docs-first** / **MkDocs-as-primary** posture when your project adopts a published site).
+- **No silent spec edits:** if the design is wrong or incomplete, use the amendment process below — same discipline as “documentation is the source of truth, but the source of truth can change auditably.”
+- **Ambiguity:** if you are inventing interfaces or behavior not grounded in **`docs/design/`** (or an agreed ticket that extends it), **stop** — that is a **`DESIGN-GAP`** until resolved.
+- **Where there is no design yet:** major behavior should land as a short spec under **`docs/design/`** (or an **`FR-NNNN`** design artifact your process defines) before or alongside code, not only in implementation.
+
+### Escalation tags
 
 | Tag | When |
 |-----|------|
@@ -166,5 +175,6 @@ After merge resolution, run a mandatory full revalidation gate on the **target**
 ## Further reading
 
 - **`INIT.MD`** — clone, **`init-skeleton`**, **`sync-skeleton`**, **`init-project`**
+- **`sync-skeleton`** skill / **`/sync-skeleton`** — run **`./sync-skeleton`** from the project root (see **`INIT.MD` → *Syncing template updates***)
 - **`docs/design/documentation-style.md`** — ticket ids, traceability, writing rules
 - **`.cursor/skills/feature-request/SKILL.md`** — full **`FR-NNNN`** stage contract
