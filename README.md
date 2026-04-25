@@ -1,49 +1,56 @@
-# Project skeleton
+# AI-native project skeleton
 
-A **stack-agnostic** template for new repositories: AI session flow, ticket tracking, Cursor and Claude rules, and a manifest so generic tooling improvements can flow back to a parent template.
+**Turn an empty repo into a disciplined delivery machine** — without picking your stack for you. This template is **process and tooling only**: tickets, parallel work, Cursor skills, Claude slash commands, docs-as-truth rules, and a **sync loop** so improvements flow downstream and **generic** wins flow back upstream.
 
-This tree is **process and tooling only**. It does not choose languages, frameworks, runtimes, or product architecture. You add those after the repo exists.
+If you ship software with humans *and* agents in the loop, this is the **shared operating system** for how work gets defined, executed, and merged.
 
 ---
 
-## Contents
+## Why use it
 
-| Area | Purpose |
-|------|---------|
-| [`docs/`](docs/) | **Process** SSOT: [`docs/ai-context.md`](docs/ai-context.md). **Product/system** SSOT: [`docs/design/`](docs/design/) (and published docs site when you add one) — see [`docs/design/documentation-style.md`](docs/design/documentation-style.md) |
-| [`tasks/`](tasks/) | Ticket progress, handoffs, feature history, and lessons |
-| [`.cursor/`](.cursor/) | Cursor rules and skills (including **`init-project`**) |
-| [`.claude/`](.claude/) | Claude Code rules and conventions |
-| [`INIT.MD`](INIT.MD) | Full bootstrap: agent prompt, copy steps, upstream sync |
-| [`README.template.md`](README.template.md) | Starting point for generating a project-owned root `README.md` |
-| [`skeleton.manifest`](skeleton.manifest) | Paths allowed for `./push-skeleton contribute` |
-| [`push-skeleton`](push-skeleton) | Script to contribute generic changes upstream |
-| [`develop`](develop) & [`develop.conf.example`](develop.conf.example) | Day-one dev entrypoint (Compose + venv); copy to **`develop.conf`** and tune during **`init-project`** |
+- **Same playbook everywhere.** One intake → design → `tickets.md` → optional parallel **TEST / DEV / VAL** pattern, documented in [`docs/ai-context.md`](docs/ai-context.md). New repo, same muscle memory.
+- **Agents that stay on the rails.** Rules and skills encode *authority* (what docs override, how to escalate), not just style — so Cursor and Claude agree on how your repo works.
+- **Parallelism without chaos.** **Identify → develop → finish** frontier skills match real dependency graphs; worktrees and handoffs are first-class, not an afterthought.
+- **Upgrade path, not a fork trap.** [`./init-skeleton`](INIT.MD) and [`./sync-skeleton`](INIT.MD) materialize from a manifest; deprecations are explicit. Your product `README` stays yours ([`README.template.md`](README.template.md)); the template never overwrites it on sync.
+- **Contribute back safely.** [`./push-skeleton contribute`](INIT.MD) copies only [`skeleton.manifest`](skeleton.manifest) paths to a local upstream checkout — no accidental product leakage.
+
+---
+
+## What you get today
+
+| Layer | You ship faster because… |
+|--------|---------------------------|
+| **Tickets & history** | `tasks/ticket-progress.md`, feature folders under `tasks/feature-history/`, global DAG in `docs/design/tickets-initial.md` |
+| **Cursor** | Skills: `init-project`, `feature-request`, `identify-frontier`, `develop-frontier`, `finish-feature`, `finish-frontier`, `sync-skeleton`, `commit-with-ai-metrics` |
+| **Claude Code** | Matching commands under `.claude/commands/` and shared rules |
+| **Docs** | Traceability style, architecture stub, maintainer changelog discipline |
+| **Day-one dev UX** | [`develop`](develop) + [`develop.conf.example`](develop.conf.example), [`scripts/serve-docs.sh`](scripts/serve-docs.sh) for MkDocs without a global install |
+| **Hygiene** | Optional `.githooks/pre-commit` for changelog enforcement in the canonical skeleton tree |
+
+---
+
+## Where we’re headed
+
+Short list of **intentional** next horizons (not promises on a date):
+
+- **Optional CI recipes** — lint/test/docs gates you can drop in once the stack exists  
+- **Richer “team mode”** — conventions for multi-human ownership on the same ticket graph  
+- **Deeper monorepo notes** — path tweaks and examples when `.skeleton` lives beside multiple packages  
+- **Stronger metrics story** — beyond commit footers: dashboards or export hooks for agent effort tracking  
+- **More stack-specific *optional* packs** — still opt-in, still manifest-driven, never mandatory bloat  
 
 ---
 
 ## Quick start
 
-1. **New repo:** Follow **[`INIT.MD`](INIT.MD)** — materialize this folder into your repository root (or a monorepo subfolder if you adjust paths in `docs/ai-context.md`).
-2. **Root `README.md`:** Generate or edit it from [`README.template.md`](README.template.md) with your project purpose, scope, build/run notes **after** you pick a stack, and links to product or API docs. `sync-skeleton` does not overwrite project READMEs.
-3. **Day to day:** Keep process documentation under `docs/` and delivery state under `tasks/` (especially **`tasks/ticket-progress.md`**).
+1. **Clone this repo** (your app will live in the same tree after init).  
+2. Run **`./init-skeleton`** once — see **[`INIT.MD`](INIT.MD)** for env vars and the full bootstrap.  
+3. Use the **`init-project`** skill at the repo root, then build your product; run **`./sync-skeleton`** when you want template updates.
 
-Prefer driving setup with the **`init-project`** Cursor skill once it exists under `.cursor/skills/init-project/` — see **`INIT.MD`** for a copy-paste prompt template.
-
----
-
-## Contributing improvements upstream
-
-If this skeleton came from a parent template and you want to push **generic** changes back (wording, skills, manifest entries — not product secrets or app code):
-
-1. Set **`.skeleton-upstream`** or **`SKELETON_UPSTREAM`** to the absolute path of the canonical skeleton repository.
-2. Run **`./push-skeleton contribute`** from your project root.
-3. Only paths listed in **`skeleton.manifest`** are copied. Upstream maintainers should review and strip anything project-specific before merging.
-
-Details and safety notes: **[`INIT.MD`](INIT.MD)** (section *Contributing tooling improvements upstream*).
+**Upstream contributions:** set **`.skeleton-upstream`** / **`SKELETON_UPSTREAM`**, then **`./push-skeleton contribute`**. Details in **`INIT.MD`**.
 
 ---
 
 ## License
 
-The repository that **hosts** this skeleton chooses the license. This template does not impose one; set `LICENSE` and root `README` accordingly when you publish or fork.
+The **host** repository sets the license. This template does not impose one; add `LICENSE` and your project README when you publish.

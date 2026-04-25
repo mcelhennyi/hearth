@@ -6,6 +6,10 @@ Maintainers: see **`docs/skeleton-MAINTAINERS.md`** and **`.cursor/rules/skeleto
 
 ## [Unreleased]
 
+### Documentation
+
+- Rewrote the repository **README.md** as the GitHub landing page: positioning, benefits, current capabilities table, and a concise roadmap of planned directions.
+
 ### Template
 
 - Standardize feature development on repo-local **`.worktrees/FR-NNNN-<slug>/`**: each feature has a `feature/` worktree on **`feat/FR-NNNN-<slug>`**, and each ticket/stage uses a child worktree on a feature-prefixed branch merged back into the feature branch.
