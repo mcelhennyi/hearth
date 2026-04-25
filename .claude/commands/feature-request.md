@@ -15,6 +15,7 @@ Follow the Cursor project skill **`.cursor/skills/feature-request/SKILL.md`**.
 - A **product-sized** flow: **intake** → **interface-first design** (skeleton, then depth as needed) → **`20-tickets-dag.md`** (Jira/Asana-friendly markdown, Mermaid DAG) → **prompt** to implement → **`/develop-frontier`** when tickets (**`T-FR-NNNN-xx`**) are in the tracker → **prompt** to **`/finish-feature`** (or **`/finish-frontier`** if integrating straight to **`main`**).
 - For **large** features, use **subagents early** per **`docs/ai-context.md` §1b** (e.g. per subsystem design or codebase survey) before consolidating artifacts.
 - **Parallel features:** several **`FR-NNNN`** may be in flight; each has its own **`tasks/feature-history/FR-…/`** directory. **`/develop-frontier`** still batches tickets (**`T-FR-NNNN-xx`**) from the **global** graph — see **`docs/ai-context.md` §2c** and **`tasks/ticket-progress.md` → Parallel streams**.
+- **Human-readable naming:** In prompts, diaries, and handoffs, lead with each ticket’s **title** from **`tickets.md`**; use the **`T-FR-NNNN-xx`** id with a **link** to the canonical **`###`** section for detail (full rule in **`.cursor/skills/feature-request/SKILL.md` → Human-readable names vs ticket ids**).
 
 ## Compose with existing commands (do not fork behavior)
 

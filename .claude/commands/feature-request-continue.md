@@ -16,4 +16,4 @@ Follow **`.cursor/skills/feature-request/SKILL.md`**, resuming the **in-progress
 
 ## Compose
 
-Same sub-commands as **`/feature-request`**: when implementation is in scope, use **`/identify-frontier`**, **`/develop-frontier`**, then **`/finish-feature`** or **`/finish-frontier`**, once tickets (**`T-FR-NNNN-xx`**) exist (**`docs/ai-context.md` §2d**).
+Same sub-commands as **`/feature-request`**: when implementation is in scope, use **`/identify-frontier`**, **`/develop-frontier`**, then **`/finish-feature`** or **`/finish-frontier`**, once tickets (**`T-FR-NNNN-xx`**) exist (**`docs/ai-context.md` §2d**). When summarizing work to the user, use **ticket titles** and link ids to **`tickets.md`** per the feature-request skill (**Human-readable names vs ticket ids**).
