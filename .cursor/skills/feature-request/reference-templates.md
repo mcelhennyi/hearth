@@ -74,25 +74,28 @@ sequenceDiagram
 
 ## Tickets + dependency DAG (Jira/Asana-ready)
 
+**Human-facing rule:** The **Title** column is the primary name in prompts, diaries, and handoffs. Use **ID** for deps, branches, and `ticket-progress.md`. When talking to the user, pair **title + linked id** to `tickets.md` (see **`.cursor/skills/feature-request/SKILL.md` → Human-readable names vs ticket ids**).
+
 ```markdown
 # FR-NNNN — Work breakdown and DAG
 
 ## Ticket table
 
-| ID | Title | Type | Deps (ticket IDs) | Summary of change (1–2 lines) | Suggested order group |
-|----|--------|------|---------------------|------------------------------|------------------------|
-| T-FR-0007-01 | | Story/Task | none / T-FR-0007-02 | | P0 foundation |
+| ID | Title (required — human-facing name) | Type | Deps (ticket IDs) | Summary of change (1–2 lines) | Suggested order group | Link (optional) |
+|----|----------------------------------------|------|---------------------|------------------------------|------------------------|-----------------|
+| T-FR-0007-01 | Contract: public API surface | Story/Task | none | … | P0 foundation | [details](tickets.md#anchor-after-promote) |
+| T-FR-0007-02 | Implement batch ingest path | Story/Task | T-FR-0007-01 | … | P1 | [details](tickets.md#…) |
 
 **Parallelization rule:** Any two tickets with **disjoint** transitive file/code ownership and **all deps in earlier VAL-done** can run in parallel (same rule as `identify-frontier`).
 
 ## DAG (Mermaid)
 
-Use a **second** code fence in the real doc (nesting is invalid inside one template block). Example flowchart:
+Use a **second** code fence in the real doc (nesting is invalid inside one template block). **Label nodes with title, then id in parentheses** (ids stay unique as Mermaid node ids):
 
     flowchart TB
-      Taa["T-FR-0007-01: title"]
-      Tbb["T-FR-0007-02: title"]
-      Taa --> Tbb
+      T01["Contract: public API surface (T-FR-0007-01)"]
+      T02["Implement batch ingest path (T-FR-0007-02)"]
+      T01 --> T02
 
 ## Map to feature **`tickets.md`** + global index
 
@@ -110,10 +113,10 @@ After tickets land, run **`/identify-frontier`** and confirm the **parallel-capa
 
 ## User prompts (copy-paste)
 
-**After design + tickets are written:**
+**After design + tickets are written:** name work by **title**, with ticket id linked to **`tickets.md`** for detail (example pattern):
 
-1. "Ready to start implementation: run **`/develop-frontier`** for the current parallel-capable set (or implement serially for a single ticket if you prefer)."
-2. "Continue: proceed to the next ticket(s) in dependency order, or re-run **`/identify-frontier`** if the queue changed."
+1. "Ready to start implementation: run **`/develop-frontier`** for the current parallel-capable set — e.g. **Contract: public API surface** ([`T-FR-0007-01`](tasks/feature-history/FR-NNNN-<slug>/tickets.md)), **Implement batch ingest path** ([`T-FR-0007-02`](tasks/feature-history/FR-NNNN-<slug>/tickets.md)) — or implement one stream serially if you prefer."
+2. "Continue: proceed to the next items by **title** in dependency order (links in **`tickets.md`**), or re-run **`/identify-frontier`** if the queue changed."
 3. "Close this feature’s implementation: run **`/finish-feature`** (merge ticket/stage branches into **`feat/FR-NNNN-<slug>`**, validate, **PR → `main`**) per **`docs/ai-context.md` §2d** — or **`/finish-frontier`** if integrating ticket/stage branches straight into **`main`**."
 
 ---
@@ -125,12 +128,12 @@ After tickets land, run **`/identify-frontier`** and confirm the **parallel-capa
 
 **Stage:** e.g. design L1 / tickets / post-merge
 
-**Recap (plain English):** What we did, what is blocked, what is next.
+**Recap (plain English):** What we did, what is blocked, what is next. When referencing tickets, use **title + [id](tickets.md#…)** not bare ids.
 ```
 
 ## Parallel agent diary (one file per stream)
 
-`parallel/STREAM-<id>.md` — same format as serial; `STREAM` is worktree slug or **`T-FR-NNNN-xx`** to avoid clobbering other agents.
+`parallel/<T-FR-NNNN-xx>-<short-title-slug>.md` — same format as serial; include the ticket id for uniqueness and a **title slug** so filenames stay human-readable; do not clobber other agents’ files.
 
 ---
 
@@ -159,9 +162,9 @@ Newest block at **top**. Each block keeps the **raw** sources (**`serial-diary.m
 ```markdown
 # FR-NNNN — Merged diary (stack: newest first)
 
-## YYYY-MM-DD — from `parallel/T-FR-0007-02.md` @ `abc1234`
+## YYYY-MM-DD — from `parallel/T-FR-0007-02-batch-ingest.md` @ `abc1234`
 
-**Recap:** …
+**Recap:** … (cite tickets as **title** + link to `tickets.md` in the body)
 
 ---
 

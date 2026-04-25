@@ -27,6 +27,18 @@ does **not** replace them.
 
 **Naming disambiguation:** The words **“identify”** in *identify, prompt, develop* refer to **FR intake + registering `FR-NNNN`**, not to **`/identify-frontier`**. Use **`/identify-frontier`** only **after** tickets exist in the tracker and you want a **parallel work** handoff.
 
+### Human-readable names vs ticket ids (user-facing text)
+
+**Stable ids** (`T-FR-NNNN-xx`, branch names, **`ticket-progress.md`**) stay as-is for tools and git. In **anything a human reads first** — prompts to the user, **`serial-diary.md`** / **`handoffs/`** recaps, **`README.md`** bullets, **`90-closeout.md`** narrative, global **`tasks/handoffs/`** pointers — use this order:
+
+1. **Lead with the ticket title** (the **Title:** field in **`tickets.md`**, or the short phrase after **`—`** in the **`### T-FR-NNNN-xx — …`** heading). That is the primary name.
+2. **Then** the ticket id, ideally as a **markdown link** to the canonical section so readers can open details:  
+   `[T-FR-NNNN-xx](tasks/feature-history/FR-NNNN-<slug>/tickets.md#…)`  
+   Use the heading anchor your host generates (GitHub/GitLab slugify the full **`###`** line; if the fragment is uncertain, link to **`tickets.md`** without a fragment and name the ticket id once in the same sentence).
+3. **Mermaid DAGs** in **`20-tickets-dag.md`** / **`tickets-initial.md`:** label nodes with **title first**, id second (e.g. `T01["Scaffold Electron shell (T-FR-0002-02)"]`) so graphs stay scannable; keep **Deps** as real ids.
+
+**Filenames** under **`parallel/`** may stay id-prefixed for uniqueness (`parallel/T-FR-0002-02-electron-shell.md`) or use a short title slug plus id; do not drop the id from machine-oriented paths if ambiguity would break parallel streams.
+
 **Template note:** Keep **`.cursor/skills/`** and **`.claude/commands/`** aligned when you change this workflow — follow **`.cursor/rules/cursor-claude-doc-sync.mdc`**.
 
 **Context:** For **large** `FR-NNNN` efforts (many subsystems, big ticket DAG, wide codebase impact), **spawn subagents early** for discovery or per-area design drafts, then consolidate into **`serial-diary.md`** or **`parallel/*.md`** per **`docs/ai-context.md` §1b**.
@@ -76,7 +88,7 @@ tasks/feature-history/FR-NNNN-<slug>/
 ```
 
 - **Serial runs:** append stages to **`serial-diary.md`** (and/or per-stage files). One narrative chain.
-- **Parallel design or implementation subagents:** each stream writes **`parallel/<stream>.md`** (e.g. `parallel/T-FR-0007-01-worktree-foo.md`) to avoid edit conflicts. Do **not** overwrite **`serial-diary.md`** from parallel streams.
+- **Parallel design or implementation subagents:** each stream writes **`parallel/<stream>.md`** (e.g. `parallel/T-FR-0007-01-scaffold-api.md` — include a **title slug** from the ticket so folder listings stay human-readable). Do **not** overwrite **`serial-diary.md`** from parallel streams.
 - **Continue / resume handoffs:** write under **`handoffs/`** (e.g. **`handoffs/2026-04-25-continue.md`**) — this is the **canonical** place for “what the next agent should do” **for this `FR-NNNN`**. A short pointer in **`tasks/handoffs/`** is optional, not a substitute.
 - **Git (implementation):** create **`feat/FR-NNNN-<slug>`** from **`main`** when starting build-out and check it out at **`.worktrees/FR-NNNN-<slug>/feature/`**. Create every ticket/stage branch from that feature branch, name it with both feature and ticket/stage (for example **`feat/FR-NNNN-<slug>/T-FR-NNNN-xx-short-name`**), place its worktree under **`.worktrees/FR-NNNN-<slug>/<ticket-or-stage-slug>/`**, merge it **into** the feature branch, then use **`/finish-feature`** to open the **PR → `main`**.
 
@@ -119,8 +131,8 @@ Tag unknowns with **`DESIGN-GAP`** per **`docs/ai-context.md`**.
 ## Stage — Tickets, DAG, mapping to the repo tracker
 
 1. Author **`20-tickets-dag.md`** (draft / planning):
-   - Table: ticket id (**`T-FR-NNNN-xx`**), title, type, **deps** (other full ticket ids or `none`), one-line **summary of change**, optional **order group** (P0, P1).
-   - **Mermaid** `flowchart` or `graph` DAG with **edges = dependency** (A must be VAL-done before B starts if `A --> B`).
+   - Table: ticket id (**`T-FR-NNNN-xx`**), **title** (required; this is the human-facing name everywhere below), type, **deps** (other full ticket ids or `none`), one-line **summary of change**, optional **order group** (P0, P1). Optional **Link** column: relative URL to **`tickets.md#…`** after sections exist, or “promote first”.
+   - **Mermaid** `flowchart` or `graph` DAG with **edges = dependency** (A must be VAL-done before B starts if `A --> B`). **Node labels:** readable title + id in parentheses (see **Human-readable names vs ticket ids** above); dependency arrows still reference node ids you define.
    - **Maximize parallel width:** split by module boundary and shared files; use shared “facade + interfaces” tickets to unblock parallel work (same spirit as `identify-frontier` eligibility).
 2. **Promote to canonical feature tickets** — in **`tasks/feature-history/FR-NNNN-<slug>/tickets.md`**:
    - Add every **`### T-FR-NNNN-xx`** section with **Deps:** and **Phases** tables (this file is the **source of truth** for that feature’s ticket bodies).
@@ -136,7 +148,7 @@ If the user forbids direct repo edits, keep a “Proposed patch” section under
 
 ## Stage — Prompt: develop or not?
 
-1. Present a short **summary** of the design and ticket count.
+1. Present a short **summary** of the design and ticket count. List tickets as **title + linked id** (per **Human-readable names vs ticket ids**), not ids alone.
 2. **Ask the user:** “Do you want to start implementation now (parallel frontier) or stop after design?”
 3. If **no** → finalize **`90-closeout.md`**, handoff, done (design-only delivery).
 4. If **yes** → continue to **develop**.
@@ -159,7 +171,7 @@ If the user forbids direct repo edits, keep a “Proposed patch” section under
 
 After each develop chunk or when the user returns:
 
-- **Ask:** “Continue with the next tickets / another parallel batch, or pause?”
+- **Ask:** “Continue with the next work (**title**, linked ticket) / another parallel batch, or pause?” — name **titles** from **`tickets.md`**, link ids for detail.
 - If the queue or deps changed, re-run **`/identify-frontier`**.
 
 ---
@@ -178,7 +190,7 @@ After each develop chunk or when the user returns:
 1. Write **`90-closeout.md`**:
    - What shipped vs deferred;
    - **Links to all files** in `FR-NNNN-<slug>/` (including **`handoffs/`** and **`DIARY.md`**);
-   - **Mapping** `FR-NNNN` → **`T-FR-NNNN-xx`** list; **PR** link if **`finish-feature`** ran;
+   - **Mapping** `FR-NNNN` → tickets: for each **`T-FR-NNNN-xx`**, give **title** and a **link** to its **`###`** section in **`tickets.md`** (not ids-only bullets); **PR** link if **`finish-feature`** ran;
    - Suggested next steps (follow-ups, new `DESIGN-GAP` items).
 2. Write **`handoffs/YYYY-MM-DD-closeout.md`** in **this feature folder** with the same anchor content (primary handoff). Optionally add **`tasks/handoffs/FR-NNNN-<slug>-closeout.md`** as a **short pointer** (“see feature `handoffs/…`”) — never let the global file replace the feature-local handoff.
 3. Final **Diary consolidation:** ensure **`DIARY.md`** exists with **newest-first** merged entries from **`serial-diary.md`** + **`parallel/`**; commit on a surviving branch for traceability.
@@ -206,7 +218,7 @@ per **`.cursor/rules/cursor-claude-doc-sync.mdc`**. Otherwise, **no** doc churn.
 - [ ] `serial-diary` (and `parallel/…` if used) have a recap per stage.
 - [ ] `90-closeout.md` links to **every** artifact in the feature folder.
 - [ ] If implementation ran: `develop-frontier` preconditions were satisfied; **`finish-feature`** or **`finish-frontier`** was chosen consistently with **§2d**; **VAL** per **`docs/ai-context.md`** (Docker / Dev Container). **Doc changes:** if **`docs/`** or **`mkdocs.yml`** changed, doc **VAL** used **`./develop build`** or equivalent Docker-based check when **`./develop`** exists.
-- [ ] If multiple streams are active: **`tasks/ticket-progress.md` → Parallel streams** (or a dated **`tasks/handoffs/`** note) lists each **`T-FR-NNNN-xx`**, **`FR-NNNN`** (if any), and worktree path per **`docs/ai-context.md` §2c**.
+- [ ] If multiple streams are active: **`tasks/ticket-progress.md` → Parallel streams** (or a dated **`tasks/handoffs/`** note) lists each ticket (**title** + **`T-FR-NNNN-xx`** + link to **`tickets.md`** where helpful), **`FR-NNNN`** (if any), and worktree path per **`docs/ai-context.md` §2c**.
 
 ## Known process tensions (surface to the user if unclear)
 
