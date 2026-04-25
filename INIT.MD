@@ -81,6 +81,7 @@ If you improved **generic** process files at the **repo root**, use **`./push-sk
 
 | Path | Role |
 |------|------|
+| `./develop` | Optional **`develop.conf`**; **`help`**, doc preview via Compose, **`local`** = **`./scripts/serve-docs.sh`** (see root **`develop.conf.example`**) |
 | `docs/ai-context.md` | Session bootstrap, worktrees, **`FR-NNNN`** / frontier workflow (**§2b–§7**) |
 | `tasks/ticket-progress.md` | Active ticket / phase / session beacon |
 | `.cursor/skills/feature-request/SKILL.md` | **`FR-NNNN`** intake → design → **`tickets.md`** → optional implement |

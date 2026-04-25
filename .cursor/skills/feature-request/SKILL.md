@@ -23,12 +23,19 @@ does **not** replace them.
 | Merge tickets → feature branch → PR | `finish-feature` / `/finish-feature` | Merges **`feat/T-FR-*`** into **`feat/FR-NNNN-<slug>`**, validates, **PR to `main`** for human review; **never** auto-deletes remote branches. |
 | Merge to `main` (integration) | `finish-frontier` / `/finish-frontier` | Direct integration of parallel ticket branches into **`main`** when not using the feature-branch line. |
 | Commits (optional) | `commit-with-ai-metrics` / `/commit-with-metrics` | Conventional commit + optional metrics footer. |
+| Doc site (MkDocs) — preview / static build | **`./develop`** (`./develop help`) | When **`docs/`** or **`mkdocs.yml`** change: use **`./develop up`** (Docker Compose, bind-mounted repo, live reload) or **`./develop local`** (host venv via **`./scripts/serve-docs.sh`**). Run **`./develop build`** for a containerized static build before closeout or as doc **VAL** when tickets touch docs. Set **`DEVELOP_*`** in optional **`develop.conf`** (from **`develop.conf.example`**) if service names or ports differ. **Aligns** with **Docker for VAL** in **`docs/ai-context.md`**. |
 
 **Naming disambiguation:** The words **“identify”** in *identify, prompt, develop* refer to **FR intake + registering `FR-NNNN`**, not to **`/identify-frontier`**. Use **`/identify-frontier`** only **after** tickets exist in the tracker and you want a **parallel work** handoff.
 
 **Template note:** Keep **`.cursor/skills/`** and **`.claude/commands/`** aligned when you change this workflow — follow **`.cursor/rules/cursor-claude-doc-sync.mdc`**.
 
 **Context:** For **large** `FR-NNNN` efforts (many subsystems, big ticket DAG, wide codebase impact), **spawn subagents early** for discovery or per-area design drafts, then consolidate into **`serial-diary.md`** or **`parallel/*.md`** per **`docs/ai-context.md` §1b**.
+
+### Local dev: `./develop` and Docker (when this repo has MkDocs / Compose)
+
+- **`./develop` is the supported entrypoint** (not a parallel to **`/identify-frontier`**) for running the **documentation** stack: **`help`**, **`up`**, **`down`**, **`build`**, **`local`**, shell/run helpers. See the root **`README.md`**.
+- **During design (Stages 1..N):** if the feature adds or rewrites **design or product docs** under **`docs/`**, run **`./develop up`** or **`./develop local`** to verify navigation, links, Mermaid, and formatting before you treat a design stage as done.
+- **During implementation and VAL:** if a **ticket** changes **`docs/`** or site config, include **`./develop build`** (or the ticket’s own Docker-based doc check) in **VAL** or note the equivalent verification in **`parallel/…` / `tickets.md`** so **`docs/ai-context.md`** (Docker for verification) is satisfied. If the project has no **`./develop`** or Compose yet, use **`/develop-frontier`**-assigned worktrees and document **VAL** criteria per ticket.
 
 ---
 
@@ -103,6 +110,7 @@ At meaningful milestones or **closeout**:
    - small feature: L0 + short risks may suffice;
    - large feature: sequence diagrams, data lifecycle, idempotency, error taxonomy, SLO/throughput.
 3. Each stage ends with a **plain-English summary** in **`serial-diary.md`** (or the relevant **`parallel/…`** file).
+4. If the stage touched **`docs/`**, use **`./develop up`** or **`./develop local`** to preview where **`./develop`** is available; note any build warnings in the diary.
 
 Tag unknowns with **`DESIGN-GAP`** per **`docs/ai-context.md`**.
 
@@ -143,6 +151,7 @@ If the user forbids direct repo edits, keep a “Proposed patch” section under
 2. Update **`tasks/ticket-progress.md` → Current focus** per **`develop-frontier`**: `Session status` = `developing`, list worktrees and ticket ids.
 3. Run **`/develop-frontier`** (or the skill) to launch **one subagent per parallel-capable ticket**, each in **`worktrees/<slug>/`**, **TEST→DEV→VAL** in order **inside** each ticket.
 4. For each parallel subagent, ensure **`parallel/…-diary.md`** gets an entry when that stream starts and when it ends.
+5. When a ticket or stream edits **`docs/`** and the project ships **`./develop`**: prefer **`./develop build`** (or **`./develop up`** to manually verify) for doc **VAL** in line with **`docs/ai-context.md`** (run verification in **Docker** / **Dev Container** for consistency).
 
 ---
 
@@ -196,7 +205,7 @@ per **`.cursor/rules/cursor-claude-doc-sync.mdc`**. Otherwise, **no** doc churn.
 - [ ] `20-tickets-dag.md` / **`tickets.md`** DAG has no cycles; every edge matches **`Deps:`** in **`tickets.md`** and the global mermaid in **`docs/design/tickets-initial.md`** (when present).
 - [ ] `serial-diary` (and `parallel/…` if used) have a recap per stage.
 - [ ] `90-closeout.md` links to **every** artifact in the feature folder.
-- [ ] If implementation ran: `develop-frontier` preconditions were satisfied; **`finish-feature`** or **`finish-frontier`** was chosen consistently with **§2d**; **VAL** in Docker per **`docs/ai-context.md`**.
+- [ ] If implementation ran: `develop-frontier` preconditions were satisfied; **`finish-feature`** or **`finish-frontier`** was chosen consistently with **§2d**; **VAL** per **`docs/ai-context.md`** (Docker / Dev Container). **Doc changes:** if **`docs/`** or **`mkdocs.yml`** changed, doc **VAL** used **`./develop build`** or equivalent Docker-based check when **`./develop`** exists.
 - [ ] If multiple streams are active: **`tasks/ticket-progress.md` → Parallel streams** (or a dated **`tasks/handoffs/`** note) lists each **`T-FR-NNNN-xx`**, **`FR-NNNN`** (if any), and worktree path per **`docs/ai-context.md` §2c**.
 
 ## Known process tensions (surface to the user if unclear)
@@ -212,6 +221,7 @@ per **`.cursor/rules/cursor-claude-doc-sync.mdc`**. Otherwise, **no** doc churn.
 ## See also
 
 - **`reference-templates.md`** (in this directory)
+- **`./develop`**, root **`develop.conf.example`**, **`README.md`**
 - **`identify-frontier`**, **`develop-frontier`**, **`finish-feature`**, **`finish-frontier`**
 - **`docs/ai-context.md`**
 - **`tasks/feature-history/README.md`**

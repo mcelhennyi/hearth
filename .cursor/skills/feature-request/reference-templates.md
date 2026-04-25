@@ -169,3 +169,9 @@ Newest block at **top**. Each block keeps the **raw** sources (**`serial-diary.m
 
 **Recap:** …
 ```
+
+---
+
+## Dev environment (MkDocs / Docker)
+
+Repositories that ship **`./develop`**, **`compose.yaml`**, and **`scripts/serve-docs.sh`**: during design or before doc **VAL**, run **`./develop up`** or **`./develop local`**; for a static build in Docker, **`./develop build`**. See **`.cursor/skills/feature-request/SKILL.md`** (local dev section) and root **`README.md`**.

@@ -46,6 +46,7 @@ The user has (or will) run **`./init-skeleton`** from a **clone of the skeleton*
 Update minimally at the **project root** (not inside `.skeleton/` unless contributing upstream):
 
 - **`README.md`** — project name, charter; placeholders for build/test once stack exists.
+- **`develop.conf` (from `develop.conf.example`)** — set **`DEVELOP_LABEL`** to the project name. If the repo has **`compose.yaml`**, set **`DEVELOP_DOCS_SERVICE`**, **`DEVELOP_COMPOSE_FILE`**, and **`DEVELOP_DOCS_PORT`** to match the service that runs MkDocs (defaults: **`docs`**, **`compose.yaml`**, **`8000`**). If there is no Docker/Compose for docs, omit the file; **`./develop local`** still uses **`scripts/serve-docs.sh`** when present.
 - **`docs/design/architecture/overview.md`** — keep placeholder or insert user bullets if provided.
 - **`docs/design/documentation-style.md`** — replace **`PROJ`** with the chosen traceability prefix in examples.
 - **`docs/ai-context.md`** — same prefix in the traceability section.
@@ -83,6 +84,7 @@ If the user named a **local path** to the skeleton **source** checkout used with
 ## Checklist before done
 
 - [ ] `README.md` reflects real project name and charter.
+- [ ] `develop.conf` (if used) matches Compose service name / ports or was intentionally skipped.
 - [ ] Ticket **`T-FR-0000-01`** still matches “choose stack” or was intentionally updated.
 - [ ] Traceability examples use the chosen prefix consistently in root docs.
 - [ ] User knows to use **`./sync-skeleton`** for template updates and deprecations.

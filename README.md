@@ -17,6 +17,7 @@ This tree is **process and tooling only**. It does not choose languages, framewo
 | [`INIT.MD`](INIT.MD) | Full bootstrap: agent prompt, copy steps, upstream sync |
 | [`skeleton.manifest`](skeleton.manifest) | Paths allowed for `./push-skeleton contribute` |
 | [`push-skeleton`](push-skeleton) | Script to contribute generic changes upstream |
+| [`develop`](develop) & [`develop.conf.example`](develop.conf.example) | Day-one dev entrypoint (Compose + venv); copy to **`develop.conf`** and tune during **`init-project`** |
 
 ---
 

@@ -23,6 +23,8 @@ Follow the Cursor project skill **`.cursor/skills/feature-request/SKILL.md`**.
 3. **Implement:** `/develop-frontier`
 4. **Integrate:** `/finish-feature` (default; feature branch → **PR to `main`**) or `/finish-frontier` (direct **`main`**)
 
+**Doc site during design / VAL:** when **`docs/`** or **`mkdocs.yml`** change, use **`./develop help`** and run **`./develop up`** (Docker Compose) or **`./develop local`** (venv on the host); use **`./develop build`** for a static check. Optional **`develop.conf`**; see root **`README.md`** and **`.cursor/skills/feature-request/SKILL.md`** (local dev / Docker section).
+
 ## “Identify” disambiguation
 
 - Spoken **identify (FR)** in the lifecycle = **register `FR-NNNN` + write intake** in `tasks/feature-history/`.

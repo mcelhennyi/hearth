@@ -8,6 +8,8 @@ Maintainers: see **`docs/skeleton-MAINTAINERS.md`** and **`.cursor/rules/skeleto
 
 ### Template
 
+- **Feature request skill** (`.cursor/skills/feature-request/SKILL.md`) and **`.claude/commands/feature-request.md`**: document **`./develop`** for doc preview and **VAL** during **`FR-NNNN`** design and implementation; **`reference-templates.md`** adds a **Dev environment** blurb.
+- Add **`./develop`**: help menu and commands for doc preview (`up` / `down` / `build` via Docker Compose), host venv (`local` → **`scripts/serve-docs.sh`**), and container `shell` / `run` / `ps`, with optional **`develop.conf`** (from **`develop.conf.example`**; **`DEVELOP_LABEL`**, service name, compose file path). **`sync-skeleton` / `init-skeleton`** set **`+x`** on **`develop`**. **`init-project`** should copy the example, set the label, and adjust compose service keys when the stack file differs.
 - Add **`scripts/serve-docs.sh`**: creates `.venv`, installs **`requirements-docs.txt`**, runs **`python -m mkdocs serve`** so docs work without a global **`mkdocs`** on `PATH`.
 - Add **`./init-skeleton`** / **`./sync-skeleton`**, submodule nesting workflow, **`DEPRECATED_PATHS`**, maintainer docs, and git hook policy for changelog discipline.
 - Ship **`feature-request`**, **`identify-frontier`**, **`develop-frontier`**, **`finish-feature`**, **`finish-frontier`**, **`commit-with-ai-metrics`** Cursor skills, matching **`.claude/commands/`** slash files, **`cursor-claude-doc-sync.mdc`**, and expanded **`docs/ai-context.md`** §2b–§7 / finish-frontier merge notes so the full FR → ticket → parallel frontier workflow is documented in-tree.

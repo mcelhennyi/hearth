@@ -109,6 +109,7 @@ main() {
   rm -f "$root/SKELETON_REPO"
 
   chmod +x "$root/push-skeleton" "$root/init-skeleton" "$root/sync-skeleton" \
+    "$root/develop" \
     "$root/scripts/init-skeleton.sh" "$root/scripts/sync-skeleton.sh" 2>/dev/null || true
 
   git add -f .gitmodules .skeleton
