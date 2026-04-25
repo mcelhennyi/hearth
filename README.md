@@ -15,6 +15,7 @@ This tree is **process and tooling only**. It does not choose languages, framewo
 | [`.cursor/`](.cursor/) | Cursor rules and skills (including **`init-project`**) |
 | [`.claude/`](.claude/) | Claude Code rules and conventions |
 | [`INIT.MD`](INIT.MD) | Full bootstrap: agent prompt, copy steps, upstream sync |
+| [`README.template.md`](README.template.md) | Starting point for generating a project-owned root `README.md` |
 | [`skeleton.manifest`](skeleton.manifest) | Paths allowed for `./push-skeleton contribute` |
 | [`push-skeleton`](push-skeleton) | Script to contribute generic changes upstream |
 | [`develop`](develop) & [`develop.conf.example`](develop.conf.example) | Day-one dev entrypoint (Compose + venv); copy to **`develop.conf`** and tune during **`init-project`** |
@@ -24,7 +25,7 @@ This tree is **process and tooling only**. It does not choose languages, framewo
 ## Quick start
 
 1. **New repo:** Follow **[`INIT.MD`](INIT.MD)** — materialize this folder into your repository root (or a monorepo subfolder if you adjust paths in `docs/ai-context.md`).
-2. **Root `README.md`:** Replace the placeholder at the repo root with your project: purpose, scope, how to build and run **after** you pick a stack, and where to find product or API docs.
+2. **Root `README.md`:** Generate or edit it from [`README.template.md`](README.template.md) with your project purpose, scope, build/run notes **after** you pick a stack, and links to product or API docs. `sync-skeleton` does not overwrite project READMEs.
 3. **Day to day:** Keep process documentation under `docs/` and delivery state under `tasks/` (especially **`tasks/ticket-progress.md`**).
 
 Prefer driving setup with the **`init-project`** Cursor skill once it exists under `.cursor/skills/init-project/` — see **`INIT.MD`** for a copy-paste prompt template.

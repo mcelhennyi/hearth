@@ -45,7 +45,7 @@ The user has (or will) run **`./init-skeleton`** from a **clone of the skeleton*
 
 Update minimally at the **project root** (not inside `.skeleton/` unless contributing upstream):
 
-- **`README.md`** — project name, charter; placeholders for build/test once stack exists.
+- **`README.md`** — generate from **`README.template.md`** if needed, then fill in project name, charter, and placeholders for build/test once stack exists. Do not copy the skeleton repository's own **`README.md`** over a project README.
 - **`develop.conf` (from `develop.conf.example`)** — set **`DEVELOP_LABEL`** to the project name. If the repo has **`compose.yaml`**, set **`DEVELOP_DOCS_SERVICE`**, **`DEVELOP_COMPOSE_FILE`**, and **`DEVELOP_DOCS_PORT`** to match the service that runs MkDocs (defaults: **`docs`**, **`compose.yaml`**, **`8000`**). If there is no Docker/Compose for docs, omit the file; **`./develop local`** still uses **`scripts/serve-docs.sh`** when present.
 - **`docs/design/architecture/overview.md`** — keep placeholder or insert user bullets if provided.
 - **`docs/design/documentation-style.md`** — replace **`PROJ`** with the chosen traceability prefix in examples.

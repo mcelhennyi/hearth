@@ -13,6 +13,7 @@ This repository is a **process- and tooling-only** template: tickets, AI session
 
 - Adds **`.skeleton/`** as a **git submodule** pointing at the same skeleton URL as `origin` (or `SKELETON_SUBMODULE_URL`), pinned to the commit you had checked out when you ran it.
 - Re-materializes every path listed in **`skeleton.manifest`** at the **repo root** (same layout as before init, but root files are now copies you can customize).
+- Seeds root **`README.md`** from **`README.template.md`** for project customization. The skeleton's own **`README.md`** is documentation for the template repository and is not a consumer sync target.
 - Removes **`SKELETON_REPO`** from the **root** only (that marker stays inside **`.skeleton/`** so the submodule remains identifiable as the canonical template tree).
 
 ### Environment variables (`init-skeleton`)
@@ -28,7 +29,7 @@ From the **project root** (after init):
 
 1. Fast-forwards the **`.skeleton/`** submodule (`git pull` or `git submodule update --remote` if needed).
 2. Deletes every path listed in **`.skeleton/DEPRECATED_PATHS`** from the **project root** (never deletes arbitrary paths under `.skeleton/` itself).
-3. Overwrites root files listed in **`skeleton.manifest`** with copies from **`.skeleton/`**.
+3. Overwrites root files listed in **`skeleton.manifest`** with copies from **`.skeleton/`**. Project-owned **`README.md`** is intentionally excluded; use **`README.template.md`** only when regenerating a project README during initialization.
 4. Stages the submodule pointer and updated root files (`git add`); you **`git commit`** when satisfied.
 
 **Agent shortcut:** the **`sync-skeleton`** Cursor skill (`.cursor/skills/sync-skeleton/SKILL.md`) and Claude **`/sync-skeleton`** command (`.claude/commands/sync-skeleton.md`) walk through the same steps — run **`./sync-skeleton`** from the project root, then review **`git status`**.

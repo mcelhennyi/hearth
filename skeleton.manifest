@@ -6,7 +6,7 @@
 CHANGELOG.md|CHANGELOG.md
 DEPRECATED_PATHS|DEPRECATED_PATHS
 INIT.MD|INIT.MD
-README.md|README.md
+README.template.md|README.template.md
 CLAUDE.md|CLAUDE.md
 .gitignore|.gitignore
 init-skeleton|init-skeleton

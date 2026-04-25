@@ -98,6 +98,12 @@ main() {
     cp -f "$root/.skeleton/$dst" "$root/$src"
   done < <(list_manifest_pairs "$mf")
 
+  if [[ -f "$root/.skeleton/README.template.md" ]]; then
+    if [[ ! -f "$root/README.md" ]] || cmp -s "$root/README.md" "$root/.skeleton/README.md"; then
+      cp -f "$root/.skeleton/README.template.md" "$root/README.md"
+    fi
+  fi
+
   # Optional scripts not always in manifest (still copy if present)
   for f in init-skeleton sync-skeleton scripts/init-skeleton.sh scripts/sync-skeleton.sh; do
     if [[ -f "$root/.skeleton/$f" ]]; then
