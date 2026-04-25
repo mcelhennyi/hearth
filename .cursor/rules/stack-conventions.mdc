@@ -1,0 +1,17 @@
+---
+description: Language and framework conventions (fill after stack is chosen)
+alwaysApply: false
+---
+
+## When to enable
+
+After the team selects a stack (see **`T-FR-0000-01`**), replace this stub with real rules and set **`alwaysApply: true`** in the frontmatter, **or** split into multiple rule files per technology.
+
+## Placeholder
+
+- **Languages / versions:** *(not set)*
+- **Format / lint:** *(not set)*
+- **Tests:** *(not set)*
+- **Build / run:** *(not set)*
+
+Keep this file **free of product domain** unless documenting how code style relates to design docs.

@@ -1,0 +1,26 @@
+# Dependencies (add patterns when you choose a stack)
+node_modules/
+.venv/
+.venv-*/
+
+# Build / cache (extend per stack)
+dist/
+build/
+.cache/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+.idea/
+*.swp
+*.swo
+
+# Per-ticket git worktrees (see docs/ai-context.md)
+worktrees/
+
+# Logs
+*.log
