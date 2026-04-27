@@ -1,0 +1,5 @@
+hearth.local {
+  tls internal
+  root * /srv
+  file_server
+}
