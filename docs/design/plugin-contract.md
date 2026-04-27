@@ -63,6 +63,23 @@ order = 30                     # ordering hint in the Mantle nav
 | Topics in `permissions.spark_*` use namespaces the plugin owns or wildcards within them | warn + restrict at runtime |
 | `permissions.network` requested but unsupported in current deploy mode | install but disable plugin, surface error |
 | Referenced files (`icon`, `entrypoint.ui.path`) exist at install time | warn (plugin still loads with placeholder) |
+| Paths in `[backup].include` and `[backup].exclude` stay inside the plugin's declared data root | reject install for escaped include; warn + ignore escaped exclude |
+
+## Backup metadata
+
+The `[backup]` block is a declaration of durable local plugin data. It does **not** make the hub responsible for reading plugin internals during MVP; it gives future backup tooling a stable boundary.
+
+Plugins that own durable data should:
+
+| Rule | Requirement |
+|------|-------------|
+| Local data root | Keep durable state under `var/hearth/plugins/<slug>/` unless the manifest grants a narrower explicit path. |
+| Include list | Declare files or directories required for restore in `[backup].include`. |
+| Exclude list | Exclude caches, temporary files, generated build output, downloads, and other disposable data in `[backup].exclude`. |
+| Snapshot safety | Flush or checkpoint data stores before shutdown; future backup hooks may ask plugins to produce a quiescent snapshot. |
+| Secrets | Keep long-lived secrets out of plugin backup paths. Cloud backup should handle only encrypted artifacts. |
+
+Later-phase backup design lives in [`native-plugin-ideas.md`](native-plugin-ideas.md) and [`plugin-ideas/system-backup.md`](plugin-ideas/system-backup.md).
 
 ## Lifecycle hooks (optional)
 

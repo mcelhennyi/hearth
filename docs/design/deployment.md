@@ -181,7 +181,7 @@ hearth-backup-YYYYMMDD-HHMM.tar.zst
 
 Restore is `hearth restore <file>` from a clean install.
 
-Phase 2 (Ember) replaces this with continuous encrypted sync to a cloud-storage adapter (Google Drive, S3-compatible, …) — see [`satellite-repos/ember.md`](satellite-repos/ember.md).
+Phase 2 (Ember) or a later native backup plugin replaces this with continuous encrypted sync to a cloud-storage adapter (Google Drive, S3-compatible, …) — see [`satellite-repos/ember.md`](satellite-repos/ember.md) and [`plugin-ideas/system-backup.md`](plugin-ideas/system-backup.md).
 
 ## Updates
 

@@ -33,6 +33,7 @@ Source SVG lives at [`docs/design/logo.svg`](docs/design/logo.svg). Copy it to `
 - **Shared UI (Mantle):** [`docs/design/mantle-ui.md`](docs/design/mantle-ui.md)
 - **Deployment topology:** [`docs/design/deployment.md`](docs/design/deployment.md)
 - **Notifications (Web Push + ntfy):** [`docs/design/notifications.md`](docs/design/notifications.md)
+- **Native plugin ideas:** [`docs/design/native-plugin-ideas.md`](docs/design/native-plugin-ideas.md)
 - **Roadmap (Phase 2 / Phase 3 / research):** [`docs/design/roadmap.md`](docs/design/roadmap.md)
 - **Satellite repos (Kindling, Ember):** [`docs/design/satellite-repos/`](docs/design/satellite-repos/)
 - **AI workflow notes:** [`docs/ai-context.md`](docs/ai-context.md)

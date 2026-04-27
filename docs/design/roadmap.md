@@ -21,7 +21,7 @@ Acceptance: see `tasks/feature-history/FR-0001-hearth-platform/README.md`.
 
 - Ember relay server (cloud-hosted) that brokers e2e-encrypted access to a home Hearth box from anywhere.
 - Device-bound identity (per-device keypair, hub signs new devices on first pairing).
-- Encrypted continuous backup adapters: Google Drive, S3-compatible, iCloud Drive (best-effort).
+- Encrypted continuous backup adapters: Google Drive, S3-compatible, iCloud Drive (best-effort), potentially through a native [`system-backup`](plugin-ideas/system-backup.md) plugin.
 - `spark.call_remote` for cross-host plugin calls.
 - Hub UI: device pairing, relay status, restore-from-backup.
 
@@ -36,6 +36,7 @@ These were named in the original product brief and are explicitly **not** part o
 - **AI recommendations** — recipes-from-pantry, idea catcher → developer agent handoff. Builds on Spark capability surface; agentic developer is the existing `../project_02` (Colony) reachable via a Spark adapter.
 - **Usage analytics (private)** — per-user histograms of plugin usage; never leaves the box without explicit export.
 - **Plugin store / community plugins** — Tinder manifests are the unit of distribution; a store is a curated index plus signature verification.
+- **Native plugin idea backlog** — early plugin concepts start in [`native-plugin-ideas.md`](native-plugin-ideas.md) before they receive an `FR-NNNN`.
 - **Workflows / automation** — Zapier-style cross-plugin recipes, expressed as a small DSL on top of Spark.
 - **Native wrappers** — Tauri or Electron shell that points at `https://<id>.ember.example/`; same UI, OS-integrated.
 

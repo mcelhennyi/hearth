@@ -142,7 +142,7 @@ graph LR
 | Plugin data | `var/hearth/plugins/<slug>/` | Plugin | Plugin opts in via Tinder `[backup]` block |
 | Secrets | `var/hearth/secrets/` (mode 0600) | Hub + admin | Never via cloud; only to encrypted local backups |
 
-Backup strategy lives in [`docs/design/deployment.md`](../deployment.md). MVP exports a tarball; Ember adds encrypted cloud sync later.
+Backup strategy lives in [`docs/design/deployment.md`](../deployment.md). MVP exports a tarball; Ember and the later native [`system-backup`](../plugin-ideas/system-backup.md) plugin idea cover encrypted cloud sync.
 
 ## 10. Non-goals (MVP)
 

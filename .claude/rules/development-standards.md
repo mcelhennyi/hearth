@@ -45,6 +45,11 @@ Use with **`docs/ai-context.md`**. This file mirrors Cursor-facing rules for Cla
 - **Spoken “identify (FR)”** = registry + intake; **`/identify-frontier`** = parallel **tickets** only **after** canonical **`### T-FR-NNNN-xx`** sections exist.
 - **Registry races:** push **`REGISTRY.md`** + minimal stub to **`main` immediately** after allocating **`FR-NNNN`** (**`docs/ai-context.md` §2b**).
 
+## Native plugin ideas
+
+- **`/plugin-idea`** / **`.cursor/skills/plugin-idea/SKILL.md`** creates docs-first native plugin idea pages under **`docs/design/plugin-ideas/`**.
+- Do not add a plugin submodule unless the user provides a concrete repository URL and explicitly asks for it; otherwise document the intended **`apps/<slug>/`** mount point.
+
 ## Ticket completion
 
 - When **VAL** is `done`, run **commit → push → PR** per team policy.

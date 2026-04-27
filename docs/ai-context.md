@@ -186,5 +186,6 @@ After merge resolution, run a mandatory full revalidation gate on the **target**
 
 - **`INIT.MD`** — clone, **`init-skeleton`**, **`sync-skeleton`**, **`init-project`**
 - **`sync-skeleton`** skill / **`/sync-skeleton`** — run **`./sync-skeleton`** from the project root (see **`INIT.MD` → *Syncing template updates***)
+- **`plugin-idea`** skill / **`/plugin-idea`** — capture native plugin ideas under **`docs/design/plugin-ideas/`** before they graduate to **`FR-NNNN`** and **`apps/<slug>/`** submodules.
 - **`docs/design/documentation-style.md`** — ticket ids, traceability, writing rules
 - **`.cursor/skills/feature-request/SKILL.md`** — full **`FR-NNNN`** stage contract

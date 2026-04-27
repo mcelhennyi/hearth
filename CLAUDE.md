@@ -20,6 +20,7 @@ Custom slash commands live in **`.claude/commands/`**:
 | **`/finish-frontier`** | Merge parallel ticket/stage branches into **`main`** per policy. |
 | **`/commit-with-metrics`** | Commit with optional AI metrics footer — **`.cursor/skills/commit-with-ai-metrics/SKILL.md`**. |
 | **`/sync-skeleton`** | Update **`.skeleton/`** submodule and **`skeleton.manifest`** root copies; run **`./sync-skeleton`** — **`.cursor/skills/sync-skeleton/SKILL.md`**, **`.skeleton/INIT.MD`**. |
+| **`/plugin-idea`** | Create or update a native plugin idea page under **`docs/design/plugin-ideas/`**; later graduate to **`FR-NNNN`** and mount as **`apps/<slug>/`** submodule — **`.cursor/skills/plugin-idea/SKILL.md`**. |
 
 **“Identify” disambiguation:** spoken **identify (FR)** = register **`FR-NNNN`** + intake; **`/identify-frontier`** = parallel **tickets** only after **`tickets.md`** exists.
 
