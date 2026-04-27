@@ -6,6 +6,8 @@
 
 A small cloud-hosted relay that lets a user reach their Hearth box from anywhere on the open internet, with **end-to-end encryption between the iPhone PWA and the Hearth box**. Ember does not see plaintext.
 
+The relay server is infrastructure. The Hearth-side product experience may live in a native [`remote-access`](../plugin-ideas/remote-access.md) plugin once the hub exposes the relay and identity surfaces that plugin needs.
+
 ## Why a relay (not port-forwarding)
 
 - Many home networks are behind CGNAT or have a non-static IP.

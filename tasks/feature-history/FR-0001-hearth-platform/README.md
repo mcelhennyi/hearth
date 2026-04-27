@@ -1,8 +1,10 @@
 # FR-0001 — Hearth platform (MVP)
 
-**Status:** `design`
+**Status:** `parked` (design authoritative; implementation paused pending [FR-0002](../FR-0002-iphone-pwa-prototype/) prototype findings)
 **Owner:** project lead (Ian)
 **Allocated:** 2026-04-27
+
+> **Parked 2026-04-27.** Before investing in the registry, Tinder loader, Spark broker, and Kindling split, we are de-risking the iPhone-PWA story end-to-end via [FR-0002](../FR-0002-iphone-pwa-prototype/README.md). The design in `docs/design/` and in this folder remains the source of truth for the MVP target; FR-0002 may produce **amendments** (per `docs/ai-context.md`) to `mantle-ui.md`, `deployment.md`, or `notifications.md` if a real-device test refutes an assumption. **Tickets `T-FR-0001-01..10` are unchanged but eligible only after FR-0002 closes.**
 
 ## Charter (one sentence)
 

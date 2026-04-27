@@ -4,6 +4,12 @@
 
 Hearth plugins are intended to be real apps, not folders of copied code. A native plugin idea should be able to become a standalone repository, receive the project process skeleton, consume Kindling templates, and mount back into Hearth as a git submodule under `apps/<slug>/`.
 
+## Plugin-first ecosystem
+
+Hearth should push as much functionality as practical behind the plugin interface. The hub stays small and stable: discovery, routing, identity handoff, lifecycle, Spark, and narrowly-scoped platform capabilities. Product categories such as remote access, backup, notifications, workflows, analytics, and AI helpers should become native plugins whenever they can be expressed through that contract.
+
+This is an open-source ecosystem bet. A category should be able to support multiple competing implementations without requiring a hub fork: hosted vs self-hosted relay providers, different backup providers, different automation engines, or community-maintained upgrades. If a feature needs privileged platform support, define the smallest Spark/Tinder surface the hub must expose, then keep provider-specific behavior in the plugin.
+
 ## Native plugin shape
 
 | Concern | Direction |
@@ -32,6 +38,7 @@ Until the repository and template exist, a plugin idea should start as a design 
 
 | Idea | Phase | Summary |
 |------|-------|---------|
+| [`remote-access`](plugin-ideas/remote-access.md) | Later phase | Native plugin that manages secure remote user/device access through a relay once Ember relay functionality exists. |
 | [`system-backup`](plugin-ideas/system-backup.md) | Later phase | Native backup plugin that snapshots hub and plugin data, encrypts with the system password, and uploads to a cloud provider. |
 
 ## Graduation criteria

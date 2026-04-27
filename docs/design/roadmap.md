@@ -19,7 +19,8 @@ Acceptance: see `tasks/feature-history/FR-0001-hearth-platform/README.md`.
 
 ## Phase 2 — Ember relay + remote access (separate FR — not yet allocated)
 
-- Ember relay server (cloud-hosted) that brokers e2e-encrypted access to a home Hearth box from anywhere.
+- Ember relay server (cloud-hosted or self-hosted) that brokers e2e-encrypted access to a home Hearth box from anywhere.
+- Native [`remote-access`](plugin-ideas/remote-access.md) plugin that owns relay provider setup, device pairing UX, status, and diagnostics once the relay surface exists.
 - Device-bound identity (per-device keypair, hub signs new devices on first pairing).
 - Encrypted continuous backup adapters: Google Drive, S3-compatible, iCloud Drive (best-effort), potentially through a native [`system-backup`](plugin-ideas/system-backup.md) plugin.
 - `spark.call_remote` for cross-host plugin calls.

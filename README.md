@@ -1,81 +1,151 @@
-# Hearth
+<p align="center">
+  <img src="docs/design/logo.svg" alt="Hearth logo" width="132" />
+</p>
 
-**Your home's productivity hub — vibe-coded, encrypted, yours.**
+<h1 align="center">Hearth</h1>
 
-Hearth is a self-hosted personal productivity platform that runs on a Raspberry Pi or Mac mini. It hosts a constellation of small "vibe-coded" lifestyle apps (groceries, scheduler, recipes, idea catcher, …) behind a single Caddy reverse proxy, a shared UI shell, and a discoverable app-to-app API. Each app is its own project that opts into the platform via a manifest; Hearth gives them a home, a chrome, an identity, and a way to talk.
+<p align="center">
+  <strong>Your home's productivity hub: local-first, plugin-friendly, and built for the iPhone Home Screen.</strong>
+</p>
 
-The **primary client is an iPhone PWA** added to the Home Screen — Mantle ships a manifest, a service worker, bottom-tab navigation, and Web Push so the result feels native. Desktop browsers and Android work too (the layout is responsive). Phase-2 **Ember** brings e2e-encrypted access from anywhere; until then, Hearth lives on your LAN with a locally-trusted TLS cert.
+<p align="center">
+  <a href="docs/design/architecture/overview.md">Architecture</a>
+  ·
+  <a href="docs/design/plugin-contract.md">Plugin Contract</a>
+  ·
+  <a href="docs/design/deployment.md">Deployment</a>
+  ·
+  <a href="docs/design/roadmap.md">Roadmap</a>
+</p>
 
-## The constellation
+## Overview
 
-| Name | Role | State |
-|------|------|-------|
-| **Hearth** | Hub: gateway, plugin loader, registry, dashboard, settings | This repo |
-| **Mantle** | Shared React shell + design system (theme, nav chrome, auth widget) | Lives in **Kindling** |
-| **Spark** | App-to-app API: discovery, capability surface, RPC, event bus | Spec in [`docs/design/spark-api.md`](docs/design/spark-api.md); client lib lives in **Kindling** |
-| **Tinder** | Plugin manifest format (declares routes, capabilities, deps, permissions) | Spec in [`docs/design/plugin-contract.md`](docs/design/plugin-contract.md) |
-| **Kindling** | Shared template repo: scaffold for new plugin apps, Mantle component library, Spark client lib, dev tooling | Separate repo, **planned** as `git@github.com:mcelhennyi/kindling.git`; see [`docs/design/satellite-repos/kindling.md`](docs/design/satellite-repos/kindling.md) |
-| **Ember** | Phase-2 relay server: e2e-encrypted access from anywhere, identity, optional cloud-storage backup providers | Sketch in [`docs/design/satellite-repos/ember.md`](docs/design/satellite-repos/ember.md); not in MVP |
+Hearth is a self-hosted personal productivity platform for a Raspberry Pi, Mac mini, or similar always-on home machine. It gives small lifestyle apps, such as groceries, scheduling, recipes, and idea capture, a shared home behind one local URL.
 
-## Logo (working concept)
+Each app is a plugin with its own code, data, and lifecycle. Hearth provides the hub: reverse proxy routing, plugin discovery, shared UI chrome, local identity, settings, dashboard surfaces, and an app-to-app API.
 
-A geometric flame inside an arch (the hearth opening). Kept abstract enough to scale to a 16px favicon and recolor for plugin badges.
+The primary client is an **iPhone PWA** added to the Home Screen. Desktop browsers and Android are supported through responsive layouts, but the product direction optimizes for the phone-in-hand experience first.
 
-![Hearth logo](docs/design/logo.svg)
+## Status
 
-Source SVG lives at [`docs/design/logo.svg`](docs/design/logo.svg). Copy it to `apps/hub/web/public/logo.svg` once the hub app is scaffolded (ticket **`T-FR-0001-02`**).
+Hearth is currently in the **design and prototype phase**. The architecture, interfaces, and workflow are documented; the first runnable scaffold lands inside an iPhone-PWA-de-risking prototype rather than the platform MVP, so we don't pay interest on assumptions that real-device testing might refute.
 
-## Documentation
+- **Active feature:** [`FR-0002 iPhone PWA prototype`](tasks/feature-history/FR-0002-iphone-pwa-prototype/) — Caddy + `tls internal`, a static Mantle shell with manifest + service worker + bottom-tab nav, the iPhone CA-trust workflow, and one Web Push round-trip on a real device.
+- **Parked:** [`FR-0001 Hearth Platform`](tasks/feature-history/FR-0001-hearth-platform/) — design stays authoritative; implementation resumes after FR-0002 closes (and applies any DESIGN-FLAW amendments FR-0002 surfaces).
+- **First runnable-code tickets:** [`T-FR-0002-01`](tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md) and [`T-FR-0002-02`](tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md) (parallel-eligible).
+- **Design source of truth:** [`docs/design/`](docs/design/).
 
-- **System architecture:** [`docs/design/architecture/overview.md`](docs/design/architecture/overview.md)
-- **Plugin contract (Tinder):** [`docs/design/plugin-contract.md`](docs/design/plugin-contract.md)
-- **App-to-app API (Spark):** [`docs/design/spark-api.md`](docs/design/spark-api.md)
-- **Shared UI (Mantle):** [`docs/design/mantle-ui.md`](docs/design/mantle-ui.md)
-- **Deployment topology:** [`docs/design/deployment.md`](docs/design/deployment.md)
-- **Notifications (Web Push + ntfy):** [`docs/design/notifications.md`](docs/design/notifications.md)
-- **Native plugin ideas:** [`docs/design/native-plugin-ideas.md`](docs/design/native-plugin-ideas.md)
-- **Roadmap (Phase 2 / Phase 3 / research):** [`docs/design/roadmap.md`](docs/design/roadmap.md)
-- **Satellite repos (Kindling, Ember):** [`docs/design/satellite-repos/`](docs/design/satellite-repos/)
-- **AI workflow notes:** [`docs/ai-context.md`](docs/ai-context.md)
-- **Active feature:** [`tasks/feature-history/FR-0001-hearth-platform/`](tasks/feature-history/FR-0001-hearth-platform/)
+## What Hearth Provides
 
-## Stack
+- A single local entrypoint, such as `https://hearth.local/`, for all enabled plugins.
+- A shared React shell, **Mantle**, for navigation, theme, auth surfaces, and PWA behavior.
+- A plugin manifest format, **Tinder**, for declaring routes, capabilities, dependencies, and permissions.
+- An app-to-app API, **Spark**, for discovery, typed RPC, pub/sub, and dashboard updates.
+- Local-first storage with SQLite defaults and plugin-owned data directories.
+- Caddy-based local TLS so iPhone PWA features, service workers, and Web Push can work on a LAN.
+- A future encrypted relay, **Ember**, for secure access away from home.
 
-| Layer | Choice | Why |
-|-------|--------|-----|
-| Hub gateway / plugin loader | **Python 3.12 + FastAPI** | Async, strong typing, fits the small-but-real-server target on Pi |
-| Plugin backends | **Python (default)**, **C++** for hot paths (later) | Same justification; C++ reserved for media/ML-style background services |
-| UIs (hub + plugins) | **React 18 + TypeScript + Vite** | Standard, fast HMR, large ecosystem; shipped via Mantle |
-| Component library / shell | **Mantle** (Tailwind + shadcn/ui) | One look across all plugins; shipped from Kindling |
-| Reverse proxy | **Caddy 2.x** (default) — auto local TLS via `tls internal`; nginx supported as alternative | Routes `/<plugin-slug>/...` → plugin process; HTTPS is required for the iPhone PWA + Web Push |
-| PWA shell | **Vite-PWA** (manifest + service worker), bottom-tab nav on mobile | "Add to Home Screen" → standalone full-screen, offline-aware |
-| Notifications | **Web Push** (iOS 16.4+, requires PWA installed) with **ntfy** as a hobbyist fallback | Spec in [`docs/design/notifications.md`](docs/design/notifications.md) |
-| Persistence (hub) | **SQLite** (single file under `var/hearth/`) | Plugin registry, settings, user prefs; trivial to back up |
-| Persistence (plugins) | Plugin's choice (SQLite default) | Plugins own their data; surfaced via Spark capabilities |
-| Process supervision | **systemd** (Pi/Mac mini) or **Docker Compose** (dev) | Match the deploy target |
+## Architecture
 
-Detail: [`.cursor/rules/stack-conventions.mdc`](.cursor/rules/stack-conventions.mdc).
+At a high level, Hearth runs a hub API, a PWA shell, a reverse proxy, and a registry of plugin services on one home machine.
 
-## Traceability prefix
+```mermaid
+graph TB
+  Client["iPhone PWA / desktop browser"]
+  Caddy["Caddy local TLS reverse proxy"]
+  Hub["Hearth Hub API"]
+  Registry[("SQLite plugin registry")]
+  Spark["Spark app-to-app bus"]
+  PluginA["Plugin: groceries"]
+  PluginB["Plugin: scheduler"]
+  PluginN["Plugin: ..."]
 
-Inline tags use **`@HRT-<AREA>-<NUMBER>`**. Areas: `HUB`, `MNTL`, `SPRK`, `TNDR`, `KDLG`, `EMBR`, `IDM`, `OPS`, `DOC`. See [`docs/design/documentation-style.md`](docs/design/documentation-style.md).
+  Client --> Caddy
+  Caddy --> Hub
+  Caddy --> PluginA
+  Caddy --> PluginB
+  Caddy --> PluginN
+  Hub --> Registry
+  Hub <--> Spark
+  PluginA <--> Spark
+  PluginB <--> Spark
+  PluginN <--> Spark
+```
 
-## Development
+See the full architecture in [`docs/design/architecture/overview.md`](docs/design/architecture/overview.md).
 
-The repo is in **design** phase — no buildable scaffold yet. The first ticket that produces runnable code is **`T-FR-0001-02`** (Hub app skeleton + dev-loop Compose); see [`tasks/feature-history/FR-0001-hearth-platform/tickets.md`](tasks/feature-history/FR-0001-hearth-platform/tickets.md).
+## Project Constellation
 
-When the scaffold lands, prefer:
+| Name | Role | Status |
+| --- | --- | --- |
+| **Hearth** | Hub, gateway, plugin loader, registry, dashboard, settings | This repo |
+| **Mantle** | Shared React shell and design system | Planned in Kindling |
+| **Spark** | Discovery, typed RPC, events, and app-to-app API | Specified in [`docs/design/spark-api.md`](docs/design/spark-api.md) |
+| **Tinder** | Plugin manifest and permission contract | Specified in [`docs/design/plugin-contract.md`](docs/design/plugin-contract.md) |
+| **Kindling** | Plugin template repo, Mantle package, Spark client, dev tooling | Planned satellite repo |
+| **Ember** | Encrypted remote relay and optional backup path | Phase 2 design |
+
+## Tech Stack
+
+| Layer | Choice |
+| --- | --- |
+| Hub API | Python 3.12, FastAPI, SQLite |
+| UI | React 18, TypeScript, Vite |
+| Shared shell | Mantle with Tailwind and shadcn/ui |
+| Reverse proxy | Caddy 2.x with `tls internal` |
+| PWA | Vite-PWA, service worker, manifest, Web Push |
+| Plugin API | Spark over local IPC |
+| Plugin manifests | Tinder manifest files |
+| Dev runtime | Docker Compose |
+| Production runtime | systemd on Raspberry Pi, launchd on macOS |
+
+## Getting Started
+
+This repository is not yet installable as an application. For now, the best way to understand or contribute to Hearth is to start with the design docs:
+
+1. Read the [architecture overview](docs/design/architecture/overview.md).
+2. Review the [plugin contract](docs/design/plugin-contract.md).
+3. Check the [deployment design](docs/design/deployment.md).
+4. Follow active implementation work in [`tasks/feature-history/`](tasks/feature-history/).
+
+Once the scaffold lands, development commands will be exposed through:
 
 ```bash
 ./develop help
 ```
 
-Development commands (build, test, lint, dev servers) run inside Docker Compose by default; host-local execution is documented in ticket diaries as exceptions.
+Development commands are expected to run inside Docker Compose by default. Host-local execution should be documented as an exception in ticket diaries.
 
-## Project skeleton
+## Documentation
 
-This repository was initialized from the [process skeleton](.skeleton/INIT.MD). Template sources live in `.skeleton/` (git submodule). Run `./sync-skeleton` when you intentionally want upstream process/tooling updates.
+- [Architecture overview](docs/design/architecture/overview.md)
+- [Plugin contract](docs/design/plugin-contract.md)
+- [Spark API](docs/design/spark-api.md)
+- [Mantle UI](docs/design/mantle-ui.md)
+- [Deployment](docs/design/deployment.md)
+- [Notifications](docs/design/notifications.md)
+- [Roadmap](docs/design/roadmap.md)
+- [Satellite repos](docs/design/satellite-repos/)
+- [AI workflow notes](docs/ai-context.md)
+
+The logo source lives at [`docs/design/logo.svg`](docs/design/logo.svg). It is intended to move into `apps/hub/web/public/logo.svg` when the hub web scaffold is created.
+
+## Contributing
+
+Hearth is early and design-led. Contributions should follow the documented architecture and ticket workflow rather than introducing behavior that is not backed by `docs/design/`.
+
+Useful places to start:
+
+- Open design questions in [`docs/design/`](docs/design/)
+- Active feature history in [`tasks/feature-history/`](tasks/feature-history/)
+- Traceability guidance in [`docs/design/documentation-style.md`](docs/design/documentation-style.md)
+
+Inline traceability tags use `@HRT-<AREA>-<NUMBER>`, where areas include `HUB`, `MNTL`, `SPRK`, `TNDR`, `KDLG`, `EMBR`, `IDM`, `OPS`, and `DOC`.
+
+## Repository Skeleton
+
+This repository was initialized from the [process skeleton](.skeleton/INIT.MD). Template sources live in `.skeleton/` as a git submodule. Run `./sync-skeleton` only when intentionally applying upstream process or tooling updates.
 
 ## License
 
-Private / unpublished. Update before the first public push.
+Hearth is not licensed for public reuse yet. Add an open-source license before the first public release.

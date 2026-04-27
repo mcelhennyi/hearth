@@ -17,7 +17,8 @@
 | FR id | Path (repo root) |
 |-------|------------------|
 | FR-0000 | `tasks/feature-history/FR-0000-bootstrap/tickets.md` |
-| FR-0001 | `tasks/feature-history/FR-0001-hearth-platform/tickets.md` |
+| FR-0001 | `tasks/feature-history/FR-0001-hearth-platform/tickets.md` *(parked pending FR-0002)* |
+| FR-0002 | `tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md` |
 
 ---
 
@@ -29,6 +30,20 @@ Extend this diagram when new **`FR-NNNN`** lines add tickets that chain to exist
 graph LR
   %% FR-0000 — bootstrap
   TFR0000_01_TEST --> TFR0000_01_DEV --> TFR0000_01_VAL
+
+  %% FR-0002 — iPhone PWA prototype (active; parks FR-0001)
+  TFR0002_01_TEST --> TFR0002_01_DEV --> TFR0002_01_VAL
+  TFR0002_02_TEST --> TFR0002_02_DEV --> TFR0002_02_VAL
+  TFR0002_03_TEST --> TFR0002_03_DEV --> TFR0002_03_VAL
+  TFR0002_04_TEST --> TFR0002_04_DEV --> TFR0002_04_VAL
+  TFR0002_01_VAL --> TFR0002_03_TEST
+  TFR0002_02_VAL --> TFR0002_03_TEST
+  TFR0002_03_VAL --> TFR0002_04_TEST
+
+  %% FR-0001 reuse hooks (parked; FR-0002 outputs feed these)
+  TFR0002_01_VAL -.reuse.-> TFR0001_05_TEST
+  TFR0002_02_VAL -.reuse.-> TFR0001_04_TEST
+  TFR0002_03_VAL -.reuse.-> TFR0001_09_TEST
 
   %% FR-0001 — Hearth platform
   TFR0001_01_TEST --> TFR0001_01_DEV --> TFR0001_01_VAL
