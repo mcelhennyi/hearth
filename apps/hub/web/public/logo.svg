@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Hearth logo</title>
+  <desc id="desc">A geometric flame inside a rounded hearth arch.</desc>
+  <defs>
+    <linearGradient id="ember" x1="78" y1="56" x2="178" y2="212" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFB84D"/>
+      <stop offset="0.54" stop-color="#F97316"/>
+      <stop offset="1" stop-color="#B83A14"/>
+    </linearGradient>
+    <linearGradient id="kindle" x1="120" y1="96" x2="146" y2="182" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF1B8"/>
+      <stop offset="1" stop-color="#FDBA3B"/>
+    </linearGradient>
+  </defs>
+
+  <path
+    fill="#241A15"
+    fill-rule="evenodd"
+    d="M41 220V95C41 50.8 80 16 128 16s87 34.8 87 79v125h-38V96c0-27.4-21.9-48-49-48S79 68.6 79 96v124H41Z"
+  />
+  <path
+    fill="#3B2A22"
+    d="M66 220V99c0-34.4 27.8-62 62-62s62 27.6 62 62v121h-19V101c0-24.6-19-44-43-44S85 76.4 85 101v119H66Z"
+    opacity="0.58"
+  />
+
+  <path
+    fill="url(#ember)"
+    d="M129 216c-34.2 0-58-21.8-58-53.1 0-20.6 11.1-37.1 27.3-52.7 13.2-12.7 22.5-27 28.8-45.9 22.3 19.7 34.3 40.1 34.3 58.6 8.9-7 14.7-17.1 17-29.5 19.2 17.4 28.6 38.1 28.6 62.8 0 36.1-30.8 59.8-78 59.8Z"
+  />
+  <path
+    fill="#7C2D12"
+    d="M128.5 216c-22.4 0-38.5-15.1-38.5-36.1 0-14.3 8.2-26.8 18.8-37.9 7.9-8.3 14.1-18.1 18.4-29.9 15 13.8 21.8 28.8 20.4 45 6.8-3.1 12.6-8.6 17.4-16.5 9.8 11.6 14.7 24.4 14.7 38.2 0 22.6-21.2 37.2-51.2 37.2Z"
+    opacity="0.28"
+  />
+  <path
+    fill="url(#kindle)"
+    d="M130.2 205c-18.1 0-30.7-11.2-30.7-27.3 0-9.8 5.2-18.6 14.8-28.4 7.4-7.6 12.6-16.4 15.8-27 13.4 13 19.9 25.6 19.5 38 5.1-2.8 9.6-7.4 13.3-13.7 7.8 9.3 11.6 19.3 11.6 29.8 0 17.5-17.6 28.6-44.3 28.6Z"
+  />
+  <path
+    fill="#FFF7ED"
+    d="M119.8 170.5c0-7.1 4.4-13.7 11.6-21.9 3.8 8.8 5.3 16.4 4.4 22.8 4.2-1.7 7.7-4.9 10.6-9.6 3.7 5.2 5.5 10.6 5.5 16.1 0 9.6-7.9 15.5-20.3 15.5-10.2 0-17.2-6.7-17.2-16.4 0-2.1 1.8-4.2 5.4-6.5Z"
+    opacity="0.9"
+  />
+
+  <path
+    fill="#FFEDD5"
+    d="M69 220h118c-10.5 12.4-29.8 20-59 20s-48.5-7.6-59-20Z"
+    opacity="0.92"
+  />
+  <path
+    fill="#C2410C"
+    d="M88 220h80c-6.8 6.4-20.1 10-40 10s-33.2-3.6-40-10Z"
+    opacity="0.7"
+  />
+</svg>
