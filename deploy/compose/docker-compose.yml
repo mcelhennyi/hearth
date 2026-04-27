@@ -48,8 +48,8 @@ services:
     command: >-
       sh -eu -c '
       CERT=/data/caddy/pki/authorities/local/root.crt;
-      while [ ! -s "$CERT" ]; do sleep 1; done;
-      cp "$CERT" /srv/ca.crt;
+      while [ ! -s "$$CERT" ]; do sleep 1; done;
+      cp "$$CERT" /srv/ca.crt;
       timeout "$${CA_EXPORT_SECONDS}" caddy file-server --root /srv --listen :8080
       '
     volumes:
