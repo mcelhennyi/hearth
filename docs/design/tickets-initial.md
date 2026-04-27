@@ -75,6 +75,7 @@ graph LR
   TFR0001_08_VAL --> TFR0001_10_TEST
   TFR0001_09_VAL --> TFR0001_10_TEST
 
+  class TFR0002_02_TEST,TFR0002_02_DEV,TFR0002_02_VAL triadDone
   classDef triadDone fill:#2e7d32,color:#fff
   class TFR0002_01_TEST,TFR0002_01_DEV,TFR0002_01_VAL triadDone
 ```
