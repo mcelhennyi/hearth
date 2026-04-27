@@ -22,9 +22,76 @@ function useDesktopLayout(): boolean {
 function PlaceholderTile() {
   const [status, setStatus] = useState<string | null>(null)
 
+  function decodeBase64Url(base64Url: string): Uint8Array {
+    const padded = `${base64Url}${'='.repeat((4 - (base64Url.length % 4)) % 4)}`
+    const base64 = padded.replace(/-/g, '+').replace(/_/g, '/')
+    const raw = window.atob(base64)
+    const output = new Uint8Array(raw.length)
+    for (let i = 0; i < raw.length; i += 1) {
+      output[i] = raw.charCodeAt(i)
+    }
+    return output
+  }
+
+  async function ensurePushSubscription(): Promise<void> {
+    if (!('Notification' in window)) {
+      throw new Error('Notifications are not supported in this browser.')
+    }
+    if (!('serviceWorker' in navigator)) {
+      throw new Error('Service workers are not supported in this browser.')
+    }
+
+    let permission = Notification.permission
+    if (permission === 'default') {
+      permission = await Notification.requestPermission()
+    }
+    if (permission !== 'granted') {
+      throw new Error(`Notification permission is ${permission}.`)
+    }
+
+    const registration = await navigator.serviceWorker.ready
+    const existing = await registration.pushManager.getSubscription()
+    if (existing) {
+      const response = await fetch('/api/push/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(existing.toJSON()),
+      })
+      if (!response.ok) {
+        throw new Error(`Failed to sync subscription: HTTP ${response.status}`)
+      }
+      return
+    }
+
+    const keyResponse = await fetch('/api/push/vapid-public-key')
+    if (!keyResponse.ok) {
+      throw new Error(`Failed to load VAPID key: HTTP ${keyResponse.status}`)
+    }
+    const keyPayload = (await keyResponse.json()) as { publicKey?: string }
+    if (!keyPayload.publicKey) {
+      throw new Error('VAPID key payload was empty.')
+    }
+
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: decodeBase64Url(keyPayload.publicKey),
+    })
+
+    const subscribeResponse = await fetch('/api/push/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(subscription.toJSON()),
+    })
+    if (!subscribeResponse.ok) {
+      throw new Error(`Failed to store subscription: HTTP ${subscribeResponse.status}`)
+    }
+  }
+
   async function sendTestNotification(): Promise<void> {
-    setStatus('Sending...')
+    setStatus('Requesting notification permission...')
     try {
+      await ensurePushSubscription()
+      setStatus('Sending...')
       const response = await fetch('/api/push/test', { method: 'POST' })
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`)

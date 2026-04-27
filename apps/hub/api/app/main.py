@@ -37,6 +37,18 @@ def subscribe(subscription: dict[str, Any]) -> dict[str, int]:
     return {"stored": len(subscriptions)}
 
 
+@app.get("/api/push/vapid-public-key")
+def vapid_public_key() -> dict[str, str]:
+    config: PushConfig = app.state.push_config
+    try:
+        public_key = config.vapid_public_key_path.read_text(encoding="utf-8").strip()
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="VAPID public key not found. Run ./develop vapid-gen.") from exc
+    if not public_key:
+        raise HTTPException(status_code=500, detail="VAPID public key is empty.")
+    return {"publicKey": public_key}
+
+
 @app.post("/api/push/test")
 def push_test() -> dict[str, int]:
     config: PushConfig = app.state.push_config
