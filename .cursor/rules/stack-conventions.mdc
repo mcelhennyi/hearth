@@ -1,17 +1,58 @@
 ---
-description: Language and framework conventions (fill after stack is chosen)
-alwaysApply: false
+description: Hearth stack conventions — Python (FastAPI) + React (Vite/TS) + nginx, Docker Compose dev loop
+alwaysApply: true
 ---
 
-## When to enable
+## Languages and runtimes
 
-After the team selects a stack (see **`T-FR-0000-01`**), replace this stub with real rules and set **`alwaysApply: true`** in the frontmatter, **or** split into multiple rule files per technology.
+- **Python 3.12** for hub gateway, plugin loader, Spark message bus, and most plugin backends.
+  - Async-first (FastAPI, `asyncio`, `httpx`).
+  - Type hints everywhere; `mypy --strict` in CI.
+  - Lint/format: `ruff` (lint + format) — no `black` / `isort` overlap.
+  - Tests: `pytest` + `pytest-asyncio`. One behavior per test, no shared mutable fixtures unless documented.
+- **C++20** is reserved for performance-critical background services (media transcode, CV, on-device ML). Not required for MVP. When introduced, use CMake + `clang-format` (LLVM style) and document in a per-component README.
+- **TypeScript 5.x** + **React 18** for all UIs. Vite for dev/build, **Vite-PWA** for manifest + service worker. ESLint + Prettier (project-wide config from Mantle). The hub UI is a PWA by default; plugins inherit Mantle's shell and do not register their own service workers in MVP.
+- **Bash** allowed only for thin invocation wrappers (`./develop`, container entrypoints). Anything with branching belongs in Python.
 
-## Placeholder
+## Build / test / lint
 
-- **Languages / versions:** *(not set)*
-- **Format / lint:** *(not set)*
-- **Tests:** *(not set)*
-- **Build / run:** *(not set)*
+- All development commands run inside Docker Compose (or the configured Dev Container) before host execution. Use `./develop <cmd>` wrappers; document host-only exceptions in the ticket diary.
+- Unit tests are required for new behavior and bug fixes. Skip only for docs-only changes and pure scaffolding.
 
-Keep this file **free of product domain** unless documenting how code style relates to design docs.
+## Project layout (target)
+
+```
+apps/
+  hub/                # FR-0001 hub app (Python backend + React UI)
+    api/              # FastAPI app (gateway, plugin registry, settings)
+    web/              # React + Vite UI (uses Mantle)
+  <plugin-slug>/      # Future plugin apps (one folder each, optional submodule)
+plugins.d/            # Discovered plugin manifest snapshots (runtime data, gitignored)
+deploy/
+  compose/            # Docker Compose for dev + Pi/Mac mini deploy
+  caddy/              # Caddyfile templates and route generators (default proxy)
+  nginx/              # nginx alternative (parity templates)
+  systemd/            # systemd unit templates for bare-metal install
+  install.sh          # one-shot Pi/Mac mini installer
+docs/                 # Authoritative design docs (see docs/design/)
+tasks/                # Process state (see docs/ai-context.md)
+.skeleton/            # Process template submodule
+```
+
+## Naming
+
+- Plugin slugs: `kebab-case`, ASCII, ≤ 32 chars (e.g. `groceries`, `idea-catcher`).
+- Python modules: `snake_case`. React components: `PascalCase`. CSS classes: Tailwind utility-first; reusable patterns live in Mantle.
+- Routes: hub at `/`; each plugin at `/<slug>/...` (proxied by Caddy by default; nginx alternative supported).
+
+## Cross-cutting rules
+
+- **Mantle is the only place** for shared UI primitives. Plugins **must not** ship duplicate theme/nav code; pull from Mantle (Kindling submodule). The PWA manifest + service worker live in Mantle; plugins do not register their own SW in MVP.
+- **Spark is the only sanctioned channel** for app-to-app traffic. Plugins **must not** call each other's proxy routes directly.
+- **Tinder manifests are validated at load**. A plugin without a valid manifest is registered but disabled with the validation error visible in the dashboard.
+- **Secrets** (relay keys, OAuth client secrets, cloud-storage tokens) live in `var/hearth/secrets/` (mode 0600, gitignored). `.env*` files are not committed; only `.env.example` placeholders.
+
+## Tie-back to design
+
+- Module-level docstrings reference `docs/design/...` where the behavior is specified.
+- Use the traceability prefix `@HRT-<AREA>-<NUMBER>` (areas in `docs/design/documentation-style.md`).

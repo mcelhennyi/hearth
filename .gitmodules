@@ -1,0 +1,4 @@
+[submodule ".skeleton"]
+	path = .skeleton
+	url = git@github.com:mcelhennyi/.skeleton.git
+	branch = main

@@ -1,56 +1,80 @@
-# AI-native project skeleton
+# Hearth
 
-**Turn an empty repo into a disciplined delivery machine** — without picking your stack for you. This template is **process and tooling only**: tickets, parallel work, Cursor skills, Claude slash commands, docs-as-truth rules, and a **sync loop** so improvements flow downstream and **generic** wins flow back upstream.
+**Your home's productivity hub — vibe-coded, encrypted, yours.**
 
-If you ship software with humans *and* agents in the loop, this is the **shared operating system** for how work gets defined, executed, and merged.
+Hearth is a self-hosted personal productivity platform that runs on a Raspberry Pi or Mac mini. It hosts a constellation of small "vibe-coded" lifestyle apps (groceries, scheduler, recipes, idea catcher, …) behind a single Caddy reverse proxy, a shared UI shell, and a discoverable app-to-app API. Each app is its own project that opts into the platform via a manifest; Hearth gives them a home, a chrome, an identity, and a way to talk.
 
----
+The **primary client is an iPhone PWA** added to the Home Screen — Mantle ships a manifest, a service worker, bottom-tab navigation, and Web Push so the result feels native. Desktop browsers and Android work too (the layout is responsive). Phase-2 **Ember** brings e2e-encrypted access from anywhere; until then, Hearth lives on your LAN with a locally-trusted TLS cert.
 
-## Why use it
+## The constellation
 
-- **Same playbook everywhere.** One intake → design → `tickets.md` → optional parallel **TEST / DEV / VAL** pattern, documented in [`docs/ai-context.md`](docs/ai-context.md). New repo, same muscle memory.
-- **Agents that stay on the rails.** Rules and skills encode *authority* (what docs override, how to escalate), not just style — so Cursor and Claude agree on how your repo works.
-- **Parallelism without chaos.** **Identify → develop → finish** frontier skills match real dependency graphs; worktrees and handoffs are first-class, not an afterthought.
-- **Upgrade path, not a fork trap.** [`./init-skeleton`](INIT.MD) and [`./sync-skeleton`](INIT.MD) materialize from a manifest; deprecations are explicit. Your product `README` stays yours ([`README.template.md`](README.template.md)); the template never overwrites it on sync.
-- **Contribute back safely.** [`./push-skeleton contribute`](INIT.MD) copies only [`skeleton.manifest`](skeleton.manifest) paths to a local upstream checkout — no accidental product leakage.
+| Name | Role | State |
+|------|------|-------|
+| **Hearth** | Hub: gateway, plugin loader, registry, dashboard, settings | This repo |
+| **Mantle** | Shared React shell + design system (theme, nav chrome, auth widget) | Lives in **Kindling** |
+| **Spark** | App-to-app API: discovery, capability surface, RPC, event bus | Spec in [`docs/design/spark-api.md`](docs/design/spark-api.md); client lib lives in **Kindling** |
+| **Tinder** | Plugin manifest format (declares routes, capabilities, deps, permissions) | Spec in [`docs/design/plugin-contract.md`](docs/design/plugin-contract.md) |
+| **Kindling** | Shared template repo: scaffold for new plugin apps, Mantle component library, Spark client lib, dev tooling | Separate repo, **planned** as `git@github.com:mcelhennyi/kindling.git`; see [`docs/design/satellite-repos/kindling.md`](docs/design/satellite-repos/kindling.md) |
+| **Ember** | Phase-2 relay server: e2e-encrypted access from anywhere, identity, optional cloud-storage backup providers | Sketch in [`docs/design/satellite-repos/ember.md`](docs/design/satellite-repos/ember.md); not in MVP |
 
----
+## Logo (working concept)
 
-## What you get today
+A geometric flame inside an arch (the hearth opening). Kept abstract enough to scale to a 16px favicon and recolor for plugin badges.
 
-| Layer | You ship faster because… |
-|--------|---------------------------|
-| **Tickets & history** | `tasks/ticket-progress.md`, feature folders under `tasks/feature-history/`, global DAG in `docs/design/tickets-initial.md` |
-| **Cursor** | Skills: `init-project`, `feature-request`, `identify-frontier`, `develop-frontier`, `finish-feature`, `finish-frontier`, `sync-skeleton`, `commit-with-ai-metrics` |
-| **Claude Code** | Matching commands under `.claude/commands/` and shared rules |
-| **Docs** | Traceability style, architecture stub, maintainer changelog discipline |
-| **Day-one dev UX** | [`develop`](develop) + [`develop.conf.example`](develop.conf.example), [`scripts/serve-docs.sh`](scripts/serve-docs.sh) for MkDocs without a global install |
-| **Hygiene** | Optional `.githooks/pre-commit` for changelog enforcement in the canonical skeleton tree |
+![Hearth logo](docs/design/logo.svg)
 
----
+Source SVG lives at [`docs/design/logo.svg`](docs/design/logo.svg). Copy it to `apps/hub/web/public/logo.svg` once the hub app is scaffolded (ticket **`T-FR-0001-02`**).
 
-## Where we’re headed
+## Documentation
 
-Short list of **intentional** next horizons (not promises on a date):
+- **System architecture:** [`docs/design/architecture/overview.md`](docs/design/architecture/overview.md)
+- **Plugin contract (Tinder):** [`docs/design/plugin-contract.md`](docs/design/plugin-contract.md)
+- **App-to-app API (Spark):** [`docs/design/spark-api.md`](docs/design/spark-api.md)
+- **Shared UI (Mantle):** [`docs/design/mantle-ui.md`](docs/design/mantle-ui.md)
+- **Deployment topology:** [`docs/design/deployment.md`](docs/design/deployment.md)
+- **Notifications (Web Push + ntfy):** [`docs/design/notifications.md`](docs/design/notifications.md)
+- **Roadmap (Phase 2 / Phase 3 / research):** [`docs/design/roadmap.md`](docs/design/roadmap.md)
+- **Satellite repos (Kindling, Ember):** [`docs/design/satellite-repos/`](docs/design/satellite-repos/)
+- **AI workflow notes:** [`docs/ai-context.md`](docs/ai-context.md)
+- **Active feature:** [`tasks/feature-history/FR-0001-hearth-platform/`](tasks/feature-history/FR-0001-hearth-platform/)
 
-- **Optional CI recipes** — lint/test/docs gates you can drop in once the stack exists  
-- **Richer “team mode”** — conventions for multi-human ownership on the same ticket graph  
-- **Deeper monorepo notes** — path tweaks and examples when `.skeleton` lives beside multiple packages  
-- **Stronger metrics story** — beyond commit footers: dashboards or export hooks for agent effort tracking  
-- **More stack-specific *optional* packs** — still opt-in, still manifest-driven, never mandatory bloat  
+## Stack
 
----
+| Layer | Choice | Why |
+|-------|--------|-----|
+| Hub gateway / plugin loader | **Python 3.12 + FastAPI** | Async, strong typing, fits the small-but-real-server target on Pi |
+| Plugin backends | **Python (default)**, **C++** for hot paths (later) | Same justification; C++ reserved for media/ML-style background services |
+| UIs (hub + plugins) | **React 18 + TypeScript + Vite** | Standard, fast HMR, large ecosystem; shipped via Mantle |
+| Component library / shell | **Mantle** (Tailwind + shadcn/ui) | One look across all plugins; shipped from Kindling |
+| Reverse proxy | **Caddy 2.x** (default) — auto local TLS via `tls internal`; nginx supported as alternative | Routes `/<plugin-slug>/...` → plugin process; HTTPS is required for the iPhone PWA + Web Push |
+| PWA shell | **Vite-PWA** (manifest + service worker), bottom-tab nav on mobile | "Add to Home Screen" → standalone full-screen, offline-aware |
+| Notifications | **Web Push** (iOS 16.4+, requires PWA installed) with **ntfy** as a hobbyist fallback | Spec in [`docs/design/notifications.md`](docs/design/notifications.md) |
+| Persistence (hub) | **SQLite** (single file under `var/hearth/`) | Plugin registry, settings, user prefs; trivial to back up |
+| Persistence (plugins) | Plugin's choice (SQLite default) | Plugins own their data; surfaced via Spark capabilities |
+| Process supervision | **systemd** (Pi/Mac mini) or **Docker Compose** (dev) | Match the deploy target |
 
-## Quick start
+Detail: [`.cursor/rules/stack-conventions.mdc`](.cursor/rules/stack-conventions.mdc).
 
-1. **Clone this repo** (your app will live in the same tree after init).  
-2. Run **`./init-skeleton`** once — see **[`INIT.MD`](INIT.MD)** for env vars and the full bootstrap.  
-3. Use the **`init-project`** skill at the repo root, then build your product; run **`./sync-skeleton`** when you want template updates.
+## Traceability prefix
 
-**Upstream contributions:** set **`.skeleton-upstream`** / **`SKELETON_UPSTREAM`**, then **`./push-skeleton contribute`**. Details in **`INIT.MD`**.
+Inline tags use **`@HRT-<AREA>-<NUMBER>`**. Areas: `HUB`, `MNTL`, `SPRK`, `TNDR`, `KDLG`, `EMBR`, `IDM`, `OPS`, `DOC`. See [`docs/design/documentation-style.md`](docs/design/documentation-style.md).
 
----
+## Development
+
+The repo is in **design** phase — no buildable scaffold yet. The first ticket that produces runnable code is **`T-FR-0001-02`** (Hub app skeleton + dev-loop Compose); see [`tasks/feature-history/FR-0001-hearth-platform/tickets.md`](tasks/feature-history/FR-0001-hearth-platform/tickets.md).
+
+When the scaffold lands, prefer:
+
+```bash
+./develop help
+```
+
+Development commands (build, test, lint, dev servers) run inside Docker Compose by default; host-local execution is documented in ticket diaries as exceptions.
+
+## Project skeleton
+
+This repository was initialized from the [process skeleton](.skeleton/INIT.MD). Template sources live in `.skeleton/` (git submodule). Run `./sync-skeleton` when you intentionally want upstream process/tooling updates.
 
 ## License
 
-The **host** repository sets the license. This template does not impose one; add `LICENSE` and your project README when you publish.
+Private / unpublished. Update before the first public push.

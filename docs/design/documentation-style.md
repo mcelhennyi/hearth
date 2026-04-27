@@ -9,9 +9,22 @@ Conventions for **documentation** and **traceability**. **Stack-specific** rules
 
 ## Traceability
 
-- Non-trivial units (services, modules, handlers) carry **`@PROJ-<AREA>-<NUMBER>`** in a short comment or docstring **for stacks where inline tags make sense**.
-- Replace **`PROJ`** with your project prefix (set during **`init-project`**).
-- **Areas:** define a small set for your product (examples: `API`, `AUTH`, `DATA`, `UI`, `JOB`).
+- Project prefix: **`HRT`** (Hearth). Non-trivial units (services, modules, handlers) carry **`@HRT-<AREA>-<NUMBER>`** in a short comment or docstring **for stacks where inline tags make sense**.
+- **Areas:**
+
+| Area | Scope |
+|------|-------|
+| **`HUB`** | Hub app — gateway, plugin loader, registry, settings, dashboard backend |
+| **`MNTL`** | Mantle — shared React shell, theme, navigation chrome, auth widget |
+| **`SPRK`** | Spark — app-to-app API, capability surface, RPC, event bus, discovery |
+| **`TNDR`** | Tinder — plugin manifest schema, manifest validator, lifecycle hooks |
+| **`KDLG`** | Kindling — shared template repo, scaffolding CLI, component library packaging |
+| **`EMBR`** | Ember — Phase-2 relay, e2e crypto, cloud-storage backup adapters |
+| **`IDM`** | Identity / auth — local user, device pairing, session, future relay-issued tokens |
+| **`OPS`** | Deployment / packaging — Docker Compose, systemd units, Pi/Mac mini installers |
+| **`DOC`** | Documentation tooling and rendering |
+
+- Numbers are per-area sequences and need not be globally unique. Cross-link to the owning **`docs/design/...`** doc when the tag first appears in a module.
 
 ## Ticket IDs (map to `FR-NNNN`)
 

@@ -1,0 +1,122 @@
+# Plugin contract — Tinder manifest
+
+**Authority:** This document defines the on-disk contract every Hearth plugin must satisfy. The hub's Tinder loader (`apps/hub/api/tinder/`) implements it. When code disagrees with this doc, fix the code (or amend per [`docs/ai-context.md`](../ai-context.md)).
+
+A plugin is **discoverable** when a `tinder.toml` file exists at the plugin's root and parses against the schema below. A plugin is **installable** when discovery succeeds and required permissions are acceptable to the user.
+
+## File: `tinder.toml`
+
+```toml
+# === required ===
+[plugin]
+slug         = "groceries"            # kebab-case, ≤ 32 chars, ASCII, unique
+name         = "Groceries"            # human-readable
+version      = "0.1.0"                # semver
+hearth_min   = "0.1.0"                # min hub API version
+description  = "Pantry, shopping list, store-aware sorting."
+icon         = "icon.svg"             # path relative to plugin root, optional
+
+[entrypoint]
+backend  = { kind = "python", module = "groceries.app:create_app", port_env = "HEARTH_PLUGIN_PORT" }
+# alternatives:
+#   backend = { kind = "node",   command = ["node", "server.js"], port_env = "HEARTH_PLUGIN_PORT" }
+#   backend = { kind = "binary", command = ["./bin/groceries"],   port_env = "HEARTH_PLUGIN_PORT" }
+ui       = { kind = "static", path = "web/dist" }   # built React bundle
+# alternatives:
+#   ui = { kind = "iframe-spa", base = "/" }                 # plugin serves its own SPA
+#   ui = { kind = "module-federation", remote = "/remoteEntry.js" }   # post-MVP
+
+# === optional but common ===
+[capabilities.list]                    # one block per capability surface
+methods = ["add", "remove", "items"]   # callable via spark.call("groceries", "list.add", …)
+events  = ["added", "removed"]         # publishable via spark.publish("groceries.list.added", …)
+
+[capabilities.pantry]
+methods = ["set", "items"]
+events  = ["changed"]
+
+[permissions]
+spark_call    = ["recipes.*", "pantry.*"]   # who this plugin may CALL
+spark_publish = ["groceries.*"]             # what topics it may publish (its own ns by default)
+spark_subscribe = ["pantry.changed", "recipes.cooked"]
+fs_paths      = ["plugins/groceries"]       # always confined; declared for clarity
+network       = "loopback"                  # one of: none | loopback | lan | internet
+
+[backup]
+include = ["plugins/groceries/db.sqlite"]
+exclude = ["plugins/groceries/cache/"]
+
+[ui.nav]
+label = "Groceries"
+icon  = "shopping-cart"        # lucide icon name, falls back to plugin.icon
+order = 30                     # ordering hint in the Mantle nav
+```
+
+## Validation rules
+
+| Rule | Effect on failure |
+|------|--------------------|
+| `plugin.slug` matches `^[a-z][a-z0-9-]{0,31}$` and is unique | reject install |
+| `plugin.version` is semver | reject install |
+| `entrypoint.backend.kind` ∈ {`python`, `node`, `binary`, `none`} | reject install |
+| `entrypoint.ui.kind` ∈ {`static`, `iframe-spa`, `module-federation`} | reject install |
+| Topics in `permissions.spark_*` use namespaces the plugin owns or wildcards within them | warn + restrict at runtime |
+| `permissions.network` requested but unsupported in current deploy mode | install but disable plugin, surface error |
+| Referenced files (`icon`, `entrypoint.ui.path`) exist at install time | warn (plugin still loads with placeholder) |
+
+## Lifecycle hooks (optional)
+
+A plugin may implement these endpoints on its backend. Hub calls them via Spark, never HTTP:
+
+| Method | When | Body | Expected response |
+|--------|------|------|-------------------|
+| `lifecycle.preflight` | After validation, before first start | `{hearth_version, plugin_dir}` | `{ok: true}` or `{ok: false, error}` |
+| `lifecycle.ready`     | Plugin sends to hub once HTTP server is bound | `{port, capabilities}` | hub responds `{ok: true}` and starts proxying |
+| `lifecycle.shutdown`  | Hub calls before SIGTERM | `{}` | best-effort `{ok: true}` |
+| `health`              | Periodic | `{}` | `{ok: bool, detail?: str}` |
+
+Plugins missing a hook simply skip it; the registry records which hooks each plugin supports.
+
+## Discovery sources
+
+In priority order:
+
+1. **Submodule plugins** — directories under `apps/<slug>/` that contain `tinder.toml`. Discovered on hub startup and on `kindling install`.
+2. **Drop-in directory** — `var/hearth/plugins.d/<slug>/` (symlink or copy). For users who don't want to use git submodules.
+3. **Future:** OCI image registry (Phase 2+). Out of scope for FR-0001.
+
+## Installation flow
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant Hub
+  participant Loader as Tinder loader
+  participant FS
+
+  User->>Hub: POST /api/plugins/install body={source}
+  Hub->>FS: clone submodule / copy folder
+  Hub->>Loader: validate(tinder.toml)
+  alt valid
+    Loader-->>Hub: ok, manifest
+    Hub->>FS: write registry row, generate nginx fragment
+    Hub-->>User: 200, plugin in "Disabled" state
+  else invalid
+    Loader-->>Hub: errors[]
+    Hub-->>User: 422 with diagnostics
+  end
+
+  User->>Hub: POST /api/plugins/<slug>/enable
+  Hub->>Hub: spark.broker.register(slug, capabilities)
+  Hub->>FS: supervisor start
+  Hub-->>User: 200
+```
+
+## Versioning
+
+- The hub publishes `hearth.api_version` (semver). A plugin's `plugin.hearth_min` must be `<=` it.
+- Tinder schema itself is versioned by a top-level `tinder = "1"` (assumed `"1"` if absent for MVP).
+
+## Examples
+
+A reference plugin lives in **Kindling** at `templates/plugin-python/tinder.toml` and is what `kindling new <slug>` copies. See [`docs/design/satellite-repos/kindling.md`](satellite-repos/kindling.md).
