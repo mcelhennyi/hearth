@@ -26,7 +26,7 @@
 | Ticket | Title | TEST | DEV | VAL | Notes |
 |--------|-------|------|-----|-----|-------|
 | T-FR-0000-01 | Choose stack and scaffold repository | done | done | done | Stack chosen; FR-0000 tooling/process scaffold complete via `init-skeleton`. Implementation scaffold lives in `T-FR-0001-01` (parked). |
-| T-FR-0002-01 | Caddy + tls internal + static placeholder | — | — | — | `FR-0002`. Reuses into `T-FR-0001-05`. |
+| T-FR-0002-01 | Caddy + tls internal + static placeholder | done | done | done | `FR-0002` complete: Caddy `tls internal` stack + static placeholder + `./develop` `up/down/ca-export`; branch naming caveat due git ref namespace (`feat/FR-.../...` conflict). |
 | T-FR-0002-02 | Mantle PWA bones (manifest + SW + nav) | — | — | — | `FR-0002`. Reuses into `T-FR-0001-04`. |
 | T-FR-0002-03 | Web Push round-trip (VAPID + subscribe + send) | — | — | — | `FR-0002`. Reuses into `T-FR-0001-09`. Deps: `T-FR-0002-01`, `T-FR-0002-02`. |
 | T-FR-0002-04 | Real-iPhone walkthrough + closeout report | — | — | — | `FR-0002`. No FR-0001 reuse target. Deps: `T-FR-0002-01..03`. |
