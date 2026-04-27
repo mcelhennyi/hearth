@@ -24,3 +24,7 @@ build/
 
 # Logs
 *.log
+
+# Runtime push state / generated VAPID secrets
+var/hearth/push-subscriptions.json
+var/hearth/secrets/

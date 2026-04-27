@@ -77,6 +77,8 @@ graph LR
 
   class TFR0002_02_TEST,TFR0002_02_DEV,TFR0002_02_VAL triadDone
   classDef triadDone fill:#2e7d32,color:#fff
+  class TFR0002_01_TEST,TFR0002_01_DEV,TFR0002_01_VAL triadDone
+  class TFR0002_03_TEST,TFR0002_03_DEV,TFR0002_03_VAL triadDone
 ```
 
 When ticket **`T-FR-NNNN-xx`** is fully complete (TEST/DEV/VAL all `done` in **`ticket-progress.md`**), add:

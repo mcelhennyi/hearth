@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import { NavLink, Navigate, Route, Routes } from 'react-router-dom'
 
 const tabs = [
@@ -20,6 +20,22 @@ function useDesktopLayout(): boolean {
 }
 
 function PlaceholderTile() {
+  const [status, setStatus] = useState<string | null>(null)
+
+  async function sendTestNotification(): Promise<void> {
+    setStatus('Sending...')
+    try {
+      const response = await fetch('/api/push/test', { method: 'POST' })
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      const data = (await response.json()) as { attempted: number; sent: number; remaining: number }
+      setStatus(`Sent ${data.sent}/${data.attempted}. Active subscriptions: ${data.remaining}.`)
+    } catch (error) {
+      setStatus(`Failed to send test notification: ${error instanceof Error ? error.message : 'unknown error'}`)
+    }
+  }
+
   return (
     <main className="mx-auto flex min-h-[60svh] w-full max-w-3xl items-center px-4 pb-28 pt-8 md:px-8 md:pb-16">
       <section className="w-full rounded-2xl border border-[var(--hearth-surface)] bg-[var(--hearth-surface)] p-6 shadow-sm">
@@ -27,6 +43,16 @@ function PlaceholderTile() {
         <p className="mt-3 text-[var(--hearth-muted)]">
           Mantle shell is installed with manifest, service worker, safe-area support, and placeholder routes.
         </p>
+        <button
+          type="button"
+          onClick={() => {
+            void sendTestNotification()
+          }}
+          className="mt-5 rounded-lg bg-[var(--hearth-accent)] px-4 py-2 text-sm font-medium text-[var(--hearth-bg)]"
+        >
+          Send test notification
+        </button>
+        {status && <p className="mt-3 text-sm text-[var(--hearth-muted)]">{status}</p>}
       </section>
     </main>
   )
