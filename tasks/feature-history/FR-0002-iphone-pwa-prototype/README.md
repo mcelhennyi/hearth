@@ -1,9 +1,15 @@
 # FR-0002 — iPhone PWA prototype
 
-**Status:** `in-progress`
+**Status:** `in-progress` (tickets `T-FR-0002-01` and `T-FR-0002-02` integrated on `feat/FR-0002-iphone-pwa-prototype`)
 **Owner:** project lead (Ian)
 **Allocated:** 2026-04-27
 **Relationship:** parks FR-0001 implementation while we de-risk the iPhone-PWA story end-to-end. FR-0001 design stays authoritative for MVP; this FR may produce **design amendments** to FR-0001 if reality disagrees.
+
+## Current implementation links
+
+- Feature branch: `feat/FR-0002-iphone-pwa-prototype`
+- Ticket PR (`T-FR-0002-01`): [#2](https://github.com/mcelhennyi/hearth/pull/2)
+- Ticket PR (`T-FR-0002-02`): [#1](https://github.com/mcelhennyi/hearth/pull/1)
 
 ## Charter (one sentence)
 
