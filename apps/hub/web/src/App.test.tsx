@@ -31,6 +31,7 @@ describe('Mantle layout breakpoint behavior', () => {
 
     expect(screen.getByLabelText('Mantle bottom tabs')).toBeInTheDocument()
     expect(screen.queryByLabelText('Mantle top bar')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Send test notification' })).toBeInTheDocument()
   })
 
   it('shows top bar at and above 768px', () => {

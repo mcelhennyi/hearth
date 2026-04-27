@@ -1,5 +1,8 @@
 hearth.local {
   tls internal
+  handle /api/* {
+    reverse_proxy hub:8200
+  }
   root * /srv
   file_server
 }

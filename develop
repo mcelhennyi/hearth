@@ -41,6 +41,8 @@ Commands
   down [args]       Stop the local Caddy stack.
   ca-export         Serve local CA cert at :8080/ca.crt for <= 10 minutes.
   web <args...>     Run web tooling command in Docker (apps/hub/web).
+  api <args...>     Run API tooling command in Docker (apps/hub/api).
+  vapid-gen         Generate var/hearth/secrets/vapid.{pub,priv} in Docker.
   ps                Show Compose service status.
 USAGE
 }
@@ -62,6 +64,15 @@ cmd_web() {
   compose run --rm --no-deps web "$@"
 }
 
+cmd_api() {
+  [[ "$#" -gt 0 ]] || { echo "develop: api command requires arguments (example: ./develop api pytest)." >&2; exit 1; }
+  compose run --rm --no-deps -e PYTHONPATH=/app hub "$@"
+}
+
+cmd_vapid_gen() {
+  compose run --rm --no-deps -e PYTHONPATH=/app hub python /workspace/scripts/gen-vapid.py
+}
+
 main() {
   local cmd="${1:-}"
   [[ -n "$cmd" ]] || { usage; exit 0; }
@@ -71,6 +82,8 @@ main() {
     down) shift; cmd_down "$@" ;;
     ca-export) shift; cmd_ca_export "$@" ;;
     web) shift; cmd_web "$@" ;;
+    api) shift; cmd_api "$@" ;;
+    vapid-gen) shift; cmd_vapid_gen "$@" ;;
     ps) shift; compose ps "$@" ;;
     *) echo "develop: unknown command: $cmd" >&2; echo "Try: $(basename "$0") help" >&2; exit 1 ;;
   esac
