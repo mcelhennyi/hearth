@@ -12,21 +12,21 @@ These tickets are intentionally small — each is a vertical slice that produces
 
 ### T-FR-0002-01 — Caddy + `tls internal` + static placeholder
 
-**Title:** Caddy in Compose with local TLS, serving a static `https://hearth.local/` placeholder
+**Title:** Caddy in Compose with local TLS, serving a static `https://hearth.home.arpa/` placeholder
 **Deps:** `none`
 **Reuse target:** `T-FR-0001-05` (Caddy generation and local TLS)
 
 #### Purpose
 
-Stand up a Compose stack with one Caddy container that serves a static placeholder page over `https://hearth.local/` using `tls internal`. Provide `./develop ca-export` for the iPhone CA-trust step. **No** plugin generation, **no** registry — just a hard-coded `Caddyfile`.
+Stand up a Compose stack with one Caddy container that serves a static placeholder page over `https://hearth.home.arpa/` using `tls internal`. Provide `./develop ca-export` for the iPhone CA-trust step. **No** plugin generation, **no** registry — just a hard-coded `Caddyfile`.
 
 #### Phases (concise)
 
 | Phase | Exit criteria |
 |-------|----------------|
-| **TEST** | A bash test brings the stack up, `curl -k https://hearth.local/` returns a known-good HTML body, `./develop ca-export` serves the local-CA cert at `:8080/ca.crt` for ≤ 10 minutes, then tears down. |
+| **TEST** | A bash test brings the stack up, `curl -k https://hearth.home.arpa/` returns a known-good HTML body, `./develop ca-export` serves the local-CA cert at `:8080/ca.crt` for ≤ 10 minutes, then tears down. |
 | **DEV** | `deploy/compose/docker-compose.yml`, `deploy/caddy/Caddyfile.dev`, `./develop` wrapper subcommands `up`, `down`, `ca-export`. mDNS or `/etc/hosts` documented in `deploy/compose/README.md`. |
-| **VAL** | On a real Mac mini and a real Pi 4 (or two laptops, with a known caveat noted): visit `https://hearth.local/` from Safari on iPhone *after* the CA cert is trusted; no certificate warning. |
+| **VAL** | On a real Mac mini and a real Pi 4 (or two laptops, with a known caveat noted): visit `https://hearth.home.arpa/` from Safari on iPhone *after* the CA cert is trusted; no certificate warning. |
 
 ---
 
@@ -46,7 +46,7 @@ Build the Mantle shell at `apps/hub/web/`. The shell is **static** — no plugin
 |-------|----------------|
 | **TEST** | Vitest covers the bottom-tab/top-bar layout switch at the 768 px breakpoint and the SW registration. Lighthouse PWA audit ≥ 90 in CI (Playwright + headless Chrome). |
 | **DEV** | `apps/hub/web/` Vite + TS scaffold, Tailwind, Vite-PWA config, `manifest.webmanifest`, `index.html` with Apple meta tags, four placeholder tab routes, theme tokens. |
-| **VAL** | Real iPhone: visit `https://hearth.local/`, Add to Home Screen, launch — full-screen, no Safari chrome, status bar tinted to `--hearth-bg`, bottom tabs visible with safe-area padding, force-quit + relaunch still renders. |
+| **VAL** | Real iPhone: visit `https://hearth.home.arpa/`, Add to Home Screen, launch — full-screen, no Safari chrome, status bar tinted to `--hearth-bg`, bottom tabs visible with safe-area padding, force-quit + relaunch still renders. |
 
 ---
 

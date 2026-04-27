@@ -14,7 +14,7 @@ graph TD
   T02 --> T04
 ```
 
-T-FR-0002-01 and T-FR-0002-02 may run in parallel — one builds the proxy + TLS, the other builds the shell. T-FR-0002-03 needs both because the SW must be reachable over `https://hearth.local/` for `pushManager.subscribe` to succeed. T-FR-0002-04 depends on all three.
+T-FR-0002-01 and T-FR-0002-02 may run in parallel — one builds the proxy + TLS, the other builds the shell. T-FR-0002-03 needs both because the SW must be reachable over `https://hearth.home.arpa/` for `pushManager.subscribe` to succeed. T-FR-0002-04 depends on all three.
 
 | When… | These become eligible |
 |-------|------------------------|

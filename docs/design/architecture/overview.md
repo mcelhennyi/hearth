@@ -4,7 +4,7 @@
 
 ## 1. What Hearth is
 
-A self-hosted hub that runs on a single machine at home (Raspberry Pi 4/5 or Mac mini) and presents a single URL — `https://hearth.local/` — that fronts a growing set of small "lifestyle" apps. Each app is its own project ("plugin") that opts into Hearth via a manifest, and apps can call each other through a typed RPC layer. The hub itself is intentionally minimal: routing, plugin registry, identity, dashboard, settings.
+A self-hosted hub that runs on a single machine at home (Raspberry Pi 4/5 or Mac mini) and presents a single URL — `https://hearth.home.arpa/` — that fronts a growing set of small "lifestyle" apps. Each app is its own project ("plugin") that opts into Hearth via a manifest, and apps can call each other through a typed RPC layer. The hub itself is intentionally minimal: routing, plugin registry, identity, dashboard, settings.
 
 The **primary client surface is an iPhone PWA** added to the Home Screen, not a desktop browser. Mantle ships a `manifest.json` and a service worker so the shell launches in `display: standalone` (no Safari chrome) and behaves like a native app. Desktop browsers still work; the layout is responsive (top bar on wide screens, bottom-tab nav on narrow ones).
 
@@ -52,7 +52,7 @@ graph TB
 | **Plugins** (`apps/<slug>/`) | Plugin's choice; default Python+React via Kindling | Self-contained app: own backend process, own UI, own data store. Declares routes + capabilities + permissions in `tinder.toml`. |
 | **Spark bus** (`apps/hub/api/spark/`) | Python `asyncio`, Unix domain sockets, length-prefixed JSON frames | Inter-plugin RPC + pub/sub. Sockets at `var/hearth/run/spark.sock` (broker) and `var/hearth/run/<slug>.sock` (per-plugin). |
 | **Tinder loader** (`apps/hub/api/tinder/`) | Python | Reads `apps/<slug>/tinder.toml`, validates schema, populates registry, materializes proxy config and Spark routing. |
-| **Reverse proxy** | **Caddy 2.x** by default (automatic local TLS via `tls internal`); **nginx** as a documented alternative | Routes HTTPS, issues a local CA cert for `hearth.local`, terminates basic auth in MVP. iPhone PWAs require HTTPS — Caddy gets us there with no manual cert work. |
+| **Reverse proxy** | **Caddy 2.x** by default (automatic local TLS via `tls internal`); **nginx** as a documented alternative | Routes HTTPS, issues a local CA cert for `hearth.home.arpa`, terminates basic auth in MVP. iPhone PWAs require HTTPS — Caddy gets us there with no manual cert work. |
 | **Process supervisor** | Docker Compose (dev), systemd (prod) | Owns plugin lifecycles. Hub asks the supervisor to start/stop a plugin via a thin adapter (`apps/hub/api/supervisor/`). |
 | **Storage** | SQLite (`var/hearth/hearth.db`) for hub; per-plugin store under `var/hearth/plugins/<slug>/` | Plugins own their data; hub never reads plugin data files directly. |
 

@@ -13,7 +13,7 @@ Prove that a Caddy-fronted, locally-trusted, manifest-and-service-worker React s
 
 The five biggest "does this even feel native?" risks all live in this slice:
 
-1. **HTTPS on a LAN-only host** — Caddy `tls internal` on `hearth.local` actually working on iOS once the local CA is trusted.
+1. **HTTPS on a LAN-only host** — Caddy `tls internal` on `hearth.home.arpa` actually working on iOS once the local CA is trusted.
 2. **iPhone CA trust UX** — installing the local-CA profile and enabling full trust without losing users at "VPN & Device Management."
 3. **Standalone launch** — `display: standalone` + Apple meta tags + `viewport-fit=cover` actually producing a no-Safari-chrome experience that handles the notch and home-indicator.
 4. **Service worker installs** — Vite-PWA-built SW registers on the iPhone PWA after Add to Home Screen, survives a relaunch.
@@ -23,7 +23,7 @@ If any of these break, every later FR-0001 ticket is paying interest on a wrong 
 
 ## In scope
 
-1. **Caddy with `tls internal`** serving `https://hearth.local/` from a Compose stack — no plugin generation, no registry, just a static config.
+1. **Caddy with `tls internal`** serving `https://hearth.home.arpa/` from a Compose stack — no plugin generation, no registry, just a static config.
 2. **Static Mantle shell**: a Vite + React + TypeScript app served from a single FastAPI route or directly from Caddy. Manifest, service worker, app icons, theme tokens, bottom-tab nav placeholder (the tabs lead nowhere — this is a prototype). Apple meta tags. Safe-area CSS.
 3. **iPhone CA trust workflow**: a documented, executed `./develop ca-export` path. Capture screenshots/notes about each iOS step.
 4. **Web Push round-trip**: VAPID keypair, `POST /api/push/subscribe` endpoint, "Send test notification" button on the prototype home view, `notify.send` server-side function (no Spark broker — direct call inside the FastAPI process), service-worker `push` event handler that calls `showNotification`.
@@ -43,7 +43,7 @@ If any of these break, every later FR-0001 ticket is paying interest on a wrong 
 A two-minute video shows, on Ian's actual iPhone, in this order:
 
 1. `./develop up` brought the stack up on a Mac mini / Pi.
-2. Safari at `https://hearth.local/` returns the Mantle shell with a green "PWA-ready" tile, no certificate errors (after CA trust is installed).
+2. Safari at `https://hearth.home.arpa/` returns the Mantle shell with a green "PWA-ready" tile, no certificate errors (after CA trust is installed).
 3. Share → Add to Home Screen.
 4. Tap the icon — full-screen launch, no Safari chrome, status bar tinted to `--hearth-bg`, bottom-tab placeholder visible.
 5. Grant notification permission.

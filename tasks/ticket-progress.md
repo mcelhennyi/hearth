@@ -5,10 +5,10 @@
 | Field | Value |
 |-------|--------|
 | **Active ticket** | `T-FR-0002-01` and `T-FR-0002-02` (parallel-eligible; not yet started) |
-| **Active phase** | — |
-| **Branch / worktree** | — (next worker: `feat/FR-0002-iphone-pwa-prototype` at `.worktrees/FR-0002-iphone-pwa-prototype/feature/`, then per-ticket child branches) |
-| **Session status** | `handoff` |
-| **Next agent should** | Read [`tasks/feature-history/FR-0002-iphone-pwa-prototype/handoffs/2026-04-27-continue.md`](feature-history/FR-0002-iphone-pwa-prototype/handoffs/2026-04-27-continue.md) **first**. Then `README.md` + `10-design/risks.md` + `tickets.md` for FR-0002. Start `T-FR-0002-01` and `T-FR-0002-02` in parallel via `/identify-frontier` → `/develop-frontier` (or serially if a single worker). FR-0001 is `parked`; do not start FR-0001 tickets until FR-0002 closes. |
+| **Active phase** | TEST kickoff (`T-FR-0002-01`, `T-FR-0002-02`) |
+| **Branch / worktree** | `feat/FR-0002-iphone-pwa-prototype` at `.worktrees/FR-0002-iphone-pwa-prototype/feature/`; ticket branches next: `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls`, `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` |
+| **Session status** | `developing` |
+| **Next agent should** | Launch one subagent per frontier ticket and execute TEST → DEV → VAL in each ticket worktree, then merge both ticket branches into `feat/FR-0002-iphone-pwa-prototype` using `finish-feature` flow. Keep FR-0001 parked until FR-0002 closes. |
 
 ### Parallel streams
 

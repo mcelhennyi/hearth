@@ -1,0 +1,38 @@
+services:
+  caddy:
+    image: caddy:2.8-alpine
+    container_name: hearth-caddy
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - ../caddy/Caddyfile.dev:/etc/caddy/Caddyfile:ro
+      - ../static:/srv:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  ca-export:
+    image: caddy:2.8-alpine
+    container_name: hearth-ca-export
+    restart: "no"
+    depends_on:
+      - caddy
+    ports:
+      - "8080:8080"
+    environment:
+      - CA_EXPORT_SECONDS=600
+    command: >-
+      sh -eu -c '
+      CERT=/data/caddy/pki/authorities/local/root.crt;
+      while [ ! -s "$CERT" ]; do sleep 1; done;
+      cp "$CERT" /srv/ca.crt;
+      timeout "$${CA_EXPORT_SECONDS}" caddy file-server --root /srv --listen :8080
+      '
+    volumes:
+      - caddy_data:/data:ro
+      - ca_export_data:/srv
+
+volumes:
+  caddy_data:
+  caddy_config:
+  ca_export_data:
