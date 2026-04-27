@@ -40,6 +40,7 @@ Commands
   up [args]         Start the local Caddy stack (pass -d for background).
   down [args]       Stop the local Caddy stack.
   ca-export         Serve local CA cert at :8080/ca.crt for <= 10 minutes.
+  web <args...>     Run web tooling command in Docker (apps/hub/web).
   ps                Show Compose service status.
 USAGE
 }
@@ -56,6 +57,11 @@ cmd_down() {
 
 cmd_ca_export() { compose up --abort-on-container-exit --exit-code-from ca-export ca-export; }
 
+cmd_web() {
+  [[ "$#" -gt 0 ]] || { echo "develop: web command requires arguments (example: ./develop web npm run test)." >&2; exit 1; }
+  compose run --rm --no-deps web "$@"
+}
+
 main() {
   local cmd="${1:-}"
   [[ -n "$cmd" ]] || { usage; exit 0; }
@@ -64,6 +70,7 @@ main() {
     up) shift; cmd_up "$@" ;;
     down) shift; cmd_down "$@" ;;
     ca-export) shift; cmd_ca_export "$@" ;;
+    web) shift; cmd_web "$@" ;;
     ps) shift; compose ps "$@" ;;
     *) echo "develop: unknown command: $cmd" >&2; echo "Try: $(basename "$0") help" >&2; exit 1 ;;
   esac
