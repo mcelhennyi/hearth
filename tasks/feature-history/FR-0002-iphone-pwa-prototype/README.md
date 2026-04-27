@@ -10,6 +10,8 @@
 - Feature branch: `feat/FR-0002-iphone-pwa-prototype`
 - Ticket PR (`T-FR-0002-01`): [#2](https://github.com/mcelhennyi/hearth/pull/2)
 - Ticket PR (`T-FR-0002-02`): [#1](https://github.com/mcelhennyi/hearth/pull/1)
+- Ticket PR (`T-FR-0002-03`): [#4](https://github.com/mcelhennyi/hearth/pull/4)
+- Feature PR (`FR-0002` -> `main`): [#3](https://github.com/mcelhennyi/hearth/pull/3)
 
 ## Charter (one sentence)
 

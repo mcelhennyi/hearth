@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0002-01` and `T-FR-0002-02` (parallel-eligible; not yet started) |
-| **Active phase** | — |
-| **Branch / worktree** | — (next worker: `feat/FR-0002-iphone-pwa-prototype` at `.worktrees/FR-0002-iphone-pwa-prototype/feature/`, then per-ticket child branches) |
-| **Session status** | `handoff` |
-| **Next agent should** | Read [`tasks/feature-history/FR-0002-iphone-pwa-prototype/handoffs/2026-04-27-continue.md`](feature-history/FR-0002-iphone-pwa-prototype/handoffs/2026-04-27-continue.md) **first**. Then `README.md` + `10-design/risks.md` + `tickets.md` for FR-0002. Start `T-FR-0002-01` and `T-FR-0002-02` in parallel via `/identify-frontier` → `/develop-frontier` (or serially if a single worker). FR-0001 is `parked`; do not start FR-0001 tickets until FR-0002 closes. |
+| **Active ticket** | `T-FR-0002-04` (closeout and real-device walkthrough) |
+| **Active phase** | TEST (real-device acceptance capture) |
+| **Branch / worktree** | `feat/FR-0002-iphone-pwa-prototype` at `.worktrees/FR-0002-iphone-pwa-prototype/feature/` |
+| **Session status** | `testing` |
+| **Next agent should** | Run the full iPhone acceptance flow on Mac mini and Pi 4, fill `40-prototype-report.md` evidence + R1-R5 verdicts, then apply any required DESIGN-FLAW amendments and finish FR-0002 closeout. |
 
 ### Parallel streams
 
@@ -26,14 +26,10 @@
 | Ticket | Title | TEST | DEV | VAL | Notes |
 |--------|-------|------|-----|-----|-------|
 | T-FR-0000-01 | Choose stack and scaffold repository | done | done | done | Stack chosen; FR-0000 tooling/process scaffold complete via `init-skeleton`. Implementation scaffold lives in `T-FR-0001-01` (parked). |
-<<<<<<< HEAD
-| T-FR-0002-01 | Caddy + tls internal + static placeholder | done | done | done | `FR-0002` complete: Caddy `tls internal` stack + static placeholder + `./develop` `up/down/ca-export`; branch naming caveat due git ref namespace (`feat/FR-.../...` conflict). |
-| T-FR-0002-02 | Mantle PWA bones (manifest + SW + nav) | — | — | — | `FR-0002`. Reuses into `T-FR-0001-04`. |
-=======
 | T-FR-0002-01 | Caddy + tls internal + static placeholder | done | done | done | `FR-0002` complete: Caddy `tls internal` stack + static placeholder + `./develop` `up/down/ca-export`; branch naming caveat due git ref namespace (`feat/FR-.../...` conflict). |
 | T-FR-0002-02 | Mantle PWA bones (manifest + SW + nav) | done | done | done | `FR-0002`. Reuses into `T-FR-0001-04`. Implemented at `apps/hub/web` with Vite+TS+Tailwind+Vite-PWA, responsive nav shell, and Vitest coverage for breakpoint/SW. |
 | T-FR-0002-03 | Web Push round-trip (VAPID + subscribe + send) | done | done | done | `FR-0002`. Reuses into `T-FR-0001-09`. Deps: `T-FR-0002-01`, `T-FR-0002-02`. Implemented FastAPI push endpoints + SW/UI trigger + VAPID generator; `410 Gone` pruning and push-path tests validated. |
-| T-FR-0002-04 | Real-iPhone walkthrough + closeout report | — | — | — | `FR-0002`. No FR-0001 reuse target. Deps: `T-FR-0002-01..03`. |
+| T-FR-0002-04 | Real-iPhone walkthrough + closeout report | in-progress | — | — | `FR-0002`. Preflight container checks passed; awaiting real-device evidence capture on iPhone (Mac mini + Pi 4 runs). |
 | T-FR-0001-01 | Repo scaffold and Compose dev loop | — | — | — | `FR-0001` parked — eligible after FR-0002 closes. |
 | T-FR-0001-02 | Hub API skeleton and SQLite registry | — | — | — | `FR-0001` parked. |
 | T-FR-0001-03 | Tinder loader and manifest schema | — | — | — | `FR-0001` parked. |
