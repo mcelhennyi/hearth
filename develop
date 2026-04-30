@@ -12,6 +12,8 @@ fi
 
 : "${DEVELOP_LABEL:=$(basename "$REPO_ROOT")}"
 : "${DEVELOP_COMPOSE_FILE:=deploy/compose/docker-compose.yml}"
+: "${DEVELOP_DOCS_SERVICE:=docs}"
+: "${DEVELOP_DOCS_PORT:=5081}"
 
 compose_abs() {
   echo "$REPO_ROOT/$DEVELOP_COMPOSE_FILE"
@@ -46,14 +48,33 @@ Usage: $(basename "$0") <command> [arguments]
 Commands
   help, -h, --help  Show this message.
   up [args]         Start the local Caddy stack (pass -d for background).
-  down [args]       Stop the local Caddy stack.
+  up-quick [args]   Start HTTP-only static server on :5080 (no TLS; fast iteration).
+  docs [args]       Start MkDocs in Docker (bind-mounted repo; live reload). Default URL:
+                    http://127.0.0.1:${DEVELOP_DOCS_PORT}/ (set DEVELOP_DOCS_PORT in develop.conf).
+  down [args]       Stop Compose services for this project file.
   ca-export         Serve local CA cert at :8080/ca.crt for <= 10 minutes.
   ps                Show Compose service status.
+
+HTTP quick mode serves the same static tree on port 5080 (plain HTTP, any Host),
+e.g. http://127.0.0.1:5080/ or, with /etc/hosts, http://hearth.local:5080/.
+MkDocs Material runs beside it on port ${DEVELOP_DOCS_PORT} via ./develop docs.
+For TLS + PWA testing, use up (https://hearth.home.arpa/ on :443).
 USAGE
 }
 
 cmd_up() {
   compose up "$@"
+}
+
+cmd_up_quick() {
+  # Explicit service name activates the http-quick profile for caddy-http.
+  compose up "$@" caddy-http
+}
+
+cmd_docs() {
+  export HEARTH_DOCS_PORT="${DEVELOP_DOCS_PORT}"
+  # Profile activates the docs service without pulling it into bare `compose up`.
+  compose --profile docs up "$@" "$DEVELOP_DOCS_SERVICE"
 }
 
 cmd_down() {
@@ -82,6 +103,14 @@ main() {
     up)
       shift
       cmd_up "$@"
+      ;;
+    up-quick)
+      shift
+      cmd_up_quick "$@"
+      ;;
+    docs)
+      shift
+      cmd_docs "$@"
       ;;
     down)
       shift

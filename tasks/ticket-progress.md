@@ -8,7 +8,7 @@
 | **Active phase** | TEST kickoff (`T-FR-0002-01`, `T-FR-0002-02`) |
 | **Branch / worktree** | `feat/FR-0002-iphone-pwa-prototype` at `.worktrees/FR-0002-iphone-pwa-prototype/feature/`; ticket branches next: `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls`, `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` |
 | **Session status** | `developing` |
-| **Next agent should** | Launch one subagent per frontier ticket and execute TEST → DEV → VAL in each ticket worktree, then merge both ticket branches into `feat/FR-0002-iphone-pwa-prototype` using `finish-feature` flow. Keep FR-0001 parked until FR-0002 closes. |
+| **Next agent should** | Launch one subagent per frontier ticket and execute TEST → DEV → VAL in each ticket worktree, then merge both ticket branches into `feat/FR-0002-iphone-pwa-prototype` using `finish-feature` flow. Keep FR-0001 parked until FR-0002 closes. **VAL:** server-first (Mac mini / Pi + desktop browser) per `tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md`; iPhone checks are follow-up only (`40-prototype-report.md` → **Follow-up: iPhone**). |
 
 ### Parallel streams
 

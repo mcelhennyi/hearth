@@ -4,6 +4,11 @@ Append-only. Newest entries at the top.
 
 ---
 
+## 2026-04-30 — Server-first VAL; iPhone deferred
+
+- **Decision:** Ticket **VAL** and FR-0002 **close** prioritize proving the stack on **Mac mini / Pi** with **desktop browsers** (same LAN, CA trusted on that client). **iPhone** (CA UX, Add to Home Screen, on-device push) is a **non-blocking side goal**, tracked in `40-prototype-report.md` under **Follow-up: iPhone** when run.
+- **Canonical text:** `tickets.md` VAL rows, feature `README.md` acceptance, `10-design/charter.md` "What succeed means".
+
 ## 2026-04-27 — `design` → `in-progress`
 
 - Allocated **`FR-0002`** in `REGISTRY.md`; `next_id` → `3`.

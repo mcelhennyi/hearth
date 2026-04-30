@@ -3,11 +3,11 @@
 **Status:** `in-progress`
 **Owner:** project lead (Ian)
 **Allocated:** 2026-04-27
-**Relationship:** parks FR-0001 implementation while we de-risk the iPhone-PWA story end-to-end. FR-0001 design stays authoritative for MVP; this FR may produce **design amendments** to FR-0001 if reality disagrees.
+**Relationship:** parks FR-0001 implementation while we de-risk the **home-server PWA** story (TLS + shell + push on Pi/Mac mini first; iPhone as follow-up). FR-0001 design stays authoritative for MVP; this FR may produce **design amendments** to FR-0001 if reality disagrees.
 
 ## Charter (one sentence)
 
-Prove that a Caddy-fronted, locally-trusted, manifest-and-service-worker React shell on a Pi/Mac mini at home can be added to the iPhone Home Screen and receive a Web Push notification — end-to-end, on a real device — before we invest in the plugin registry, Tinder loader, Spark broker, or Kindling repo split.
+Prove that a Caddy-fronted, locally-trusted, manifest-and-service-worker React shell **runs correctly on a Pi/Mac mini at home** (TLS, static shell, Web Push to a subscribed browser) **before** we invest in the plugin registry, Tinder loader, Spark broker, or Kindling repo split. **iPhone** Home Screen + on-device push is a **follow-up side goal** to confirm the same stack on iOS; it does not gate FR-0002 close once server-first acceptance below is satisfied.
 
 ## Why prototype before MVP
 
@@ -27,7 +27,8 @@ If any of these break, every later FR-0001 ticket is paying interest on a wrong 
 2. **Static Mantle shell**: a Vite + React + TypeScript app served from a single FastAPI route or directly from Caddy. Manifest, service worker, app icons, theme tokens, bottom-tab nav placeholder (the tabs lead nowhere — this is a prototype). Apple meta tags. Safe-area CSS.
 3. **iPhone CA trust workflow**: a documented, executed `./develop ca-export` path. Capture screenshots/notes about each iOS step.
 4. **Web Push round-trip**: VAPID keypair, `POST /api/push/subscribe` endpoint, "Send test notification" button on the prototype home view, `notify.send` server-side function (no Spark broker — direct call inside the FastAPI process), service-worker `push` event handler that calls `showNotification`.
-5. **Real-device walkthrough**: a documented, filmed run-through on a real iPhone (Ian's). Time it. Note every friction point.
+5. **Server walkthrough**: a documented run on Mac mini and Pi (screenshots/logs). Time major steps. Note every friction point.
+6. **Side goal — iPhone walkthrough** (non-blocking for FR-0002 close): when available, filmed run-through on a real iPhone; file under **Follow-up: iPhone** in `40-prototype-report.md`.
 
 ## Out of scope
 
@@ -38,19 +39,20 @@ If any of these break, every later FR-0001 ticket is paying interest on a wrong 
 - Kindling repo split. The shell is built directly under `apps/hub/web/` with no `vendor/kindling/` submodule.
 - `groceries` plugin. The prototype's only "screen" is the test-notification button and the Mantle bottom-tab placeholder.
 
-## Acceptance for FR-0002 close
+## Acceptance for FR-0002 close (server-first)
 
-A two-minute video shows, on Ian's actual iPhone, in this order:
+Evidence (video or screenshot set + logs) shows **on Mac mini and on Pi** (both unless one is waived with a written caveat in the report), in order:
 
-1. `./develop up` brought the stack up on a Mac mini / Pi.
-2. Safari at `https://hearth.home.arpa/` returns the Mantle shell with a green "PWA-ready" tile, no certificate errors (after CA trust is installed).
-3. Share → Add to Home Screen.
-4. Tap the icon — full-screen launch, no Safari chrome, status bar tinted to `--hearth-bg`, bottom-tab placeholder visible.
-5. Grant notification permission.
-6. Tap "Send test notification" — within ~3 seconds an iOS push lands; tapping it returns to the PWA.
-7. Force-quit and relaunch — service worker cache means the shell still renders without network.
+1. `./develop up` (or documented production-equivalent) brings the stack up on the target host.
+2. A **desktop browser** on the same LAN opens `https://hearth.home.arpa/` — Mantle shell with a green "PWA-ready" tile, **no certificate errors** after the local CA is trusted on that client.
+3. DevTools (or equivalent) confirms **service worker** registration against the deployed origin.
+4. **Web Push:** subscribe from that browser; "Send test notification" delivers within ~30 seconds in three of three tries; notification click focuses the app.
 
-A short markdown report at `40-prototype-report.md` (created when the FR closes) summarizes what worked, what didn't, and lists every **DESIGN-FLAW** discovered against FR-0001's `mantle-ui.md`, `deployment.md`, and `notifications.md`. Those flaws become amendments before FR-0001 implementation resumes.
+A short markdown report at `40-prototype-report.md` (created when the FR closes) summarizes what worked, what didn't, lists every **DESIGN-FLAW** discovered against FR-0001's `mantle-ui.md`, `deployment.md`, and `notifications.md`, and includes a section **Follow-up: iPhone** (empty OK at close) for Add to Home Screen, standalone chrome, and on-device push when someone runs that side goal later.
+
+## Side goal — iPhone (product confidence, non-blocking)
+
+When you have a phone and LAN, extend the same checklist: Safari CA trust, Add to Home Screen, standalone launch, push to iOS, force-quit + relaunch. Record results in **Follow-up: iPhone** in `40-prototype-report.md` — does not reopen FR-0002 if server-first acceptance already merged unless a **DESIGN-FLAW** appears.
 
 ## Layered design
 

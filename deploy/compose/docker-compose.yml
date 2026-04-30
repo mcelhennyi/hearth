@@ -1,4 +1,41 @@
+# HTTP quick stack: `docker compose up -d caddy-http` or `./develop up-quick`
+# Docs: `./develop docs` (squidfunk/mkdocs-material:9.7.1, profile `docs`; host HEARTH_DOCS_PORT → :8000)
 services:
+  docs:
+    profiles: ["docs"]
+    # Same MkDocs Material build as Loom’s locked 9.7.1 stack; official image uses WORKDIR /docs.
+    image: squidfunk/mkdocs-material:9.7.1
+    container_name: hearth-docs
+    restart: unless-stopped
+    working_dir: /docs
+    ports:
+      - "${HEARTH_DOCS_PORT:-5081}:8000"
+    environment:
+      # Bind-mount file events are unreliable on some Docker hosts; polling keeps live reload working.
+      - WATCHDOG_FORCE_POLLING=true
+    volumes:
+      - ../..:/docs:cached
+    command:
+      - serve
+      - --dev-addr=0.0.0.0:8000
+      - --watch
+      - docs
+      - --watch
+      - mkdocs.yml
+      - --watch
+      - docs/stylesheets
+
+  caddy-http:
+    profiles: ["http-quick"]
+    image: caddy:2.8-alpine
+    container_name: hearth-caddy-http
+    restart: unless-stopped
+    ports:
+      - "5080:80"
+    volumes:
+      - ../caddy/Caddyfile.dev.http:/etc/caddy/Caddyfile:ro
+      - ../static:/srv:ro
+
   caddy:
     image: caddy:2.8-alpine
     container_name: hearth-caddy
@@ -24,8 +61,8 @@ services:
     command: >-
       sh -eu -c '
       CERT=/data/caddy/pki/authorities/local/root.crt;
-      while [ ! -s "$CERT" ]; do sleep 1; done;
-      cp "$CERT" /srv/ca.crt;
+      while [ ! -s "$$CERT" ]; do sleep 1; done;
+      cp "$$CERT" /srv/ca.crt;
       timeout "$${CA_EXPORT_SECONDS}" caddy file-server --root /srv --listen :8080
       '
     volumes:
