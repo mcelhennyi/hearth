@@ -1,17 +1,19 @@
-# CURRENT — `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-02-install-layout`
+# CURRENT — `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-04-cli-core`
 
-**Ticket:** `T-FR-0003-02` — Install layout: `heart/`, VERSION.json, README  
-**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-02-install-layout/`
+**Ticket:** `T-FR-0003-04` — `hearth` CLI core: argparse, paths, doctor, compose passthrough
+**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-04-cli-core/`
+**Phase:** PR
 
-## Delivered
+## Plan
 
-- **`deploy/hearth-install/`**: `hearth_install` package (`ensure_heart_layout`, `VERSION.json` v1 parser), JSON Schema, templates, module README.
-- **Tests:** `tests/test_heart_install_layout.py` (dirs, manifest parse, idempotence).
-- **`./develop test`**: Compose profile `test` (`hearth-test` service) runs pytest in `python:3.12-slim-bookworm` (pip needs network on first cold run).
-- **Docs:** `docs/design/deployment.md` links schema; feature README artifact index links `deploy/hearth-install/README.md`.
+1. Add CLI contract tests for install-root resolution, `VERSION.json` loading, `doctor`, `compose --`, `version`, and help output.
+2. Implement a small Python CLI package plus `bin/hearth` shim in a single home.
+3. Validate through `./develop test` where Docker is available, with documented host-local exceptions if needed.
 
-## Verify
+## Current Status
 
-```bash
-./develop test
-```
+- Worktree created from `feat/FR-0003-hearth-pi-docker-cli`.
+- TEST done: `tests/test_hearth_cli.py` covers install-root resolution, `VERSION.json`, graceful `doctor`, `compose --`, and global help.
+- DEV done: `deploy/hearth-cli/hearth_cli/cli.py` implements `version`, `doctor`, `compose --`, install-root resolution, and `bin/hearth`.
+- VAL done: `./develop test` passes; fixture smoke ran `bin/hearth --install-root <tmp> version`, `doctor`, and `compose -- ps`.
+- Docker wrapper note: sandboxed access to the Colima socket was denied, so `./develop test tests/test_hearth_cli.py` was rerun with unrestricted Docker access and reached pytest.
