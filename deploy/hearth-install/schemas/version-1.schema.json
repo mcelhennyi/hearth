@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hearth.local/schemas/hearth-version-manifest/1",
+  "title": "Hearth VERSION.json (install manifest) v1",
+  "description": "Machine-local manifest at <install-dir>/heart/VERSION.json for the Docker profile. See docs/design/deployment.md.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "hearth_ref"],
+  "properties": {
+    "schema": {
+      "type": "integer",
+      "const": 1,
+      "description": "Manifest format version; bump only with a migration story."
+    },
+    "hearth_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Git ref, tag, or human label for the Hearth deploy checkout this install tracks."
+    },
+    "installed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Optional RFC 3339 timestamp when this manifest was first written."
+    }
+  }
+}

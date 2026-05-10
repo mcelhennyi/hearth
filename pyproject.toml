@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hearth-install-layout"
+version = "0.0.0"
+description = "Hearth Docker profile install layout under heart/ (FR-0003)."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+where = ["deploy/hearth-install"]
+
+[tool.setuptools.package-data]
+hearth_install = ["templates/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["deploy/hearth-install"]
+
+[tool.ruff]
+line-length = 100
+src = ["deploy/hearth-install/hearth_install", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]

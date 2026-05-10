@@ -1,24 +1,17 @@
-# Current branch state
+# CURRENT — `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-02-install-layout`
 
-| Field | Value |
-|------|--------|
-| **FR** | FR-0003 |
-| **Feature folder** | `tasks/feature-history/FR-0003-hearth-pi-docker-cli/` |
-| **This branch** | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-01-deployment-docker-pi` |
-| **Parent branch** | `feat/FR-0003-hearth-pi-docker-cli` |
-| **Last meaningful update** | 2026-05-10 |
+**Ticket:** `T-FR-0003-02` — Install layout: `heart/`, VERSION.json, README  
+**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-02-install-layout/`
 
-## What is on this branch
+## Delivered
 
-- **`T-FR-0003-01` VAL complete:** `docs/design/deployment.md` documents the **Docker (Pi) profile** (supervisor choice, `heart/` ↔ `/opt`/`/var`/`/etc` mapping, bootstrap mermaid, update intent, **DESIGN-GAP** stubs). **Bare-metal** `deploy/install.sh` / systemd path labeled **alternative**; no contradictory Pi-only-systemd wording.
-- **`tasks/ticket-progress.md`:** T-FR-0003-01 TEST/DEV/VAL **done**.
-- **`docs/design/tickets-initial.md`:** `triadDone` for **TFR0003_01_***.
-- **Diary:** [`serial-diary.md`](tasks/feature-history/FR-0003-hearth-pi-docker-cli/serial-diary.md) — TEST mapping + branch naming note (hyphenated ticket branch; Git ref nesting).
+- **`deploy/hearth-install/`**: `hearth_install` package (`ensure_heart_layout`, `VERSION.json` v1 parser), JSON Schema, templates, module README.
+- **Tests:** `tests/test_heart_install_layout.py` (dirs, manifest parse, idempotence).
+- **`./develop test`**: Compose profile `test` (`hearth-test` service) runs pytest in `python:3.12-slim-bookworm` (pip needs network on first cold run).
+- **Docs:** `docs/design/deployment.md` links schema; feature README artifact index links `deploy/hearth-install/README.md`.
 
-## In flight / blockers
+## Verify
 
-- None for **T-FR-0003-01**. Next eligible: **`T-FR-0003-02`**, **`T-FR-0003-13`** (after merge to feature branch).
-
-## Next
-
-1. Open PR **into** `feat/FR-0003-hearth-pi-docker-cli`; merge then proceed **`T-FR-0003-02`** (install layout).
+```bash
+./develop test
+```
