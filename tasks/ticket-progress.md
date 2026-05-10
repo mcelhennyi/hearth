@@ -8,7 +8,7 @@
 | **Active phase** | TEST kickoff (`T-FR-0002-01`, `T-FR-0002-02`) |
 | **Branch / worktree** | `feat/FR-0002-iphone-pwa-prototype` at `.worktrees/FR-0002-iphone-pwa-prototype/feature/`; ticket branches next: `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls`, `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` |
 | **Session status** | `developing` |
-| **Next agent should** | Launch one subagent per frontier ticket and execute TEST → DEV → VAL in each ticket worktree, then merge both ticket branches into `feat/FR-0002-iphone-pwa-prototype` using `finish-feature` flow. Keep FR-0001 parked until FR-0002 closes. **VAL:** server-first (Mac mini / Pi + desktop browser) per `tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md`; iPhone checks are follow-up only (`40-prototype-report.md` → **Follow-up: iPhone**). |
+| **Next agent should** | Launch one subagent per frontier ticket and execute TEST → DEV → VAL in each ticket worktree, then merge both ticket branches into `feat/FR-0002-iphone-pwa-prototype` using `finish-feature` flow. Keep FR-0001 and **FR-0003** parked until FR-0002 closes. **VAL:** server-first (Mac mini / Pi + desktop browser) per `tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md`; iPhone checks are follow-up only (`40-prototype-report.md` → **Follow-up: iPhone**). |
 
 ### Parallel streams
 
@@ -59,6 +59,6 @@
 ## How to choose next work
 
 1. While FR-0002 is `in-progress`: pick the smallest **`T-FR-0002-xx`** with all `Deps:` satisfied. Ignore FR-0001 tickets — they are parked.
-2. **FR-0003 (`hearth` / `./install` / per-plugin `plugin`):** design-stage tickets are listed in **`tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md`**. When starting implementation, prefer **`/identify-frontier`** after **`T-FR-0003-02`** is VAL-done to batch **T-FR-0003-04**, **-05**, **-10**, **-13** (and later **-06**, **-07**, **-09**). Do not let FR-0003 change **Current focus** away from FR-0002 unless the session owner explicitly switches streams.
-3. After FR-0002 closes: re-flip FR-0001 to `design`/`in-progress` in `REGISTRY.md`, apply any FR-0002-driven amendments, and start `T-FR-0001-01`.
+2. **FR-0003 (`hearth` / `./install` / per-plugin `plugin`):** **parked until FR-0002 closes** (operator option A, 2026-05-09). Do **not** start **`T-FR-0003-xx`** or open **`feat/FR-0003-hearth-pi-docker-cli`** while FR-0002 is in flight. After FR-0002, set FR-0003 to **`in-progress`** in `REGISTRY.md` when beginning work, then prefer **`/identify-frontier`** after **`T-FR-0003-02`** is VAL-done to batch **T-FR-0003-04**, **-05**, **-10**, **-13** (and later **-06**, **-07**, **-09**).
+3. After FR-0002 closes: re-flip FR-0001 to `design`/`in-progress` in `REGISTRY.md`, apply any FR-0002-driven amendments, and start `T-FR-0001-01`. **FR-0003** may start in parallel with FR-0001 once FR-0002 is done, if capacity allows (see `tasks/feature-history/FR-0003-hearth-pi-docker-cli/README.md`).
 4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.

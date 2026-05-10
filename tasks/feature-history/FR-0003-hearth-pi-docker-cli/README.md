@@ -1,8 +1,10 @@
 # FR-0003 — Hearth Pi Docker CLI and install bootstrap
 
-**Status:** `design` (see [`REGISTRY.md`](../REGISTRY.md))  
+**Status:** `parked` for **implementation** until **FR-0002** closes (see [`REGISTRY.md`](../REGISTRY.md)); design + ticket DAG on `main` are done.  
 **Canonical tickets:** [`tickets.md`](tickets.md)  
 **DAG draft:** [`20-tickets-dag.md`](20-tickets-dag.md)
+
+**Schedule:** Do **not** open **`feat/FR-0003-hearth-pi-docker-cli`** or start **`T-FR-0003-xx`** TEST/DEV/VAL while **FR-0002** is still in flight. After FR-0002 closes, create the feature worktree and begin with **[T-FR-0003-01](tickets.md#t-fr-0003-01--design-contract-amend-deployment-for-docker-on-pi)** (or run **`/identify-frontier`** if resuming mid-graph). Sequencing next to **FR-0001** is a separate capacity call.
 
 ## One-screen summary
 
@@ -19,6 +21,7 @@ Deliver a **Docker Compose–first** production install path for Raspberry Pi cl
 | [`20-tickets-dag.md`](20-tickets-dag.md) | Ticket table + Mermaid DAG |
 | [`tickets.md`](tickets.md) | Canonical **`### T-FR-0003-xx`** sections |
 | [`serial-diary.md`](serial-diary.md) | Serial session log |
+| [`handoffs/2026-05-09-operator-option-a.md`](handoffs/2026-05-09-operator-option-a.md) | Schedule: defer implementation until FR-0002 closes (option A) |
 
 ## Deferred (follow-up FRs)
 
