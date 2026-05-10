@@ -1,10 +1,12 @@
 # FR-0003 — Hearth Pi Docker CLI and install bootstrap
 
-**Status:** `in-progress` — implementation permitted per [`REGISTRY.md`](../REGISTRY.md); design + ticket DAG remain authoritative.  
+**Status:** `in-progress` — implementation on **`feat/FR-0003-hearth-pi-docker-cli`** (see [`REGISTRY.md`](../REGISTRY.md)); design + ticket DAG remain authoritative.  
 **Canonical tickets:** [`tickets.md`](tickets.md)  
 **DAG draft:** [`20-tickets-dag.md`](20-tickets-dag.md)
 
-**Schedule:** Feature branch **`feat/FR-0003-hearth-pi-docker-cli`**; worktrees under **`.worktrees/FR-0003-hearth-pi-docker-cli/`**. Start **[T-FR-0003-01](tickets.md#t-fr-0003-01--design-contract-amend-deployment-for-docker-on-pi)** or **`/identify-frontier`** after **`T-FR-0003-02`** VAL for the wide parallel batch (**04**, **05**, **10**, **13**).
+**Relationship to FR-0002:** No **`Deps:`** edge from any **`T-FR-0003-xx`** to FR-0002. FR-0002 (PWA prototype) and FR-0003 (Pi Docker CLI) may proceed on parallel timelines; **hub HTTP health**, **prod Compose images**, and **Mantle routes** may use **fixtures / placeholders** until FR-0001 hub + FR-0002 shell artifacts exist (already anticipated in [`10-design-00-skeleton.md`](10-design-00-skeleton.md) and ticket VAL notes).
+
+**Schedule:** Feature integration branch is open; create ticket worktrees under **`.worktrees/FR-0003-hearth-pi-docker-cli/`** per `docs/ai-context.md`. **`T-FR-0003-01`** landed via **PR #6**; next parallel-capable tickets include **`T-FR-0003-02`** and **`T-FR-0003-13`**. Run **`/identify-frontier`** after **`T-FR-0003-02`** VAL to batch **-04**, **-05**, **-10**.
 
 ## One-screen summary
 
@@ -21,7 +23,8 @@ Deliver a **Docker Compose–first** production install path for Raspberry Pi cl
 | [`20-tickets-dag.md`](20-tickets-dag.md) | Ticket table + Mermaid DAG |
 | [`tickets.md`](tickets.md) | Canonical **`### T-FR-0003-xx`** sections |
 | [`serial-diary.md`](serial-diary.md) | Serial session log |
-| [`handoffs/2026-05-09-operator-option-a.md`](handoffs/2026-05-09-operator-option-a.md) | Schedule: defer implementation until FR-0002 closes (option A) |
+| [`handoffs/2026-05-09-operator-option-a.md`](handoffs/2026-05-09-operator-option-a.md) | Historical: scheduling-only deferral (option A), superseded for FR-0003 by [`handoffs/2026-05-10-unpark-start-implementation.md`](handoffs/2026-05-10-unpark-start-implementation.md) |
+| [`handoffs/2026-05-10-unpark-start-implementation.md`](handoffs/2026-05-10-unpark-start-implementation.md) | Unpark FR-0003; no FR-0004 split — start implementation now |
 
 ## Deferred (follow-up FRs)
 

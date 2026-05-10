@@ -4,21 +4,22 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | **`/develop-frontier 0003` (wave 2):** unblock **`T-FR-0003-01`** → **`feat/FR-0003-hearth-pi-docker-cli`** (open PR **#6** ticket branch). Next parallel FR-0003 tickets after **-01** VAL on tracker: **`T-FR-0003-02`**, **`T-FR-0003-13`**. **FR-0002:** unchanged. |
-| **Active phase** | Integrate **T-FR-0003-01**; then **TEST→DEV→VAL** for **-02** and **-13** in separate ticket worktrees. |
-| **Branch / worktree** | Feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → `feat/FR-0003-hearth-pi-docker-cli`. Ticket **-01:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-01-deployment-docker-pi` → `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/`. |
+| **Active ticket** | **`/develop-frontier 0003` (wave 3):** **`T-FR-0003-02`** + **`T-FR-0003-13`** in parallel. **`T-FR-0003-01`** complete (merged **PR #6** into **`feat/FR-0003-hearth-pi-docker-cli`**). **FR-0002:** unchanged. |
+| **Active phase** | **TEST→DEV→VAL** for **-02** and **-13** in separate ticket worktrees. |
+| **Branch / worktree** | Feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → `feat/FR-0003-hearth-pi-docker-cli`. Create ticket branches with **hyphenated** suffix (Git cannot nest `feat/.../T-...`). |
 | **Session status** | `developing` |
-| **Next agent should** | Merge **PR #6** (or equivalent) into **`feat/FR-0003-hearth-pi-docker-cli`**, update **`ticket-progress`** **T-FR-0003-01** to triad **`done`**, union **`triadDone`** in **`tickets-initial.md`**, then **`/develop-frontier 0003`** again for **-02** + **-13** in parallel. |
+| **Next agent should** | One stream each for **`T-FR-0003-02`** (install layout) and **`T-FR-0003-13`** (CLI parity rules); PR base **`feat/FR-0003-hearth-pi-docker-cli`**; touch **only** that ticket’s Progress row. |
 
 ### Parallel streams
 
-`T-FR-0002-01` and `T-FR-0002-02` are independent. **`T-FR-0003-01`** has no FR-0002 **Deps** and may run in parallel. **`T-FR-0002-01`** and **`T-FR-0002-02`** must land before `T-FR-0002-03`.
+`T-FR-0002-01` and `T-FR-0002-02` are independent. **`T-FR-0003-02`** and **`T-FR-0003-13`** may run in parallel (both depend only on **`T-FR-0003-01`**). **`T-FR-0002-01`** and **`T-FR-0002-02`** must land before `T-FR-0002-03`.
 
 | Stream label | Ticket(s) | `FR-NNNN` | Branch / worktree | Owner / note |
 |----------------|------------|-----------|-------------------|--------------|
 | caddy-tls | `T-FR-0002-01` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/` | unassigned |
 | mantle-bones | `T-FR-0002-02` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` | unassigned |
-| deployment-docker-pi | `T-FR-0003-01` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-01-deployment-docker-pi` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/` | PR **#6** → merge into **feat** branch to unblock **-02** / **-13** |
+| install-layout | `T-FR-0003-02` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-02-*` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-02-*/` | develop-frontier 0003 |
+| cli-parity-rules | `T-FR-0003-13` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-13-*` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-13-*/` | develop-frontier 0003 |
 
 ---
 
@@ -31,7 +32,7 @@
 | T-FR-0002-02 | Mantle PWA bones (manifest + SW + nav) | — | — | — | `FR-0002`. Reuses into `T-FR-0001-04`. |
 | T-FR-0002-03 | Web Push round-trip (VAPID + subscribe + send) | — | — | — | `FR-0002`. Reuses into `T-FR-0001-09`. Deps: `T-FR-0002-01`, `T-FR-0002-02`. |
 | T-FR-0002-04 | Real-iPhone walkthrough + closeout report | — | — | — | `FR-0002`. No FR-0001 reuse target. Deps: `T-FR-0002-01..03`. |
-| T-FR-0003-01 | Design contract: amend deployment for Docker-on-Pi | — | — | — | `FR-0003` design. Deps: none. |
+| T-FR-0003-01 | Design contract: amend deployment for Docker-on-Pi | done | done | done | `FR-0003` design. `deployment.md`: Docker (Pi) profile + gaps; systemd install.sh path explicit alternative. Merged via **PR #6** into **`feat/FR-0003-hearth-pi-docker-cli`**. |
 | T-FR-0003-02 | Install layout: `heart/`, VERSION.json, README | — | — | — | `FR-0003`. Deps: `T-FR-0003-01`. |
 | T-FR-0003-03 | `./install` bootstrap: Docker + layout + first `compose up` | — | — | — | `FR-0003`. Deps: `T-FR-0003-02`, `T-FR-0003-05`. |
 | T-FR-0003-04 | `hearth` CLI core: argparse, paths, doctor, compose passthrough | — | — | — | `FR-0003`. Deps: `T-FR-0003-01`, `T-FR-0003-02`. |
@@ -60,6 +61,6 @@
 ## How to choose next work
 
 1. While FR-0002 is `in-progress`: pick the smallest **`T-FR-0002-xx`** with all `Deps:` satisfied. Ignore FR-0001 tickets — they are parked.
-2. **FR-0003 (`hearth` / `./install` / per-plugin `plugin`):** **`in-progress`** in [`REGISTRY.md`](feature-history/REGISTRY.md). Prefer **`/identify-frontier`** after **`T-FR-0003-02`** VAL to batch **T-FR-0003-04**, **-05**, **-10**, **-13**. FR-0003 may run **in parallel with FR-0002** (no DAG dependency).
-3. After FR-0002 closes: re-flip FR-0001 to `design`/`in-progress` in `REGISTRY.md`, apply any FR-0002-driven amendments, and start `T-FR-0001-01`. **FR-0003** may overlap FR-0001 once staffed (see `tasks/feature-history/FR-0003-hearth-pi-docker-cli/README.md`).
+2. **FR-0003 (`hearth` / `./install` / per-plugin `plugin`):** **`in-progress`** (2026-05-10). Feature branch **`feat/FR-0003-hearth-pi-docker-cli`** is valid; scheduling-only “park until FR-0002” is **superseded** — FR-0003 has **no ticket dependency** on FR-0002 (hub/Mantle placeholders per design). Prefer **`/identify-frontier`** after **`T-FR-0003-02`** VAL to batch **T-FR-0003-04**, **-05**, **-10**. FR-0003 may run **in parallel with FR-0002** if capacity allows.
+3. After FR-0002 closes: re-flip FR-0001 to `design`/`in-progress` in `REGISTRY.md`, apply any FR-0002-driven amendments, and start `T-FR-0001-01`. **FR-0003** may also overlap FR-0001 once work is staffed (see `tasks/feature-history/FR-0003-hearth-pi-docker-cli/README.md`).
 4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.

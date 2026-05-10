@@ -9,8 +9,9 @@
 
 ## Explicitly excluded
 
-- **All `T-FR-0003-xx`** — [FR-0003 parked](../feature-history/REGISTRY.md) until FR-0002 closes (operator option A).
 - **`T-FR-0001-xx`** — FR-0001 parked.
+
+**FR-0003:** Scheduling exclusion **lifted** 2026-05-10 — implementation allowed on **`feat/FR-0003-hearth-pi-docker-cli`** (see [`2026-05-10-fr0003-unpark.md`](2026-05-10-fr0003-unpark.md)). Historical note: previously excluded under operator option A (2026-05-09).
 
 ## Worktrees (this repo)
 
