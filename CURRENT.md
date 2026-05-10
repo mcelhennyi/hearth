@@ -1,26 +1,23 @@
-# CURRENT — `feat/FR-0003-hearth-pi-docker-cli`
+# CURRENT — `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-09-stack-control`
 
-**FR:** `FR-0003` — Hearth Pi Docker CLI and install bootstrap  
-**Feature folder:** `tasks/feature-history/FR-0003-hearth-pi-docker-cli/`  
-**Branch role:** Feature integration branch  
-**Last meaningful update:** 2026-05-10
+**Ticket:** `T-FR-0003-09` — stack control (`start`, `stop`, `restart`, `status`, `logs`)  
+**Feature:** `FR-0003` — Hearth Pi Docker CLI  
+**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-09-stack-control/`  
+**Last update:** 2026-05-10
 
-## Landed on this feature branch
+## Phase
 
-- **`T-FR-0003-01` done:** `docs/design/deployment.md` documents the Docker-on-Pi profile and bare-metal systemd alternative.
-- **`T-FR-0003-02` done:** `deploy/hearth-install/` scaffolds the `heart/` layout, `VERSION.json` v1 parser/schema, templates, README, and `./develop test` path.
-- **`T-FR-0003-13` done:** Hearth CLI parity rules are mirrored across Cursor and Claude guidance.
-- **`T-FR-0003-04` done:** `bin/hearth` and `deploy/hearth-cli/` provide install-root resolution, `version`, `doctor`, and `compose --` passthrough with tests.
-- **`T-FR-0003-05` done:** `deploy/hearth-install/` now manages `heart/state/plugins.yaml` and generates Compose plugin overrides.
-- **`T-FR-0003-10` done:** `deploy/kindling-contract/` mirrors the plugin `scripts/install` + `plugin` template contract until Kindling exists upstream.
-
-## Validation
-
-- Ticket branches individually passed their scoped Docker/Compose validation before merge.
-- Run feature-branch validation with `./develop test` before pushing this branch.
+- **TEST:** done — stack/compose mapping and env-file tests in `tests/test_hearth_cli.py`.
+- **DEV:** done — `deploy/hearth-cli/hearth_cli/cli.py` implements commands + shared compose prefix.
+- **VAL:** done — `./develop test` (full suite) in Docker.
 
 ## Next
 
-1. Run `./develop test` on this feature branch.
-2. Push `feat/FR-0003-hearth-pi-docker-cli`.
-3. Open or update the PR to `main`, noting that `CURRENT.md` should be removed when merged to `main`.
+1. Push branch and open PR → `feat/FR-0003-hearth-pi-docker-cli`.
+2. After merge, refresh feature `CURRENT.md` and rerun `./develop test` on the integration branch.
+
+## Notes
+
+- Compose project: `HEARTH_COMPOSE_PROJECT_NAME` (default `hearth`).
+- Env file: `heart/compose/.env` or `HEARTH_COMPOSE_ENV_FILE`.
+- Hub health on `hearth status`: `HEARTH_HUB_HEALTH_URL` or `docker compose port hub …`; use `--skip-health` to skip.

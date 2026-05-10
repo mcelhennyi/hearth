@@ -119,6 +119,7 @@ graph LR
   class TFR0003_04_TEST,TFR0003_04_DEV,TFR0003_04_VAL triadDone
   class TFR0003_05_TEST,TFR0003_05_DEV,TFR0003_05_VAL triadDone
   class TFR0003_10_TEST,TFR0003_10_DEV,TFR0003_10_VAL triadDone
+  class TFR0003_09_TEST,TFR0003_09_DEV,TFR0003_09_VAL triadDone
 
   classDef triadDone fill:#2e7d32,color:#fff
 ```

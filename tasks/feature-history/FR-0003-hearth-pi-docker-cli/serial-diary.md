@@ -1,5 +1,25 @@
 ---
 
+## 2026-05-10 — T-FR-0003-09 TEST→DEV→VAL (stack control)
+
+**Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-09-stack-control`  
+**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-09-stack-control/`
+
+### TEST
+
+- Extended `tests/test_hearth_cli.py` with parametrized stack-command assertions and coverage for `--project-name`, `heart/compose/.env`, and status health probing.
+
+### DEV
+
+- `hearth start|stop|restart|status|logs` map to docker compose with shared `--project-name` (default `hearth`, override `HEARTH_COMPOSE_PROJECT_NAME`) and optional `heart/compose/.env` or `HEARTH_COMPOSE_ENV_FILE`.
+- `hearth compose` uses the same prefix; `hearth status` runs `ps -a` then optionally GETs `/api/health` via `HEARTH_HUB_HEALTH_URL` or `docker compose port hub <port>` discovery (`--skip-health` to skip).
+
+### VAL
+
+- `./develop test tests/test_hearth_cli.py` and `./develop test` — PASS (Docker `hearth-test` profile). No host-local test exception.
+
+---
+
 ## 2026-05-10 — T-FR-0003-10 TEST→DEV→VAL (Kindling plugin contract)
 
 **Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-10-kindling-plugin-contract`  
