@@ -1,5 +1,27 @@
 ---
 
+## 2026-05-10 — T-FR-0003-08 TEST→DEV→VAL (`hearth --plugin enter`)
+
+**Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-08-plugin-enter`  
+**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-08-plugin-enter/`
+
+### TEST
+
+- Added `hearth_install.plugin_session` (`HEARTH_PLUGIN_ENTER_STACK` JSON array + `HEARTH_PLUGIN_ENTER_FROM`) and `tests/test_plugin_enter_session.py` for push/pop nesting, `exit_plugin_enter_session`, and malformed-stack errors.
+
+### DEV
+
+- `hearth --plugin enter [--slug SLUG]` — interactive **bash/zsh** via `exec $SHELL -i` after `chdir` to `heart/plugins/<slug>`; non-TTY prints `cd` + `export` fallback. Numbered picker when TTY and `--slug` omitted.
+- Kindling template `plugin` implements real `./plugin --exit` when `hearth_install` is importable (reuses `plugin_session`).
+- Documented operator UX under `deploy/hearth-install/README.md`.
+
+### VAL
+
+- `docker compose -f deploy/compose/docker-compose.yml --profile test run --rm hearth-test` — **PASS** (59 tests).
+- **Host-local / manual:** full **enter → `./plugin status` → `--exit`** REPL smoke is intentionally not automated (requires interactive TTY + real shell); deterministic coverage is the pytest suite above.
+
+---
+
 ## 2026-05-10 — T-FR-0003-03 TEST→DEV→VAL (`./install` bootstrap)
 
 **Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-03-install-bootstrap`  

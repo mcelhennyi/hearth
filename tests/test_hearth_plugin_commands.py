@@ -2,18 +2,23 @@
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import textwrap
 from pathlib import Path
 
 import pytest
-
 from hearth_cli import cli
 from hearth_install.layout import ensure_heart_layout
 from hearth_install.plugin_add import PluginAddError, add_plugin_from_source, classify_plugin_source
-from hearth_install.plugin_compose import PluginRecord, generate_plugin_compose, load_plugin_registry, save_plugin_registry
-
+from hearth_install.plugin_compose import (
+    PluginRecord,
+    generate_plugin_compose,
+    load_plugin_registry,
+    save_plugin_registry,
+)
+from hearth_install.plugin_session import FROM_ENV, STACK_ENV
 
 MINIMAL_TINDER = textwrap.dedent(
     """\
@@ -174,3 +179,89 @@ def test_save_plugin_registry_roundtrips_through_parser(tmp_path: Path) -> None:
         ("alpha", True, "deadbeef"),
         ("beta", False, None),
     ]
+
+
+def _heart_with_one_plugin(tmp_path: Path) -> Path:
+    ensure_heart_layout(tmp_path, hearth_ref="enter-test")
+    heart = tmp_path / "heart"
+    (heart / "compose" / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
+    plug = heart / "plugins" / "fixture-one"
+    plug.mkdir(parents=True)
+    (plug / "tinder.toml").write_text(MINIMAL_TINDER, encoding="utf-8")
+    save_plugin_registry(
+        heart,
+        [
+            PluginRecord(
+                slug="fixture-one",
+                source_git="https://example.test/fixture.git",
+                enabled=True,
+            ),
+        ],
+    )
+    return heart
+
+
+def test_plugin_enter_noninteractive_prints_exports(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    monkeypatch.setattr(cli.sys.stdin, "isatty", lambda: False)
+    monkeypatch.setattr(cli.sys.stdout, "isatty", lambda: False)
+    _heart_with_one_plugin(tmp_path)
+    monkeypatch.chdir(tmp_path)
+
+    code = cli.run(["--install-root", str(tmp_path), "--plugin", "enter", "--slug", "fixture-one"])
+    out = capsys.readouterr().out
+    assert code == 0
+    assert "cd " in out
+    assert "fixture-one" in out
+    assert FROM_ENV in out
+    assert STACK_ENV in out
+
+
+def test_plugin_enter_requires_slug_when_non_interactive(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    monkeypatch.setattr(cli.sys.stdin, "isatty", lambda: False)
+    monkeypatch.setattr(cli.sys.stdout, "isatty", lambda: False)
+    _heart_with_one_plugin(tmp_path)
+    monkeypatch.chdir(tmp_path)
+
+    code = cli.run(["--install-root", str(tmp_path), "--plugin", "enter"])
+    assert code == 2
+    assert "--slug" in capsys.readouterr().err
+
+
+def test_plugin_enter_interactive_prepares_execve(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(cli.sys.stdin, "isatty", lambda: True)
+    monkeypatch.setattr(cli.sys.stdout, "isatty", lambda: True)
+    _heart_with_one_plugin(tmp_path)
+    shell = tmp_path / "fake-sh"
+    shell.write_text("#!/bin/sh\necho noop\n", encoding="utf-8")
+    shell.chmod(shell.stat().st_mode | 0o111)
+    monkeypatch.setenv("SHELL", str(shell))
+    monkeypatch.chdir(tmp_path)
+
+    calls: list[tuple[str, list[str], dict[str, str]]] = []
+
+    def fake_execve(path: str, argv: list[str], env: dict[str, str]) -> None:
+        calls.append((path, argv, env))
+        raise RuntimeError("stop exec")
+
+    monkeypatch.setattr(os, "execve", fake_execve)
+
+    with pytest.raises(RuntimeError, match="stop exec"):
+        cli.run(["--install-root", str(tmp_path), "--plugin", "enter", "--slug", "fixture-one"])
+
+    assert len(calls) == 1
+    path, argv, env = calls[0]
+    assert path == str(shell)
+    assert argv == [str(shell), "-i"]
+    assert STACK_ENV in env
+    assert FROM_ENV in env

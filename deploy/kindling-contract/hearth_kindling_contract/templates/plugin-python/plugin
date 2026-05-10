@@ -16,7 +16,6 @@ COMMON_FLAGS = {
     "--start",
     "--stop",
     "--reset",
-    "--exit",
     "--status",
     "--logs",
     "--doctor",
@@ -37,6 +36,22 @@ def main() -> int:
 
     if args[0] == "--":
         return _run_admin(args[1:])
+
+    if args[0] == "--exit":
+        try:
+            from hearth_install.plugin_session import (
+                PluginEnterSessionError,
+                exit_plugin_enter_session,
+            )
+        except ImportError as exc:
+            print(f"{PLUGIN_SLUG}: hearth_install is not importable: {exc}", file=sys.stderr)
+            return 1
+        try:
+            exit_plugin_enter_session()
+            return 0
+        except PluginEnterSessionError as exc:
+            print(f"{PLUGIN_SLUG}: {exc}", file=sys.stderr)
+            return 1
 
     if args[0] in COMMON_FLAGS:
         print(f"{PLUGIN_SLUG}: {args[0]} handled by template stub")
