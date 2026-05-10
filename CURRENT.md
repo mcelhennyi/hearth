@@ -19,6 +19,6 @@
 
 ## Next
 
-1. **[T-FR-0003-01 — Design contract: amend deployment for Docker-on-Pi](tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md)** — TEST → DEV → VAL, or run **`/identify-frontier`** if batching with other eligible globals.
-2. Create ticket branch + worktree under **`.worktrees/FR-0003-hearth-pi-docker-cli/`** when starting DEV.
-3. Refresh **`tasks/ticket-progress.md`** as phases complete.
+1. Parallel frontier (2026-05-10): **[`tasks/handoffs/2026-05-10-parallel-frontier.md`](tasks/handoffs/2026-05-10-parallel-frontier.md)** — only **[T-FR-0003-01](tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md)** is dependency-eligible for FR-0003 until its VAL completes.
+2. **[T-FR-0003-01 — Design contract: amend deployment for Docker-on-Pi](tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md)** — TEST → DEV → VAL on branch **`feat/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-…`** + worktree **`.worktrees/FR-0003-hearth-pi-docker-cli/…`**.
+3. Refresh **`tasks/ticket-progress.md`** as phases complete; after **`T-FR-0003-01`** VAL, **`T-FR-0003-02`** and **`T-FR-0003-13`** unlock (then parallel batch after **`T-FR-0003-02`** VAL per DAG).
