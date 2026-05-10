@@ -1,3 +1,15 @@
+---
+
+## 2026-05-10 — Unpark implementation (operator)
+
+**Stage:** policy / branch bootstrap
+
+**Recap:** Confirmed **no `T-FR-0003-xx` dependency on FR-0002**; prior park was option A scheduling only. Set FR-0003 to **`in-progress`** in [`REGISTRY.md`](../REGISTRY.md), opened **`feat/FR-0003-hearth-pi-docker-cli`** + repo-root **`CURRENT.md`**, updated [`tasks/ticket-progress.md`](../../ticket-progress.md) and global [`tasks/handoffs/2026-05-10-fr0003-unpark.md`](../../handoffs/2026-05-10-fr0003-unpark.md). **No FR-0004** — stubs in existing tickets suffice for FR-0002 coupling.
+
+**Next:** **[T-FR-0003-01](tickets.md#t-fr-0003-01--design-contract-amend-deployment-for-docker-on-pi)** TEST→DEV→VAL or **`/identify-frontier`**.
+
+---
+
 ## 2026-05-09 — Operator choice: defer implementation (option A)
 
 **Stage:** scheduling
