@@ -4,8 +4,8 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0002-01` and `T-FR-0002-02` (parallel-eligible; not yet started) |
-| **Active phase** | TEST kickoff (`T-FR-0002-01`, `T-FR-0002-02`) |
+| **Active ticket** | `T-FR-0002-02` (primary); `T-FR-0002-01` — merge `feat/FR-0002-iphone-pwa-prototype-T-FR-0002-01-caddy-tls` into feature branch when ready |
+| **Active phase** | `T-FR-0002-02` TEST → DEV → VAL; confirm `T-FR-0002-01` server-first VAL in `serial-diary.md` per HOWTO |
 | **Branch / worktree** | Feature: `.worktrees/FR-0002-iphone-pwa-prototype/feature/` → `feat/FR-0002-iphone-pwa-prototype`. Frontier ticket checkouts: `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/`, `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` (re-linked 2026-05-09 after `git worktree prune`). See [`tasks/handoffs/2026-05-09-parallel-frontier.md`](handoffs/2026-05-09-parallel-frontier.md). |
 | **Session status** | `developing` |
 | **Next agent should** | **To complete / close FR-0002:** follow the ordered checklist in `tasks/feature-history/FR-0002-iphone-pwa-prototype/HOWTO-complete-FR-0002.md` (Pi + Mac mini acceptance, `40-prototype-report.md`, `REGISTRY.md`, then `/finish-feature`). For parallel implementation work: launch one subagent per frontier ticket and execute TEST → DEV → VAL in each ticket worktree, then merge ticket branches into `feat/FR-0002-iphone-pwa-prototype` using `finish-feature` flow. Keep FR-0001 and **FR-0003** parked until FR-0002 closes. **VAL:** server-first (Mac mini / Pi + desktop browser) per `tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md`; iPhone checks are follow-up only (`40-prototype-report.md` → **Follow-up: iPhone**). |
@@ -26,7 +26,7 @@
 | Ticket | Title | TEST | DEV | VAL | Notes |
 |--------|-------|------|-----|-----|-------|
 | T-FR-0000-01 | Choose stack and scaffold repository | done | done | done | Stack chosen; FR-0000 tooling/process scaffold complete via `init-skeleton`. Implementation scaffold lives in `T-FR-0001-01` (parked). |
-| T-FR-0002-01 | Caddy + tls internal + static placeholder | — | — | — | `FR-0002`. Reuses into `T-FR-0001-05`. |
+| T-FR-0002-01 | Caddy + tls internal + static placeholder | done | done | done | `FR-0002`. Automated smoke + branch `feat/...-T-FR-0002-01-caddy-tls` merged with `main` (2026-05-10). Confirm Pi/Mac mini VAL per HOWTO when hardware available. |
 | T-FR-0002-02 | Mantle PWA bones (manifest + SW + nav) | — | — | — | `FR-0002`. Reuses into `T-FR-0001-04`. |
 | T-FR-0002-03 | Web Push round-trip (VAPID + subscribe + send) | — | — | — | `FR-0002`. Reuses into `T-FR-0001-09`. Deps: `T-FR-0002-01`, `T-FR-0002-02`. |
 | T-FR-0002-04 | Real-iPhone walkthrough + closeout report | — | — | — | `FR-0002`. No FR-0001 reuse target. Deps: `T-FR-0002-01..03`. |
