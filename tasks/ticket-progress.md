@@ -26,7 +26,7 @@
 | Ticket | Title | TEST | DEV | VAL | Notes |
 |--------|-------|------|-----|-----|-------|
 | T-FR-0000-01 | Choose stack and scaffold repository | done | done | done | Stack chosen; FR-0000 tooling/process scaffold complete via `init-skeleton`. Implementation scaffold lives in `T-FR-0001-01` (parked). |
-| T-FR-0002-01 | Caddy + tls internal + static placeholder | done | done | — | `FR-0002`. Local smoke PASS (`scripts/test-t-fr-0002-01.sh`); branch `feat/...-T-FR-0002-01-caddy-tls` merged with `main`. **VAL:** server-first on Pi or Mac mini still required per `tickets.md` + HOWTO — log in `serial-diary.md`. |
+| T-FR-0002-01 | Caddy + tls internal + static placeholder | done | done | — | `FR-0002`. TEST/DEV satisfied in tree. Local Docker smoke PASS (`scripts/test-t-fr-0002-01.sh`, 2026-05-10). **VAL pending:** server-first desktop + trusted CA on real Mac mini or Pi per `tickets.md` — agent session cannot complete; evidence and blocker in `tasks/feature-history/FR-0002-iphone-pwa-prototype/parallel/T-FR-0002-01-val-evidence.md`. When VAL is done on hardware, set this row and add `triadDone` for `TFR0002_01_*` in `docs/design/tickets-initial.md`. |
 | T-FR-0002-02 | Mantle PWA bones (manifest + SW + nav) | — | — | — | `FR-0002`. Reuses into `T-FR-0001-04`. |
 | T-FR-0002-03 | Web Push round-trip (VAPID + subscribe + send) | — | — | — | `FR-0002`. Reuses into `T-FR-0001-09`. Deps: `T-FR-0002-01`, `T-FR-0002-02`. |
 | T-FR-0002-04 | Real-iPhone walkthrough + closeout report | — | — | — | `FR-0002`. No FR-0001 reuse target. Deps: `T-FR-0002-01..03`. |

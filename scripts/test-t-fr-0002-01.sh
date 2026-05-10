@@ -17,7 +17,8 @@ echo "[T-FR-0002-01] starting stack"
 
 echo "[T-FR-0002-01] waiting for HTTPS placeholder"
 for _ in {1..40}; do
-  if curl -ksS --resolve hearth.home.arpa:443:127.0.0.1 "$STACK_URL" | grep -Fq "$KNOWN_BODY"; then
+  # Transient TLS handshake errors while Caddy issues internal certs — retry quietly.
+  if curl -ks --resolve hearth.home.arpa:443:127.0.0.1 "$STACK_URL" 2>/dev/null | grep -Fq "$KNOWN_BODY"; then
     break
   fi
   sleep 1

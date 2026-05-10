@@ -4,6 +4,14 @@ Append-only. Newest entries at the top.
 
 ---
 
+## 2026-05-10 — T-FR-0002-01 local smoke; VAL pending hardware
+
+- **Local:** `scripts/test-t-fr-0002-01.sh` PASS (Docker on development host); placeholder HTML and CA export URL asserted.
+- **VAL:** Not marked done — server-first proof on **Mac mini or Pi** + desktop browser with trusted CA still required per `tickets.md`. Recorded in `parallel/T-FR-0002-01-val-evidence.md`.
+- **Design:** Removed premature `triadDone` styling for `TFR0002_01_*` from `docs/design/tickets-initial.md` until VAL is complete on hardware.
+
+---
+
 ## 2026-04-30 — Server-first VAL; iPhone deferred
 
 - **Decision:** Ticket **VAL** and FR-0002 **close** prioritize proving the stack on **Mac mini / Pi** with **desktop browsers** (same LAN, CA trusted on that client). **iPhone** (CA UX, Add to Home Screen, on-device push) is a **non-blocking side goal**, tracked in `40-prototype-report.md` under **Follow-up: iPhone** when run.
