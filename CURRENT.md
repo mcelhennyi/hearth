@@ -22,6 +22,7 @@
 
 - Ticket branches individually passed their scoped Docker/Compose validation before merge.
 - Feature-branch validation passed before PR #13: `./develop test` (19 tests).
+- Integrated feature validation after merging `T-FR-0003-03`, `-06`, `-07`, and `-09`: `docker compose -f deploy/compose/docker-compose.yml --profile test run --rm hearth-test` — PASS (`49 passed`).
 - `T-FR-0003-03`: `./develop test` full suite PASS; host-local generated `docker compose config` PASS.
 - `T-FR-0003-06`: `./develop test` PASS (26 tests); host-local `hearth --update --dry-run` no-op idempotence PASS.
 - `T-FR-0003-07`: `./develop test` PASS (24 tests); Docker test image installs `git` for clone coverage.
@@ -29,8 +30,8 @@
 
 ## Next
 
-1. Rerun `./develop test` on the integrated feature branch.
-2. Identify the next frontier from the updated `feat/FR-0003-hearth-pi-docker-cli` state.
+1. Run the next FR-0003 frontier in parallel: `T-FR-0003-08` (`hearth --plugin enter`) and `T-FR-0003-11` (per-plugin `plugin` executable).
+2. After `T-FR-0003-08` and `T-FR-0003-11` are VAL-done, identify `T-FR-0003-12` as the capstone smoke/ARM CI ticket.
 3. Update PR #13 or a successor feature PR to `main`, noting that `CURRENT.md` should be removed when merged to `main`.
 
 ## Notes
