@@ -11,6 +11,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import NoReturn, TextIO
 
+from hearth_install.plugin_add import PluginAddError, add_plugin_from_source, format_plugin_list_lines
+from hearth_install.plugin_compose import PluginRegistryError
+from hearth_install.tinder_manifest import TinderManifestError
 from hearth_install.version_manifest import VersionManifestError, VersionManifestV1, read_version_manifest
 
 
@@ -60,7 +63,7 @@ def load_version(resolved: ResolvedInstall) -> VersionManifestV1:
     return read_version_manifest(resolved.version_path)
 
 
-def build_parser() -> argparse.ArgumentParser:
+def build_parser(command_required: bool = True) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="hearth",
         description="Operate a Hearth Docker-profile install.",
@@ -70,7 +73,7 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="PATH",
         help="Install root containing heart/ (or the heart/ directory itself).",
     )
-    subparsers = parser.add_subparsers(dest="command", required=True)
+    subparsers = parser.add_subparsers(dest="command", required=command_required)
 
     subparsers.add_parser("version", help="Print the installed Hearth ref.")
     subparsers.add_parser("doctor", help="Check install files and Docker availability.")
@@ -154,6 +157,109 @@ def cmd_compose(resolved: ResolvedInstall, args: list[str], stderr: TextIO) -> i
     return completed.returncode
 
 
+def split_plugin_argv(argv: list[str]) -> tuple[list[str], list[str]]:
+    """Split argv at ``--plugin`` if present."""
+
+    if "--plugin" not in argv:
+        return argv, []
+    idx = argv.index("--plugin")
+    prefix = argv[:idx]
+    suffix = argv[idx + 1 :]
+    return prefix, suffix
+
+
+def parse_install_only(argv: list[str]) -> str | None:
+    """Parse optional ``--install-root`` prefix for plugin invocation."""
+
+    pre = argparse.ArgumentParser(add_help=False)
+    pre.add_argument("--install-root", dest="install_root", metavar="PATH", default=None)
+    ns, leftover = pre.parse_known_args(argv)
+    if leftover:
+        extra = ", ".join(leftover)
+        raise SystemExit(f"unexpected arguments next to hearth --plugin: {extra}")
+    return ns.install_root
+
+
+def cmd_plugin_list(resolved: ResolvedInstall, stdout: TextIO, stderr: TextIO) -> int:
+    heart = resolved.heart_dir
+    if not heart.is_dir():
+        print(f"hearth plugin list: missing heart directory: {heart}", file=stderr)
+        return 1
+    try:
+        rows = format_plugin_list_lines(heart)
+    except (PluginRegistryError, OSError) as exc:
+        print(f"hearth plugin list: {exc}", file=stderr)
+        return 1
+    print("\n".join(rows), file=stdout)
+    return 0
+
+
+def cmd_plugin_add(
+    resolved: ResolvedInstall,
+    source: str,
+    *,
+    stdout: TextIO,
+    stderr: TextIO,
+    start_if_enabled: bool,
+) -> int:
+    heart = resolved.heart_dir
+    if not heart.is_dir():
+        print(f"hearth --plugin --add: missing heart directory: {heart}", file=stderr)
+        return 1
+    try:
+        add_plugin_from_source(
+            heart=heart,
+            source_spec=source,
+            start_if_enabled=start_if_enabled,
+        )
+    except PluginAddError as exc:
+        print(f"hearth --plugin --add: {exc}", file=stderr)
+        return exc.exit_code
+    except (PluginRegistryError, TinderManifestError) as exc:
+        print(f"hearth --plugin --add: {exc}", file=stderr)
+        return 1
+    print(f"installed plugin into {heart / 'plugins'} from {source!r}", file=stdout)
+    return 0
+
+
+def cmd_plugin_argv(
+    prefix: list[str],
+    suffix: list[str],
+    *,
+    stdout: TextIO,
+    stderr: TextIO,
+) -> int:
+    install_raw = parse_install_only(prefix)
+    if not suffix:
+        print("hearth --plugin requires --add GIT_URL [...] or the list verb.", file=stderr)
+        return 2
+
+    if suffix[0] == "list":
+        if len(suffix) != 1:
+            print("hearth --plugin list: unexpected extra arguments.", file=stderr)
+            return 2
+        resolved = resolve_install(install_raw)
+        return cmd_plugin_list(resolved, stdout, stderr)
+
+    if len(suffix) >= 2 and suffix[0] == "--add":
+        source = suffix[1]
+        if len(suffix) > 2:
+            print("hearth --plugin --add: unexpected extra arguments after source URL.", file=stderr)
+            return 2
+
+        resolved = resolve_install(install_raw)
+        return cmd_plugin_add(
+            resolved,
+            source,
+            stdout=stdout,
+            stderr=stderr,
+            start_if_enabled=True,
+        )
+
+    print("hearth --plugin: expected `list` or `--add GIT_URL_OR_PATH`.", file=stderr)
+    return 2
+
+
 def run(
     argv: list[str] | None = None,
     *,
@@ -161,9 +267,24 @@ def run(
     stderr: TextIO | None = None,
     env: dict[str, str] | None = None,
 ) -> int:
+    argv = argv if argv is not None else sys.argv[1:]
     stdout = stdout if stdout is not None else sys.stdout
     stderr = stderr if stderr is not None else sys.stderr
-    parser = build_parser()
+
+    prefix, plugin_suffix = split_plugin_argv(argv)
+    if plugin_suffix:
+        try:
+            return cmd_plugin_argv(prefix, plugin_suffix, stdout=stdout, stderr=stderr)
+        except SystemExit as exc:
+            raw_code = exc.code
+            if isinstance(raw_code, str):
+                print(raw_code, file=stderr)
+                return 2
+            if raw_code is None:
+                return 0
+            return int(raw_code)
+
+    parser = build_parser(command_required=True)
     ns = parser.parse_args(argv)
     resolved = resolve_install(ns.install_root, env=env)
 
