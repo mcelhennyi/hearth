@@ -69,6 +69,19 @@ services:
       - caddy_data:/data:ro
       - ca_export_data:/srv
 
+  hearth-test:
+    profiles: ["test"]
+    image: python:3.12-slim-bookworm
+    container_name: hearth-pytest
+    working_dir: /work
+    volumes:
+      - ../..:/work:cached
+      - ./hearth-test-entry.sh:/entry.sh:ro
+    environment:
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+    entrypoint: ["/bin/sh", "/entry.sh"]
+    command: ["tests"]
+
 volumes:
   caddy_data:
   caddy_config:

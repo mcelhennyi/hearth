@@ -127,7 +127,7 @@ flowchart TD
 | **`heart/state/`**, generated proxy fragments, registry files | Machine-local config and derived files | `/etc/hearth/` |
 | **`heart/compose/`** | Compose project + generated plugin overrides | *(native units + `/etc/caddy` instead on bare metal)* |
 | **`heart/plugins/<slug>/`** | Plugin source checkouts | `/opt/hearth/apps/<slug>/` (submodule shape) |
-| **`heart/VERSION.json`** | Install manifest (schema + `hearth_ref`, …) — **`T-FR-0003-02`** | *(no single analogue; bare metal uses git checkout under `/opt/hearth`)* |
+| **`heart/VERSION.json`** | Install manifest (schema v1; JSON Schema [`deploy/hearth-install/schemas/version-1.schema.json`](../../deploy/hearth-install/schemas/version-1.schema.json)) — **`T-FR-0003-02`** | *(no single analogue; bare metal uses git checkout under `/opt/hearth`)* |
 | **`heart/state/plugins.yaml`** (or `.json`) | Local plugin registry for Compose generation — **`T-FR-0003-05`** | Split between hub DB + `/etc/hearth` on bare metal; Docker profile stays **file-first** until hub sync exists |
 | **`heart/bin/`** | `hearth` shim on `PATH` (install policy) — **`T-FR-0003-04`** | `/usr/local/bin` or equivalent from **`deploy/install.sh`** |
 
