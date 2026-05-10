@@ -8,6 +8,9 @@ dist/
 build/
 .cache/
 site/
+__pycache__/
+*.py[cod]
+*.egg-info/
 
 # Environment
 .env
