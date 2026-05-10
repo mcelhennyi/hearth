@@ -28,6 +28,7 @@ Deliver a **Docker Compose–first** production install path for Raspberry Pi cl
 | [`tickets.md`](tickets.md) | Canonical **`### T-FR-0003-xx`** sections |
 | [`serial-diary.md`](serial-diary.md) | Serial session log |
 | [`../../../deploy/hearth-install/README.md`](../../../deploy/hearth-install/README.md) | **`heart/`** layout generator, **`VERSION.json`** schema v1, operator templates (**T-FR-0003-02**) |
+| [`../../../deploy/kindling-contract/README.md`](../../../deploy/kindling-contract/README.md) | Hearth-side Kindling plugin template mirror: `plugin` shim + `scripts/install` hook (**T-FR-0003-10**) |
 | [`handoffs/2026-05-09-operator-option-a.md`](handoffs/2026-05-09-operator-option-a.md) | Historical: scheduling-only deferral (option A), superseded for FR-0003 by [`handoffs/2026-05-10-unpark-start-implementation.md`](handoffs/2026-05-10-unpark-start-implementation.md) |
 | [`handoffs/2026-05-10-unpark-start-implementation.md`](handoffs/2026-05-10-unpark-start-implementation.md) | Unpark FR-0003; no FR-0004 split — start implementation now |
 
