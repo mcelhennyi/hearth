@@ -1,5 +1,28 @@
 ---
 
+## 2026-05-10 — T-FR-0003-03 TEST→DEV→VAL (`./install` bootstrap)
+
+**Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-03-install-bootstrap`  
+**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-03-install-bootstrap/`
+
+### TEST
+
+- Added `tests/test_install_bootstrap.py`: `--dry-run` leaves install root untouched; `--skip-compose-up` materializes layout + shim; mocked `docker compose up`; empty plugin registry emits valid `services: {}` for Compose `include`.
+
+### DEV
+
+- Repo-root `./install` thin bash wrapper → `python -m hearth_install.bootstrap`.
+- `hearth_install.bootstrap`: layout (`ensure_heart_layout`), packaged `docker-compose.install.yml` → `heart/compose/docker-compose.yml` (hub-smoke placeholder + `include` of generated plugins), plugin compose generation, `heart/bin/hearth` symlink to repo `bin/hearth`, optional `docker compose up -d`.
+- Docker Engine install is intentionally **not** scripted (host mutation); missing daemon prints Pi-oriented hints + Docker docs link.
+- `plugin_compose._render_compose`: empty enabled plugins → `services: {}` for valid YAML merge.
+
+### VAL
+
+- `./develop test` — PASS (full suite in Compose `hearth-test`).
+- Host-local (documented exception): `docker compose config` against a temp install produced by `--skip-compose-up` — PASS on developer macOS (validates `include` + hub-smoke placeholder).
+
+---
+
 ## 2026-05-10 — T-FR-0003-10 TEST→DEV→VAL (Kindling plugin contract)
 
 **Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-10-kindling-plugin-contract`  

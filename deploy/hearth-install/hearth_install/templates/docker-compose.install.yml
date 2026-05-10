@@ -1,0 +1,11 @@
+# @HRT-OPS-003 MVP placeholder stack for the Docker profile (T-FR-0003-03).
+# Replace hub-smoke with the real hub service when FR-0001 images are available.
+services:
+  hub-smoke:
+    image: alpine:3.19
+    container_name: hearth-hub-smoke
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
+
+include:
+  - path: overrides/generated.plugins.yml

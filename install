@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Thin wrapper: repo-root ./install bootstrap (T-FR-0003-03). Heavy logic is Python.
+set -euo pipefail
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export PYTHONPATH="${REPO_ROOT}/deploy/hearth-install:${REPO_ROOT}/deploy/hearth-cli:${REPO_ROOT}/deploy/kindling-contract${PYTHONPATH:+:${PYTHONPATH}}"
+exec python3 -m hearth_install.bootstrap "$@"
