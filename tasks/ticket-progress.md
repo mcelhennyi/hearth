@@ -35,7 +35,7 @@
 | T-FR-0003-02 | Install layout: `heart/`, VERSION.json, README | done | done | done | `FR-0003`. `deploy/hearth-install/` + `./develop test`; schema `deploy/hearth-install/schemas/version-1.schema.json`. |
 | T-FR-0003-03 | `./install` bootstrap: Docker + layout + first `compose up` | — | — | — | `FR-0003`. Deps: `T-FR-0003-02`, `T-FR-0003-05`. |
 | T-FR-0003-04 | `hearth` CLI core: argparse, paths, doctor, compose passthrough | — | — | — | `FR-0003`. Deps: `T-FR-0003-01`, `T-FR-0003-02`. |
-| T-FR-0003-05 | Plugin registry file + Compose fragment generation | — | — | — | `FR-0003`. Deps: `T-FR-0003-01`, `T-FR-0003-02`. |
+| T-FR-0003-05 | Plugin registry file + Compose fragment generation | done | done | done | `FR-0003`. Generator writes `state/plugins.yaml` and `compose/overrides/generated.plugins.yml`; `./develop test`, `docker compose config`, and two-fake-plugin `compose up` smoke pass. |
 | T-FR-0003-06 | `hearth --update` | — | — | — | `FR-0003`. Deps: `T-FR-0003-04`, `T-FR-0003-05`. |
 | T-FR-0003-07 | `hearth --plugin --add` and `list` | — | — | — | `FR-0003`. Deps: `T-FR-0003-04`, `T-FR-0003-05`. |
 | T-FR-0003-08 | `hearth --plugin enter` | — | — | — | `FR-0003`. Deps: `T-FR-0003-07`. |

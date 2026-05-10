@@ -7,6 +7,7 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+from hearth_install.plugin_compose import write_default_plugin_registry
 from hearth_install.version_manifest import read_version_manifest
 
 _HEART_SUBDIRS = ("compose", "plugins", "state", "var", "bin")
@@ -38,6 +39,7 @@ def ensure_heart_layout(
     heart.mkdir(parents=True, exist_ok=True)
     for name in _HEART_SUBDIRS:
         (heart / name).mkdir(parents=True, exist_ok=True)
+    write_default_plugin_registry(heart)
 
     tpl = _package_templates()
     readme_src = tpl / "README.heart.md"

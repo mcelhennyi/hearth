@@ -1,17 +1,19 @@
-# CURRENT — `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-02-install-layout`
+# CURRENT — `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-05-plugin-registry-compose`
 
-**Ticket:** `T-FR-0003-02` — Install layout: `heart/`, VERSION.json, README  
-**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-02-install-layout/`
+**Ticket:** `T-FR-0003-05` — Plugin registry file + Compose fragment generation  
+**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-05-plugin-registry-compose/`  
+**Phase:** complete
 
-## Delivered
+## Delivered So Far
 
-- **`deploy/hearth-install/`**: `hearth_install` package (`ensure_heart_layout`, `VERSION.json` v1 parser), JSON Schema, templates, module README.
-- **Tests:** `tests/test_heart_install_layout.py` (dirs, manifest parse, idempotence).
-- **`./develop test`**: Compose profile `test` (`hearth-test` service) runs pytest in `python:3.12-slim-bookworm` (pip needs network on first cold run).
-- **Docs:** `docs/design/deployment.md` links schema; feature README artifact index links `deploy/hearth-install/README.md`.
+- Added golden tests for `heart/state/plugins.yaml` to `heart/compose/overrides/generated.plugins.yml`.
+- Implemented a stdlib-only schema-v1 registry reader and Compose override generator in `deploy/hearth-install/`.
+- `ensure_heart_layout()` now creates an idempotent default plugin registry.
+- Containerized tests passed: `./develop test tests/test_plugin_compose_generation.py tests/test_heart_install_layout.py`.
+- Full validation passed: `./develop test`, `docker compose config --quiet`, and a two-fake-plugin `docker compose up -d` smoke.
+- Updated `tasks/ticket-progress.md`, `serial-diary.md`, and `docs/design/tickets-initial.md` for `T-FR-0003-05`.
 
-## Verify
+## Next
 
-```bash
-./develop test
-```
+1. Commit and push this ticket branch.
+2. Open a PR into `feat/FR-0003-hearth-pi-docker-cli`.
