@@ -14,7 +14,7 @@ HEARTH_INSTALL_ROOT=~/hearth-deploy ./install --skip-compose-up
 
 Heavy logic lives in `hearth_install.bootstrap`; the `./install` file is a thin `PYTHONPATH` wrapper. Docker Engine installation is **not** automated (unsafe to mutate the host from this script); missing Docker yields a clear message pointing at [Docker Engine install](https://docs.docker.com/engine/install/) and the Pi `get.docker.com` flow.
 
-The generated **`heart/compose/docker-compose.yml`** is an MVP **hub-smoke** placeholder (`alpine` sleep) plus `include` of plugin overrides until FR-0001 hub images exist.
+The generated **`heart/compose/docker-compose.yml`** is an MVP **hub-smoke** placeholder (`alpine` sleep) plus `include` of plugin overrides until FR-0001 hub images exist. Requires a Compose implementation that supports the top-level **`include`** field (Docker Compose **v2.20+**).
 
 ## Contents
 
