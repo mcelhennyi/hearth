@@ -1,5 +1,30 @@
 ---
 
+## 2026-05-10 — T-FR-0003-05 TEST→DEV→VAL (plugin registry compose)
+
+**Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-05-plugin-registry-compose`  
+**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-05-plugin-registry-compose/`
+
+### TEST
+
+- Added golden-file coverage for **`heart/state/plugins.yaml`** to **`heart/compose/overrides/generated.plugins.yml`**.
+- Covered enabled-only output, image and build-context services, plugin env injection, default registry idempotence, and missing enabled plugin dirs.
+
+### DEV
+
+- Implemented `hearth_install.plugin_compose`: schema-v1 registry reader, validation, default registry writer, and deterministic Compose override rendering.
+- Wired `ensure_heart_layout()` to create **`state/plugins.yaml`** and added `python -m hearth_install --generate-plugin-compose`.
+- Updated install-layout docs/templates to document the registry and generated override.
+
+### VAL
+
+- Containerized tests: `./develop test` — **PASS** (`10 passed`).
+- Compose config check: generated two fake plugin services from a temp **`heart/`** tree and ran `docker compose -f <generated.plugins.yml> config --quiet` — **PASS**.
+- Integration smoke: `docker compose -f <generated.plugins.yml> up -d` with two `busybox:1.36` fake plugin services — **PASS**; both services reached running state and were stopped with `docker compose down`.
+- Host-local exception: the temp fixture generator used host `python3` with `PYTHONPATH=deploy/hearth-install` because the validation target was the generated file consumed by Docker Compose; tests themselves ran inside the repo's Docker Compose `hearth-test` service.
+
+---
+
 ## 2026-05-10 — T-FR-0003-01 TEST→DEV→VAL (deployment Docker-on-Pi)
 
 **Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-01-deployment-docker-pi`  
