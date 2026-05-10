@@ -7,8 +7,9 @@ Append-only. Newest entries at the top.
 ## 2026-05-10 — T-FR-0002-02 Mantle PWA bones complete
 
 - **TEST:** Vitest (`App.test.tsx`, `pwa.test.ts`); Playwright + Lighthouse **11.x** PWA category ≥90 (`e2e/lighthouse-pwa.spec.ts`). Lighthouse 12+ dropped the dedicated PWA category — dependency pinned accordingly until CI moves to successor metrics.
-- **DEV:** `apps/hub/web` Mantle shell; production build → `apps/hub/web/dist/`; Compose mounts `dist` at `/srv` for HTTPS + HTTP-quick Caddy profiles (`deploy/compose/docker-compose.yml`).
+- **DEV:** `apps/hub/web` Mantle shell; production build → `apps/hub/web/dist/`; Compose mounts `dist` at `/srv` for HTTPS + HTTP-quick Caddy profiles (`deploy/compose/docker-compose.yml`). Vite-PWA uses `injectManifest` so the committed `src/sw.ts` is the generated `/sw.js`.
 - **VAL (server-first):** Build hub web, `./develop up -d`, trust local CA on desktop client, open `https://hearth.home.arpa/` — manifest loads, SW registers, shell matches mobile bottom tabs vs desktop top bar in responsive preview. Pi/Mac mini LAN proof follows `HOWTO-complete-FR-0002.md` when hardware run is staffed.
+- **Host-local exception:** No Node Docker/Compose wrapper exists yet for `apps/hub/web`; `npm test`, `npm run lint`, `npm run build`, and `npm run test:e2e` were run host-local. Playwright Chromium was installed into a worktree-local cache for the Lighthouse gate. `./develop up-quick -d` served the built bundle via Caddy after Docker socket access was granted for validation.
 
 ## 2026-04-30 — Server-first VAL; iPhone deferred
 

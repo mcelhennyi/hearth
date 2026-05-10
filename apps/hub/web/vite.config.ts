@@ -14,6 +14,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
+      strategies: 'injectManifest',
       includeAssets: ['logo.svg', 'icons/*.png'],
       srcDir: 'src',
       filename: 'sw.ts',
@@ -33,7 +34,7 @@ export default defineConfig({
           { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
         ],
       },
-      workbox: {
+      injectManifest: {
         globPatterns: ['**/*.{js,css,html,svg,png,webp,ico}'],
       },
       devOptions: {
