@@ -45,10 +45,15 @@ Use with **`docs/ai-context.md`**. This file mirrors Cursor-facing rules for Cla
 - **Spoken “identify (FR)”** = registry + intake; **`/identify-frontier`** = parallel **tickets** only **after** canonical **`### T-FR-NNNN-xx`** sections exist.
 - **Registry races:** push **`REGISTRY.md`** + minimal stub to **`main` immediately** after allocating **`FR-NNNN`** (**`docs/ai-context.md` §2b**).
 
-## Hearth CLI parity (operator surface)
+## Hearth CLI parity (production operator surface)
 
-- **`hearth`** / per-plugin **`plugin`** are the default **SSH-first** control plane for Docker-based production installs (**`FR-0003`**).
-- When adding **operator-facing** platform behavior, ship matching CLI (or file an explicit parity **follow-up ticket** on the active **`FR-NNNN`**) — mirrors **`.cursor/rules/stack-conventions.mdc` → Hearth CLI parity**.
+Mirrors **`.cursor/rules/stack-conventions.mdc` → Hearth CLI parity** (same intent; keep both in sync per **`.cursor/rules/cursor-claude-doc-sync.mdc`**).
+
+- **Scope:** The **`hearth`** admin CLI and per-plugin **`plugin`** CLI (see **`FR-0003`**, design contract: [Docker profile (Pi)](../../docs/design/deployment.md#docker-profile-pi) in **`docs/design/deployment.md`**) are the **default operator control plane** for Compose-based installs on Pi-class hosts.
+- **Rule:** When you add or change an **operator-facing** platform capability (stack lifecycle, plugin lifecycle, backup/restore, TLS/CA export, updates, diagnostics), you **must** either:
+  - expose it through **`hearth`** / **`plugin`** in the same change series, **or**
+  - add an explicit **follow-up ticket** on the active **`FR-NNNN`** (or a new **`FR-NNNN`**) titled so `identify-frontier` can schedule CLI parity, and note the gap in the feature diary.
+- **UI follow-up:** Web admin surfaces should wrap the same contracts later; do not treat “UI-only” as done for operations that operators must perform over SSH.
 
 ## Native plugin ideas
 

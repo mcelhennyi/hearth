@@ -8,6 +8,10 @@
 
 **Schedule:** Feature integration branch is open; create ticket worktrees under **`.worktrees/FR-0003-hearth-pi-docker-cli/`** per `docs/ai-context.md`. Begin with **[T-FR-0003-01](tickets.md#t-fr-0003-01--design-contract-amend-deployment-for-docker-on-pi)** or run **`/identify-frontier`** after **`T-FR-0003-02`** VAL to batch the wide parallel front.
 
+## Process rule (Hearth CLI parity)
+
+New **operator-facing** platform behavior for this line of work should ship through **`hearth`** and per-plugin **`plugin`** on the Compose / Pi path (see [Docker profile (Pi)](../../../docs/design/deployment.md#docker-profile-pi) in [`docs/design/deployment.md`](../../../docs/design/deployment.md)), or land with an explicit **follow-up ticket** titled for **`identify-frontier`** plus a diary note — same wording as **`.cursor/rules/stack-conventions.mdc`** and **`.claude/rules/development-standards.md`**. Admin web UI may wrap the same contracts later; it does not replace the SSH-first operator surface.
+
 ## One-screen summary
 
 Deliver a **Docker Compose–first** production install path for Raspberry Pi class hosts: a repo-root **`./install`** bootstrap (system prep including Docker Engine where needed, layout under **`<install-dir>/heart`**, first boot via Compose), a user-facing **`hearth`** command (update, plugin add/list/enter, stack status/logs/start/stop, doctor, compose passthrough), and a per-plugin **`plugin`** executable under **`<install-dir>/heart/plugins/<slug>/plugin`** with lifecycle and admin passthrough — aligned with Kindling’s **`install`** hook for plugins.
