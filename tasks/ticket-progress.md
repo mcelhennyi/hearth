@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | **`/identify-frontier 0003` after wave 5 integration:** **`T-FR-0003-08`** and **`T-FR-0003-11`** are dependency-eligible from **`feat/FR-0003-hearth-pi-docker-cli`**. FR-0002 **`T-FR-0002-01`** VAL and **`T-FR-0002-02`** remain eligible in parallel. |
-| **Active phase** | `handoff` — wave 5 ticket branches merged into the FR-0003 feature branch; integrated Compose test suite passed (`49 passed`). |
+| **Active ticket** | **`/develop-frontier 0003` (wave 6):** **`T-FR-0003-08`** (`hearth --plugin enter`) and **`T-FR-0003-11`** (per-plugin `plugin` executable) in parallel from **`feat/FR-0003-hearth-pi-docker-cli`**. |
+| **Active phase** | **TEST→DEV→VAL** for **-08** and **-11** in separate ticket worktrees. |
 | **Branch / worktree** | Feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → `feat/FR-0003-hearth-pi-docker-cli`. Ticket branches use **hyphenated** suffixes because Git cannot nest `feat/.../T-...`. |
-| **Session status** | `handoff` |
-| **Next agent should** | Start one stream each for **`T-FR-0003-08`** (`hearth --plugin enter`) and **`T-FR-0003-11`** (per-plugin `plugin` executable) from the FR-0003 feature branch, or continue FR-0002 **`T-FR-0002-01`** VAL / **`T-FR-0002-02`** integration if that feature is the priority. |
+| **Session status** | `developing` |
+| **Next agent should** | One stream each for **`T-FR-0003-08`** at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-08-plugin-enter/` and **`T-FR-0003-11`** at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-11-plugin-executable/`. PR base **`feat/FR-0003-hearth-pi-docker-cli`**; touch **only** that ticket's Progress row. |
 
 ### Parallel streams
 
@@ -18,8 +18,8 @@
 |----------------|------------|-----------|-------------------|--------------|
 | caddy-tls | `T-FR-0002-01` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/` | unassigned |
 | mantle-bones | `T-FR-0002-02` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` | unassigned |
-| plugin-enter | `T-FR-0003-08` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-08-plugin-enter` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-08-plugin-enter/` | eligible after `T-FR-0003-07` VAL |
-| plugin-executable | `T-FR-0003-11` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-11-plugin-executable` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-11-plugin-executable/` | eligible after `T-FR-0003-07` + `T-FR-0003-10` VAL |
+| plugin-enter | `T-FR-0003-08` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-08-plugin-enter` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-08-plugin-enter/` | develop-frontier wave 6 |
+| plugin-executable | `T-FR-0003-11` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-11-plugin-executable` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-11-plugin-executable/` | develop-frontier wave 6 |
 
 ---
 

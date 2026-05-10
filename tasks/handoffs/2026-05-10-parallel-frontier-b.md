@@ -18,7 +18,7 @@
 
 **Triad-complete (summary):** `T-FR-0000-01`; FR-0003 `T-FR-0003-01`, `-02`, `-03`, `-04`, `-05`, `-06`, `-07`, `-09`, `-10`, `-13`.
 
-**Still incomplete (summary):** FR-0003 `T-FR-0003-08`, `-11`, `-12`; FR-0002 `T-FR-0002-01` VAL, `T-FR-0002-02`, `-03`, `-04`; FR-0001 remains parked.
+**Still incomplete (summary):** FR-0003 `T-FR-0003-08`, `-11`, `-12`; FR-0002 `T-FR-0002-01` VAL, `T-FR-0002-02`, `-03`, `-04`; FR-0001 remains parked by policy.
 
 ---
 
@@ -26,14 +26,23 @@
 
 **Eligibility rule:** Every ticket in `Deps:` has `VAL` = `done` in `tasks/ticket-progress.md`.
 
-With FR-0003 `T-FR-0003-07` and `T-FR-0003-10` VAL-done, these tickets are eligible and mutually non-blocking:
+With FR-0003 `T-FR-0003-07` and `T-FR-0003-10` VAL-done, and with FR-0002 `T-FR-0002-01` / `T-FR-0002-02` both having `Deps: none`, these tickets are eligible and mutually non-blocking:
 
-| Ticket | Title | Deps |
-|--------|-------|------|
-| `T-FR-0003-08` | `hearth --plugin enter` | `T-FR-0003-07` |
-| `T-FR-0003-11` | Per-plugin `plugin` executable: lifecycle + passthrough | `T-FR-0003-07`, `T-FR-0003-10` |
+| Ticket | FR | Title | Deps |
+|--------|----|-------|------|
+| `T-FR-0002-01` | FR-0002 | Caddy + `tls internal` + static placeholder | `none` |
+| `T-FR-0002-02` | FR-0002 | Mantle PWA bones | `none` |
+| `T-FR-0003-08` | FR-0003 | `hearth --plugin enter` | `T-FR-0003-07` |
+| `T-FR-0003-11` | FR-0003 | Per-plugin `plugin` executable: lifecycle + passthrough | `T-FR-0003-07`, `T-FR-0003-10` |
 
-So **two FR-0003 streams** are dependency-valid now: `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-08-plugin-enter` and `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-11-plugin-executable`, each under `.worktrees/FR-0003-hearth-pi-docker-cli/`.
+So **four implementation streams** are dependency-valid now across the global graph:
+
+- `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` under `.worktrees/FR-0002-iphone-pwa-prototype/`
+- `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` under `.worktrees/FR-0002-iphone-pwa-prototype/`
+- `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-08-plugin-enter` under `.worktrees/FR-0003-hearth-pi-docker-cli/`
+- `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-11-plugin-executable` under `.worktrees/FR-0003-hearth-pi-docker-cli/`
+
+**Policy-excluded despite graph eligibility:** `T-FR-0001-01` has `Deps: none`, but FR-0001 is parked until FR-0002 closes or the registry policy changes.
 
 **Examples of what stays blocked until more VAL-done rows exist:**
 
@@ -49,7 +58,7 @@ Full `Deps:` edges: scan all `tasks/feature-history/**/tickets.md`; global merma
 
 This handoff is based on the FR-0003 feature branch, not `main`. `main` may still lag until the feature PR is refreshed and reviewed. For FR-0003 ticket streams, branch from `feat/FR-0003-hearth-pi-docker-cli` and merge ticket PRs back into that feature branch first.
 
-The global graph also permits FR-0002 work in parallel: `T-FR-0002-01` remains incomplete because server-first VAL is still open, and `T-FR-0002-02` is eligible with no deps. Keep those streams under the FR-0002 feature worktree.
+The global graph mixes FR-0002 and FR-0003 in this frontier, which is expected under `docs/ai-context.md` §2c. Keep FR-0002 streams under the FR-0002 feature worktree and FR-0003 streams under the FR-0003 feature worktree.
 
 ---
 
@@ -63,10 +72,11 @@ The global graph also permits FR-0002 work in parallel: `T-FR-0002-01` remains i
 
 ## First concrete steps
 
-1. Create child worktrees from `feat/FR-0003-hearth-pi-docker-cli` for `T-FR-0003-08` and `T-FR-0003-11`.
-2. Run TEST → DEV → VAL per each ticket in `tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md`.
-3. Validate in Docker with `docker compose -f deploy/compose/docker-compose.yml --profile test run --rm hearth-test`.
-4. Merge both ticket PRs into the FR-0003 feature branch, then identify `T-FR-0003-12` as the final FR-0003 capstone ticket.
+1. For FR-0003, create child worktrees from `feat/FR-0003-hearth-pi-docker-cli` for `T-FR-0003-08` and `T-FR-0003-11`.
+2. For FR-0002, either finish `T-FR-0002-01` server-first VAL or merge/validate `T-FR-0002-02` from its feature branch, depending on operator priority.
+3. Run TEST → DEV → VAL per each ticket's owning `tickets.md`.
+4. Validate FR-0003 in Docker with `docker compose -f deploy/compose/docker-compose.yml --profile test run --rm hearth-test`; use the FR-0002 feature's documented stack validation for FR-0002 streams.
+5. After FR-0003 `T-FR-0003-08` and `T-FR-0003-11` are VAL-done, identify `T-FR-0003-12` as the final FR-0003 capstone ticket.
 
 ---
 

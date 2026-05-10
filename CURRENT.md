@@ -30,7 +30,7 @@
 
 ## Next
 
-1. Run the next FR-0003 frontier in parallel: `T-FR-0003-08` (`hearth --plugin enter`) and `T-FR-0003-11` (per-plugin `plugin` executable).
+1. `/develop-frontier 0003` wave 6 is active for `T-FR-0003-08` (`hearth --plugin enter`) and `T-FR-0003-11` (per-plugin `plugin` executable).
 2. After `T-FR-0003-08` and `T-FR-0003-11` are VAL-done, identify `T-FR-0003-12` as the capstone smoke/ARM CI ticket.
 3. Update PR #13 or a successor feature PR to `main`, noting that `CURRENT.md` should be removed when merged to `main`.
 
