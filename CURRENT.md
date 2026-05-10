@@ -1,17 +1,24 @@
-# CURRENT — `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-02-install-layout`
+# CURRENT — `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-13-cli-parity`
 
-**Ticket:** `T-FR-0003-02` — Install layout: `heart/`, VERSION.json, README  
-**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-02-install-layout/`
+| Field | Value |
+|------|--------|
+| **FR** | FR-0003 |
+| **Feature folder** | `tasks/feature-history/FR-0003-hearth-pi-docker-cli/` |
+| **This branch** | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-13-cli-parity` (ticket) |
+| **Parent branch** | `feat/FR-0003-hearth-pi-docker-cli` |
+| **Last meaningful update** | 2026-05-10 |
 
 ## Delivered
 
-- **`deploy/hearth-install/`**: `hearth_install` package (`ensure_heart_layout`, `VERSION.json` v1 parser), JSON Schema, templates, module README.
-- **Tests:** `tests/test_heart_install_layout.py` (dirs, manifest parse, idempotence).
-- **`./develop test`**: Compose profile `test` (`hearth-test` service) runs pytest in `python:3.12-slim-bookworm` (pip needs network on first cold run).
-- **Docs:** `docs/design/deployment.md` links schema; feature README artifact index links `deploy/hearth-install/README.md`.
+- **T-FR-0003-13:** Hearth CLI parity discipline mirrored in **`.cursor/rules/stack-conventions.mdc`** and **`.claude/rules/development-standards.md`**, with cross-links to **`docs/design/deployment.md`** Docker profile (Pi).
+- **FR-0003 README:** “Process rule (Hearth CLI parity)” matches those rules.
+- **Tracker:** **`tasks/ticket-progress.md`** row for **-13** complete; **`docs/design/tickets-initial.md`** **`triadDone`** for **TFR0003_13_***.
 
 ## Verify
 
-```bash
-./develop test
-```
+- None; open **PR → `feat/FR-0003-hearth-pi-docker-cli`** for merge.
+
+## Next
+
+1. Human review and merge PR into feature branch.
+2. Continue FR-0003 implementation tickets per **`tasks/ticket-progress.md`** / **`handoffs/`**.

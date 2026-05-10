@@ -43,7 +43,7 @@
 | T-FR-0003-10 | Kindling contract: `scripts/install` + `plugin` template | — | — | — | `FR-0003`. Deps: `T-FR-0003-01`, `T-FR-0003-02`. |
 | T-FR-0003-11 | Per-plugin `plugin` executable: lifecycle + passthrough | — | — | — | `FR-0003`. Deps: `T-FR-0003-07`, `T-FR-0003-10`. |
 | T-FR-0003-12 | Smoke tests + ARM CI for install path | — | — | — | `FR-0003`. Deps: `T-FR-0003-03`, `T-FR-0003-06`, `T-FR-0003-08`, `T-FR-0003-09`, `T-FR-0003-11`. |
-| T-FR-0003-13 | Project rules: Hearth CLI parity (Cursor + Claude) | — | — | — | `FR-0003`. Deps: `T-FR-0003-01`. |
+| T-FR-0003-13 | Project rules: Hearth CLI parity (Cursor + Claude) | done | done | done | `FR-0003`. Deps: `T-FR-0003-01`. Rules + FR-0003 README process rule; PR into `feat/FR-0003-hearth-pi-docker-cli`. |
 | T-FR-0001-01 | Repo scaffold and Compose dev loop | — | — | — | `FR-0001` parked — eligible after FR-0002 closes. |
 | T-FR-0001-02 | Hub API skeleton and SQLite registry | — | — | — | `FR-0001` parked. |
 | T-FR-0001-03 | Tinder loader and manifest schema | — | — | — | `FR-0001` parked. |
