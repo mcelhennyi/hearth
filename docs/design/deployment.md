@@ -127,6 +127,9 @@ flowchart TD
 | **`heart/state/`**, generated proxy fragments, registry files | Machine-local config and derived files | `/etc/hearth/` |
 | **`heart/compose/`** | Compose project + generated plugin overrides | *(native units + `/etc/caddy` instead on bare metal)* |
 | **`heart/plugins/<slug>/`** | Plugin source checkouts | `/opt/hearth/apps/<slug>/` (submodule shape) |
+| **`heart/VERSION.json`** | Install manifest (schema + `hearth_ref`, …) — **`T-FR-0003-02`** | *(no single analogue; bare metal uses git checkout under `/opt/hearth`)* |
+| **`heart/state/plugins.yaml`** (or `.json`) | Local plugin registry for Compose generation — **`T-FR-0003-05`** | Split between hub DB + `/etc/hearth` on bare metal; Docker profile stays **file-first** until hub sync exists |
+| **`heart/bin/`** | `hearth` shim on `PATH` (install policy) — **`T-FR-0003-04`** | `/usr/local/bin` or equivalent from **`deploy/install.sh`** |
 
 **Updates (intent):** **`hearth --update`** pulls the deploy ref, refreshes images/builds, runs **`docker compose up -d`**, and applies migration hooks when present — details track **`T-FR-0003-06`**. Until implementation lands, treat command names as **contracts**, not promises.
 
@@ -135,6 +138,8 @@ flowchart TD
 - **Published ARM images** — Release hub/plugin images for Pi may need a registry and CI publishing pipeline; **local image build** remains valid until that exists.
 - **Rootless Docker** — Install docs assume a working Docker socket for the operator account; rootless Docker specifics are **unspecified**.
 - **Plugin add by friendly name** — MVP remains **git URL** (and optional local path); central registry / relay naming is **out of scope** until the relay exists (`tasks/feature-history/FR-0003-hearth-pi-docker-cli/10-design-00-skeleton.md`).
+
+**MVP policy (not a gap):** Plugin add and registry edits stay **file-first** on this profile until an explicit hub sync story exists (skeleton “Hub API duplication” — convergence with **`T-FR-0001-02`** is deferred).
 
 ## systemd units (prod, bare-metal alternative)
 
