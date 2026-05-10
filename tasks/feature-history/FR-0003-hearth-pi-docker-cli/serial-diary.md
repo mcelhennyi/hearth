@@ -1,5 +1,30 @@
 ---
 
+## 2026-05-10 — T-FR-0003-10 TEST→DEV→VAL (Kindling plugin contract)
+
+**Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-10-kindling-plugin-contract`  
+**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-10-kindling-plugin-contract/`
+
+### TEST
+
+- Confirmed there is no `vendor/kindling/` checkout or public Kindling submodule in this repo state, so the ticket is implemented as a Hearth-side mirror per the ticket instruction.
+- Added `tests/test_kindling_plugin_contract.py` to assert a rendered plugin root contains executable `plugin`, executable `scripts/install`, `tinder.toml`, and a Python admin passthrough target.
+- Initial focused test failed as expected with `ModuleNotFoundError: No module named 'hearth_kindling_contract'`.
+
+### DEV
+
+- Added `deploy/kindling-contract/` with `hearth_kindling_contract.render_plugin_template(...)` and the mirrored `templates/plugin-python/` contract.
+- Documented the mirror in `deploy/kindling-contract/README.md`, linked it from the FR-0003 artifact index, and amended the Kindling satellite design to state the temporary mirror and replacement rule once upstream Kindling exists.
+- Upstream/submodule PR note: not applicable yet because Kindling is design-only; this ticket's PR into `feat/FR-0003-hearth-pi-docker-cli` is the implementation link.
+
+### VAL
+
+- `./develop test tests/test_kindling_plugin_contract.py` — PASS (4 tests, Docker Compose `hearth-test` service).
+- `./develop test` — PASS (11 tests, Docker Compose `hearth-test` service).
+- No host-local validation exception; tests ran through `./develop`.
+
+---
+
 ## 2026-05-10 — T-FR-0003-01 TEST→DEV→VAL (deployment Docker-on-Pi)
 
 **Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-01-deployment-docker-pi`  

@@ -1,17 +1,27 @@
-# CURRENT — `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-02-install-layout`
+# CURRENT — `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-10-kindling-plugin-contract`
 
-**Ticket:** `T-FR-0003-02` — Install layout: `heart/`, VERSION.json, README  
-**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-02-install-layout/`
+**Ticket:** `T-FR-0003-10` — Kindling contract: `scripts/install` + `plugin` template  
+**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-10-kindling-plugin-contract/`
+**Branch role:** Ticket branch targeting `feat/FR-0003-hearth-pi-docker-cli`
+**Last meaningful update:** 2026-05-10
+
+## Phase
+
+- **VAL done:** Hearth-side Kindling mirror implemented and validated through Docker Compose.
 
 ## Delivered
 
-- **`deploy/hearth-install/`**: `hearth_install` package (`ensure_heart_layout`, `VERSION.json` v1 parser), JSON Schema, templates, module README.
-- **Tests:** `tests/test_heart_install_layout.py` (dirs, manifest parse, idempotence).
-- **`./develop test`**: Compose profile `test` (`hearth-test` service) runs pytest in `python:3.12-slim-bookworm` (pip needs network on first cold run).
-- **Docs:** `docs/design/deployment.md` links schema; feature README artifact index links `deploy/hearth-install/README.md`.
+- `deploy/kindling-contract/`: `hearth_kindling_contract` renderer plus mirrored `templates/plugin-python/` containing executable `plugin`, executable `scripts/install`, Tinder metadata, and Python admin passthrough.
+- `tests/test_kindling_plugin_contract.py`: contract coverage for template rendering, lifecycle flag handling, install hook delegation, passthrough, and slug validation.
+- Docs/tracking: Kindling satellite contract mirror note, FR-0003 artifact index, serial diary, ticket progress row, and global DAG `triadDone`.
 
 ## Verify
 
 ```bash
+./develop test tests/test_kindling_plugin_contract.py
 ./develop test
 ```
+
+## Next
+
+- Commit, push, and open PR to `feat/FR-0003-hearth-pi-docker-cli`.

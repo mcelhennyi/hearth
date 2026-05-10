@@ -14,18 +14,19 @@ dependencies = []
 test = ["pytest>=8"]
 
 [tool.setuptools.packages.find]
-where = ["deploy/hearth-install"]
+where = ["deploy/hearth-install", "deploy/kindling-contract"]
 
 [tool.setuptools.package-data]
 hearth_install = ["templates/*"]
+hearth_kindling_contract = ["templates/plugin-python/*", "templates/plugin-python/scripts/*", "templates/plugin-python/package/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["deploy/hearth-install"]
+pythonpath = ["deploy/hearth-install", "deploy/kindling-contract"]
 
 [tool.ruff]
 line-length = 100
-src = ["deploy/hearth-install/hearth_install", "tests"]
+src = ["deploy/hearth-install/hearth_install", "deploy/kindling-contract/hearth_kindling_contract", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
