@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | **`/develop-frontier 0003` (wave 2):** **`T-FR-0003-01`** merged (**PR #6**). Next parallel FR-0003 tickets: **`T-FR-0003-02`**, **`T-FR-0003-13`**. **FR-0002:** unchanged. |
-| **Active phase** | **TEST→DEV→VAL** for **-02** and **-13** in separate ticket worktrees. |
-| **Branch / worktree** | Feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → `feat/FR-0003-hearth-pi-docker-cli`. Ticket **-01:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-01-deployment-docker-pi` → `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/`. |
+| **Active ticket** | **`/develop-frontier 0003` (wave 5):** **`T-FR-0003-03`**, **`T-FR-0003-06`**, **`T-FR-0003-07`**, and **`T-FR-0003-09`** in parallel from **`feat/FR-0003-hearth-pi-docker-cli`**. |
+| **Active phase** | **TEST→DEV→VAL** for **-03**, **-06**, **-07**, and **-09** in separate ticket worktrees. |
+| **Branch / worktree** | Feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → `feat/FR-0003-hearth-pi-docker-cli`. Ticket branches use **hyphenated** suffixes because Git cannot nest `feat/.../T-...`. |
 | **Session status** | `developing` |
-| **Next agent should** | Run **`/develop-frontier 0003`** for **`T-FR-0003-02`** + **`T-FR-0003-13`** in parallel (separate ticket worktrees). |
+| **Next agent should** | One stream each for **`T-FR-0003-03`** (`./install` bootstrap), **`T-FR-0003-06`** (`hearth --update`), **`T-FR-0003-07`** (`hearth --plugin --add` / `list`), and **`T-FR-0003-09`** (stack control). PR base **`feat/FR-0003-hearth-pi-docker-cli`**; touch **only** that ticket's Progress row. |
 
 ### Parallel streams
 
@@ -18,7 +18,10 @@
 |----------------|------------|-----------|-------------------|--------------|
 | caddy-tls | `T-FR-0002-01` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/` | unassigned |
 | mantle-bones | `T-FR-0002-02` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` | unassigned |
-| deployment-docker-pi | `T-FR-0003-01` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-01-deployment-docker-pi` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/` | **PR #6** merged into **`feat/FR-0003-hearth-pi-docker-cli`**; **-02** / **-13** unblocked |
+| install-bootstrap | `T-FR-0003-03` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-03-install-bootstrap` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-03-install-bootstrap/` | develop-frontier wave 5 |
+| hearth-update | `T-FR-0003-06` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-06-update` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-06-update/` | develop-frontier wave 5 |
+| plugin-add-list | `T-FR-0003-07` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-07-plugin-add-list` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-07-plugin-add-list/` | develop-frontier wave 5 |
+| stack-control | `T-FR-0003-09` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-09-stack-control` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-09-stack-control/` | develop-frontier wave 5 |
 
 ---
 

@@ -17,10 +17,10 @@
 ## Validation
 
 - Ticket branches individually passed their scoped Docker/Compose validation before merge.
-- Run feature-branch validation with `./develop test` before pushing this branch.
+- Feature-branch validation passed before PR #13: `./develop test` (19 tests).
 
 ## Next
 
-1. Run `./develop test` on this feature branch.
-2. Push `feat/FR-0003-hearth-pi-docker-cli`.
-3. Open or update the PR to `main`, noting that `CURRENT.md` should be removed when merged to `main`.
+1. Run `/develop-frontier` wave 5 for `T-FR-0003-03`, `T-FR-0003-06`, `T-FR-0003-07`, and `T-FR-0003-09`.
+2. Merge completed ticket branches back into this feature branch and rerun `./develop test`.
+3. Update PR #13 or a successor feature PR to `main`, noting that `CURRENT.md` should be removed when merged to `main`.
