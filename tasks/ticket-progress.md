@@ -4,21 +4,21 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | **Develop-frontier batch (2026-05-10):** `T-FR-0002-01` (VAL), `T-FR-0002-02` (TEST→VAL), `T-FR-0003-01` (TEST→VAL) — one child worktree each; see **Parallel streams** |
-| **Active phase** | Per ticket: run **TEST → DEV → VAL** in that ticket’s worktree only; update **only** that ticket’s row in this file |
-| **Branch / worktree** | **FR-0002** feature: `.worktrees/FR-0002-iphone-pwa-prototype/feature/` → `feat/FR-0002-iphone-pwa-prototype`. Tickets: `…/T-FR-0002-01-caddy-tls/`, `…/T-FR-0002-02-mantle-bones/`. **FR-0003** feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → `feat/FR-0003-hearth-pi-docker-cli` (create if missing). Ticket **T-FR-0003-01:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/`. Global handoff: [`tasks/handoffs/2026-05-10-parallel-frontier.md`](handoffs/2026-05-10-parallel-frontier.md). |
+| **Active ticket** | **`/develop-frontier 0003` (wave 2):** **`T-FR-0003-01`** merged (**PR #6**). Next parallel FR-0003 tickets: **`T-FR-0003-02`**, **`T-FR-0003-13`**. **FR-0002:** unchanged. |
+| **Active phase** | **TEST→DEV→VAL** for **-02** and **-13** in separate ticket worktrees. |
+| **Branch / worktree** | Feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → `feat/FR-0003-hearth-pi-docker-cli`. Ticket **-01:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-01-deployment-docker-pi` → `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/`. |
 | **Session status** | `developing` |
-| **Next agent should** | **`/develop-frontier` (2026-05-10):** finish assigned **`T-FR-NNNN-xx`** through VAL in **your** worktree; push ticket branch; open PR **into** the owning **`feat/FR-NNNN-<slug>`**; refresh **`CURRENT.md`** on ticket + feature branches. **Parked:** **`T-FR-0001-xx`**. **FR-0002 VAL** remains server-first per [`tickets.md`](feature-history/FR-0002-iphone-pwa-prototype/tickets.md). |
+| **Next agent should** | Run **`/develop-frontier 0003`** for **`T-FR-0003-02`** + **`T-FR-0003-13`** in parallel (separate ticket worktrees). |
 
 ### Parallel streams
 
-`T-FR-0002-01` and `T-FR-0002-02` are independent and can run in parallel — one builds the proxy + TLS, the other builds the static Mantle shell. **`T-FR-0003-01`** (deployment doc) has no dependency on FR-0002 and may run in the same batch. **`T-FR-0002-01`** and **`T-FR-0002-02`** must land before `T-FR-0002-03` (Web Push needs the SW reachable over `https://`).
+`T-FR-0002-01` and `T-FR-0002-02` are independent. **`T-FR-0003-01`** has no FR-0002 **Deps** and may run in parallel. **`T-FR-0002-01`** and **`T-FR-0002-02`** must land before `T-FR-0002-03`.
 
 | Stream label | Ticket(s) | `FR-NNNN` | Branch / worktree | Owner / note |
 |----------------|------------|-----------|-------------------|--------------|
-| caddy-tls | `T-FR-0002-01` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/` | develop-frontier |
-| mantle-bones | `T-FR-0002-02` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` | develop-frontier |
-| deployment-docker-pi | `T-FR-0003-01` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/` | create worktree if absent |
+| caddy-tls | `T-FR-0002-01` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/` | unassigned |
+| mantle-bones | `T-FR-0002-02` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` | unassigned |
+| deployment-docker-pi | `T-FR-0003-01` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-01-deployment-docker-pi` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/` | **PR #6** merged into **`feat/FR-0003-hearth-pi-docker-cli`**; **-02** / **-13** unblocked |
 
 ---
 
@@ -31,7 +31,7 @@
 | T-FR-0002-02 | Mantle PWA bones (manifest + SW + nav) | — | — | — | `FR-0002`. Reuses into `T-FR-0001-04`. |
 | T-FR-0002-03 | Web Push round-trip (VAPID + subscribe + send) | — | — | — | `FR-0002`. Reuses into `T-FR-0001-09`. Deps: `T-FR-0002-01`, `T-FR-0002-02`. |
 | T-FR-0002-04 | Real-iPhone walkthrough + closeout report | — | — | — | `FR-0002`. No FR-0001 reuse target. Deps: `T-FR-0002-01..03`. |
-| T-FR-0003-01 | Design contract: amend deployment for Docker-on-Pi | done | done | done | `FR-0003` design. `deployment.md`: Docker (Pi) profile + gaps; systemd install.sh path explicit alternative. |
+| T-FR-0003-01 | Design contract: amend deployment for Docker-on-Pi | done | done | done | `FR-0003` design. `deployment.md`: Docker (Pi) profile + gaps; systemd install.sh path explicit alternative. Merged via **PR #6** into **`feat/FR-0003-hearth-pi-docker-cli`**. |
 | T-FR-0003-02 | Install layout: `heart/`, VERSION.json, README | — | — | — | `FR-0003`. Deps: `T-FR-0003-01`. |
 | T-FR-0003-03 | `./install` bootstrap: Docker + layout + first `compose up` | — | — | — | `FR-0003`. Deps: `T-FR-0003-02`, `T-FR-0003-05`. |
 | T-FR-0003-04 | `hearth` CLI core: argparse, paths, doctor, compose passthrough | — | — | — | `FR-0003`. Deps: `T-FR-0003-01`, `T-FR-0003-02`. |
