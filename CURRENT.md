@@ -13,17 +13,18 @@
 - **`T-FR-0003-04` done:** `bin/hearth` and `deploy/hearth-cli/` provide install-root resolution, `version`, `doctor`, and `compose --` passthrough with tests.
 - **`T-FR-0003-05` done:** `deploy/hearth-install/` now manages `heart/state/plugins.yaml` and generates Compose plugin overrides.
 - **`T-FR-0003-10` done:** `deploy/kindling-contract/` mirrors the plugin `scripts/install` + `plugin` template contract until Kindling exists upstream.
-- Repo-root `./install` wrapper + `hearth_install.bootstrap` (dry-run, layout, shim, compose template, plugin overrides, `docker compose up -d`).
 - **`T-FR-0003-03` done:** `./install` bootstraps Docker layout, shim, compose template, plugin overrides, and initial `docker compose up -d`.
+- **`T-FR-0003-06` done:** `hearth --update` supports dry-run, deploy git pull, plugin refresh, compose regeneration, optional migration hook, and compose restart.
 
 ## Validation
 
 - Ticket branches individually passed their scoped Docker/Compose validation before merge.
 - Feature-branch validation passed before PR #13: `./develop test` (19 tests).
 - `T-FR-0003-03`: `./develop test` full suite PASS; host-local generated `docker compose config` PASS.
+- `T-FR-0003-06`: `./develop test` PASS (26 tests); host-local `hearth --update --dry-run` no-op idempotence PASS.
 
 ## Next
 
-1. Merge remaining wave 5 ticket branches: `T-FR-0003-06`, `T-FR-0003-07`, and `T-FR-0003-09`.
+1. Merge remaining wave 5 ticket branches: `T-FR-0003-07` and `T-FR-0003-09`.
 2. Rerun `./develop test`.
 3. Update PR #13 or a successor feature PR to `main`, noting that `CURRENT.md` should be removed when merged to `main`.
