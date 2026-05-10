@@ -4,20 +4,21 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0002-02` (primary); `T-FR-0002-01` — merge `feat/FR-0002-iphone-pwa-prototype-T-FR-0002-01-caddy-tls` into feature branch when ready |
-| **Active phase** | `T-FR-0002-02` TEST → DEV → VAL; confirm `T-FR-0002-01` server-first VAL in `serial-diary.md` per HOWTO |
-| **Branch / worktree** | Feature: `.worktrees/FR-0002-iphone-pwa-prototype/feature/` → `feat/FR-0002-iphone-pwa-prototype`. Frontier ticket checkouts: `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/`, `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` (re-linked 2026-05-09 after `git worktree prune`). See [`tasks/handoffs/2026-05-09-parallel-frontier.md`](handoffs/2026-05-09-parallel-frontier.md). |
+| **Active ticket** | **`/develop-frontier 0003`:** **`T-FR-0003-01`** (primary for this batch). **FR-0002:** `T-FR-0002-02` / `T-FR-0002-01` unchanged — see HOWTO. |
+| **Active phase** | **FR-0003:** `T-FR-0003-01` TEST → DEV → VAL in **`.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/`**. **FR-0002:** prior focus. |
+| **Branch / worktree** | **FR-0003:** feature `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → `feat/FR-0003-hearth-pi-docker-cli`; ticket branch `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-01-deployment-docker-pi` (hyphenated; Git cannot use `feat/.../T-...` nested form when `feat/FR-0003-hearth-pi-docker-cli` exists as a branch). **FR-0002:** `.worktrees/FR-0002-iphone-pwa-prototype/…` as before. |
 | **Session status** | `developing` |
-| **Next agent should** | **To complete / close FR-0002:** follow the ordered checklist in `tasks/feature-history/FR-0002-iphone-pwa-prototype/HOWTO-complete-FR-0002.md` (Pi + Mac mini acceptance, `40-prototype-report.md`, `REGISTRY.md`, then `/finish-feature`). For parallel implementation work: launch one subagent per frontier ticket and execute TEST → DEV → VAL in each ticket worktree, then merge ticket branches into `feat/FR-0002-iphone-pwa-prototype` using `finish-feature` flow. Keep FR-0001 and **FR-0003** parked until FR-0002 closes. **VAL:** server-first (Mac mini / Pi + desktop browser) per `tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md`; iPhone checks are follow-up only (`40-prototype-report.md` → **Follow-up: iPhone**). |
+| **Next agent should** | **FR-0003:** one subagent implements **`T-FR-0003-01`** through VAL; PR base **`feat/FR-0003-hearth-pi-docker-cli`**. **FR-0002:** HOWTO + `/finish-feature` when closing prototype. **FR-0001** stays parked unless registry flips. FR-0003 **not** blocked on FR-0002 by DAG — parallel capacity when staffed. |
 
 ### Parallel streams
 
-`T-FR-0002-01` and `T-FR-0002-02` are independent and can run in parallel — one builds the proxy + TLS, the other builds the static Mantle shell. Both must land before `T-FR-0002-03` (Web Push needs the SW reachable over `https://`).
+`T-FR-0002-01` and `T-FR-0002-02` are independent. **`T-FR-0003-01`** has no FR-0002 **Deps** and may run in parallel. **`T-FR-0002-01`** and **`T-FR-0002-02`** must land before `T-FR-0002-03`.
 
 | Stream label | Ticket(s) | `FR-NNNN` | Branch / worktree | Owner / note |
 |----------------|------------|-----------|-------------------|--------------|
 | caddy-tls | `T-FR-0002-01` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/` | unassigned |
 | mantle-bones | `T-FR-0002-02` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` | unassigned |
+| deployment-docker-pi | `T-FR-0003-01` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-01-deployment-docker-pi` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/` | develop-frontier 0003 |
 
 ---
 
@@ -59,6 +60,6 @@
 ## How to choose next work
 
 1. While FR-0002 is `in-progress`: pick the smallest **`T-FR-0002-xx`** with all `Deps:` satisfied. Ignore FR-0001 tickets — they are parked.
-2. **FR-0003 (`hearth` / `./install` / per-plugin `plugin`):** **parked until FR-0002 closes** (operator option A, 2026-05-09). Do **not** start **`T-FR-0003-xx`** or open **`feat/FR-0003-hearth-pi-docker-cli`** while FR-0002 is in flight. After FR-0002, set FR-0003 to **`in-progress`** in `REGISTRY.md` when beginning work, then prefer **`/identify-frontier`** after **`T-FR-0003-02`** is VAL-done to batch **T-FR-0003-04**, **-05**, **-10**, **-13** (and later **-06**, **-07**, **-09**).
-3. After FR-0002 closes: re-flip FR-0001 to `design`/`in-progress` in `REGISTRY.md`, apply any FR-0002-driven amendments, and start `T-FR-0001-01`. **FR-0003** may start in parallel with FR-0001 once FR-0002 is done, if capacity allows (see `tasks/feature-history/FR-0003-hearth-pi-docker-cli/README.md`).
+2. **FR-0003 (`hearth` / `./install` / per-plugin `plugin`):** **`in-progress`** in [`REGISTRY.md`](feature-history/REGISTRY.md). Prefer **`/identify-frontier`** after **`T-FR-0003-02`** VAL to batch **T-FR-0003-04**, **-05**, **-10**, **-13**. FR-0003 may run **in parallel with FR-0002** (no DAG dependency).
+3. After FR-0002 closes: re-flip FR-0001 to `design`/`in-progress` in `REGISTRY.md`, apply any FR-0002-driven amendments, and start `T-FR-0001-01`. **FR-0003** may overlap FR-0001 once staffed (see `tasks/feature-history/FR-0003-hearth-pi-docker-cli/README.md`).
 4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.

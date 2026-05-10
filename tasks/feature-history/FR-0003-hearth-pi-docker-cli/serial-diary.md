@@ -1,3 +1,11 @@
+## 2026-05-10 — `/develop-frontier 0003` orchestration
+
+**Stage:** policy + queue beacon
+
+**Recap:** Operator invoked **`/develop-frontier 0003`**. Set [`REGISTRY.md`](../REGISTRY.md) FR-0003 → **`in-progress`**, aligned [`README.md`](../README.md) + [`tasks/ticket-progress.md`](../../ticket-progress.md); superseded scheduling-only park for FR-0003. Parallel-capable FR-0003 ticket on current tracker: **`T-FR-0003-01`** only (`Deps: none`). Launched one implementation subagent for that ticket.
+
+---
+
 ## 2026-05-09 — Operator choice: defer implementation (option A)
 
 **Stage:** scheduling

@@ -1,10 +1,10 @@
 # FR-0003 — Hearth Pi Docker CLI and install bootstrap
 
-**Status:** `parked` for **implementation** until **FR-0002** closes (see [`REGISTRY.md`](../REGISTRY.md)); design + ticket DAG on `main` are done.  
+**Status:** `in-progress` — implementation permitted per [`REGISTRY.md`](../REGISTRY.md); design + ticket DAG remain authoritative.  
 **Canonical tickets:** [`tickets.md`](tickets.md)  
 **DAG draft:** [`20-tickets-dag.md`](20-tickets-dag.md)
 
-**Schedule:** Do **not** open **`feat/FR-0003-hearth-pi-docker-cli`** or start **`T-FR-0003-xx`** TEST/DEV/VAL while **FR-0002** is still in flight. After FR-0002 closes, create the feature worktree and begin with **[T-FR-0003-01](tickets.md#t-fr-0003-01--design-contract-amend-deployment-for-docker-on-pi)** (or run **`/identify-frontier`** if resuming mid-graph). Sequencing next to **FR-0001** is a separate capacity call.
+**Schedule:** Feature branch **`feat/FR-0003-hearth-pi-docker-cli`**; worktrees under **`.worktrees/FR-0003-hearth-pi-docker-cli/`**. Start **[T-FR-0003-01](tickets.md#t-fr-0003-01--design-contract-amend-deployment-for-docker-on-pi)** or **`/identify-frontier`** after **`T-FR-0003-02`** VAL for the wide parallel batch (**04**, **05**, **10**, **13**).
 
 ## One-screen summary
 
