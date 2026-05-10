@@ -17,14 +17,14 @@ echo "[T-FR-0002-01] starting stack"
 
 echo "[T-FR-0002-01] waiting for HTTPS placeholder"
 for _ in {1..40}; do
-  if curl -ksS --resolve hearth.home.arpa:443:127.0.0.1 "$STACK_URL" | rg -q "$KNOWN_BODY"; then
+  if curl -ksS --resolve hearth.home.arpa:443:127.0.0.1 "$STACK_URL" | grep -Fq "$KNOWN_BODY"; then
     break
   fi
   sleep 1
 done
 
 HTML="$(curl -ksS --resolve hearth.home.arpa:443:127.0.0.1 "$STACK_URL")"
-echo "$HTML" | rg -q "$KNOWN_BODY"
+echo "$HTML" | grep -Fq "$KNOWN_BODY"
 
 echo "[T-FR-0002-01] starting CA export"
 ./develop ca-export >/tmp/t-fr-0002-01-ca-export.log 2>&1 &
@@ -38,7 +38,7 @@ for _ in {1..30}; do
 done
 
 test -s /tmp/t-fr-0002-01-ca.crt
-rg -q "BEGIN CERTIFICATE" /tmp/t-fr-0002-01-ca.crt
+grep -Fq "BEGIN CERTIFICATE" /tmp/t-fr-0002-01-ca.crt
 
 kill "$CA_EXPORT_PID" >/dev/null 2>&1 || true
 wait "$CA_EXPORT_PID" >/dev/null 2>&1 || true
