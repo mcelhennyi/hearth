@@ -34,7 +34,7 @@
 | T-FR-0003-01 | Design contract: amend deployment for Docker-on-Pi | done | done | done | `FR-0003` design. `deployment.md`: Docker (Pi) profile + gaps; systemd install.sh path explicit alternative. Merged via **PR #6** into **`feat/FR-0003-hearth-pi-docker-cli`**. |
 | T-FR-0003-02 | Install layout: `heart/`, VERSION.json, README | done | done | done | `FR-0003`. `deploy/hearth-install/` + `./develop test`; schema `deploy/hearth-install/schemas/version-1.schema.json`. |
 | T-FR-0003-03 | `./install` bootstrap: Docker + layout + first `compose up` | — | — | — | `FR-0003`. Deps: `T-FR-0003-02`, `T-FR-0003-05`. |
-| T-FR-0003-04 | `hearth` CLI core: argparse, paths, doctor, compose passthrough | — | — | — | `FR-0003`. Deps: `T-FR-0003-01`, `T-FR-0003-02`. |
+| T-FR-0003-04 | `hearth` CLI core: argparse, paths, doctor, compose passthrough | done | done | done | `FR-0003`. `deploy/hearth-cli/` + `bin/hearth`; `./develop test` passes; smoke: `hearth version`, `hearth doctor`, `hearth compose -- ps` against fixture install. |
 | T-FR-0003-05 | Plugin registry file + Compose fragment generation | — | — | — | `FR-0003`. Deps: `T-FR-0003-01`, `T-FR-0003-02`. |
 | T-FR-0003-06 | `hearth --update` | — | — | — | `FR-0003`. Deps: `T-FR-0003-04`, `T-FR-0003-05`. |
 | T-FR-0003-07 | `hearth --plugin --add` and `list` | — | — | — | `FR-0003`. Deps: `T-FR-0003-04`, `T-FR-0003-05`. |

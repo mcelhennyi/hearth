@@ -1,24 +1,24 @@
-# CURRENT — `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-13-cli-parity`
+# CURRENT — `feat/FR-0003-hearth-pi-docker-cli`
 
-| Field | Value |
-|------|--------|
-| **FR** | FR-0003 |
-| **Feature folder** | `tasks/feature-history/FR-0003-hearth-pi-docker-cli/` |
-| **This branch** | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-13-cli-parity` (ticket) |
-| **Parent branch** | `feat/FR-0003-hearth-pi-docker-cli` |
-| **Last meaningful update** | 2026-05-10 |
+**FR:** `FR-0003` — Hearth Pi Docker CLI and install bootstrap  
+**Feature folder:** `tasks/feature-history/FR-0003-hearth-pi-docker-cli/`  
+**Branch role:** Feature integration branch  
+**Last meaningful update:** 2026-05-10
 
-## Delivered
+## Landed on this feature branch
 
-- **T-FR-0003-13:** Hearth CLI parity discipline mirrored in **`.cursor/rules/stack-conventions.mdc`** and **`.claude/rules/development-standards.md`**, with cross-links to **`docs/design/deployment.md`** Docker profile (Pi).
-- **FR-0003 README:** “Process rule (Hearth CLI parity)” matches those rules.
-- **Tracker:** **`tasks/ticket-progress.md`** row for **-13** complete; **`docs/design/tickets-initial.md`** **`triadDone`** for **TFR0003_13_***.
+- **`T-FR-0003-01` done:** `docs/design/deployment.md` documents the Docker-on-Pi profile and bare-metal systemd alternative.
+- **`T-FR-0003-02` done:** `deploy/hearth-install/` scaffolds the `heart/` layout, `VERSION.json` v1 parser/schema, templates, README, and `./develop test` path.
+- **`T-FR-0003-13` done:** Hearth CLI parity rules are mirrored across Cursor and Claude guidance.
+- **`T-FR-0003-04` done:** `bin/hearth` and `deploy/hearth-cli/` provide install-root resolution, `version`, `doctor`, and `compose --` passthrough with tests.
 
-## Verify
+## In flight
 
-- None; open **PR → `feat/FR-0003-hearth-pi-docker-cli`** for merge.
+- **`T-FR-0003-05`** plugin registry + Compose fragment generation is the next merge candidate.
+- **`T-FR-0003-10`** Kindling install/plugin contract is the next merge candidate after or alongside `T-FR-0003-05`.
 
 ## Next
 
-1. Human review and merge PR into feature branch.
-2. Continue FR-0003 implementation tickets per **`tasks/ticket-progress.md`** / **`handoffs/`**.
+1. Merge `T-FR-0003-05` and `T-FR-0003-10` into this feature branch.
+2. Run feature-branch validation with `./develop test` after all ticket branches land.
+3. Push `feat/FR-0003-hearth-pi-docker-cli` and open or update the PR to `main`.
