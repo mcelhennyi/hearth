@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0002-02` (primary); `T-FR-0002-01` — merge `feat/FR-0002-iphone-pwa-prototype-T-FR-0002-01-caddy-tls` into feature branch when ready |
-| **Active phase** | `T-FR-0002-02` TEST → DEV → VAL; confirm `T-FR-0002-01` server-first VAL in `serial-diary.md` per HOWTO |
-| **Branch / worktree** | Feature: `.worktrees/FR-0002-iphone-pwa-prototype/feature/` → `feat/FR-0002-iphone-pwa-prototype`. Frontier ticket checkouts: `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/`, `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` (re-linked 2026-05-09 after `git worktree prune`). See [`tasks/handoffs/2026-05-09-parallel-frontier.md`](handoffs/2026-05-09-parallel-frontier.md). |
+| **Active ticket** | **Develop-frontier batch (2026-05-10):** `T-FR-0002-01` (VAL), `T-FR-0002-02` (TEST→VAL), `T-FR-0003-01` (TEST→VAL) — one child worktree each; see **Parallel streams** |
+| **Active phase** | Per ticket: run **TEST → DEV → VAL** in that ticket’s worktree only; update **only** that ticket’s row in this file |
+| **Branch / worktree** | **FR-0002** feature: `.worktrees/FR-0002-iphone-pwa-prototype/feature/` → `feat/FR-0002-iphone-pwa-prototype`. Tickets: `…/T-FR-0002-01-caddy-tls/`, `…/T-FR-0002-02-mantle-bones/`. **FR-0003** feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → `feat/FR-0003-hearth-pi-docker-cli` (create if missing). Ticket **T-FR-0003-01:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/`. Global handoff: [`tasks/handoffs/2026-05-10-parallel-frontier.md`](handoffs/2026-05-10-parallel-frontier.md). |
 | **Session status** | `developing` |
-| **Next agent should** | **FR-0002:** follow `tasks/feature-history/FR-0002-iphone-pwa-prototype/HOWTO-complete-FR-0002.md` when closing the prototype; parallel ticket work as today. **FR-0003:** **`in-progress`** on `feat/FR-0003-hearth-pi-docker-cli` — start **[T-FR-0003-01](feature-history/FR-0003-hearth-pi-docker-cli/tickets.md#t-fr-0003-01--design-contract-amend-deployment-for-docker-on-pi)** or **`/identify-frontier`** after **T-FR-0003-02** VAL; no DAG dependency on FR-0002. Keep **FR-0001** parked until FR-0002 closes unless policy changes. **FR-0002 VAL:** server-first (Mac mini / Pi + desktop browser); iPhone follow-up per `40-prototype-report.md`. |
+| **Next agent should** | **`/develop-frontier` (2026-05-10):** finish assigned **`T-FR-NNNN-xx`** through VAL in **your** worktree; push ticket branch; open PR **into** the owning **`feat/FR-NNNN-<slug>`**; refresh **`CURRENT.md`** on ticket + feature branches. **Parked:** **`T-FR-0001-xx`**. **FR-0002 VAL** remains server-first per [`tickets.md`](feature-history/FR-0002-iphone-pwa-prototype/tickets.md). |
 
 ### Parallel streams
 
@@ -16,8 +16,9 @@
 
 | Stream label | Ticket(s) | `FR-NNNN` | Branch / worktree | Owner / note |
 |----------------|------------|-----------|-------------------|--------------|
-| caddy-tls | `T-FR-0002-01` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/` | unassigned |
-| mantle-bones | `T-FR-0002-02` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` | unassigned |
+| caddy-tls | `T-FR-0002-01` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/` | develop-frontier |
+| mantle-bones | `T-FR-0002-02` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` | develop-frontier |
+| deployment-docker-pi | `T-FR-0003-01` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/` | create worktree if absent |
 
 ---
 
