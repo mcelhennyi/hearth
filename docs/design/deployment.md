@@ -131,7 +131,7 @@ flowchart TD
 | **`heart/state/plugins.yaml`** (or `.json`) | Local plugin registry for Compose generation — **`T-FR-0003-05`** | Split between hub DB + `/etc/hearth` on bare metal; Docker profile stays **file-first** until hub sync exists |
 | **`heart/bin/`** | `hearth` shim on `PATH` (install policy) — **`T-FR-0003-04`** | `/usr/local/bin` or equivalent from **`deploy/install.sh`** |
 
-**Updates (intent):** **`hearth --update`** pulls the deploy ref, refreshes images/builds, runs **`docker compose up -d`**, and applies migration hooks when present — details track **`T-FR-0003-06`**. Until implementation lands, treat command names as **contracts**, not promises.
+**Updates:** **`hearth --update`** (with optional **`--dry-run`**) runs **`git pull --ff-only`** at the deploy checkout root, refreshes enabled plugin git checkouts per **`heart/state/plugins.yaml`** (`git pull --ff-only` or **`git checkout <pinned_ref>`** when set), regenerates **`compose/overrides/generated.plugins.yml`**, optionally runs an executable **`heart/bin/hearth-migrate`** when the hub supplies one, then **`docker compose up -d --pull always`** for the install Compose project. **`VERSION.json` `hearth_ref`** is rewritten when the deploy HEAD changes after the pull.
 
 **DESIGN-GAP — Docker profile (explicit):**
 

@@ -3,56 +3,16 @@
 from __future__ import annotations
 
 import argparse
-import os
 import shutil
 import subprocess
 import sys
-from dataclasses import dataclass
 from pathlib import Path
 from typing import NoReturn, TextIO
 
 from hearth_install.version_manifest import VersionManifestError, VersionManifestV1, read_version_manifest
 
-
-@dataclass(frozen=True)
-class ResolvedInstall:
-    """Resolved install paths for a Docker-profile Hearth checkout."""
-
-    install_root: Path
-    heart_dir: Path
-    version_path: Path
-    compose_file: Path
-
-
-def _looks_like_heart_dir(path: Path) -> bool:
-    return (path / "VERSION.json").is_file()
-
-
-def resolve_install(
-    install_root: str | os.PathLike[str] | None = None,
-    *,
-    env: dict[str, str] | None = None,
-) -> ResolvedInstall:
-    """Resolve ``<install-root>/heart`` from CLI args, env, or cwd.
-
-    ``HEARTH_INSTALL_ROOT`` and ``--install-root`` may point either at the parent
-    install directory or directly at the ``heart/`` directory.
-    """
-    source_env = env if env is not None else os.environ
-    raw_root = install_root or source_env.get("HEARTH_INSTALL_ROOT") or Path.cwd()
-    candidate = Path(raw_root).expanduser().resolve()
-    if _looks_like_heart_dir(candidate):
-        heart_dir = candidate
-        root = candidate.parent
-    else:
-        root = candidate
-        heart_dir = root / "heart"
-    return ResolvedInstall(
-        install_root=root,
-        heart_dir=heart_dir,
-        version_path=heart_dir / "VERSION.json",
-        compose_file=heart_dir / "compose" / "docker-compose.yml",
-    )
+from hearth_cli import update_cmd
+from hearth_cli.install_context import ResolvedInstall, resolve_install
 
 
 def load_version(resolved: ResolvedInstall) -> VersionManifestV1:
@@ -70,7 +30,17 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="PATH",
         help="Install root containing heart/ (or the heart/ directory itself).",
     )
-    subparsers = parser.add_subparsers(dest="command", required=True)
+    parser.add_argument(
+        "--update",
+        action="store_true",
+        help="Pull deploy checkout, refresh plugin checkouts + compose override, and compose up -d.",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="With --update, print planned steps without changing git, compose files, or containers.",
+    )
+    subparsers = parser.add_subparsers(dest="command", required=False)
 
     subparsers.add_parser("version", help="Print the installed Hearth ref.")
     subparsers.add_parser("doctor", help="Check install files and Docker availability.")
@@ -165,7 +135,19 @@ def run(
     stderr = stderr if stderr is not None else sys.stderr
     parser = build_parser()
     ns = parser.parse_args(argv)
+    if ns.dry_run and not ns.update:
+        parser.error("--dry-run requires --update")
+
     resolved = resolve_install(ns.install_root, env=env)
+
+    if ns.update:
+        if ns.command is not None:
+            parser.error("--update cannot be combined with subcommands")
+        return update_cmd.run_update(resolved, dry_run=ns.dry_run, stdout=stdout, stderr=stderr)
+
+    if ns.command is None:
+        parser.print_help()
+        return 2
 
     if ns.command == "version":
         return cmd_version(resolved, stdout, stderr)

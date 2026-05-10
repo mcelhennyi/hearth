@@ -1,5 +1,27 @@
 ---
 
+## 2026-05-10 — T-FR-0003-06 TEST→DEV→VAL (`hearth --update`)
+
+**Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-06-update`  
+**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-06-update/`
+
+### TEST
+
+- Added `tests/test_hearth_update.py` with mocked `git`/`docker compose` subprocesses, dry-run idempotence, deploy ref change + `VERSION.json` rewrite, and CLI mutual-exclusion checks.
+
+### DEV
+
+- Implemented `hearth_cli/update_cmd.py`: deploy `git pull --ff-only`, plugin dir refresh from `plugins.yaml`, `generate_plugin_compose`, optional executable `heart/bin/hearth-migrate`, `docker compose up -d --pull always`.
+- Split `ResolvedInstall` / `resolve_install` into `hearth_cli/install_context.py` to avoid circular imports.
+- Documented behavior under **Updates** in `docs/design/deployment.md`.
+
+### VAL
+
+- `./develop test` — **PASS** (26 tests).
+- Host-local: `bin/hearth --install-root <temp git+heart> --update --dry-run` run twice; output identical (**no-op**). Full non-dry-run update not exercised here (requires real Compose stack + network pull).
+
+---
+
 ## 2026-05-10 — T-FR-0003-10 TEST→DEV→VAL (Kindling plugin contract)
 
 **Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-10-kindling-plugin-contract`  
