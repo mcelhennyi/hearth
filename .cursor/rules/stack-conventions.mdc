@@ -52,6 +52,14 @@ tasks/                # Process state (see docs/ai-context.md)
 - **Tinder manifests are validated at load**. A plugin without a valid manifest is registered but disabled with the validation error visible in the dashboard.
 - **Secrets** (relay keys, OAuth client secrets, cloud-storage tokens) live in `var/hearth/secrets/` (mode 0600, gitignored). `.env*` files are not committed; only `.env.example` placeholders.
 
+## Hearth CLI parity (production operator surface)
+
+- **Scope:** The **`hearth`** admin CLI and per-plugin **`plugin`** CLI (see **`FR-0003`**, `docs/design/deployment.md` Docker profile) are the **default operator control plane** for Compose-based installs on Pi-class hosts.
+- **Rule:** When you add or change an **operator-facing** platform capability (stack lifecycle, plugin lifecycle, backup/restore, TLS/CA export, updates, diagnostics), you **must** either:
+  - expose it through **`hearth`** / **`plugin`** in the same change series, **or**
+  - add an explicit **follow-up ticket** on the active **`FR-NNNN`** (or a new **`FR-NNNN`**) titled so `identify-frontier` can schedule CLI parity, and note the gap in the feature diary.
+- **UI follow-up:** Web admin surfaces should wrap the same contracts later; do not treat “UI-only” as done for operations that operators must perform over SSH.
+
 ## Tie-back to design
 
 - Module-level docstrings reference `docs/design/...` where the behavior is specified.

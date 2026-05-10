@@ -37,7 +37,7 @@ Hearth is currently in the **design and prototype phase**. The architecture, int
 
 ## What Hearth Provides
 
-- A single local entrypoint, such as `https://hearth.local/`, for all enabled plugins.
+- A single local entrypoint, such as `https://hearth.home.arpa/`, for all enabled plugins.
 - A shared React shell, **Mantle**, for navigation, theme, auth surfaces, and PWA behavior.
 - A plugin manifest format, **Tinder**, for declaring routes, capabilities, dependencies, and permissions.
 - An app-to-app API, **Spark**, for discovery, typed RPC, pub/sub, and dashboard updates.

@@ -1,28 +1,31 @@
 # FR-0002 Caddy dev stack
 
-This ticket's stack serves a static placeholder over local HTTPS at `https://hearth.local/` using Caddy `tls internal`.
+This ticket's stack serves a static placeholder over local HTTPS at `https://hearth.home.arpa/` using Caddy `tls internal` (per `tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md` → **T-FR-0002-01**).
 
 ## Hostname setup
 
-Use one of these options so `hearth.local` resolves to your host machine:
+Use local DNS so `hearth.home.arpa` resolves to the machine running Docker:
 
-- **mDNS** if your LAN setup already resolves `.local` hostnames to your machine, or
-- **`/etc/hosts`** entry on each client (including your iPhone test machine), for example:
+- **Pi-hole / router DNS** A record (recommended on a homelab), or
+- **mDNS** only if your environment resolves this name (uncommon for `.arpa`), or
+- **`/etc/hosts`** on each client, for example:
 
 ```text
-192.168.1.50 hearth.local
+192.168.1.50 hearth.home.arpa
 ```
 
 ## Commands
 
 From repo root:
 
-- `./develop up -d` - start Caddy in the background
-- `./develop down` - stop the stack
-- `./develop ca-export` - temporarily serve `http://<host>:8080/ca.crt` (10-minute max) for iPhone trust setup
+- `./develop up -d` — start Caddy with TLS on `:443`
+- `./develop down` — stop Compose services for this compose file
+- `./develop ca-export` — temporarily serve `http://<host>:8080/ca.crt` (10-minute max) for device CA trust
+- `./develop up-quick` — HTTP-only static server on `:5080` (no TLS; fast iteration)
+- `./develop docs` — MkDocs in Docker (see `./develop help`)
 
-For local Mac validation without hostname changes, use:
+For local validation without changing system DNS, use:
 
 ```bash
-curl -k --resolve hearth.local:443:127.0.0.1 https://hearth.local/
+curl -k --resolve hearth.home.arpa:443:127.0.0.1 https://hearth.home.arpa/
 ```

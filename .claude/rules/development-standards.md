@@ -45,6 +45,11 @@ Use with **`docs/ai-context.md`**. This file mirrors Cursor-facing rules for Cla
 - **Spoken “identify (FR)”** = registry + intake; **`/identify-frontier`** = parallel **tickets** only **after** canonical **`### T-FR-NNNN-xx`** sections exist.
 - **Registry races:** push **`REGISTRY.md`** + minimal stub to **`main` immediately** after allocating **`FR-NNNN`** (**`docs/ai-context.md` §2b**).
 
+## Hearth CLI parity (operator surface)
+
+- **`hearth`** / per-plugin **`plugin`** are the default **SSH-first** control plane for Docker-based production installs (**`FR-0003`**).
+- When adding **operator-facing** platform behavior, ship matching CLI (or file an explicit parity **follow-up ticket** on the active **`FR-NNNN`**) — mirrors **`.cursor/rules/stack-conventions.mdc` → Hearth CLI parity**.
+
 ## Native plugin ideas
 
 - **`/plugin-idea`** / **`.cursor/skills/plugin-idea/SKILL.md`** creates docs-first native plugin idea pages under **`docs/design/plugin-ideas/`**.

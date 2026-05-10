@@ -1,4 +1,4 @@
-hearth.local {
+hearth.home.arpa {
   tls internal
   root * /srv
   file_server

@@ -16,20 +16,20 @@ Phases follow `docs/ai-context.md`: each ticket goes **TEST → DEV → VAL** in
 
 #### Purpose
 
-Create the directory layout from `.cursor/rules/stack-conventions.mdc`, a working `./develop up` Compose stack with one Caddy container, one empty `hub` container, and a smoke test. After this ticket, `./develop up` boots locally and `https://hearth.local/` returns a placeholder page over local TLS.
+Create the directory layout from `.cursor/rules/stack-conventions.mdc`, a working `./develop up` Compose stack with one Caddy container, one empty `hub` container, and a smoke test. After this ticket, `./develop up` boots locally and `https://hearth.home.arpa/` returns a placeholder page over local TLS.
 
 #### Phases
 
 | Phase | Goal | Exit criteria |
 |-------|------|----------------|
-| **TEST** | Acceptance for "the dev loop is real" | A bash test (`tests/smoke/dev-loop.sh`) starts the stack, `curl -k https://hearth.local/` returns 200 with a `Hearth — placeholder` body, then tears down. |
+| **TEST** | Acceptance for "the dev loop is real" | A bash test (`tests/smoke/dev-loop.sh`) starts the stack, `curl -k https://hearth.home.arpa/` returns 200 with a `Hearth — placeholder` body, then tears down. |
 | **DEV** | Build the scaffold | `apps/hub/api/` (FastAPI placeholder), `apps/hub/web/` (Vite placeholder), `deploy/compose/`, `deploy/caddy/`, `./develop` wrapper. Add `.dockerignore`, `pyproject.toml`, `package.json` (pnpm workspace). |
 | **VAL** | Verify a fresh clone works | Cold clone + `./develop up` succeeds; smoke test passes in CI stub. |
 
 #### Notes
 
 - Pin Python 3.12, Node 20 LTS, Caddy 2.8.
-- mDNS `hearth.local` resolution: Bonjour on macOS works out of the box; on Linux dev hosts, document the `avahi-daemon` requirement and provide an `/etc/hosts` fallback in `deploy/compose/README.md`.
+- DNS `hearth.home.arpa` resolution: use local DNS (for example Pi-hole or router DNS), with an `/etc/hosts` fallback in `deploy/compose/README.md`.
 
 ---
 
@@ -134,9 +134,9 @@ Out of scope here: nginx parity templates (post-MVP).
 
 | Phase | Goal | Exit criteria |
 |-------|------|----------------|
-| **TEST** | Renderer + reload tests | Unit tests: registry fixture → expected fragment text (golden files). Integration: spin up real Caddy in Compose, install a stub plugin, `curl https://hearth.local/groceries-stub/health` returns the stub's response. |
+| **TEST** | Renderer + reload tests | Unit tests: registry fixture → expected fragment text (golden files). Integration: spin up real Caddy in Compose, install a stub plugin, `curl https://hearth.home.arpa/groceries-stub/health` returns the stub's response. |
 | **DEV** | Implement renderer + helper + reload hook | Reload runs as a privileged side-car (separate Compose service) not in the hub itself. |
-| **VAL** | iPhone PWA test on a real device: visit `https://hearth.local/`, install, see plugin tab. | |
+| **VAL** | iPhone PWA test on a real device: visit `https://hearth.home.arpa/`, install, see plugin tab. | |
 
 ---
 
@@ -265,7 +265,7 @@ The closeout ticket. Take the Compose-only dev loop and produce a real Pi/Mac mi
 - `deploy/systemd/hearth-hub.service`, `hearth-plugin@.service`.
 - macOS launchd equivalents.
 - `hub backup --output <path>` and `hub restore <path>` CLI subcommands.
-- Smoke test in CI: a Pi-emulating ARM container runs `install.sh` and confirms `https://hearth.local/api/health` answers.
+- Smoke test in CI: a Pi-emulating ARM container runs `install.sh` and confirms `https://hearth.home.arpa/api/health` answers.
 
 #### Phases
 

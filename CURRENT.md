@@ -7,24 +7,21 @@
 
 ## TEST
 
-- Added `scripts/test-t-fr-0002-01.sh` to encode stack + CA-export checks.
-- Initial run failed pre-implementation as expected (`develop` missing compose stack artifacts).
+- `scripts/test-t-fr-0002-01.sh`: stack up, `curl` HTTPS placeholder (`hearth.home.arpa` → 127.0.0.1), `ca-export` serves PEM at `:8080/ca.crt`, teardown on exit.
 
 ## DEV
 
-- Added `deploy/compose/docker-compose.yml` with `caddy` and `ca-export` services.
-- Added `deploy/caddy/Caddyfile.dev` with `tls internal` and static serving for `hearth.local`.
-- Added placeholder page at `deploy/static/index.html`.
-- Added operator notes at `deploy/compose/README.md` (hostname setup + commands).
-- Updated `./develop` to include `up`, `down`, `ca-export`, and `ps` for this stack.
+- `deploy/compose/docker-compose.yml`: `caddy` (TLS) + `ca-export`; optional `docs` + `caddy-http` profiles from merged `main`.
+- `deploy/caddy/Caddyfile.dev`: `tls internal`, static root, site `hearth.home.arpa` (canonical per feature `tickets.md`).
+- `deploy/static/index.html`: placeholder body marker for tests.
+- `deploy/compose/README.md`: hostname + commands.
+- `./develop`: `up`, `down`, `ca-export`, `ps`, plus `up-quick` and `docs`.
 
 ## VAL
 
-- `bash scripts/test-t-fr-0002-01.sh` => PASS.
-- `./develop help` and `./develop ps` verified wrapper command surface.
-- Updated `tasks/ticket-progress.md` for the `T-FR-0002-01` row only.
-- Updated `docs/design/tickets-initial.md` with `triadDone` class for `TFR0002_01`.
+- Automated: `bash scripts/test-t-fr-0002-01.sh` ⇒ PASS (Docker).
+- Server-first manual steps: see `tasks/feature-history/FR-0002-iphone-pwa-prototype/serial-diary.md` (2026-05-09 entry).
 
 ## Caveat
 
-- Requested branch name `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` is impossible while `feat/FR-0002-iphone-pwa-prototype` exists (git ref namespace conflict). Used `feat/FR-0002-iphone-pwa-prototype-T-FR-0002-01-caddy-tls` instead.
+- Git cannot use branch name `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` while `feat/FR-0002-iphone-pwa-prototype` exists (ref namespace conflict). This work uses `feat/FR-0002-iphone-pwa-prototype-T-FR-0002-01-caddy-tls`.

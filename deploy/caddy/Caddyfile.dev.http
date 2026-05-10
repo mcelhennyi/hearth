@@ -1,0 +1,11 @@
+# Plain HTTP for fast local iteration (no TLS, no PWA SW requirements).
+# Caddy would otherwise enable automatic HTTPS for localhost / *.local.
+# Use: http://127.0.0.1:5080/ (any Host) or http://hearth.home.arpa:5080/ with DNS/hosts entry.
+{
+	auto_https off
+}
+
+:80 {
+	root * /srv
+	file_server
+}

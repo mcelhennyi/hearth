@@ -18,12 +18,12 @@ The reverse proxy is **Caddy 2.x by default** because Caddy's `tls internal` iss
 
 ```caddyfile
 {
-    # local CA — Caddy issues hearth.local certs trusted only by hosts that
+    # local CA — Caddy issues hearth.home.arpa certs trusted only by hosts that
     # install the local CA root (see "iPhone trust workflow" below)
     local_certs
 }
 
-hearth.local {
+hearth.home.arpa {
     tls internal
 
     # Web Push requires the PWA scope to be at /
@@ -64,12 +64,12 @@ Web Push and the service worker need a TLS cert the iPhone trusts. With Caddy `t
 flowchart TD
   A[On Hearth box: ./develop ca-export]
   --> B[Generates hearth-local-ca.crt]
-  --> C[Serve it temporarily at http://hearth.local:8080/ca.crt]
-  --> D[On iPhone, Safari → http://hearth.local:8080/ca.crt]
+  --> C[Serve it temporarily at http://hearth.home.arpa:8080/ca.crt]
+  --> D[On iPhone, Safari → http://hearth.home.arpa:8080/ca.crt]
   --> E[iOS prompts to install profile]
   --> F[Settings → General → VPN & Device Management → install]
   --> G[Settings → General → About → Certificate Trust Settings → enable]
-  --> H[Visit https://hearth.local/ → Add to Home Screen]
+  --> H[Visit https://hearth.home.arpa/ → Add to Home Screen]
 ```
 
 `./develop ca-export` is a tiny wrapper around `caddy file-server -listen :8080 -root /tmp/hearth-ca/` that times out after 10 minutes. It is documented in the dashboard's "Add a device" tile.
@@ -128,7 +128,7 @@ services:
       - ../../var/hearth:/var/hearth
     environment:
       HEARTH_DEV: "1"
-      HEARTH_HOSTNAME: "hearth.local"
+      HEARTH_HOSTNAME: "hearth.home.arpa"
 
   # plugin services scaffolded by `kindling new <slug>` and added to a generated override file
 
@@ -163,7 +163,7 @@ flowchart TD
   I --> J[Prompt for local user password]
   J --> K[Generate initial hearth.toml + Caddyfile]
   K --> L[Start hearth-hub + caddy]
-  L --> M[Print: https://hearth.local/ and 'next: trust the local CA on your iPhone']
+  L --> M[Print: https://hearth.home.arpa/ and 'next: trust the local CA on your iPhone']
 ```
 
 The script is idempotent — running it again upgrades in place.

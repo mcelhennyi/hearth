@@ -5,10 +5,10 @@
 | Field | Value |
 |-------|--------|
 | **Active ticket** | `T-FR-0002-01` and `T-FR-0002-02` (parallel-eligible; not yet started) |
-| **Active phase** | — |
-| **Branch / worktree** | — (next worker: `feat/FR-0002-iphone-pwa-prototype` at `.worktrees/FR-0002-iphone-pwa-prototype/feature/`, then per-ticket child branches) |
-| **Session status** | `handoff` |
-| **Next agent should** | Read [`tasks/feature-history/FR-0002-iphone-pwa-prototype/handoffs/2026-04-27-continue.md`](feature-history/FR-0002-iphone-pwa-prototype/handoffs/2026-04-27-continue.md) **first**. Then `README.md` + `10-design/risks.md` + `tickets.md` for FR-0002. Start `T-FR-0002-01` and `T-FR-0002-02` in parallel via `/identify-frontier` → `/develop-frontier` (or serially if a single worker). FR-0001 is `parked`; do not start FR-0001 tickets until FR-0002 closes. |
+| **Active phase** | TEST kickoff (`T-FR-0002-01`, `T-FR-0002-02`) |
+| **Branch / worktree** | Feature: `.worktrees/FR-0002-iphone-pwa-prototype/feature/` → `feat/FR-0002-iphone-pwa-prototype`. Frontier ticket checkouts: `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/`, `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` (re-linked 2026-05-09 after `git worktree prune`). See [`tasks/handoffs/2026-05-09-parallel-frontier.md`](handoffs/2026-05-09-parallel-frontier.md). |
+| **Session status** | `developing` |
+| **Next agent should** | **To complete / close FR-0002:** follow the ordered checklist in `tasks/feature-history/FR-0002-iphone-pwa-prototype/HOWTO-complete-FR-0002.md` (Pi + Mac mini acceptance, `40-prototype-report.md`, `REGISTRY.md`, then `/finish-feature`). For parallel implementation work: launch one subagent per frontier ticket and execute TEST → DEV → VAL in each ticket worktree, then merge ticket branches into `feat/FR-0002-iphone-pwa-prototype` using `finish-feature` flow. Keep FR-0001 and **FR-0003** parked until FR-0002 closes. **VAL:** server-first (Mac mini / Pi + desktop browser) per `tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md`; iPhone checks are follow-up only (`40-prototype-report.md` → **Follow-up: iPhone**). |
 
 ### Parallel streams
 
@@ -30,6 +30,19 @@
 | T-FR-0002-02 | Mantle PWA bones (manifest + SW + nav) | — | — | — | `FR-0002`. Reuses into `T-FR-0001-04`. |
 | T-FR-0002-03 | Web Push round-trip (VAPID + subscribe + send) | — | — | — | `FR-0002`. Reuses into `T-FR-0001-09`. Deps: `T-FR-0002-01`, `T-FR-0002-02`. |
 | T-FR-0002-04 | Real-iPhone walkthrough + closeout report | — | — | — | `FR-0002`. No FR-0001 reuse target. Deps: `T-FR-0002-01..03`. |
+| T-FR-0003-01 | Design contract: amend deployment for Docker-on-Pi | — | — | — | `FR-0003` design. Deps: none. |
+| T-FR-0003-02 | Install layout: `heart/`, VERSION.json, README | — | — | — | `FR-0003`. Deps: `T-FR-0003-01`. |
+| T-FR-0003-03 | `./install` bootstrap: Docker + layout + first `compose up` | — | — | — | `FR-0003`. Deps: `T-FR-0003-02`, `T-FR-0003-05`. |
+| T-FR-0003-04 | `hearth` CLI core: argparse, paths, doctor, compose passthrough | — | — | — | `FR-0003`. Deps: `T-FR-0003-01`, `T-FR-0003-02`. |
+| T-FR-0003-05 | Plugin registry file + Compose fragment generation | — | — | — | `FR-0003`. Deps: `T-FR-0003-01`, `T-FR-0003-02`. |
+| T-FR-0003-06 | `hearth --update` | — | — | — | `FR-0003`. Deps: `T-FR-0003-04`, `T-FR-0003-05`. |
+| T-FR-0003-07 | `hearth --plugin --add` and `list` | — | — | — | `FR-0003`. Deps: `T-FR-0003-04`, `T-FR-0003-05`. |
+| T-FR-0003-08 | `hearth --plugin enter` | — | — | — | `FR-0003`. Deps: `T-FR-0003-07`. |
+| T-FR-0003-09 | `hearth` stack control: start/stop/restart/status/logs | — | — | — | `FR-0003`. Deps: `T-FR-0003-04`, `T-FR-0003-05`. |
+| T-FR-0003-10 | Kindling contract: `scripts/install` + `plugin` template | — | — | — | `FR-0003`. Deps: `T-FR-0003-01`, `T-FR-0003-02`. |
+| T-FR-0003-11 | Per-plugin `plugin` executable: lifecycle + passthrough | — | — | — | `FR-0003`. Deps: `T-FR-0003-07`, `T-FR-0003-10`. |
+| T-FR-0003-12 | Smoke tests + ARM CI for install path | — | — | — | `FR-0003`. Deps: `T-FR-0003-03`, `T-FR-0003-06`, `T-FR-0003-08`, `T-FR-0003-09`, `T-FR-0003-11`. |
+| T-FR-0003-13 | Project rules: Hearth CLI parity (Cursor + Claude) | — | — | — | `FR-0003`. Deps: `T-FR-0003-01`. |
 | T-FR-0001-01 | Repo scaffold and Compose dev loop | — | — | — | `FR-0001` parked — eligible after FR-0002 closes. |
 | T-FR-0001-02 | Hub API skeleton and SQLite registry | — | — | — | `FR-0001` parked. |
 | T-FR-0001-03 | Tinder loader and manifest schema | — | — | — | `FR-0001` parked. |
@@ -46,5 +59,6 @@
 ## How to choose next work
 
 1. While FR-0002 is `in-progress`: pick the smallest **`T-FR-0002-xx`** with all `Deps:` satisfied. Ignore FR-0001 tickets — they are parked.
-2. After FR-0002 closes: re-flip FR-0001 to `design`/`in-progress` in `REGISTRY.md`, apply any FR-0002-driven amendments, and start `T-FR-0001-01`.
-3. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
+2. **FR-0003 (`hearth` / `./install` / per-plugin `plugin`):** **parked until FR-0002 closes** (operator option A, 2026-05-09). Do **not** start **`T-FR-0003-xx`** or open **`feat/FR-0003-hearth-pi-docker-cli`** while FR-0002 is in flight. After FR-0002, set FR-0003 to **`in-progress`** in `REGISTRY.md` when beginning work, then prefer **`/identify-frontier`** after **`T-FR-0003-02`** is VAL-done to batch **T-FR-0003-04**, **-05**, **-10**, **-13** (and later **-06**, **-07**, **-09**).
+3. After FR-0002 closes: re-flip FR-0001 to `design`/`in-progress` in `REGISTRY.md`, apply any FR-0002-driven amendments, and start `T-FR-0001-01`. **FR-0003** may start in parallel with FR-0001 once FR-0002 is done, if capacity allows (see `tasks/feature-history/FR-0003-hearth-pi-docker-cli/README.md`).
+4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
