@@ -7,3 +7,4 @@ Canonical **`### T-FR-NNNN-xx`** sections live in the **`tickets.md`** files bel
 | `tasks/feature-history/FR-0000-bootstrap/tickets.md` |
 | `tasks/feature-history/FR-0001-hearth-platform/tickets.md` |
 | `tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md` |
+| `tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md` |

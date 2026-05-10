@@ -22,7 +22,7 @@ The primary client is an **iPhone PWA** added to the Home Screen. Mantle is ther
 
 The manifest's `display: standalone` plus the Apple meta tag is what lets "Add to Home Screen" launch Hearth without any browser UI.
 
-iPhone Safari requires **HTTPS** for service workers and Web Push. Hearth's reverse proxy (Caddy) issues a local CA cert for `hearth.local`; the cert must be trusted on the iPhone via a profile install. See [`deployment.md`](deployment.md) for the one-time trust steps.
+iPhone Safari requires **HTTPS** for service workers and Web Push. Hearth's reverse proxy (Caddy) issues a local CA cert for `hearth.home.arpa`; the cert must be trusted on the iPhone via a profile install. See [`deployment.md`](deployment.md) for the one-time trust steps.
 
 ## Layout
 

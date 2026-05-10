@@ -4,12 +4,17 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  base: '/',
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+  },
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['logo.svg'],
+      includeAssets: ['logo.svg', 'icons/*.png'],
       srcDir: 'src',
       filename: 'sw.ts',
       manifest: {
@@ -23,9 +28,9 @@ export default defineConfig({
         background_color: '#0f1115',
         theme_color: '#0f1115',
         icons: [
-          { src: '/logo.svg', sizes: '180x180', type: 'image/svg+xml', purpose: 'any' },
-          { src: '/logo.svg', sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
-          { src: '/logo.svg', sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' },
+          { src: '/logo.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
         ],
       },
       workbox: {
@@ -40,5 +45,6 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     globals: true,
+    exclude: ['**/node_modules/**', '**/dist/**', 'e2e/**'],
   },
 })

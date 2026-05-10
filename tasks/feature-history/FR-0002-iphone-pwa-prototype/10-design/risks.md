@@ -2,6 +2,8 @@
 
 Each row names a risk we believe is the biggest threat to FR-0001's "feels native on iPhone" claim, an explicit **fail trigger** so we know when the prototype has refuted the assumption, and the **amendment we'd write** if it does.
 
+**Server-first close (2026-04-30):** For **R1–R4**, record **`deferred`** in `40-prototype-report.md` with a one-line reason if **Follow-up: iPhone** was not run yet — that is **not** a failed prototype. **R5** may be marked **`pass`** on evidence of timely push to a **desktop Chromium** subscriber against the deployed Pi/Mac mini stack; mark **`pass-with-caveat`** ("APNs / iOS path not yet exercised") until the iPhone side goal runs.
+
 | ID | Risk | Fail trigger | Amendment if it fails |
 |----|------|--------------|------------------------|
 | R1 | Caddy `tls internal` certs aren't trusted by iOS Safari even after profile install. | After three independent attempts at the documented CA-trust flow, Safari still shows "Not Secure" or refuses to register the service worker. | DESIGN-FLAW vs `deployment.md` § iPhone trust workflow → switch default cert source to Tailscale-issued certs (or `mkcert` + USB-side-loaded profile). Document constraints. |

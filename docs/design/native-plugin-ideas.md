@@ -38,6 +38,7 @@ Until the repository and template exist, a plugin idea should start as a design 
 
 | Idea | Phase | Summary |
 |------|-------|---------|
+| [`local-raid-backup`](plugin-ideas/local-raid-backup.md) | Later phase | Native plugin for encrypted local-first backups to RAID-backed storage with target health validation and guided restore planning. |
 | [`remote-access`](plugin-ideas/remote-access.md) | Later phase | Native plugin that manages secure remote user/device access through a relay once Ember relay functionality exists. |
 | [`system-backup`](plugin-ideas/system-backup.md) | Later phase | Native backup plugin that snapshots hub and plugin data, encrypts with the system password, and uploads to a cloud provider. |
 

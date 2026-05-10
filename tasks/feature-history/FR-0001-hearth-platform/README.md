@@ -30,7 +30,7 @@ Stand up Hearth — a self-hosted hub for vibe-coded daily-life productivity app
 
 ## Acceptance for FR-0001 close
 
-- A fresh Pi/Mac mini can `git clone … && ./install.sh` and reach a working dashboard at `http://hearth.local/`.
+- A fresh Pi/Mac mini can `git clone … && ./install.sh` and reach a working dashboard at `http://hearth.home.arpa/`.
 - Installing the `groceries` plugin (drop-in submodule + `kindling install`) makes it appear in the dashboard nav and reachable at `/groceries/`.
 - A second hypothetical plugin can call `spark.call("groceries", "list.add", {…})` and succeed (validated via a tiny `dev-tools/spark-cli` script).
 - Mantle theme tokens visibly drive both hub and plugin UIs (no per-plugin restyling).

@@ -1,0 +1,44 @@
+name: Hub web (Mantle PWA)
+
+on:
+  push:
+    paths:
+      - 'apps/hub/web/**'
+      - '.github/workflows/hub-web-ci.yml'
+  pull_request:
+    paths:
+      - 'apps/hub/web/**'
+      - '.github/workflows/hub-web-ci.yml'
+
+jobs:
+  mantle-pwa:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/hub/web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: apps/hub/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Unit tests (Vitest)
+        run: npm test
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: Lighthouse PWA (Playwright + headless Chromium)
+        run: npm run test:e2e
