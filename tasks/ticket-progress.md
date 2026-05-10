@@ -12,7 +12,7 @@
 
 ### Parallel streams
 
-`T-FR-0002-01` and `T-FR-0002-02` are independent and can run in parallel — one builds the proxy + TLS, the other builds the static Mantle shell. Both must land before `T-FR-0002-03` (Web Push needs the SW reachable over `https://`).
+`T-FR-0002-01` and `T-FR-0002-02` are independent and can run in parallel — one builds the proxy + TLS, the other builds the static Mantle shell. **`T-FR-0003-01`** (deployment doc) has no dependency on FR-0002 and may run in the same batch. **`T-FR-0002-01`** and **`T-FR-0002-02`** must land before `T-FR-0002-03` (Web Push needs the SW reachable over `https://`).
 
 | Stream label | Ticket(s) | `FR-NNNN` | Branch / worktree | Owner / note |
 |----------------|------------|-----------|-------------------|--------------|
