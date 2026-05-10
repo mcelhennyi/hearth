@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | **`/develop-frontier 0003`:** **`T-FR-0003-01`** (primary for this batch). **FR-0002:** `T-FR-0002-02` / `T-FR-0002-01` unchanged — see HOWTO. |
-| **Active phase** | **FR-0003:** `T-FR-0003-01` TEST → DEV → VAL in **`.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/`**. **FR-0002:** prior focus. |
-| **Branch / worktree** | **FR-0003:** feature `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → `feat/FR-0003-hearth-pi-docker-cli`; ticket branch `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-01-deployment-docker-pi` (hyphenated; Git cannot use `feat/.../T-...` nested form when `feat/FR-0003-hearth-pi-docker-cli` exists as a branch). **FR-0002:** `.worktrees/FR-0002-iphone-pwa-prototype/…` as before. |
+| **Active ticket** | **`/develop-frontier 0003` (wave 2):** unblock **`T-FR-0003-01`** → **`feat/FR-0003-hearth-pi-docker-cli`** (open PR **#6** ticket branch). Next parallel FR-0003 tickets after **-01** VAL on tracker: **`T-FR-0003-02`**, **`T-FR-0003-13`**. **FR-0002:** unchanged. |
+| **Active phase** | Integrate **T-FR-0003-01**; then **TEST→DEV→VAL** for **-02** and **-13** in separate ticket worktrees. |
+| **Branch / worktree** | Feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → `feat/FR-0003-hearth-pi-docker-cli`. Ticket **-01:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-01-deployment-docker-pi` → `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/`. |
 | **Session status** | `developing` |
-| **Next agent should** | **FR-0003:** one subagent implements **`T-FR-0003-01`** through VAL; PR base **`feat/FR-0003-hearth-pi-docker-cli`**. **FR-0002:** HOWTO + `/finish-feature` when closing prototype. **FR-0001** stays parked unless registry flips. FR-0003 **not** blocked on FR-0002 by DAG — parallel capacity when staffed. |
+| **Next agent should** | Merge **PR #6** (or equivalent) into **`feat/FR-0003-hearth-pi-docker-cli`**, update **`ticket-progress`** **T-FR-0003-01** to triad **`done`**, union **`triadDone`** in **`tickets-initial.md`**, then **`/develop-frontier 0003`** again for **-02** + **-13** in parallel. |
 
 ### Parallel streams
 
@@ -18,7 +18,7 @@
 |----------------|------------|-----------|-------------------|--------------|
 | caddy-tls | `T-FR-0002-01` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/` | unassigned |
 | mantle-bones | `T-FR-0002-02` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` | unassigned |
-| deployment-docker-pi | `T-FR-0003-01` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-01-deployment-docker-pi` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/` | develop-frontier 0003 |
+| deployment-docker-pi | `T-FR-0003-01` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-01-deployment-docker-pi` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-01-deployment-docker-pi/` | PR **#6** → merge into **feat** branch to unblock **-02** / **-13** |
 
 ---
 
