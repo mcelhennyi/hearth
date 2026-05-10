@@ -40,7 +40,7 @@
 | T-FR-0003-04 | `hearth` CLI core: argparse, paths, doctor, compose passthrough | done | done | done | `FR-0003`. `deploy/hearth-cli/` + `bin/hearth`; `./develop test` passes; smoke: `hearth version`, `hearth doctor`, `hearth compose -- ps` against fixture install. |
 | T-FR-0003-05 | Plugin registry file + Compose fragment generation | done | done | done | `FR-0003`. Generator writes `state/plugins.yaml` and `compose/overrides/generated.plugins.yml`; `./develop test`, `docker compose config`, and two-fake-plugin `compose up` smoke pass. |
 | T-FR-0003-06 | `hearth --update` | done | done | done | `FR-0003`. Branch `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-06-update`; `./develop test` + dry-run VAL on temp install. |
-| T-FR-0003-07 | `hearth --plugin --add` and `list` | — | — | — | `FR-0003`. Deps: `T-FR-0003-04`, `T-FR-0003-05`. |
+| T-FR-0003-07 | `hearth --plugin --add` and `list` | done | done | done | `FR-0003`. `hearth_install.plugin_add` + Tinder MVP validation; `./develop test`; git installed in hearth-test Docker entry for clone coverage. |
 | T-FR-0003-08 | `hearth --plugin enter` | — | — | — | `FR-0003`. Deps: `T-FR-0003-07`. |
 | T-FR-0003-09 | `hearth` stack control: start/stop/restart/status/logs | — | — | — | `FR-0003`. Deps: `T-FR-0003-04`, `T-FR-0003-05`. |
 | T-FR-0003-10 | Kindling contract: `scripts/install` + `plugin` template | done | done | done | `FR-0003`. Hearth-side Kindling mirror implemented under `deploy/kindling-contract/`; Docker validation passes (`./develop test tests/test_kindling_plugin_contract.py`, `./develop test`). No upstream Kindling repo/submodule present. |

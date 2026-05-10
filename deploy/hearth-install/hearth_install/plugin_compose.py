@@ -354,3 +354,46 @@ def _optional_env(data: dict[str, Any], registry: Path, index: int) -> dict[str,
         msg = f"{registry} plugin entry {index} field env must be a mapping"
         raise PluginRegistryError(msg)
     return {key: str(env_value) for key, env_value in value.items()}
+
+
+def save_plugin_registry(heart: Path, records: list[PluginRecord]) -> Path:
+    """Overwrite ``plugins.yaml`` with validated rows (same schema-v1 dialect as parser)."""
+
+    registry = write_default_plugin_registry(heart)
+    registry.write_text(_render_registry_yaml(records), encoding="utf-8")
+    load_plugin_registry(heart)
+    return registry
+
+
+def _render_registry_yaml(records: list[PluginRecord]) -> str:
+    header = """\
+# Hearth Docker profile plugin registry (schema v1).
+# T-FR-0003-05 keeps this file first-class until hub registry sync exists.
+schema: 1
+plugins:
+"""
+    if not records:
+        return header.replace("plugins:\n", "plugins: []\n")
+
+    lines = header.rstrip("\n").splitlines()
+    for record in records:
+        dash_indent = "  "
+        field_indent = "    "
+        lines.append(f"{dash_indent}- slug: {_yaml_scalar(record.slug)}")
+        lines.append(f"{field_indent}source_git: {_yaml_scalar(record.source_git)}")
+        lines.append(f"{field_indent}enabled: {str(record.enabled).lower()}")
+        if record.pinned_ref:
+            lines.append(f"{field_indent}pinned_ref: {_yaml_scalar(record.pinned_ref)}")
+        if record.image:
+            lines.append(f"{field_indent}image: {_yaml_scalar(record.image)}")
+        if record.build:
+            lines.append(f"{field_indent}build: {_yaml_scalar(record.build)}")
+        if record.port != 8201:
+            lines.append(f"{field_indent}port: {record.port}")
+        if record.command:
+            lines.append(f"{field_indent}command: {_yaml_scalar(json.dumps(record.command))}")
+        if record.env:
+            lines.append(f"{field_indent}env:")
+            for key in sorted(record.env):
+                lines.append(f"{field_indent}  {key}: {_yaml_scalar(record.env[key])}")
+    return "\n".join(lines) + "\n"

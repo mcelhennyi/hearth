@@ -45,6 +45,28 @@
 
 ---
 
+## 2026-05-10 — T-FR-0003-07 TEST→DEV→VAL (hearth --plugin --add / list)
+
+**Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-07-plugin-add-list`  
+**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-07-plugin-add-list/`
+
+### TEST
+
+- Added `tests/test_hearth_plugin_commands.py` for classify errors, local tree add/list, shallow git clone fixtures, CLI wiring, registry serialization round-trip, and `scripts/install` execution via local stub.
+
+### DEV
+
+- `hearth_install.tinder_manifest` — MVP `tinder.toml` validation aligned with FR-0003 install needs.
+- `hearth_install.plugin_add` — classify sources (reject OCI / registry shorthand per ticket), shallow `git clone` or filesystem copy, `scripts/install`, registry append (`save_plugin_registry`), `generate_plugin_compose`, optional `docker compose up -d <slug>` when base compose exists.
+- `hearth_install.plugin_compose.save_plugin_registry` — round-trip YAML for schema v1 dialect.
+- `hearth_cli.cli` — `hearth --plugin --add <url-or-path>` and `hearth --plugin list`.
+
+### VAL
+
+- `./develop test` — PASS (24 tests). `deploy/compose/hearth-test-entry.sh` installs **`git`** in the test image once so clone-based tests run in Docker (host `python3` runs were ad hoc only).
+
+---
+
 ## 2026-05-10 — T-FR-0003-10 TEST→DEV→VAL (Kindling plugin contract)
 
 **Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-10-kindling-plugin-contract`  
