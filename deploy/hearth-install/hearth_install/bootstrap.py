@@ -1,0 +1,266 @@
+"""@HRT-OPS-003 Repo-root ``./install`` bootstrap (layout, shim, compose, first ``up``)."""
+
+from __future__ import annotations
+
+import argparse
+import os
+import shutil
+import subprocess
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Callable, TextIO
+
+from hearth_install.layout import ensure_heart_layout
+from hearth_install.plugin_compose import generate_plugin_compose
+
+_DOCKER_HINT_PI = """\
+Docker Engine is required for the non-dry-run bootstrap.
+
+Raspberry Pi OS (64-bit) quick path:
+  curl -fsSL https://get.docker.com | sudo sh
+  sudo usermod -aG docker "$USER"
+Then log out and back in so the docker group applies (non-root operator).
+
+Other distros: https://docs.docker.com/engine/install/
+"""
+
+
+def _package_templates() -> Path:
+    return Path(__file__).resolve().parent / "templates"
+
+
+def _resolve_install_root(raw: str | None, env: dict[str, str]) -> Path:
+    if raw:
+        return Path(raw).expanduser().resolve()
+    env_root = env.get("HEARTH_INSTALL_ROOT")
+    if env_root:
+        return Path(env_root).expanduser().resolve()
+    msg = "install root: pass INSTALL_DIR or set HEARTH_INSTALL_ROOT"
+    raise SystemExit(msg)
+
+
+@dataclass(frozen=True)
+class BootstrapPaths:
+    repo_root: Path
+    install_root: Path
+
+
+def plan_bootstrap(
+    paths: BootstrapPaths,
+    *,
+    hearth_ref: str,
+    dry_run: bool,
+    skip_compose_up: bool,
+) -> list[str]:
+    """Human-readable plan lines (used by ``--dry-run`` and logging)."""
+
+    heart = paths.install_root / "heart"
+    lines = [
+        f"repo root: {paths.repo_root}",
+        f"install root: {paths.install_root}",
+        f"VERSION.json hearth_ref (when created): {hearth_ref}",
+        f"ensure layout under {heart}",
+        f"write {heart / 'compose' / 'docker-compose.yml'} from packaged template",
+        f"generate {heart / 'compose' / 'overrides' / 'generated.plugins.yml'}",
+        f"symlink {heart / 'bin' / 'hearth'} -> {paths.repo_root / 'bin' / 'hearth'}",
+    ]
+    if dry_run:
+        lines.append("dry-run: no filesystem or compose changes")
+    elif skip_compose_up:
+        lines.append("skip: docker compose up -d (Docker Engine not validated)")
+        lines.append(f"will still write compose files under {heart / 'compose'}")
+    else:
+        lines.append("verify Docker Engine (docker info)")
+        lines.append(f"run: docker compose -f {heart / 'compose' / 'docker-compose.yml'} up -d")
+    lines.append(
+        "PATH: add heart/bin to your shell profile, e.g. "
+        f'export PATH="{heart}/bin:$PATH"',
+    )
+    return lines
+
+
+def verify_docker_engine(stderr: TextIO) -> bool:
+    """Return True when the CLI exists and the daemon answers ``docker info``."""
+
+    if shutil.which("docker") is None:
+        print("bootstrap: docker CLI not found on PATH.", file=stderr)
+        print(_DOCKER_HINT_PI, file=stderr)
+        return False
+    try:
+        proc = subprocess.run(
+            ["docker", "info"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        print(f"bootstrap: docker info failed: {exc}", file=stderr)
+        print(_DOCKER_HINT_PI, file=stderr)
+        return False
+    if proc.returncode != 0:
+        print("bootstrap: docker daemon not reachable (docker info failed).", file=stderr)
+        if proc.stderr.strip():
+            print(proc.stderr.strip(), file=stderr)
+        print(_DOCKER_HINT_PI, file=stderr)
+        return False
+    return True
+
+
+def install_hearth_shim(heart_bin: Path, target: Path, *, dry_run: bool) -> None:
+    """Place ``heart/bin/hearth`` pointing at the repo launcher."""
+
+    heart_bin.mkdir(parents=True, exist_ok=True)
+    shim = heart_bin / "hearth"
+    target_abs = target.resolve()
+    if dry_run:
+        return
+    if shim.is_symlink() and shim.resolve() == target_abs:
+        return
+    if shim.exists() or shim.is_symlink():
+        shim.unlink()
+    shim.symlink_to(target_abs)
+
+
+def materialize_compose_template(heart: Path, *, dry_run: bool) -> Path:
+    """Copy the packaged install compose template into ``heart/compose/``."""
+
+    src = _package_templates() / "docker-compose.install.yml"
+    dest_dir = heart / "compose"
+    dest = dest_dir / "docker-compose.yml"
+    if dry_run:
+        return dest
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(src, dest)
+    return dest
+
+
+def run_compose_up(
+    compose_file: Path,
+    *,
+    dry_run: bool,
+    runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+) -> int:
+    """``docker compose up -d`` from ``heart/compose``."""
+
+    if dry_run:
+        return 0
+    command = ["docker", "compose", "-f", str(compose_file.name), "up", "-d"]
+    proc = runner(
+        command,
+        cwd=str(compose_file.parent),
+        check=False,
+    )
+    return int(proc.returncode)
+
+
+def run_bootstrap(
+    argv: list[str] | None,
+    *,
+    stdout: TextIO | None = None,
+    stderr: TextIO | None = None,
+    env: dict[str, str] | None = None,
+    compose_runner: Callable[..., subprocess.CompletedProcess[str]] | None = None,
+) -> int:
+    """CLI entry for ``python -m hearth_install.bootstrap``."""
+
+    stdout = stdout or sys.stdout
+    stderr = stderr or sys.stderr
+    source_env = env if env is not None else dict(os.environ)
+    compose_runner = compose_runner or subprocess.run
+
+    parser = argparse.ArgumentParser(
+        description="Bootstrap a Hearth Docker-profile install (heart/ layout + compose + first up).",
+    )
+    parser.add_argument(
+        "install_dir",
+        nargs="?",
+        default=None,
+        help="Install root (parent of heart/). Defaults to HEARTH_INSTALL_ROOT.",
+    )
+    parser.add_argument(
+        "--repo-root",
+        type=Path,
+        default=None,
+        help="Hearth deploy checkout (directory containing bin/hearth). Default: infer from module location.",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print planned actions only; do not write files or run Docker.",
+    )
+    parser.add_argument(
+        "--skip-compose-up",
+        action="store_true",
+        help="Skip docker compose up -d after generating compose files.",
+    )
+    parser.add_argument(
+        "--skip-docker-check",
+        action="store_true",
+        help="Skip docker info validation (for tests or air-gapped planning).",
+    )
+    parser.add_argument(
+        "--hearth-ref",
+        default="unknown",
+        help='Git ref recorded in VERSION.json when created (default: "%(default)s").',
+    )
+    ns = parser.parse_args(argv)
+
+    repo_root = ns.repo_root
+    if repo_root is None:
+        # deploy/hearth-install/hearth_install/bootstrap.py -> parents[2] = repo root
+        repo_root = Path(__file__).resolve().parents[3]
+    repo_root = repo_root.resolve()
+
+    try:
+        install_root = _resolve_install_root(ns.install_dir, source_env)
+    except SystemExit as exc:
+        print(str(exc), file=stderr)
+        return 2
+
+    paths = BootstrapPaths(repo_root=repo_root, install_root=install_root)
+    for line in plan_bootstrap(
+        paths,
+        hearth_ref=ns.hearth_ref,
+        dry_run=ns.dry_run,
+        skip_compose_up=ns.skip_compose_up,
+    ):
+        print(line, file=stdout)
+
+    if ns.dry_run:
+        print("dry-run: no changes applied.", file=stdout)
+        return 0
+
+    heart = ensure_heart_layout(install_root, hearth_ref=ns.hearth_ref)
+    materialize_compose_template(heart, dry_run=False)
+    generate_plugin_compose(heart)
+    launcher = repo_root / "bin" / "hearth"
+    if not launcher.is_file():
+        print(f"bootstrap: missing repo launcher {launcher}", file=stderr)
+        return 1
+    install_hearth_shim(heart / "bin", launcher, dry_run=False)
+
+    compose_file = heart / "compose" / "docker-compose.yml"
+    if ns.skip_compose_up:
+        print(f"bootstrap: compose files ready at {compose_file.parent}", file=stdout)
+        return 0
+
+    if not ns.skip_docker_check:
+        if not verify_docker_engine(stderr):
+            return 1
+
+    code = run_compose_up(compose_file, dry_run=False, runner=compose_runner)
+    if code != 0:
+        print(f"bootstrap: docker compose up exited {code}", file=stderr)
+    else:
+        print("bootstrap: docker compose up -d finished.", file=stdout)
+    return code
+
+
+def main() -> None:
+    raise SystemExit(run_bootstrap(sys.argv[1:]))
+
+
+if __name__ == "__main__":
+    main()
