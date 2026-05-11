@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -12,10 +13,23 @@ import urllib.request
 from pathlib import Path
 from typing import NoReturn, TextIO
 
-from hearth_install.plugin_add import PluginAddError, add_plugin_from_source, format_plugin_list_lines
-from hearth_install.plugin_compose import PluginRegistryError
+from hearth_install.plugin_add import (
+    PluginAddError,
+    add_plugin_from_source,
+    format_plugin_list_lines,
+)
+from hearth_install.plugin_compose import PluginRegistryError, load_plugin_registry
+from hearth_install.plugin_session import (
+    FROM_ENV,
+    STACK_ENV,
+    prepare_enter_environment,
+)
 from hearth_install.tinder_manifest import TinderManifestError
-from hearth_install.version_manifest import VersionManifestError, VersionManifestV1, read_version_manifest
+from hearth_install.version_manifest import (
+    VersionManifestError,
+    VersionManifestV1,
+    read_version_manifest,
+)
 
 from hearth_cli import update_cmd
 from hearth_cli.install_context import ResolvedInstall, resolve_install
@@ -413,6 +427,131 @@ def cmd_plugin_list(resolved: ResolvedInstall, stdout: TextIO, stderr: TextIO) -
     return 0
 
 
+def _plugin_enter_candidates(heart: Path) -> list[str]:
+    try:
+        rows = load_plugin_registry(heart)
+    except (PluginRegistryError, OSError):
+        rows = []
+    if rows:
+        return [record.slug for record in rows]
+
+    root = heart / "plugins"
+    if not root.is_dir():
+        return []
+    slugs: list[str] = []
+    for child in sorted(root.iterdir()):
+        if child.is_dir() and (child / "tinder.toml").is_file():
+            slugs.append(child.name)
+    return slugs
+
+
+def _prompt_plugin_slug(heart: Path, stdout: TextIO, stderr: TextIO) -> str | None:
+    candidates = _plugin_enter_candidates(heart)
+    if not candidates:
+        print(
+            "hearth --plugin enter: no plugins found "
+            "(expected registry rows or heart/plugins/*/tinder.toml).",
+            file=stderr,
+        )
+        return None
+
+    print("Select a plugin (number):", file=stdout)
+    for idx, slug in enumerate(candidates, start=1):
+        print(f"  [{idx}] {slug}", file=stdout)
+    try:
+        raw = input().strip()
+    except EOFError:
+        print("hearth --plugin enter: unexpected EOF while reading selection.", file=stderr)
+        return None
+    if not raw.isdigit():
+        print(f"hearth --plugin enter: expected a number, got {raw!r}.", file=stderr)
+        return None
+    choice = int(raw, 10)
+    if choice < 1 or choice > len(candidates):
+        print(f"hearth --plugin enter: selection out of range: {choice}.", file=stderr)
+        return None
+    return candidates[choice - 1]
+
+
+def _emit_noninteractive_enter_instructions(plugin_dir: Path, stdout: TextIO) -> int:
+    env = os.environ.copy()
+    prepare_enter_environment(env, from_dir=Path.cwd())
+    print(
+        "hearth --plugin enter: non-interactive terminal; run:\n"
+        f"  cd {plugin_dir}\n"
+        f"  export {FROM_ENV}={shlex.quote(env[FROM_ENV])}\n"
+        f"  export {STACK_ENV}={shlex.quote(env[STACK_ENV])}\n",
+        file=stdout,
+    )
+    print(
+        "Use `./plugin --exit` from the plugin directory once `hearth-ops` "
+        "is on `PYTHONPATH` (same as the `hearth` CLI).",
+        file=stdout,
+    )
+    return 0
+
+
+def cmd_plugin_enter(
+    resolved: ResolvedInstall,
+    slug: str | None,
+    *,
+    stdout: TextIO,
+    stderr: TextIO,
+) -> int:
+    heart = resolved.heart_dir
+    if not heart.is_dir():
+        print(f"hearth --plugin enter: missing heart directory: {heart}", file=stderr)
+        return 1
+
+    chosen = slug
+    if chosen is None:
+        if not sys.stdin.isatty() or not sys.stdout.isatty():
+            print(
+                "hearth --plugin enter: --slug is required when stdin/stdout is not a TTY.",
+                file=stderr,
+            )
+            print(
+                "(Interactive bash/zsh: omit --slug for a numbered picker.)",
+                file=stderr,
+            )
+            return 2
+        chosen = _prompt_plugin_slug(heart, stdout, stderr)
+        if chosen is None:
+            return 1
+
+    plugin_dir = (heart / "plugins" / chosen).resolve()
+    if not plugin_dir.is_dir() or not (plugin_dir / "tinder.toml").is_file():
+        print(f"hearth --plugin enter: not a plugin directory: {plugin_dir}", file=stderr)
+        return 1
+
+    if not sys.stdin.isatty() or not sys.stdout.isatty():
+        return _emit_noninteractive_enter_instructions(plugin_dir, stdout)
+
+    env = os.environ.copy()
+    prepare_enter_environment(env, from_dir=Path.cwd())
+    try:
+        os.chdir(plugin_dir)
+    except OSError as exc:
+        print(f"hearth --plugin enter: cannot cd to {plugin_dir}: {exc}", file=stderr)
+        return 1
+
+    shell = os.environ.get("SHELL") or "/bin/bash"
+    if not Path(shell).is_file():
+        print(
+            f"hearth --plugin enter: SHELL {shell!r} is not an executable file; "
+            "set SHELL to bash or zsh.",
+            file=stderr,
+        )
+        return 1
+
+    try:
+        os.execve(shell, [shell, "-i"], env)
+    except OSError as exc:
+        print(f"hearth --plugin enter: cannot exec {shell!r}: {exc}", file=stderr)
+        return 1
+    return 0
+
+
 def cmd_plugin_add(
     resolved: ResolvedInstall,
     source: str,
@@ -450,7 +589,10 @@ def cmd_plugin_argv(
 ) -> int:
     install_raw = parse_install_only(prefix)
     if not suffix:
-        print("hearth --plugin requires --add GIT_URL [...] or the list verb.", file=stderr)
+        print(
+            "hearth --plugin requires `list`, `enter`, `--add GIT_URL_OR_PATH`, or similar.",
+            file=stderr,
+        )
         return 2
 
     if suffix[0] == "list":
@@ -459,6 +601,24 @@ def cmd_plugin_argv(
             return 2
         resolved = resolve_install(install_raw)
         return cmd_plugin_list(resolved, stdout, stderr)
+
+    if suffix[0] == "enter":
+        rest = suffix[1:]
+        slug: str | None = None
+        idx = 0
+        while idx < len(rest):
+            if rest[idx] == "--slug":
+                if idx + 1 >= len(rest):
+                    print("hearth --plugin enter: `--slug` requires a value.", file=stderr)
+                    return 2
+                slug = rest[idx + 1]
+                idx += 2
+                continue
+            print(f"hearth --plugin enter: unknown argument {rest[idx]!r}.", file=stderr)
+            return 2
+
+        resolved = resolve_install(install_raw)
+        return cmd_plugin_enter(resolved, slug, stdout=stdout, stderr=stderr)
 
     if len(suffix) >= 2 and suffix[0] == "--add":
         source = suffix[1]
@@ -475,7 +635,10 @@ def cmd_plugin_argv(
             start_if_enabled=True,
         )
 
-    print("hearth --plugin: expected `list` or `--add GIT_URL_OR_PATH`.", file=stderr)
+    print(
+        "hearth --plugin: expected `list`, `enter [--slug SLUG]`, or `--add GIT_URL_OR_PATH`.",
+        file=stderr,
+    )
     return 2
 
 

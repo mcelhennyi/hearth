@@ -8,7 +8,6 @@ import subprocess
 from pathlib import Path
 
 import pytest
-
 from hearth_kindling_contract import KindlingTemplateError, render_plugin_template
 
 
@@ -50,6 +49,24 @@ def test_rendered_plugin_common_flags_and_passthrough_work(tmp_path: Path) -> No
         text=True,
     )
     assert "sample-plugin admin passthrough: doctor" in passthrough.stdout
+
+
+def test_rendered_plugin_exit_errors_without_enter_session(tmp_path: Path) -> None:
+    import hearth_install
+
+    pkg_parent = str(Path(hearth_install.__file__).resolve().parents[1])
+    plugin_root = render_plugin_template(tmp_path, slug="sample-plugin")
+    env = os.environ.copy()
+    env["PYTHONPATH"] = pkg_parent
+    completed = subprocess.run(
+        [str(plugin_root / "plugin"), "--exit"],
+        cwd=plugin_root,
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 1
+    assert "not inside" in completed.stderr
 
 
 def test_rendered_install_hook_delegates_to_admin_install(tmp_path: Path) -> None:

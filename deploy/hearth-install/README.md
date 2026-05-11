@@ -1,6 +1,6 @@
 # `deploy/hearth-install/` — Docker profile `heart/` layout
 
-**Tickets:** [`T-FR-0003-02`](../../tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md#t-fr-0003-02--install-layout-heart-versionjson-readme), [`T-FR-0003-05`](../../tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md#t-fr-0003-05--plugin-registry-file--compose-fragment-generation), [`T-FR-0003-03`](../../tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md#t-fr-0003-03--install-bootstrap-docker--layout--first-compose-up)
+**Tickets:** [`T-FR-0003-02`](../../tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md#t-fr-0003-02--install-layout-heart-versionjson-readme), [`T-FR-0003-05`](../../tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md#t-fr-0003-05--plugin-registry-file--compose-fragment-generation), [`T-FR-0003-03`](../../tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md#t-fr-0003-03--install-bootstrap-docker--layout--first-compose-up), [`T-FR-0003-08`](../../tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md#t-fr-0003-08--hearth--plugin-enter)
 
 ## Repo-root `./install` (bootstrap)
 
@@ -55,3 +55,11 @@ plugins:
 ```
 
 Design authority: **`docs/design/deployment.md`** (Docker profile, `heart/` mapping table).
+
+## `hearth --plugin enter` / `./plugin --exit` (T-FR-0003-08)
+
+From an interactive **bash** or **zsh** session, `hearth --plugin enter` (optional `--slug`; otherwise a numbered picker) **`exec`s your login shell** (`$SHELL -i`) with `cwd` under **`heart/plugins/<slug>/`** and records the previous directory in **`HEARTH_PLUGIN_ENTER_FROM`** plus a JSON stack in **`HEARTH_PLUGIN_ENTER_STACK`** so **`./plugin --exit`** (Kindling template / per-plugin shim) can **`chdir`** back.
+
+If **stdin/stdout is not a TTY** (scripts/CI), pass **`--slug`** and **`hearth`** prints **`cd`** + **`export`** lines instead of replacing the process.
+
+Full **enter → `./plugin status` → `--exit`** still requires a TTY (or a manual subshell); automated coverage is via **`tests/test_plugin_enter_session.py`** and CLI **`execve`** checks in **`tests/test_hearth_plugin_commands.py`**.
