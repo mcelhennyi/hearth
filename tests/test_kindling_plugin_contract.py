@@ -29,26 +29,43 @@ def test_render_plugin_template_creates_plugin_executable_and_install_hook(
     assert (plugin_root / "sample_plugin" / "admin.py").is_file()
 
 
-def test_rendered_plugin_common_flags_and_passthrough_work(tmp_path: Path) -> None:
+def test_rendered_plugin_help_works_without_heart_layout(tmp_path: Path) -> None:
     plugin_root = render_plugin_template(tmp_path, slug="sample-plugin")
 
-    status = subprocess.run(
-        [str(plugin_root / "plugin"), "--status"],
-        check=True,
+    proc = subprocess.run(
+        [str(plugin_root / "plugin"), "--help"],
         cwd=plugin_root,
         capture_output=True,
         text=True,
     )
-    assert "sample-plugin: --status handled by template stub" in status.stdout
+    assert proc.returncode == 0
+    assert "sample-plugin" in proc.stdout
 
-    passthrough = subprocess.run(
-        [str(plugin_root / "plugin"), "--", "doctor"],
-        check=True,
+
+def test_rendered_plugin_ops_fail_without_registry(tmp_path: Path) -> None:
+    plugin_root = render_plugin_template(tmp_path, slug="sample-plugin")
+    proc = subprocess.run(
+        [str(plugin_root / "plugin"), "--disable"],
         cwd=plugin_root,
         capture_output=True,
         text=True,
     )
-    assert "sample-plugin admin passthrough: doctor" in passthrough.stdout
+    assert proc.returncode == 1
+    assert "heart/plugins" in proc.stderr or "registered" in proc.stderr
+
+
+def test_rendered_plugin_passthrough_with_heart_layout(tmp_path: Path) -> None:
+    from test_plugin_executable import _layout_with_plugin
+
+    _root, plugin_exe = _layout_with_plugin(tmp_path)
+    proc = subprocess.run(
+        [str(plugin_exe), "--", "doctor"],
+        cwd=tmp_path / "heart" / "plugins" / "sample-plugin",
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode == 0
+    assert "admin passthrough: doctor" in proc.stdout
 
 
 def test_rendered_plugin_exit_errors_without_enter_session(tmp_path: Path) -> None:

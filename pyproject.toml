@@ -17,7 +17,7 @@ hearth = "hearth_cli.cli:main"
 test = ["pytest>=8"]
 
 [tool.setuptools.packages.find]
-where = ["deploy/hearth-install", "deploy/hearth-cli", "deploy/kindling-contract"]
+where = ["deploy/hearth-install", "deploy/hearth-cli", "deploy/kindling-contract", "deploy/hearth-plugin-cli"]
 
 [tool.setuptools.package-data]
 hearth_install = ["templates/*"]
@@ -25,7 +25,7 @@ hearth_kindling_contract = ["templates/plugin-python/*", "templates/plugin-pytho
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["deploy/hearth-install", "deploy/hearth-cli", "deploy/kindling-contract"]
+pythonpath = ["deploy/hearth-install", "deploy/hearth-cli", "deploy/kindling-contract", "deploy/hearth-plugin-cli"]
 
 [tool.ruff]
 line-length = 100
@@ -33,6 +33,7 @@ src = [
     "deploy/hearth-install/hearth_install",
     "deploy/hearth-cli/hearth_cli",
     "deploy/kindling-contract/hearth_kindling_contract",
+    "deploy/hearth-plugin-cli/hearth_plugin_cli",
     "tests",
 ]
 

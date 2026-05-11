@@ -82,9 +82,16 @@ def assemble_docker_compose_command(
         "compose",
         "-f",
         str(resolved.compose_file),
-        "--project-name",
-        compose_project_name(env=env),
     ]
+    overrides = resolved.heart_dir / "compose" / "overrides" / "generated.plugins.yml"
+    if overrides.is_file():
+        cmd.extend(["-f", str(overrides)])
+    cmd.extend(
+        [
+            "--project-name",
+            compose_project_name(env=env),
+        ],
+    )
     env_file = resolve_compose_env_file(resolved, env=env)
     if env_file is not None:
         cmd.extend(["--env-file", str(env_file)])

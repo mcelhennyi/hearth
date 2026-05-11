@@ -210,6 +210,30 @@ Amended **`docs/design/deployment.md`**: Pi **Docker profile** with mermaid boot
 
 ---
 
+## 2026-05-10 — T-FR-0003-11 TEST→DEV→VAL (per-plugin `plugin` executable)
+
+**Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-11-plugin-executable`  
+**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-11-plugin-executable/`
+
+### TEST
+
+- Added `tests/test_plugin_executable.py` (subprocess + in-process): lifecycle flags, passthrough, disable/enable round-trip against `generated.plugins.yml`, reset/remove/exit, help without full install context.
+- Adjusted `tests/test_kindling_plugin_contract.py` for Kindling template + registrar layout.
+
+### DEV
+
+- New `deploy/hearth-plugin-cli/hearth_plugin_cli` (`run_plugin_cli`) shared by the Kindling `plugin` shim.
+- `hearth_install/plugin_lifecycle.py`: `set_plugin_enabled`, `remove_plugin_from_install`.
+- Kindling template `plugin` executable delegates to `hearth_plugin_cli`.
+- `hearth_cli.assemble_docker_compose_command` appends `compose/overrides/generated.plugins.yml` when present so `plugin --start` / `plugin --stop` match the add-flow compose graph.
+
+### VAL
+
+- `docker compose -f deploy/compose/docker-compose.yml --profile test run --rm hearth-test` — full pytest suite **PASS** (66 tests).
+- Automated VAL covers disable→generated-compose→enable; host Docker daemon is **not** required for closure (docker subprocess mocked or unused in those asserts). Real-operator `docker compose stop` after disable is exercised when the daemon is available.
+
+---
+
 ## 2026-05-09 — Intake + design + tickets (agent)
 
 **Stage:** Stage 0–2 (intake, L0 design, ticket DAG)

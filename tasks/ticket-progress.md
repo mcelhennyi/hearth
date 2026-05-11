@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | **`/develop-frontier 0003` (wave 6):** **`T-FR-0003-08`** (`hearth --plugin enter`) and **`T-FR-0003-11`** (per-plugin `plugin` executable) in parallel from **`feat/FR-0003-hearth-pi-docker-cli`**. |
-| **Active phase** | **TEST→DEV→VAL** for **-08** and **-11** in separate ticket worktrees. |
+| **Active ticket** | **FR-0003 wave 6 integrated:** **`T-FR-0003-08`** and **`T-FR-0003-11`** merged into **`feat/FR-0003-hearth-pi-docker-cli`**. **`T-FR-0003-12`** is now dependency-eligible. |
+| **Active phase** | `handoff` — wave 6 merged; integrated Compose test suite passed (`76 passed`). |
 | **Branch / worktree** | Feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → `feat/FR-0003-hearth-pi-docker-cli`. Ticket branches use **hyphenated** suffixes because Git cannot nest `feat/.../T-...`. |
-| **Session status** | `developing` |
-| **Next agent should** | One stream each for **`T-FR-0003-08`** at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-08-plugin-enter/` and **`T-FR-0003-11`** at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-11-plugin-executable/`. PR base **`feat/FR-0003-hearth-pi-docker-cli`**; touch **only** that ticket's Progress row. |
+| **Session status** | `handoff` |
+| **Next agent should** | Run `/identify-frontier` or start **`T-FR-0003-12`** (`Smoke tests + ARM CI for install path`) from the FR-0003 feature branch; FR-0002 **`T-FR-0002-01`** VAL and **`T-FR-0002-02`** remain eligible in parallel. |
 
 ### Parallel streams
 
@@ -18,8 +18,7 @@
 |----------------|------------|-----------|-------------------|--------------|
 | caddy-tls | `T-FR-0002-01` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/` | unassigned |
 | mantle-bones | `T-FR-0002-02` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` | unassigned |
-| plugin-enter | `T-FR-0003-08` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-08-plugin-enter` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-08-plugin-enter/` | develop-frontier wave 6 |
-| plugin-executable | `T-FR-0003-11` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-11-plugin-executable` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-11-plugin-executable/` | develop-frontier wave 6 |
+| install-smoke-arm-ci | `T-FR-0003-12` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-12-install-smoke-arm-ci` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-12-install-smoke-arm-ci/` | eligible after wave 6 |
 
 ---
 
@@ -42,7 +41,7 @@
 | T-FR-0003-08 | `hearth --plugin enter` | done | done | done | `FR-0003`. Branch `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-08-plugin-enter`; VAL: Docker `hearth-test` 59 passed; manual REPL enter/exit noted in `serial-diary.md`. |
 | T-FR-0003-09 | `hearth` stack control: start/stop/restart/status/logs | done | done | done | `FR-0003`. `hearth start|stop|restart|status|logs` + shared compose project/env-file; hub `/api/health` optional. VAL: `./develop test`. |
 | T-FR-0003-10 | Kindling contract: `scripts/install` + `plugin` template | done | done | done | `FR-0003`. Hearth-side Kindling mirror implemented under `deploy/kindling-contract/`; Docker validation passes (`./develop test tests/test_kindling_plugin_contract.py`, `./develop test`). No upstream Kindling repo/submodule present. |
-| T-FR-0003-11 | Per-plugin `plugin` executable: lifecycle + passthrough | — | — | — | `FR-0003`. Deps: `T-FR-0003-07`, `T-FR-0003-10`. |
+| T-FR-0003-11 | Per-plugin `plugin` executable: lifecycle + passthrough | done | done | done | `FR-0003`. `deploy/hearth-plugin-cli`, Kindling `plugin` shim, `plugin_lifecycle.py`, compose override `-f`; VAL: Docker `hearth-test` pytest (66 passed). |
 | T-FR-0003-12 | Smoke tests + ARM CI for install path | — | — | — | `FR-0003`. Deps: `T-FR-0003-03`, `T-FR-0003-06`, `T-FR-0003-08`, `T-FR-0003-09`, `T-FR-0003-11`. |
 | T-FR-0003-13 | Project rules: Hearth CLI parity (Cursor + Claude) | done | done | done | `FR-0003`. Deps: `T-FR-0003-01`. Rules + FR-0003 README process rule; PR into `feat/FR-0003-hearth-pi-docker-cli`. |
 | T-FR-0001-01 | Repo scaffold and Compose dev loop | — | — | — | `FR-0001` parked — eligible after FR-0002 closes. |
@@ -61,6 +60,6 @@
 ## How to choose next work
 
 1. While FR-0002 is `in-progress`: pick the smallest **`T-FR-0002-xx`** with all `Deps:` satisfied. Ignore FR-0001 tickets — they are parked.
-2. **FR-0003 (`hearth` / `./install` / per-plugin `plugin`):** **`in-progress`** (2026-05-10). Feature branch **`feat/FR-0003-hearth-pi-docker-cli`** is valid; scheduling-only “park until FR-0002” is **superseded** — FR-0003 has **no ticket dependency** on FR-0002 (hub/Mantle placeholders per design). After wave 5, **`T-FR-0003-08`** and **`T-FR-0003-11`** are the next dependency-valid parallel set; **`T-FR-0003-12`** remains blocked on **-08** and **-11**.
+2. **FR-0003 (`hearth` / `./install` / per-plugin `plugin`):** **`in-progress`** (2026-05-10). Feature branch **`feat/FR-0003-hearth-pi-docker-cli`** is valid; scheduling-only “park until FR-0002” is **superseded** — FR-0003 has **no ticket dependency** on FR-0002 (hub/Mantle placeholders per design). After wave 6, **`T-FR-0003-12`** is dependency-valid as the capstone smoke/ARM CI ticket.
 3. After FR-0002 closes: re-flip FR-0001 to `design`/`in-progress` in `REGISTRY.md`, apply any FR-0002-driven amendments, and start `T-FR-0001-01`. **FR-0003** may also overlap FR-0001 once work is staffed (see `tasks/feature-history/FR-0003-hearth-pi-docker-cli/README.md`).
 4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
