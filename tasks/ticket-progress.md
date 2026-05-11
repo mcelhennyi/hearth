@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | **`T-FR-0003-12`** complete on branch **`feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-12-smoke-arm-ci`** — merge into **`feat/FR-0003-hearth-pi-docker-cli`**, then **`/finish-feature`** (PR to **`main`**) when ready. |
-| **Active phase** | `integrating` — capstone smoke + CI landed; feature integration merge pending. |
-| **Branch / worktree** | Ticket: `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-12-smoke-arm-ci/` → `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-12-smoke-arm-ci`. Feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → `feat/FR-0003-hearth-pi-docker-cli`. |
+| **Active ticket** | **FR-0003** — all **`T-FR-0003-xx`** implementation rows are **VAL `done`** on **`feat/FR-0003-hearth-pi-docker-cli`** (including **`T-FR-0003-12`** merged from **`feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-12-smoke-arm-ci`**). |
+| **Active phase** | `integrating` — push feature + ticket branches, then **`/finish-feature`** (PR **`feat/FR-0003-hearth-pi-docker-cli` → `main`**). |
+| **Branch / worktree** | Feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → **`feat/FR-0003-hearth-pi-docker-cli`**. Ticket branch retained for audit: **`feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-12-smoke-arm-ci`**. |
 | **Session status** | `integrating` |
-| **Next agent should** | Merge **`T-FR-0003-12`** ticket branch into **`feat/FR-0003-hearth-pi-docker-cli`**, run **`./develop test`** on the feature worktree, push feature branch, update feature **`CURRENT.md`**, then open/update PR to **`main`**. FR-0002 streams unchanged. |
+| **Next agent should** | **`git push`** **`feat/FR-0003-hearth-pi-docker-cli`** and the **`-12`** ticket branch to **`origin`**, run **`./develop test`** on the feature worktree if needed, then **`/finish-feature`** or **`gh pr create` / update** toward **`main`**. FR-0002 unchanged. |
 
 ### Parallel streams
 
@@ -18,7 +18,7 @@
 |----------------|------------|-----------|-------------------|--------------|
 | caddy-tls | `T-FR-0002-01` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/` | unassigned |
 | mantle-bones | `T-FR-0002-02` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` | unassigned |
-| install-smoke-arm-ci | `T-FR-0003-12` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-12-smoke-arm-ci` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-12-smoke-arm-ci/` | VAL done; merge to feature branch |
+| install-smoke-arm-ci | `T-FR-0003-12` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-12-smoke-arm-ci` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-12-smoke-arm-ci/` | Merged into **`feat/FR-0003-hearth-pi-docker-cli`** (2026-05-11) |
 
 ---
 
@@ -60,6 +60,6 @@
 ## How to choose next work
 
 1. While FR-0002 is `in-progress`: pick the smallest **`T-FR-0002-xx`** with all `Deps:` satisfied. Ignore FR-0001 tickets — they are parked.
-2. **FR-0003 (`hearth` / `./install` / per-plugin `plugin`):** **`in-progress`** (2026-05-10). Feature branch **`feat/FR-0003-hearth-pi-docker-cli`** is valid; scheduling-only “park until FR-0002” is **superseded** — FR-0003 has **no ticket dependency** on FR-0002 (hub/Mantle placeholders per design). After wave 6, **`T-FR-0003-12`** is dependency-valid as the capstone smoke/ARM CI ticket.
+2. **FR-0003 (`hearth` / `./install` / per-plugin `plugin`):** All **`T-FR-0003-xx`** tickets are **VAL `done`** on **`feat/FR-0003-hearth-pi-docker-cli`** (including **`T-FR-0003-12`** smoke + ARM CI, merged 2026-05-11). Next: **`/finish-feature`** (PR to **`main`**) and **`90-closeout.md`** when the team closes the FR line.
 3. After FR-0002 closes: re-flip FR-0001 to `design`/`in-progress` in `REGISTRY.md`, apply any FR-0002-driven amendments, and start `T-FR-0001-01`. **FR-0003** may also overlap FR-0001 once work is staffed (see `tasks/feature-history/FR-0003-hearth-pi-docker-cli/README.md`).
 4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
