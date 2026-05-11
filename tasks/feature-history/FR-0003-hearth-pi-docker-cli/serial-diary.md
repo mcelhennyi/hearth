@@ -210,6 +210,27 @@ Amended **`docs/design/deployment.md`**: Pi **Docker profile** with mermaid boot
 
 ---
 
+## 2026-05-10 — T-FR-0003-12 TEST→DEV→VAL (smoke tests + ARM CI)
+
+**Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-12-smoke-arm-ci`  
+**Worktree:** `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-12-smoke-arm-ci/`
+
+### TEST
+
+- Added `.github/workflows/hearth-install-smoke.yml` (matrix: `ubuntu-latest`, `ubuntu-24.04-arm`) invoking **`scripts/ci/hearth-install-smoke.sh`**.
+- Script skips `docker compose config` when the Docker CLI is absent; `hearth doctor` may exit non-zero without Docker — workflow still passes on minimal hosts.
+
+### DEV
+
+- **`scripts/ci/hearth-install-smoke.sh`**: end-to-end host smoke — `./install --dry-run`, `./install` with `--skip-docker-check --skip-compose-up`, `hearth version`, `hearth doctor`, `hearth --plugin list`, optional compose config validation under the materialized **`heart/compose/`** tree.
+
+### VAL
+
+- Local (macOS, Docker Desktop): `./scripts/ci/hearth-install-smoke.sh` — **PASS** (full path including `docker compose config`).
+- **Pi hardware:** not exercised in this session; operator checklist: run the same script on a Pi-class host after `./install` (non–dry-run) per `docs/design/deployment.md` Docker profile, and record model + duration here when available.
+
+---
+
 ## 2026-05-10 — T-FR-0003-11 TEST→DEV→VAL (per-plugin `plugin` executable)
 
 **Branch:** `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-11-plugin-executable`  
