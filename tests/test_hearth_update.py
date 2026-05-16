@@ -13,16 +13,16 @@ from hearth_cli import cli
 from hearth_cli.update_cmd import run_update
 
 
-def _make_version(heart: Path, *, ref: str = "aaa") -> None:
-    heart.mkdir(parents=True, exist_ok=True)
-    (heart / "VERSION.json").write_text(
+def _make_version(hearth: Path, *, ref: str = "aaa") -> None:
+    hearth.mkdir(parents=True, exist_ok=True)
+    (hearth / "VERSION.json").write_text(
         json.dumps({"schema": 1, "hearth_ref": ref}) + "\n",
         encoding="utf-8",
     )
-    (heart / "compose").mkdir(parents=True, exist_ok=True)
-    (heart / "state").mkdir(parents=True, exist_ok=True)
-    (heart / "plugins").mkdir(parents=True, exist_ok=True)
-    (heart / "compose" / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
+    (hearth / "compose").mkdir(parents=True, exist_ok=True)
+    (hearth / "state").mkdir(parents=True, exist_ok=True)
+    (hearth / "plugins").mkdir(parents=True, exist_ok=True)
+    (hearth / "compose" / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
 
 
 def _fake_completed(code: int = 0, stdout: str = "", stderr: str = "") -> subprocess.CompletedProcess[str]:
@@ -31,8 +31,8 @@ def _fake_completed(code: int = 0, stdout: str = "", stderr: str = "") -> subpro
 
 def test_update_dry_run_skips_mutations(tmp_path: Path) -> None:
     root = tmp_path
-    heart = root / "heart"
-    _make_version(heart)
+    hearth = root / "hearth"
+    _make_version(hearth)
     calls: list[tuple[list[str], Path | None]] = []
 
     def fake_run(argv: list[str], cwd: Path | None) -> subprocess.CompletedProcess[str]:
@@ -56,8 +56,8 @@ def test_update_dry_run_skips_mutations(tmp_path: Path) -> None:
 
 def test_update_pull_unchanged_deploy_ref_writes_compose_and_composes_up(tmp_path: Path) -> None:
     root = tmp_path
-    heart = root / "heart"
-    _make_version(heart)
+    hearth = root / "hearth"
+    _make_version(hearth)
     head_calls = 0
 
     def fake_run(argv: list[str], cwd: Path | None) -> subprocess.CompletedProcess[str]:
@@ -82,14 +82,14 @@ def test_update_pull_unchanged_deploy_ref_writes_compose_and_composes_up(tmp_pat
 
     assert code == 0
     assert "unchanged (aaa1111)" in out.getvalue()
-    assert (heart / "compose" / "overrides" / "generated.plugins.yml").is_file()
+    assert (hearth / "compose" / "overrides" / "generated.plugins.yml").is_file()
     assert head_calls == 2
 
 
 def test_update_changed_deploy_ref_updates_version_json(tmp_path: Path) -> None:
     root = tmp_path
-    heart = root / "heart"
-    _make_version(heart, ref="oldref")
+    hearth = root / "hearth"
+    _make_version(hearth, ref="oldref")
     head_i = 0
 
     def fake_run(argv: list[str], cwd: Path | None) -> subprocess.CompletedProcess[str]:
@@ -111,15 +111,15 @@ def test_update_changed_deploy_ref_updates_version_json(tmp_path: Path) -> None:
     code = run_update(resolved, dry_run=False, stdout=out, stderr=err, run_proc=fake_run)
 
     assert code == 0
-    data = json.loads((heart / "VERSION.json").read_text(encoding="utf-8"))
+    data = json.loads((hearth / "VERSION.json").read_text(encoding="utf-8"))
     assert data["hearth_ref"] == "222"
     assert "111 -> 222" in out.getvalue()
 
 
 def test_update_fails_without_git(tmp_path: Path) -> None:
     root = tmp_path
-    heart = root / "heart"
-    _make_version(heart)
+    hearth = root / "hearth"
+    _make_version(hearth)
 
     def fake_run(argv: list[str], cwd: Path | None) -> subprocess.CompletedProcess[str]:
         if argv[:3] == ["git", "rev-parse", "--show-toplevel"]:
@@ -140,8 +140,8 @@ def test_cli_update_runs(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     root = tmp_path
-    heart = root / "heart"
-    _make_version(heart)
+    hearth = root / "hearth"
+    _make_version(hearth)
     head_i = 0
 
     def fake_run(argv: list[str], cwd: Path | None) -> subprocess.CompletedProcess[str]:

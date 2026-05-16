@@ -14,7 +14,7 @@ New **operator-facing** platform behavior for this line of work should ship thro
 
 ## One-screen summary
 
-Deliver a **Docker Compose–first** production install path for Raspberry Pi class hosts: a repo-root **`./install`** bootstrap (system prep including Docker Engine where needed, layout under **`<install-dir>/heart`**, first boot via Compose), a user-facing **`hearth`** command (update, plugin add/list/enter, stack status/logs/start/stop, doctor, compose passthrough), and a per-plugin **`plugin`** executable under **`<install-dir>/heart/plugins/<slug>/plugin`** with lifecycle and admin passthrough — aligned with Kindling’s **`install`** hook for plugins.
+Deliver a **Docker Compose–first** production install path for Raspberry Pi class hosts: a repo-root **`./install`** bootstrap (system prep including Docker Engine where needed, layout under **`<install-dir>/hearth`**, first boot via Compose), a user-facing **`hearth`** command (update, plugin add/list/enter, stack status/logs/start/stop, doctor, compose passthrough), and a per-plugin **`plugin`** executable under **`<install-dir>/hearth/plugins/<slug>/plugin`** with lifecycle and admin passthrough — aligned with Kindling’s **`install`** hook for plugins.
 
 **Design tension (resolved in tickets):** [`docs/design/deployment.md`](../../../docs/design/deployment.md) today emphasizes **systemd + bare metal** for Pi; this feature **adds** a documented Docker-on-Pi profile and amends deployment authority so both paths are explicit (see [T-FR-0003-01](tickets.md#t-fr-0003-01--design-contract-amend-deployment-for-docker-on-pi)).
 
@@ -29,7 +29,7 @@ Deliver a **Docker Compose–first** production install path for Raspberry Pi cl
 | [`serial-diary.md`](serial-diary.md) | Serial session log |
 | [`handoffs/2026-05-16-finish-feature.md`](handoffs/2026-05-16-finish-feature.md) | Finish-feature integration handoff (PR #13) |
 | [`../../../scripts/ci/hearth-install-smoke.sh`](../../../scripts/ci/hearth-install-smoke.sh) | Host/CI smoke for `./install` + `hearth` (**T-FR-0003-12**); see also [`.github/workflows/hearth-install-smoke.yml`](../../../.github/workflows/hearth-install-smoke.yml) |
-| [`../../../deploy/hearth-install/README.md`](../../../deploy/hearth-install/README.md) | **`heart/`** layout generator, **`VERSION.json`** schema v1, operator templates (**T-FR-0003-02**) |
+| [`../../../deploy/hearth-install/README.md`](../../../deploy/hearth-install/README.md) | **`hearth/`** layout generator, **`VERSION.json`** schema v1, operator templates (**T-FR-0003-02**) |
 | [`../../../deploy/kindling-contract/README.md`](../../../deploy/kindling-contract/README.md) | Hearth-side Kindling plugin template mirror: `plugin` shim + `scripts/install` hook (**T-FR-0003-10**) |
 | [`handoffs/2026-05-09-operator-option-a.md`](handoffs/2026-05-09-operator-option-a.md) | Historical: scheduling-only deferral (option A), superseded for FR-0003 by [`handoffs/2026-05-10-unpark-start-implementation.md`](handoffs/2026-05-10-unpark-start-implementation.md) |
 | [`handoffs/2026-05-10-unpark-start-implementation.md`](handoffs/2026-05-10-unpark-start-implementation.md) | Unpark FR-0003; no FR-0004 split — start implementation now |

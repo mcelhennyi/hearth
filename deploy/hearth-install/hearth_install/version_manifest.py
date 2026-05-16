@@ -1,4 +1,4 @@
-"""@HRT-OPS-001 Parse and validate ``heart/VERSION.json`` (schema v1)."""
+"""@HRT-OPS-001 Parse and validate ``hearth/VERSION.json`` (schema v1)."""
 
 from __future__ import annotations
 

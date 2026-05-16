@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 from hearth_cli import cli
-from hearth_install.layout import ensure_heart_layout
+from hearth_install.layout import ensure_hearth_layout
 from hearth_install.plugin_add import PluginAddError, add_plugin_from_source, classify_plugin_source
 from hearth_install.plugin_compose import (
     PluginRecord,
@@ -52,9 +52,9 @@ def test_add_plugin_from_local_path_updates_registry_and_compose(
         lambda *args, **kwargs: None,
     )
 
-    ensure_heart_layout(tmp_path, hearth_ref="plugin-add-test")
-    heart = tmp_path / "heart"
-    (heart / "compose" / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
+    ensure_hearth_layout(tmp_path, hearth_ref="plugin-add-test")
+    hearth = tmp_path / "hearth"
+    (hearth / "compose" / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
 
     src = tmp_path / "upstream-plugin"
     src.mkdir()
@@ -65,17 +65,17 @@ def test_add_plugin_from_local_path_updates_registry_and_compose(
     stub.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
     stub.chmod(stub.stat().st_mode | 0o111)
 
-    add_plugin_from_source(heart=heart, source_spec=str(src), start_if_enabled=False)
+    add_plugin_from_source(hearth=hearth, source_spec=str(src), start_if_enabled=False)
 
-    plug = heart / "plugins" / "fixture-one"
+    plug = hearth / "plugins" / "fixture-one"
     assert (plug / "tinder.toml").is_file()
 
-    rows = load_plugin_registry(heart)
+    rows = load_plugin_registry(hearth)
     assert len(rows) == 1
     assert rows[0].slug == "fixture-one"
     assert rows[0].source_git == str(src.resolve())
 
-    out = generate_plugin_compose(heart)
+    out = generate_plugin_compose(hearth)
     yaml_text = out.read_text(encoding="utf-8")
     assert "fixture-one:" in yaml_text
 
@@ -91,9 +91,9 @@ def test_add_plugin_via_cli_list_and_add(
     )
 
     root = tmp_path
-    ensure_heart_layout(root, hearth_ref="cli-plugin")
-    heart = root / "heart"
-    (heart / "compose" / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
+    ensure_hearth_layout(root, hearth_ref="cli-plugin")
+    hearth = root / "hearth"
+    (hearth / "compose" / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
 
     src = tmp_path / "upstream"
     src.mkdir()
@@ -120,9 +120,9 @@ def test_add_plugin_via_git_clone(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
         lambda *args, **kwargs: None,
     )
 
-    ensure_heart_layout(tmp_path, hearth_ref="git-clone")
-    heart = tmp_path / "heart"
-    (heart / "compose" / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
+    ensure_hearth_layout(tmp_path, hearth_ref="git-clone")
+    hearth = tmp_path / "hearth"
+    (hearth / "compose" / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
 
     remote = tmp_path / "remote.git"
     remote.mkdir()
@@ -149,15 +149,15 @@ def test_add_plugin_via_git_clone(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
         check=True,
     )
 
-    add_plugin_from_source(heart=heart, source_spec=str(remote), start_if_enabled=False)
+    add_plugin_from_source(hearth=hearth, source_spec=str(remote), start_if_enabled=False)
 
-    loaded = load_plugin_registry(heart)
+    loaded = load_plugin_registry(hearth)
     assert loaded[0].slug == "fixture-one"
     assert loaded[0].pinned_ref
 
 
 def test_save_plugin_registry_roundtrips_through_parser(tmp_path: Path) -> None:
-    heart = ensure_heart_layout(tmp_path, hearth_ref="roundtrip")
+    hearth = ensure_hearth_layout(tmp_path, hearth_ref="roundtrip")
     records = [
         PluginRecord(
             slug="alpha",
@@ -173,23 +173,23 @@ def test_save_plugin_registry_roundtrips_through_parser(tmp_path: Path) -> None:
             enabled=False,
         ),
     ]
-    save_plugin_registry(heart, records)
-    again = load_plugin_registry(heart)
+    save_plugin_registry(hearth, records)
+    again = load_plugin_registry(hearth)
     assert [(r.slug, r.enabled, r.pinned_ref) for r in again] == [
         ("alpha", True, "deadbeef"),
         ("beta", False, None),
     ]
 
 
-def _heart_with_one_plugin(tmp_path: Path) -> Path:
-    ensure_heart_layout(tmp_path, hearth_ref="enter-test")
-    heart = tmp_path / "heart"
-    (heart / "compose" / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
-    plug = heart / "plugins" / "fixture-one"
+def _hearth_with_one_plugin(tmp_path: Path) -> Path:
+    ensure_hearth_layout(tmp_path, hearth_ref="enter-test")
+    hearth = tmp_path / "hearth"
+    (hearth / "compose" / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
+    plug = hearth / "plugins" / "fixture-one"
     plug.mkdir(parents=True)
     (plug / "tinder.toml").write_text(MINIMAL_TINDER, encoding="utf-8")
     save_plugin_registry(
-        heart,
+        hearth,
         [
             PluginRecord(
                 slug="fixture-one",
@@ -198,7 +198,7 @@ def _heart_with_one_plugin(tmp_path: Path) -> Path:
             ),
         ],
     )
-    return heart
+    return hearth
 
 
 def test_plugin_enter_noninteractive_prints_exports(
@@ -208,7 +208,7 @@ def test_plugin_enter_noninteractive_prints_exports(
 ) -> None:
     monkeypatch.setattr(cli.sys.stdin, "isatty", lambda: False)
     monkeypatch.setattr(cli.sys.stdout, "isatty", lambda: False)
-    _heart_with_one_plugin(tmp_path)
+    _hearth_with_one_plugin(tmp_path)
     monkeypatch.chdir(tmp_path)
 
     code = cli.run(["--install-root", str(tmp_path), "--plugin", "enter", "--slug", "fixture-one"])
@@ -227,7 +227,7 @@ def test_plugin_enter_requires_slug_when_non_interactive(
 ) -> None:
     monkeypatch.setattr(cli.sys.stdin, "isatty", lambda: False)
     monkeypatch.setattr(cli.sys.stdout, "isatty", lambda: False)
-    _heart_with_one_plugin(tmp_path)
+    _hearth_with_one_plugin(tmp_path)
     monkeypatch.chdir(tmp_path)
 
     code = cli.run(["--install-root", str(tmp_path), "--plugin", "enter"])
@@ -241,7 +241,7 @@ def test_plugin_enter_interactive_prepares_execve(
 ) -> None:
     monkeypatch.setattr(cli.sys.stdin, "isatty", lambda: True)
     monkeypatch.setattr(cli.sys.stdout, "isatty", lambda: True)
-    _heart_with_one_plugin(tmp_path)
+    _hearth_with_one_plugin(tmp_path)
     shell = tmp_path / "fake-sh"
     shell.write_text("#!/bin/sh\necho noop\n", encoding="utf-8")
     shell.chmod(shell.stat().st_mode | 0o111)

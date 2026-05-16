@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from hearth_install.layout import ensure_heart_layout
+from hearth_install.layout import ensure_hearth_layout
 from hearth_install.plugin_compose import PluginRecord, generate_plugin_compose, save_plugin_registry
 from hearth_kindling_contract import render_plugin_template
 
@@ -32,10 +32,10 @@ _MIN_TINDER = textwrap.dedent(
 def _layout_with_plugin(tmp_path: Path) -> tuple[Path, Path]:
     """Returns ``(install_root, plugin_executable)``."""
 
-    ensure_heart_layout(tmp_path, hearth_ref="plugin-exe-test")
-    plugins_parent = tmp_path / "heart" / "plugins"
+    ensure_hearth_layout(tmp_path, hearth_ref="plugin-exe-test")
+    plugins_parent = tmp_path / "hearth" / "plugins"
     render_plugin_template(plugins_parent, slug="sample-plugin")
-    (tmp_path / "heart" / "compose" / "docker-compose.yml").write_text(
+    (tmp_path / "hearth" / "compose" / "docker-compose.yml").write_text(
         textwrap.dedent(
             """\
             services:
@@ -50,7 +50,7 @@ def _layout_with_plugin(tmp_path: Path) -> tuple[Path, Path]:
     (plugin_root / "tinder.toml").write_text(_MIN_TINDER, encoding="utf-8")
 
     save_plugin_registry(
-        tmp_path / "heart",
+        tmp_path / "hearth",
         [
             PluginRecord(
                 slug="sample-plugin",
@@ -59,7 +59,7 @@ def _layout_with_plugin(tmp_path: Path) -> tuple[Path, Path]:
             ),
         ],
     )
-    generate_plugin_compose(tmp_path / "heart")
+    generate_plugin_compose(tmp_path / "hearth")
     return tmp_path, plugin_root / "plugin"
 
 
@@ -67,7 +67,7 @@ def test_plugin_help_succeeds(tmp_path: Path) -> None:
     _root, plugin_exe = _layout_with_plugin(tmp_path)
     proc = subprocess.run(
         [str(plugin_exe), "--help"],
-        cwd=tmp_path / "heart" / "plugins" / "sample-plugin",
+        cwd=tmp_path / "hearth" / "plugins" / "sample-plugin",
         capture_output=True,
         text=True,
         check=False,
@@ -98,7 +98,7 @@ def test_plugin_flags_invoke_without_crash_when_docker_stubbed(
     from hearth_plugin_cli.cli import run_plugin_cli
 
     _root, _exe = _layout_with_plugin(tmp_path)
-    plugin_root = tmp_path / "heart" / "plugins" / "sample-plugin"
+    plugin_root = tmp_path / "hearth" / "plugins" / "sample-plugin"
 
     monkeypatch.setattr(
         "hearth_plugin_cli.cli.subprocess.run",
@@ -124,9 +124,9 @@ def test_plugin_disable_updates_generated_compose(
     from hearth_plugin_cli.cli import run_plugin_cli
 
     _root, _plugin_exe = _layout_with_plugin(tmp_path)
-    heart = tmp_path / "heart"
-    plugin_root = heart / "plugins" / "sample-plugin"
-    gen = heart / "compose" / "overrides" / "generated.plugins.yml"
+    hearth = tmp_path / "hearth"
+    plugin_root = hearth / "plugins" / "sample-plugin"
+    gen = hearth / "compose" / "overrides" / "generated.plugins.yml"
     assert "sample-plugin:" in gen.read_text(encoding="utf-8")
 
     monkeypatch.setattr(
@@ -148,9 +148,9 @@ def test_plugin_disable_then_enable_roundtrip(
     from hearth_plugin_cli.cli import run_plugin_cli
 
     _root, _plugin_exe = _layout_with_plugin(tmp_path)
-    heart = tmp_path / "heart"
-    plugin_root = heart / "plugins" / "sample-plugin"
-    gen = heart / "compose" / "overrides" / "generated.plugins.yml"
+    hearth = tmp_path / "hearth"
+    plugin_root = hearth / "plugins" / "sample-plugin"
+    gen = hearth / "compose" / "overrides" / "generated.plugins.yml"
 
     monkeypatch.setattr(
         "hearth_plugin_cli.cli.subprocess.run",
@@ -168,7 +168,7 @@ def test_plugin_passthrough_admin(tmp_path: Path) -> None:
     _root, plugin_exe = _layout_with_plugin(tmp_path)
     proc = subprocess.run(
         [str(plugin_exe), "--", "hello", "world"],
-        cwd=tmp_path / "heart" / "plugins" / "sample-plugin",
+        cwd=tmp_path / "hearth" / "plugins" / "sample-plugin",
         capture_output=True,
         text=True,
     )
@@ -178,11 +178,11 @@ def test_plugin_passthrough_admin(tmp_path: Path) -> None:
 
 def test_plugin_exit_emits_cd(tmp_path: Path) -> None:
     _root, plugin_exe = _layout_with_plugin(tmp_path)
-    back = tmp_path / "heart"
+    back = tmp_path / "hearth"
     env = {**os.environ, "HEARTH_PLUGIN_ENTER_FROM": str(back)}
     proc = subprocess.run(
         [str(plugin_exe), "--exit"],
-        cwd=tmp_path / "heart" / "plugins" / "sample-plugin",
+        cwd=tmp_path / "hearth" / "plugins" / "sample-plugin",
         env=env,
         capture_output=True,
         text=True,
@@ -196,7 +196,7 @@ def test_plugin_remove_requires_confirmation_flag(tmp_path: Path) -> None:
     _root, plugin_exe = _layout_with_plugin(tmp_path)
     proc = subprocess.run(
         [str(plugin_exe), "--remove"],
-        cwd=tmp_path / "heart" / "plugins" / "sample-plugin",
+        cwd=tmp_path / "hearth" / "plugins" / "sample-plugin",
         capture_output=True,
         text=True,
     )
@@ -207,7 +207,7 @@ def test_plugin_remove_with_yes_deletes_tree(
     tmp_path: Path,
 ) -> None:
     _root, plugin_exe = _layout_with_plugin(tmp_path)
-    plug = tmp_path / "heart" / "plugins" / "sample-plugin"
+    plug = tmp_path / "hearth" / "plugins" / "sample-plugin"
     proc = subprocess.run(
         [str(plugin_exe), "--remove", "--yes"],
         cwd=plug,
@@ -220,14 +220,14 @@ def test_plugin_remove_with_yes_deletes_tree(
 
 def test_plugin_reset_clears_var_data(tmp_path: Path) -> None:
     _root, plugin_exe = _layout_with_plugin(tmp_path)
-    heart = tmp_path / "heart"
-    data = heart / "var" / "plugins" / "sample-plugin"
+    hearth = tmp_path / "hearth"
+    data = hearth / "var" / "plugins" / "sample-plugin"
     data.mkdir(parents=True, exist_ok=True)
     (data / "x").write_text("y", encoding="utf-8")
 
     proc = subprocess.run(
         [str(plugin_exe), "--reset", "--yes"],
-        cwd=heart / "plugins" / "sample-plugin",
+        cwd=hearth / "plugins" / "sample-plugin",
         capture_output=True,
         text=True,
     )

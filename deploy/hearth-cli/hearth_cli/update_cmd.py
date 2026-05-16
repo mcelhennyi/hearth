@@ -52,14 +52,14 @@ def _rewrite_version_hearth_ref(version_path: Path, new_ref: str) -> None:
 
 
 def _maybe_run_migrate_hook(
-    heart_dir: Path,
+    hearth_dir: Path,
     *,
     dry_run: bool,
     stdout: TextIO,
     run_proc: RunProc,
 ) -> int:
-    """Run ``heart/bin/hearth-migrate`` when the hub/install supplies an executable hook."""
-    script = heart_dir / "bin" / "hearth-migrate"
+    """Run ``hearth/bin/hearth-migrate`` when the hub/install supplies an executable hook."""
+    script = hearth_dir / "bin" / "hearth-migrate"
     if not script.is_file():
         return 0
     if not os.access(script, os.X_OK):
@@ -68,7 +68,7 @@ def _maybe_run_migrate_hook(
     if dry_run:
         print(f"hearth --update: dry-run: would run {script}", file=stdout)
         return 0
-    proc = run_proc([str(script)], cwd=heart_dir)
+    proc = run_proc([str(script)], cwd=hearth_dir)
     if proc.returncode != 0:
         tail = (proc.stderr or proc.stdout or "").strip()
         print(f"hearth --update: migrate hook failed ({proc.returncode}): {tail}", file=stdout)
@@ -92,17 +92,17 @@ def _docker_compose(
 
 
 def _refresh_plugins(
-    heart_dir: Path,
+    hearth_dir: Path,
     *,
     dry_run: bool,
     stdout: TextIO,
     run_proc: RunProc,
 ) -> int:
-    registry_path = heart_dir / "state" / "plugins.yaml"
+    registry_path = hearth_dir / "state" / "plugins.yaml"
     if dry_run and not registry_path.is_file():
         return 0
     try:
-        records = load_plugin_registry(heart_dir)
+        records = load_plugin_registry(hearth_dir)
     except PluginRegistryError as exc:
         print(f"hearth --update: plugin registry: {exc}", file=stdout)
         return 1
@@ -111,7 +111,7 @@ def _refresh_plugins(
     for record in records:
         if not record.enabled:
             continue
-        plugin_root = heart_dir / "plugins" / record.slug
+        plugin_root = hearth_dir / "plugins" / record.slug
         if not (plugin_root / ".git").exists():
             continue
         before = _git_head(plugin_root, run_proc)
@@ -170,9 +170,9 @@ def run_update(
 ) -> int:
     """Fetch latest deploy sources, regenerate compose, and restart the stack."""
     runner = run_proc or _default_run_proc
-    heart = resolved.heart_dir
-    if not heart.is_dir():
-        print(f"hearth --update: missing heart directory {heart}", file=stderr)
+    hearth = resolved.hearth_dir
+    if not hearth.is_dir():
+        print(f"hearth --update: missing hearth directory {hearth}", file=stderr)
         return 1
     if not resolved.compose_file.is_file():
         print(f"hearth --update: missing compose file {resolved.compose_file}", file=stderr)
@@ -184,11 +184,11 @@ def run_update(
         print(f"hearth --update: VERSION.json: {exc}", file=stderr)
         return 1
 
-    git_root = _find_git_toplevel((resolved.install_root, heart.parent, heart), runner)
+    git_root = _find_git_toplevel((resolved.install_root, hearth.parent, hearth), runner)
     if git_root is None:
         print(
             "hearth --update: deploy checkout is not a git repository "
-            "(expected git at install root or parent of heart/)",
+            "(expected git at install root or parent of hearth/)",
             file=stderr,
         )
         return 1
@@ -222,7 +222,7 @@ def run_update(
         else:
             print(f"hearth --update: deploy ref unchanged ({before})", file=stdout)
 
-    plug_code = _refresh_plugins(heart, dry_run=dry_run, stdout=stdout, run_proc=runner)
+    plug_code = _refresh_plugins(hearth, dry_run=dry_run, stdout=stdout, run_proc=runner)
     if plug_code != 0:
         return plug_code
 
@@ -230,13 +230,13 @@ def run_update(
         print("hearth --update: dry-run: would regenerate plugin compose override", file=stdout)
     else:
         try:
-            out = generate_plugin_compose(heart)
+            out = generate_plugin_compose(hearth)
             print(f"hearth --update: wrote {out}", file=stdout)
         except PluginRegistryError as exc:
             print(f"hearth --update: compose generation failed: {exc}", file=stderr)
             return 1
 
-    mig = _maybe_run_migrate_hook(heart, dry_run=dry_run, stdout=stdout, run_proc=runner)
+    mig = _maybe_run_migrate_hook(hearth, dry_run=dry_run, stdout=stdout, run_proc=runner)
     if mig != 0:
         return mig
 

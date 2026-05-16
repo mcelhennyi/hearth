@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hearth.local/schemas/hearth-version-manifest/1",
   "title": "Hearth VERSION.json (install manifest) v1",
-  "description": "Machine-local manifest at <install-dir>/heart/VERSION.json for the Docker profile. See docs/design/deployment.md.",
+  "description": "Machine-local manifest at <install-dir>/hearth/VERSION.json for the Docker profile. See docs/design/deployment.md.",
   "type": "object",
   "additionalProperties": true,
   "required": ["schema", "hearth_ref"],

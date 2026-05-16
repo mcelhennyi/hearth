@@ -47,8 +47,8 @@ fi
 echo "== hearth --plugin list =="
 ./bin/hearth --install-root "${INSTALL_ROOT}" --plugin list
 
-heart="${INSTALL_ROOT}/heart"
-overrides="${heart}/compose/overrides/generated.plugins.yml"
+hearth="${INSTALL_ROOT}/hearth"
+overrides="${hearth}/compose/overrides/generated.plugins.yml"
 if [[ ! -f "${overrides}" ]]; then
   echo "missing generated plugin overrides: ${overrides}" >&2
   exit 1
@@ -57,7 +57,7 @@ fi
 if command -v docker >/dev/null 2>&1; then
   echo "== docker compose config (install tree) =="
   (
-    cd "${heart}/compose"
+    cd "${hearth}/compose"
     docker compose -f docker-compose.yml -f overrides/generated.plugins.yml config >/dev/null
   )
 else

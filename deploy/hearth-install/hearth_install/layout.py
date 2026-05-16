@@ -1,4 +1,4 @@
-"""@HRT-OPS-001 Create ``<install-dir>/heart/`` layout idempotently."""
+"""@HRT-OPS-001 Create ``<install-dir>/hearth/`` layout idempotently."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from typing import Any
 from hearth_install.plugin_compose import write_default_plugin_registry
 from hearth_install.version_manifest import read_version_manifest
 
-_HEART_SUBDIRS = ("compose", "plugins", "state", "var", "bin")
+_HEARTH_SUBDIRS = ("compose", "plugins", "state", "var", "bin")
 
 
 def _package_templates() -> Path:
@@ -18,34 +18,34 @@ def _package_templates() -> Path:
     return Path(__file__).resolve().parent / "templates"
 
 
-def ensure_heart_layout(
+def ensure_hearth_layout(
     install_dir: Path,
     *,
     hearth_ref: str,
     extra_version_fields: dict[str, Any] | None = None,
 ) -> Path:
-    """Ensure ``install_dir/heart`` exists with required dirs and operator files.
+    """Ensure ``install_dir/hearth`` exists with required dirs and operator files.
 
-    * Creates ``heart/{compose,plugins,state,var,bin}`` if missing.
-    * Writes ``heart/README.md`` from the bundled template (overwrites each run so
+    * Creates ``hearth/{compose,plugins,state,var,bin}`` if missing.
+    * Writes ``hearth/README.md`` from the bundled template (overwrites each run so
       template updates propagate; content is non-destructive to operator data).
-    * Writes ``heart/VERSION.json`` only if absent; if present, validates schema v1
+    * Writes ``hearth/VERSION.json`` only if absent; if present, validates schema v1
       and leaves contents unchanged.
 
-    Returns the absolute ``heart`` path.
+    Returns the absolute ``hearth`` path.
     """
     install_dir = install_dir.resolve()
-    heart = install_dir / "heart"
-    heart.mkdir(parents=True, exist_ok=True)
-    for name in _HEART_SUBDIRS:
-        (heart / name).mkdir(parents=True, exist_ok=True)
-    write_default_plugin_registry(heart)
+    hearth = install_dir / "hearth"
+    hearth.mkdir(parents=True, exist_ok=True)
+    for name in _HEARTH_SUBDIRS:
+        (hearth / name).mkdir(parents=True, exist_ok=True)
+    write_default_plugin_registry(hearth)
 
     tpl = _package_templates()
-    readme_src = tpl / "README.heart.md"
-    shutil.copyfile(readme_src, heart / "README.md")
+    readme_src = tpl / "README.hearth.md"
+    shutil.copyfile(readme_src, hearth / "README.md")
 
-    version_path = heart / "VERSION.json"
+    version_path = hearth / "VERSION.json"
     if version_path.is_file():
         read_version_manifest(version_path)
     else:
@@ -61,4 +61,4 @@ def ensure_heart_layout(
             encoding="utf-8",
         )
 
-    return heart
+    return hearth

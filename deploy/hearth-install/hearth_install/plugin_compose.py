@@ -1,4 +1,4 @@
-"""@HRT-OPS-002 Generate Docker Compose fragments from ``heart/state/plugins.yaml``."""
+"""@HRT-OPS-002 Generate Docker Compose fragments from ``hearth/state/plugins.yaml``."""
 
 from __future__ import annotations
 
@@ -36,25 +36,25 @@ class PluginRecord:
     env: dict[str, str] = field(default_factory=dict)
 
 
-def write_default_plugin_registry(heart: Path) -> Path:
-    """Create ``heart/state/plugins.yaml`` if absent and preserve operator edits."""
+def write_default_plugin_registry(hearth: Path) -> Path:
+    """Create ``hearth/state/plugins.yaml`` if absent and preserve operator edits."""
 
-    registry = heart / "state" / "plugins.yaml"
+    registry = hearth / "state" / "plugins.yaml"
     registry.parent.mkdir(parents=True, exist_ok=True)
     if not registry.exists():
         registry.write_text(_DEFAULT_REGISTRY, encoding="utf-8")
     return registry
 
 
-def load_plugin_registry(heart: Path) -> list[PluginRecord]:
-    """Read and validate ``heart/state/plugins.yaml``.
+def load_plugin_registry(hearth: Path) -> list[PluginRecord]:
+    """Read and validate ``hearth/state/plugins.yaml``.
 
     This is intentionally a tiny schema-v1 YAML reader instead of a general YAML
     dependency. FR-0003's MVP registry only needs scalars, ``plugins: []``, and
     per-plugin ``env`` maps.
     """
 
-    registry = write_default_plugin_registry(heart)
+    registry = write_default_plugin_registry(hearth)
     try:
         data = _parse_registry_yaml(registry.read_text(encoding="utf-8"))
     except PluginRegistryError:
@@ -75,15 +75,15 @@ def load_plugin_registry(heart: Path) -> list[PluginRecord]:
     return [_validate_plugin(item, registry, index) for index, item in enumerate(plugins)]
 
 
-def generate_plugin_compose(heart: Path) -> Path:
-    """Generate ``heart/compose/overrides/generated.plugins.yml`` for enabled plugins."""
+def generate_plugin_compose(hearth: Path) -> Path:
+    """Generate ``hearth/compose/overrides/generated.plugins.yml`` for enabled plugins."""
 
-    heart = heart.resolve()
-    records = [record for record in load_plugin_registry(heart) if record.enabled]
-    output = heart / "compose" / "overrides" / "generated.plugins.yml"
+    hearth = hearth.resolve()
+    records = [record for record in load_plugin_registry(hearth) if record.enabled]
+    output = hearth / "compose" / "overrides" / "generated.plugins.yml"
     output.parent.mkdir(parents=True, exist_ok=True)
 
-    services = [_compose_service(heart, record) for record in records]
+    services = [_compose_service(hearth, record) for record in records]
     output.write_text(_render_compose(services), encoding="utf-8")
     return output
 
@@ -124,10 +124,10 @@ def _validate_plugin(data: Any, registry: Path, index: int) -> PluginRecord:
     )
 
 
-def _compose_service(heart: Path, record: PluginRecord) -> dict[str, Any]:
-    plugin_dir = heart / "plugins" / record.slug
+def _compose_service(hearth: Path, record: PluginRecord) -> dict[str, Any]:
+    plugin_dir = hearth / "plugins" / record.slug
     if not plugin_dir.is_dir():
-        msg = f"enabled plugin {record.slug} requires heart/plugins/{record.slug}"
+        msg = f"enabled plugin {record.slug} requires hearth/plugins/{record.slug}"
         raise PluginRegistryError(msg)
 
     service: dict[str, Any] = {"name": record.slug}
@@ -135,7 +135,7 @@ def _compose_service(heart: Path, record: PluginRecord) -> dict[str, Any]:
         service["image"] = record.image
     else:
         build_path = record.build or f"plugins/{record.slug}"
-        service["build_context"] = _compose_path_from_heart(build_path)
+        service["build_context"] = _compose_path_from_hearth(build_path)
 
     if record.command:
         service["command"] = record.command
@@ -160,10 +160,10 @@ def _compose_service(heart: Path, record: PluginRecord) -> dict[str, Any]:
     return service
 
 
-def _compose_path_from_heart(path: str) -> str:
+def _compose_path_from_hearth(path: str) -> str:
     clean = path.strip().removeprefix("./")
     if clean.startswith("../") or clean.startswith("/"):
-        msg = f"compose paths must stay under heart/: {path}"
+        msg = f"compose paths must stay under hearth/: {path}"
         raise PluginRegistryError(msg)
     return f"../{clean}"
 
@@ -356,12 +356,12 @@ def _optional_env(data: dict[str, Any], registry: Path, index: int) -> dict[str,
     return {key: str(env_value) for key, env_value in value.items()}
 
 
-def save_plugin_registry(heart: Path, records: list[PluginRecord]) -> Path:
+def save_plugin_registry(hearth: Path, records: list[PluginRecord]) -> Path:
     """Overwrite ``plugins.yaml`` with validated rows (same schema-v1 dialect as parser)."""
 
-    registry = write_default_plugin_registry(heart)
+    registry = write_default_plugin_registry(hearth)
     registry.write_text(_render_registry_yaml(records), encoding="utf-8")
-    load_plugin_registry(heart)
+    load_plugin_registry(hearth)
     return registry
 
 

@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, TextIO
 
-from hearth_install.layout import ensure_heart_layout
+from hearth_install.layout import ensure_hearth_layout
 from hearth_install.plugin_compose import generate_plugin_compose
 
 _DOCKER_HINT_PI = """\
@@ -55,27 +55,27 @@ def plan_bootstrap(
 ) -> list[str]:
     """Human-readable plan lines (used by ``--dry-run`` and logging)."""
 
-    heart = paths.install_root / "heart"
+    hearth = paths.install_root / "hearth"
     lines = [
         f"repo root: {paths.repo_root}",
         f"install root: {paths.install_root}",
         f"VERSION.json hearth_ref (when created): {hearth_ref}",
-        f"ensure layout under {heart}",
-        f"write {heart / 'compose' / 'docker-compose.yml'} from packaged template",
-        f"generate {heart / 'compose' / 'overrides' / 'generated.plugins.yml'}",
-        f"symlink {heart / 'bin' / 'hearth'} -> {paths.repo_root / 'bin' / 'hearth'}",
+        f"ensure layout under {hearth}",
+        f"write {hearth / 'compose' / 'docker-compose.yml'} from packaged template",
+        f"generate {hearth / 'compose' / 'overrides' / 'generated.plugins.yml'}",
+        f"symlink {hearth / 'bin' / 'hearth'} -> {paths.repo_root / 'bin' / 'hearth'}",
     ]
     if dry_run:
         lines.append("dry-run: no filesystem or compose changes")
     elif skip_compose_up:
         lines.append("skip: docker compose up -d (Docker Engine not validated)")
-        lines.append(f"will still write compose files under {heart / 'compose'}")
+        lines.append(f"will still write compose files under {hearth / 'compose'}")
     else:
         lines.append("verify Docker Engine (docker info)")
-        lines.append(f"run: docker compose -f {heart / 'compose' / 'docker-compose.yml'} up -d")
+        lines.append(f"run: docker compose -f {hearth / 'compose' / 'docker-compose.yml'} up -d")
     lines.append(
-        "PATH: add heart/bin to your shell profile, e.g. "
-        f'export PATH="{heart}/bin:$PATH"',
+        "PATH: add hearth/bin to your shell profile, e.g. "
+        f'export PATH="{hearth}/bin:$PATH"',
     )
     return lines
 
@@ -108,11 +108,11 @@ def verify_docker_engine(stderr: TextIO) -> bool:
     return True
 
 
-def install_hearth_shim(heart_bin: Path, target: Path, *, dry_run: bool) -> None:
-    """Place ``heart/bin/hearth`` pointing at the repo launcher."""
+def install_hearth_shim(hearth_bin: Path, target: Path, *, dry_run: bool) -> None:
+    """Place ``hearth/bin/hearth`` pointing at the repo launcher."""
 
-    heart_bin.mkdir(parents=True, exist_ok=True)
-    shim = heart_bin / "hearth"
+    hearth_bin.mkdir(parents=True, exist_ok=True)
+    shim = hearth_bin / "hearth"
     target_abs = target.resolve()
     if dry_run:
         return
@@ -123,11 +123,11 @@ def install_hearth_shim(heart_bin: Path, target: Path, *, dry_run: bool) -> None
     shim.symlink_to(target_abs)
 
 
-def materialize_compose_template(heart: Path, *, dry_run: bool) -> Path:
-    """Copy the packaged install compose template into ``heart/compose/``."""
+def materialize_compose_template(hearth: Path, *, dry_run: bool) -> Path:
+    """Copy the packaged install compose template into ``hearth/compose/``."""
 
     src = _package_templates() / "docker-compose.install.yml"
-    dest_dir = heart / "compose"
+    dest_dir = hearth / "compose"
     dest = dest_dir / "docker-compose.yml"
     if dry_run:
         return dest
@@ -142,7 +142,7 @@ def run_compose_up(
     dry_run: bool,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
 ) -> int:
-    """``docker compose up -d`` from ``heart/compose``."""
+    """``docker compose up -d`` from ``hearth/compose``."""
 
     if dry_run:
         return 0
@@ -171,13 +171,13 @@ def run_bootstrap(
     compose_runner = compose_runner or subprocess.run
 
     parser = argparse.ArgumentParser(
-        description="Bootstrap a Hearth Docker-profile install (heart/ layout + compose + first up).",
+        description="Bootstrap a Hearth Docker-profile install (hearth/ layout + compose + first up).",
     )
     parser.add_argument(
         "install_dir",
         nargs="?",
         default=None,
-        help="Install root (parent of heart/). Defaults to HEARTH_INSTALL_ROOT.",
+        help="Install root (parent of hearth/). Defaults to HEARTH_INSTALL_ROOT.",
     )
     parser.add_argument(
         "--repo-root",
@@ -232,16 +232,16 @@ def run_bootstrap(
         print("dry-run: no changes applied.", file=stdout)
         return 0
 
-    heart = ensure_heart_layout(install_root, hearth_ref=ns.hearth_ref)
-    materialize_compose_template(heart, dry_run=False)
-    generate_plugin_compose(heart)
+    hearth = ensure_hearth_layout(install_root, hearth_ref=ns.hearth_ref)
+    materialize_compose_template(hearth, dry_run=False)
+    generate_plugin_compose(hearth)
     launcher = repo_root / "bin" / "hearth"
     if not launcher.is_file():
         print(f"bootstrap: missing repo launcher {launcher}", file=stderr)
         return 1
-    install_hearth_shim(heart / "bin", launcher, dry_run=False)
+    install_hearth_shim(hearth / "bin", launcher, dry_run=False)
 
-    compose_file = heart / "compose" / "docker-compose.yml"
+    compose_file = hearth / "compose" / "docker-compose.yml"
     if ns.skip_compose_up:
         print(f"bootstrap: compose files ready at {compose_file.parent}", file=stdout)
         return 0

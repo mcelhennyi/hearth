@@ -30,7 +30,7 @@ class PluginCliError(RuntimeError):
 
 
 def resolve_plugin_context(plugin_root: Path, env: dict[str, str] | None) -> tuple[ResolvedInstall, str]:
-    """Resolve install paths; ``plugin_root`` is ``heart/plugins/<slug>``."""
+    """Resolve install paths; ``plugin_root`` is ``hearth/plugins/<slug>``."""
 
     plugin_root = plugin_root.resolve()
     slug = plugin_root.name
@@ -38,17 +38,17 @@ def resolve_plugin_context(plugin_root: Path, env: dict[str, str] | None) -> tup
         msg = f"invalid plugin directory name {slug!r}"
         raise PluginCliError(msg)
     if plugin_root.parent.name != "plugins":
-        msg = f"plugin must live under heart/plugins/<slug>/ (got {plugin_root})"
+        msg = f"plugin must live under hearth/plugins/<slug>/ (got {plugin_root})"
         raise PluginCliError(msg)
 
-    heart = plugin_root.parent.parent
-    if not (heart / "VERSION.json").is_file():
-        msg = f"heart directory missing VERSION.json ({heart})"
+    hearth = plugin_root.parent.parent
+    if not (hearth / "VERSION.json").is_file():
+        msg = f"hearth directory missing VERSION.json ({hearth})"
         raise PluginCliError(msg)
 
-    resolved = resolve_install(str(heart), env=env)
+    resolved = resolve_install(str(hearth), env=env)
     try:
-        rows = load_plugin_registry(resolved.heart_dir)
+        rows = load_plugin_registry(resolved.hearth_dir)
     except PluginRegistryError as exc:
         raise PluginCliError(str(exc)) from exc
 
@@ -134,7 +134,7 @@ def run_plugin_cli(
             "  --remove --yes   Unregister and delete this plugin (requires --yes)\n"
             "  --enable | --disable   Toggle registry enabled + regenerate compose\n"
             "  --start | --stop   docker compose up -d/stop for this service\n"
-            "  --reset [--yes]  Delete mutable data under heart/var/plugins/<slug>/\n"
+            "  --reset [--yes]  Delete mutable data under hearth/var/plugins/<slug>/\n"
             "  --exit           Emit `cd` for HEARTH_PLUGIN_ENTER_FROM (from hearth enter)\n"
             "Admin passthrough:\n"
             "  plugin -- <args>   python -m <package>.admin\n",
@@ -172,7 +172,7 @@ def run_plugin_cli(
             print("plugin: --remove requires --yes", file=err)
             return 2
         try:
-            remove_plugin_from_install(resolved.heart_dir, slug)
+            remove_plugin_from_install(resolved.hearth_dir, slug)
         except PluginLifecycleError as exc:
             print(f"plugin: {exc}", file=err)
             return 1
@@ -184,7 +184,7 @@ def run_plugin_cli(
 
     if head == "--enable":
         try:
-            set_plugin_enabled(resolved.heart_dir, slug, enabled=True)
+            set_plugin_enabled(resolved.hearth_dir, slug, enabled=True)
         except PluginLifecycleError as exc:
             print(f"plugin: {exc}", file=err)
             return 1
@@ -192,7 +192,7 @@ def run_plugin_cli(
 
     if head == "--disable":
         try:
-            set_plugin_enabled(resolved.heart_dir, slug, enabled=False)
+            set_plugin_enabled(resolved.hearth_dir, slug, enabled=False)
         except PluginLifecycleError as exc:
             print(f"plugin: {exc}", file=err)
             return 1
@@ -205,7 +205,7 @@ def run_plugin_cli(
         return _run_compose_slug(resolved, slug, ["stop", slug], stderr=err, env=src_env)
 
     if head == "--reset":
-        data_dir = resolved.heart_dir / "var" / "plugins" / slug
+        data_dir = resolved.hearth_dir / "var" / "plugins" / slug
         if not _confirm_or_abort(
             f"reset mutable data under {data_dir}?",
             argv_rest=rest,

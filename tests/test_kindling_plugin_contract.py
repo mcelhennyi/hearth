@@ -29,7 +29,7 @@ def test_render_plugin_template_creates_plugin_executable_and_install_hook(
     assert (plugin_root / "sample_plugin" / "admin.py").is_file()
 
 
-def test_rendered_plugin_help_works_without_heart_layout(tmp_path: Path) -> None:
+def test_rendered_plugin_help_works_without_hearth_layout(tmp_path: Path) -> None:
     plugin_root = render_plugin_template(tmp_path, slug="sample-plugin")
 
     proc = subprocess.run(
@@ -51,16 +51,16 @@ def test_rendered_plugin_ops_fail_without_registry(tmp_path: Path) -> None:
         text=True,
     )
     assert proc.returncode == 1
-    assert "heart/plugins" in proc.stderr or "registered" in proc.stderr
+    assert "hearth/plugins" in proc.stderr or "registered" in proc.stderr
 
 
-def test_rendered_plugin_passthrough_with_heart_layout(tmp_path: Path) -> None:
+def test_rendered_plugin_passthrough_with_hearth_layout(tmp_path: Path) -> None:
     from test_plugin_executable import _layout_with_plugin
 
     _root, plugin_exe = _layout_with_plugin(tmp_path)
     proc = subprocess.run(
         [str(plugin_exe), "--", "doctor"],
-        cwd=tmp_path / "heart" / "plugins" / "sample-plugin",
+        cwd=tmp_path / "hearth" / "plugins" / "sample-plugin",
         capture_output=True,
         text=True,
     )

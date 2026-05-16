@@ -12,12 +12,12 @@ class ResolvedInstall:
     """Resolved install paths for a Docker-profile Hearth checkout."""
 
     install_root: Path
-    heart_dir: Path
+    hearth_dir: Path
     version_path: Path
     compose_file: Path
 
 
-def _looks_like_heart_dir(path: Path) -> bool:
+def _looks_like_hearth_app_dir(path: Path) -> bool:
     return (path / "VERSION.json").is_file()
 
 
@@ -26,23 +26,23 @@ def resolve_install(
     *,
     env: dict[str, str] | None = None,
 ) -> ResolvedInstall:
-    """Resolve ``<install-root>/heart`` from CLI args, env, or cwd.
+    """Resolve ``<install-root>/hearth`` from CLI args, env, or cwd.
 
     ``HEARTH_INSTALL_ROOT`` and ``--install-root`` may point either at the parent
-    install directory or directly at the ``heart/`` directory.
+    install directory or directly at the ``hearth/`` directory.
     """
     source_env = env if env is not None else os.environ
     raw_root = install_root or source_env.get("HEARTH_INSTALL_ROOT") or Path.cwd()
     candidate = Path(raw_root).expanduser().resolve()
-    if _looks_like_heart_dir(candidate):
-        heart_dir = candidate
+    if _looks_like_hearth_app_dir(candidate):
+        hearth_dir = candidate
         root = candidate.parent
     else:
         root = candidate
-        heart_dir = root / "heart"
+        hearth_dir = root / "hearth"
     return ResolvedInstall(
         install_root=root,
-        heart_dir=heart_dir,
-        version_path=heart_dir / "VERSION.json",
-        compose_file=heart_dir / "compose" / "docker-compose.yml",
+        hearth_dir=hearth_dir,
+        version_path=hearth_dir / "VERSION.json",
+        compose_file=hearth_dir / "compose" / "docker-compose.yml",
     )

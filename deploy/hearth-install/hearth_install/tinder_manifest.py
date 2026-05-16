@@ -71,13 +71,13 @@ def load_tinder_manifest(plugin_root: Path, *, raw_text: str | None = None) -> T
     return TinderManifest(slug=slug, name=name, version=version, hearth_min=hearth_min, description=description)
 
 
-def validate_slug_available(slug: str, heart: Path) -> None:
+def validate_slug_available(slug: str, hearth: Path) -> None:
     """Reject invalid slugs with the same rules as ``plugins.yaml``."""
 
     if not isinstance(slug, str) or not slug or not _SLUG_RE.fullmatch(slug):
         raise TinderManifestError(f"invalid plugin slug {slug!r}")
 
-    target = heart / "plugins" / slug
+    target = hearth / "plugins" / slug
     if target.exists():
         msg = f"plugin directory already exists: {target}"
         raise TinderManifestError(msg)

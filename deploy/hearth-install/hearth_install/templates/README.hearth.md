@@ -1,4 +1,4 @@
-# Hearth install (`heart/`)
+# Hearth install (`hearth/`)
 
 This directory is the **Docker profile** install root on a Pi-class host. Roles match **`docs/design/deployment.md`** in the Hearth repository (section **Docker profile (Pi)**).
 
@@ -22,7 +22,7 @@ From a checkout of the Hearth deploy repository:
 python -m hearth_install /path/to/install-root --hearth-ref "$(git rev-parse HEAD)"
 ```
 
-Pass the **parent** of `heart/` as `install-root` (the tool creates `heart/` under that path).
+Pass the **parent** of `hearth/` as `install-root` (the tool creates `hearth/` under that path).
 
 To refresh the generated plugin Compose override after editing `state/plugins.yaml`:
 

@@ -16,7 +16,7 @@ Phases follow `docs/ai-context.md`: **TEST → DEV → VAL** per ticket.
 
 #### Purpose
 
-Make **`docs/design/deployment.md`** explicitly describe the **Docker Compose on Pi** profile alongside the existing **systemd + bare metal** story: supervisor choice, filesystem mapping from **`heart/`** to the doc’s `/opt/hearth` / `/var/hearth` concepts, update flow, and **known gaps** (image publishing, rootless Docker).
+Make **`docs/design/deployment.md`** explicitly describe the **Docker Compose on Pi** profile alongside the existing **systemd + bare metal** story: supervisor choice, filesystem mapping from **`hearth/`** to the doc’s `/opt/hearth` / `/var/hearth` concepts, update flow, and **known gaps** (image publishing, rootless Docker).
 
 #### Phases
 
@@ -32,14 +32,14 @@ Make **`docs/design/deployment.md`** explicitly describe the **Docker Compose on
 
 ---
 
-### T-FR-0003-02 — Install layout: `heart/`, VERSION.json, README
+### T-FR-0003-02 — Install layout: `hearth/`, VERSION.json, README
 
-**Title:** Install layout: `heart/`, VERSION.json, README
+**Title:** Install layout: `hearth/`, VERSION.json, README
 **Deps:** `T-FR-0003-01`
 
 #### Purpose
 
-Specify and scaffold the on-disk layout under **`<install-dir>/heart`**: minimal top-level entries, subdirs for **`compose/`**, **`plugins/`**, **`state/`**, **`var/`**, **`bin/`**; **`README.md`** operator guide; **`VERSION.json`** schema v1.
+Specify and scaffold the on-disk layout under **`<install-dir>/hearth`**: minimal top-level entries, subdirs for **`compose/`**, **`plugins/`**, **`state/`**, **`var/`**, **`bin/`**; **`README.md`** operator guide; **`VERSION.json`** schema v1.
 
 #### Phases
 
@@ -58,7 +58,7 @@ Specify and scaffold the on-disk layout under **`<install-dir>/heart`**: minimal
 
 #### Purpose
 
-Repo-root **`./install`**: ensure **Docker Engine** (Pi: documented `apt`/`get.docker.com` path or distro matrix), create **`heart/`** layout, install **`hearth`** shim to `PATH` (symlink or copy), generate compose, run **`docker compose up -d`** for hub + enabled plugins.
+Repo-root **`./install`**: ensure **Docker Engine** (Pi: documented `apt`/`get.docker.com` path or distro matrix), create **`hearth/`** layout, install **`hearth`** shim to `PATH` (symlink or copy), generate compose, run **`docker compose up -d`** for hub + enabled plugins.
 
 #### Phases
 
@@ -100,7 +100,7 @@ Implement the **`hearth`** command: resolve install root, load `VERSION.json`, *
 
 #### Purpose
 
-Maintain **`heart/state/plugins.yaml`** (or `.json`) and generate **`docker-compose`** fragments so **enabled** plugins receive services, volumes, and env — consistent with `deploy/compose/docker-compose.yml` conventions.
+Maintain **`hearth/state/plugins.yaml`** (or `.json`) and generate **`docker-compose`** fragments so **enabled** plugins receive services, volumes, and env — consistent with `deploy/compose/docker-compose.yml` conventions.
 
 #### Phases
 
@@ -138,7 +138,7 @@ Implement **`hearth --update`**: fetch latest Hearth sources (git pull of deploy
 
 #### Purpose
 
-**`hearth --plugin --add <git-url>`**: clone to **`heart/plugins/<slug>/`**, validate **`tinder.toml`**, run **`scripts/install`** if present, update registry, regenerate compose, start if enabled.
+**`hearth --plugin --add <git-url>`**: clone to **`hearth/plugins/<slug>/`**, validate **`tinder.toml`**, run **`scripts/install`** if present, update registry, regenerate compose, start if enabled.
 
 **`hearth --plugin list`**: print table of slug, source, enabled, version/ref.
 
@@ -163,7 +163,7 @@ Implement **`hearth --update`**: fetch latest Hearth sources (git pull of deploy
 
 #### Purpose
 
-**`hearth --plugin enter`** (with `--slug` or interactive pick): start subshell or **`exec $SHELL`** with cwd **`heart/plugins/<slug>`** and env **`HEARTH_PLUGIN_ENTER_FROM=$PWD`** (or stack) so **`plugin --exit`** can restore.
+**`hearth --plugin enter`** (with `--slug` or interactive pick): start subshell or **`exec $SHELL`** with cwd **`hearth/plugins/<slug>`** and env **`HEARTH_PLUGIN_ENTER_FROM=$PWD`** (or stack) so **`plugin --exit`** can restore.
 
 #### Phases
 
@@ -220,7 +220,7 @@ In **Kindling** (or Hearth mirror if Kindling not yet public): document **`scrip
 
 #### Purpose
 
-Executable at **`heart/plugins/<slug>/plugin`**: **`--update`**, **`--remove`**, **`--enable`**, **`--disable`**, **`--start`**, **`--stop`**, **`--reset`** (confirm), **`--exit`**, and **`-- <admin args>`** delegated to plugin.
+Executable at **`hearth/plugins/<slug>/plugin`**: **`--update`**, **`--remove`**, **`--enable`**, **`--disable`**, **`--start`**, **`--stop`**, **`--reset`** (confirm), **`--exit`**, and **`-- <admin args>`** delegated to plugin.
 
 #### Phases
 

@@ -58,7 +58,7 @@ def resolve_compose_env_file(
     """Optional ``--env-file`` for docker compose.
 
     Preference: ``HEARTH_COMPOSE_ENV_FILE`` when set and the path exists;
-    otherwise ``heart/compose/.env`` when present.
+    otherwise ``hearth/compose/.env`` when present.
     """
     src = env if env is not None else os.environ
     explicit = src.get("HEARTH_COMPOSE_ENV_FILE")
@@ -83,7 +83,7 @@ def assemble_docker_compose_command(
         "-f",
         str(resolved.compose_file),
     ]
-    overrides = resolved.heart_dir / "compose" / "overrides" / "generated.plugins.yml"
+    overrides = resolved.hearth_dir / "compose" / "overrides" / "generated.plugins.yml"
     if overrides.is_file():
         cmd.extend(["-f", str(overrides)])
     cmd.extend(
@@ -107,7 +107,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--install-root",
         metavar="PATH",
-        help="Install root containing heart/ (or the heart/ directory itself).",
+        help="Install root containing hearth/ (or the hearth/ directory itself).",
     )
     parser.add_argument(
         "--update",
@@ -172,10 +172,10 @@ def cmd_version(resolved: ResolvedInstall, stdout: TextIO, stderr: TextIO) -> in
 def cmd_doctor(resolved: ResolvedInstall, stdout: TextIO) -> int:
     ok = True
     print(f"install root: {resolved.install_root}", file=stdout)
-    print(f"heart dir: {resolved.heart_dir}", file=stdout)
+    print(f"hearth dir: {resolved.hearth_dir}", file=stdout)
 
-    if not resolved.heart_dir.is_dir():
-        print("heart dir: missing", file=stdout)
+    if not resolved.hearth_dir.is_dir():
+        print("hearth dir: missing", file=stdout)
         ok = False
 
     try:
@@ -421,12 +421,12 @@ def parse_install_only(argv: list[str]) -> str | None:
 
 
 def cmd_plugin_list(resolved: ResolvedInstall, stdout: TextIO, stderr: TextIO) -> int:
-    heart = resolved.heart_dir
-    if not heart.is_dir():
-        print(f"hearth plugin list: missing heart directory: {heart}", file=stderr)
+    hearth = resolved.hearth_dir
+    if not hearth.is_dir():
+        print(f"hearth plugin list: missing hearth directory: {hearth}", file=stderr)
         return 1
     try:
-        rows = format_plugin_list_lines(heart)
+        rows = format_plugin_list_lines(hearth)
     except (PluginRegistryError, OSError) as exc:
         print(f"hearth plugin list: {exc}", file=stderr)
         return 1
@@ -434,15 +434,15 @@ def cmd_plugin_list(resolved: ResolvedInstall, stdout: TextIO, stderr: TextIO) -
     return 0
 
 
-def _plugin_enter_candidates(heart: Path) -> list[str]:
+def _plugin_enter_candidates(hearth: Path) -> list[str]:
     try:
-        rows = load_plugin_registry(heart)
+        rows = load_plugin_registry(hearth)
     except (PluginRegistryError, OSError):
         rows = []
     if rows:
         return [record.slug for record in rows]
 
-    root = heart / "plugins"
+    root = hearth / "plugins"
     if not root.is_dir():
         return []
     slugs: list[str] = []
@@ -452,12 +452,12 @@ def _plugin_enter_candidates(heart: Path) -> list[str]:
     return slugs
 
 
-def _prompt_plugin_slug(heart: Path, stdout: TextIO, stderr: TextIO) -> str | None:
-    candidates = _plugin_enter_candidates(heart)
+def _prompt_plugin_slug(hearth: Path, stdout: TextIO, stderr: TextIO) -> str | None:
+    candidates = _plugin_enter_candidates(hearth)
     if not candidates:
         print(
             "hearth --plugin enter: no plugins found "
-            "(expected registry rows or heart/plugins/*/tinder.toml).",
+            "(expected registry rows or hearth/plugins/*/tinder.toml).",
             file=stderr,
         )
         return None
@@ -505,9 +505,9 @@ def cmd_plugin_enter(
     stdout: TextIO,
     stderr: TextIO,
 ) -> int:
-    heart = resolved.heart_dir
-    if not heart.is_dir():
-        print(f"hearth --plugin enter: missing heart directory: {heart}", file=stderr)
+    hearth = resolved.hearth_dir
+    if not hearth.is_dir():
+        print(f"hearth --plugin enter: missing hearth directory: {hearth}", file=stderr)
         return 1
 
     chosen = slug
@@ -522,11 +522,11 @@ def cmd_plugin_enter(
                 file=stderr,
             )
             return 2
-        chosen = _prompt_plugin_slug(heart, stdout, stderr)
+        chosen = _prompt_plugin_slug(hearth, stdout, stderr)
         if chosen is None:
             return 1
 
-    plugin_dir = (heart / "plugins" / chosen).resolve()
+    plugin_dir = (hearth / "plugins" / chosen).resolve()
     if not plugin_dir.is_dir() or not (plugin_dir / "tinder.toml").is_file():
         print(f"hearth --plugin enter: not a plugin directory: {plugin_dir}", file=stderr)
         return 1
@@ -567,13 +567,13 @@ def cmd_plugin_add(
     stderr: TextIO,
     start_if_enabled: bool,
 ) -> int:
-    heart = resolved.heart_dir
-    if not heart.is_dir():
-        print(f"hearth --plugin --add: missing heart directory: {heart}", file=stderr)
+    hearth = resolved.hearth_dir
+    if not hearth.is_dir():
+        print(f"hearth --plugin --add: missing hearth directory: {hearth}", file=stderr)
         return 1
     try:
         add_plugin_from_source(
-            heart=heart,
+            hearth=hearth,
             source_spec=source,
             start_if_enabled=start_if_enabled,
         )
@@ -583,7 +583,7 @@ def cmd_plugin_add(
     except (PluginRegistryError, TinderManifestError) as exc:
         print(f"hearth --plugin --add: {exc}", file=stderr)
         return 1
-    print(f"installed plugin into {heart / 'plugins'} from {source!r}", file=stdout)
+    print(f"installed plugin into {hearth / 'plugins'} from {source!r}", file=stdout)
     return 0
 
 

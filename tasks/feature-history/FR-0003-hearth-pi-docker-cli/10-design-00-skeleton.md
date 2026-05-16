@@ -1,14 +1,20 @@
 # FR-0003 — Design (level 0, skeleton)
 
+<!-- AMENDMENT: HRT-FR0003-001 -->
+<!-- Author: Cursor agent (design amendment) -->
+<!-- Date: 2026-05-16 -->
+<!-- Reason: Install tree directory renamed from ``heart/`` to ``hearth/`` — see ``docs/design/deployment.md`` amendment **HRT-DEP-001**. -->
+<!-- /AMENDMENT -->
+
 ## Purpose
 
-Define **contracts** for a Docker Compose–based Hearth deployment on constrained hosts (Raspberry Pi class): filesystem layout under **`<install-dir>/heart`**, bootstrap **`./install`**, the **`hearth`** admin CLI, and per-plugin **`plugin`** tooling — so a later **admin UI** can call the same operations without re-inventing policy.
+Define **contracts** for a Docker Compose–based Hearth deployment on constrained hosts (Raspberry Pi class): filesystem layout under **`<install-dir>/hearth`**, bootstrap **`./install`**, the **`hearth`** admin CLI, and per-plugin **`plugin`** tooling — so a later **admin UI** can call the same operations without re-inventing policy.
 
 ## Actors
 
 - **Operator** — human on SSH or local console; may be non-root with `docker` group membership.
 - **Bootstrap script** — repo-root **`./install`** (thin shell entry; may delegate to Python — see stack conventions exception note in tickets).
-- **`hearth` CLI** — Python package or module invoked from a shim on `PATH`; reads/writes install-local state only under **`heart/`** (and delegated Docker/Compose).
+- **`hearth` CLI** — Python package or module invoked from a shim on `PATH`; reads/writes install-local state only under **`hearth/`** (and delegated Docker/Compose).
 - **Plugin codebase** — Kindling-shaped repo with **`tinder.toml`**, optional **`scripts/install`**, and **`plugin`** executable.
 - **Docker Compose** — runtime for hub + plugins in this profile (contrasts with systemd units in [`deployment.md`](../../../docs/design/deployment.md) bare-metal path).
 
@@ -16,10 +22,10 @@ Define **contracts** for a Docker Compose–based Hearth deployment on constrain
 
 | Surface | Kind | Contract (signature / schema sketch) | Owner (logical) |
 |---------|------|----------------------------------------|-----------------|
-| Install root env | Config | `HEARTH_INSTALL_ROOT` (default: user-chosen at install time) → canonical app dir **`$HEARTH_INSTALL_ROOT/heart`**. | T-FR-0003-02 |
-| Version manifest | File | **`heart/VERSION.json`**: `{ "hearth_ref": "<git sha or tag>", "hearth_source": "<clone path or url>", "installed_at": "<iso8601>", "schema": 1 }` | T-FR-0003-02 |
-| Plugin registry (local) | File | **`heart/state/plugins.yaml`** (or `.json`): list of `{ slug, source_git, enabled, pinned_ref? }` — MVP; hub DB may supersede later with sync ticket. | T-FR-0003-05 |
-| Compose project | Generated | **`heart/compose/docker-compose.yml`** + **`heart/compose/overrides/generated.plugins.yml`** (or single merged file — implementation choice) consumed by `docker compose -p hearth`. | T-FR-0003-05 |
+| Install root env | Config | `HEARTH_INSTALL_ROOT` (default: user-chosen at install time) → canonical app dir **`$HEARTH_INSTALL_ROOT/hearth`**. | T-FR-0003-02 |
+| Version manifest | File | **`hearth/VERSION.json`**: `{ "hearth_ref": "<git sha or tag>", "hearth_source": "<clone path or url>", "installed_at": "<iso8601>", "schema": 1 }` | T-FR-0003-02 |
+| Plugin registry (local) | File | **`hearth/state/plugins.yaml`** (or `.json`): list of `{ slug, source_git, enabled, pinned_ref? }` — MVP; hub DB may supersede later with sync ticket. | T-FR-0003-05 |
+| Compose project | Generated | **`hearth/compose/docker-compose.yml`** + **`hearth/compose/overrides/generated.plugins.yml`** (or single merged file — implementation choice) consumed by `docker compose -p hearth`. | T-FR-0003-05 |
 | `hearth` | CLI | Subcommands / flags (see below). Idempotent; no network except documented (`--update`, `plugin --add`). | T-FR-0003-04+ |
 | `plugin` | CLI | Per-plugin; forwards to plugin backend admin or edits local plugin state per policy. | T-FR-0003-11 |
 | Kindling `install` | Hook | **`scripts/install`** (or documented path in `tinder.toml`) run once on add/update when manifest declares it; exit non-zero aborts with message. | T-FR-0003-10 |
@@ -31,8 +37,8 @@ Define **contracts** for a Docker Compose–based Hearth deployment on constrain
 | Invocation | Behavior |
 |------------|----------|
 | `hearth --update` | Pull Hearth deploy ref (or re-fetch tarball strategy — **open**), rebuild/pull images, `compose up -d`, run migrations hook if present. |
-| `hearth --plugin --add <git-url>` | Clone or submodule into **`heart/plugins/<slug>/`**, validate manifest, run plugin `install` once, register in local registry, regenerate Compose, **start if enabled**. |
-| `hearth --plugin enter` | Interactive or `--plugin <slug>`: `cd` or subshell to **`heart/plugins/<slug>`** with env so **`./plugin`** is default admin tool. |
+| `hearth --plugin --add <git-url>` | Clone or submodule into **`hearth/plugins/<slug>/`**, validate manifest, run plugin `install` once, register in local registry, regenerate Compose, **start if enabled**. |
+| `hearth --plugin enter` | Interactive or `--plugin <slug>`: `cd` or subshell to **`hearth/plugins/<slug>`** with env so **`./plugin`** is default admin tool. |
 
 **Recommended additions (power user)**
 
@@ -57,7 +63,7 @@ Define **contracts** for a Docker Compose–based Hearth deployment on constrain
 | `--remove` | Disable, remove containers, remove from Compose; optional `--purge` to delete data dir (separate from `--reset`). |
 | `--enable` / `--disable` | Toggle enabled; regenerate Compose; **disable** does not delete data. |
 | `--start` / `--stop` | Compose service for this slug only. |
-| `--reset` | Confirm interactively; wipe **`heart/var/plugins/<slug>/`** (or agreed path), keep code; rerun `install`. |
+| `--reset` | Confirm interactively; wipe **`hearth/var/plugins/<slug>/`** (or agreed path), keep code; rerun `install`. |
 | `--exit` | Return to previous cwd; if unknown, **`cd ~`**. |
 | `-- …` | Passthrough to plugin-defined admin commands (documented in plugin README). |
 
@@ -67,12 +73,12 @@ Define **contracts** for a Docker Compose–based Hearth deployment on constrain
 
 | Input | Output | Storage |
 |-------|--------|---------|
-| Git URL / path | Cloned plugin tree | **`heart/plugins/<slug>/`** (code) |
-| Enabled plugins list | Compose services | **`heart/state/`** + generated compose fragments |
-| Runtime DB, uploads | Per-plugin | **`heart/var/plugins/<slug>/`** (mutable); secrets **`heart/var/secrets/`** (mode 0600) — align with existing `var/hearth` semantics where compatible |
+| Git URL / path | Cloned plugin tree | **`hearth/plugins/<slug>/`** (code) |
+| Enabled plugins list | Compose services | **`hearth/state/`** + generated compose fragments |
+| Runtime DB, uploads | Per-plugin | **`hearth/var/plugins/<slug>/`** (mutable); secrets **`hearth/var/secrets/`** (mode 0600) — align with existing `var/hearth` semantics where compatible |
 | Operator CWD | Restored path | Env `HEARTH_PLUGIN_ENTER_FROM` or shell `pushd` stack for `plugin --exit` |
 
-**Top-level minimalism:** Only **`README.md`**, **`VERSION.json`**, small set of dirs (`bin`, `compose`, `plugins`, `state`, `var`, …) at **`heart/`** root; no loose DB files at top level.
+**Top-level minimalism:** Only **`README.md`**, **`VERSION.json`**, small set of dirs (`bin`, `compose`, `plugins`, `state`, `var`, …) at **`hearth/`** root; no loose DB files at top level.
 
 ## Sequencing vs existing design
 
@@ -81,7 +87,7 @@ Define **contracts** for a Docker Compose–based Hearth deployment on constrain
 
 ## Open questions
 
-- **Single-user vs root install:** default to **`docker` group** + install under **`$HOME/heart`** or **`/opt/heart/heart`**? (Ticket: document default + override.)
+- **Single-user vs root install:** default to **`docker` group** + install under **`$HOME/hearth`** or **`/opt/hearth/hearth`**? (Ticket: document default + override.)
 - **Image build on Pi:** build from source vs pull from registry? (**DESIGN-GAP** for CI publishing — stub in T01.)
 - **Hub API duplication:** should `hearth --plugin --add` call hub HTTP or stay file-first until hub exists? MVP recommendation: **file-first**; open ticket for convergence with `T-FR-0001-02` API.
 

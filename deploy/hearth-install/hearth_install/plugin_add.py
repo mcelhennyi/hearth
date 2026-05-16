@@ -125,8 +125,8 @@ def _run_install_hook(plugin_dir: Path, runner: _RunnerFn) -> None:
         raise PluginAddError(f"scripts/install failed: {combined}", exit_code=1)
 
 
-def format_plugin_list_lines(heart: Path) -> list[str]:
-    records = load_plugin_registry(heart.resolve())
+def format_plugin_list_lines(hearth: Path) -> list[str]:
+    records = load_plugin_registry(hearth.resolve())
     slug_w = 22
     src_w = 48
     lines = [
@@ -145,7 +145,7 @@ def format_plugin_list_lines(heart: Path) -> list[str]:
 
 def add_plugin_from_source(
     *,
-    heart: Path,
+    hearth: Path,
     source_spec: str,
     runner: _RunnerFn | None = None,
     start_if_enabled: bool = True,
@@ -154,7 +154,7 @@ def add_plugin_from_source(
     """Clone or copy a plugin, validate Tinder, hook install, update registry, regenerate compose."""
 
     run = runner or _default_runner
-    heart = heart.resolve()
+    hearth = hearth.resolve()
 
     canonical = classify_plugin_source(source_spec)
     work = Path(tempfile.mkdtemp(prefix=".hearth-add-"))
@@ -162,9 +162,9 @@ def add_plugin_from_source(
     try:
         materialized = _materialize_source(canonical, work, run)
         manifest = load_tinder_manifest(materialized)
-        validate_slug_available(manifest.slug, heart)
+        validate_slug_available(manifest.slug, hearth)
 
-        dest = heart / "plugins" / manifest.slug
+        dest = hearth / "plugins" / manifest.slug
         shutil.move(str(materialized), str(dest))
     except PluginAddError:
         shutil.rmtree(work, ignore_errors=True)
@@ -179,7 +179,7 @@ def add_plugin_from_source(
         pinned = _git_head(dest, run)
         _run_install_hook(dest, run)
 
-        entries = load_plugin_registry(heart)
+        entries = load_plugin_registry(hearth)
         if any(existing.slug == manifest.slug for existing in entries):
             raise PluginAddError(f"plugin {manifest.slug!r} already listed in plugins.yaml")
 
@@ -190,11 +190,11 @@ def add_plugin_from_source(
             pinned_ref=pinned,
         )
         entries.append(new_rec)
-        save_plugin_registry(heart, entries)
-        generate_plugin_compose(heart)
+        save_plugin_registry(hearth, entries)
+        generate_plugin_compose(hearth)
 
         if start_if_enabled and new_rec.enabled:
-            _maybe_start_plugin_services(heart, [new_rec.slug], run=compose_runner or run)
+            _maybe_start_plugin_services(hearth, [new_rec.slug], run=compose_runner or run)
         return new_rec
     except Exception:
         if dest is not None:
@@ -202,12 +202,12 @@ def add_plugin_from_source(
         raise
 
 
-def _maybe_start_plugin_services(heart: Path, slugs: Sequence[str], *, run: _RunnerFn) -> None:
-    compose_file = heart / "compose" / "docker-compose.yml"
+def _maybe_start_plugin_services(hearth: Path, slugs: Sequence[str], *, run: _RunnerFn) -> None:
+    compose_file = hearth / "compose" / "docker-compose.yml"
     if not compose_file.is_file():
         return
 
-    overrides = heart / "compose" / "overrides" / "generated.plugins.yml"
+    overrides = hearth / "compose" / "overrides" / "generated.plugins.yml"
     command = ["docker", "compose", "-f", str(compose_file)]
     if overrides.is_file():
         command.extend(["-f", str(overrides)])

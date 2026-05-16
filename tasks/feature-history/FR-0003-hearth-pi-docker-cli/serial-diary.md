@@ -1,3 +1,18 @@
+## 2026-05-16 — Design amendment HRT-DEP-001 (`heart/` → `hearth/`)
+
+**Branch:** `feat/FR-0003-hearth-pi-docker-cli`  
+**Refs:** `docs/design/deployment.md` (amendment **HRT-DEP-001**), FR-0003 intake + skeleton
+
+**Change:** Docker-profile install layout directory is **`hearth/`** under `<install-dir>`, not **`heart/`**. Rationale: avoid confusion with the **Hearth** product name; early intake used `heart` by mistake.
+
+**Code:** `ensure_hearth_layout`, `ResolvedInstall.hearth_dir`, template `README.hearth.md`, tests renamed to `test_hearth_install_layout.py`.
+
+**Operator:** Fresh Pi test should use `~/hearth-deploy/hearth/` after `./install`. Pre-amendment trees with `heart/` must rename or reinstall.
+
+**Validation:** `./develop test` + `./scripts/ci/hearth-install-smoke.sh` on feature branch after rename.
+
+---
+
 ## 2026-05-10 — `/develop-frontier 0003` orchestration
 
 **Stage:** policy + queue beacon
@@ -17,7 +32,7 @@
 
 ### DEV
 
-- `hearth --plugin enter [--slug SLUG]` — interactive **bash/zsh** via `exec $SHELL -i` after `chdir` to `heart/plugins/<slug>`; non-TTY prints `cd` + `export` fallback. Numbered picker when TTY and `--slug` omitted.
+- `hearth --plugin enter [--slug SLUG]` — interactive **bash/zsh** via `exec $SHELL -i` after `chdir` to `hearth/plugins/<slug>`; non-TTY prints `cd` + `export` fallback. Numbered picker when TTY and `--slug` omitted.
 - Kindling template `plugin` implements real `./plugin --exit` when `hearth_install` is importable (reuses `plugin_session`).
 - Documented operator UX under `deploy/hearth-install/README.md`.
 
@@ -40,7 +55,7 @@
 ### DEV
 
 - Repo-root `./install` thin bash wrapper → `python -m hearth_install.bootstrap`.
-- `hearth_install.bootstrap`: layout (`ensure_heart_layout`), packaged `docker-compose.install.yml` → `heart/compose/docker-compose.yml` (hub-smoke placeholder + `include` of generated plugins), plugin compose generation, `heart/bin/hearth` symlink to repo `bin/hearth`, optional `docker compose up -d`.
+- `hearth_install.bootstrap`: layout (`ensure_hearth_layout`), packaged `docker-compose.install.yml` → `hearth/compose/docker-compose.yml` (hub-smoke placeholder + `include` of generated plugins), plugin compose generation, `hearth/bin/hearth` symlink to repo `bin/hearth`, optional `docker compose up -d`.
 - Docker Engine install is intentionally **not** scripted (host mutation); missing daemon prints Pi-oriented hints + Docker docs link.
 - `plugin_compose._render_compose`: empty enabled plugins → `services: {}` for valid YAML merge.
 
@@ -62,14 +77,14 @@
 
 ### DEV
 
-- Implemented `hearth_cli/update_cmd.py`: deploy `git pull --ff-only`, plugin dir refresh from `plugins.yaml`, `generate_plugin_compose`, optional executable `heart/bin/hearth-migrate`, `docker compose up -d --pull always`.
+- Implemented `hearth_cli/update_cmd.py`: deploy `git pull --ff-only`, plugin dir refresh from `plugins.yaml`, `generate_plugin_compose`, optional executable `hearth/bin/hearth-migrate`, `docker compose up -d --pull always`.
 - Split `ResolvedInstall` / `resolve_install` into `hearth_cli/install_context.py` to avoid circular imports.
 - Documented behavior under **Updates** in `docs/design/deployment.md`.
 
 ### VAL
 
 - `./develop test` — **PASS** (26 tests).
-- Host-local: `bin/hearth --install-root <temp git+heart> --update --dry-run` run twice; output identical (**no-op**). Full non-dry-run update not exercised here (requires real Compose stack + network pull).
+- Host-local: `bin/hearth --install-root <temp git+hearth> --update --dry-run` run twice; output identical (**no-op**). Full non-dry-run update not exercised here (requires real Compose stack + network pull).
 
 ---
 
@@ -102,11 +117,11 @@
 
 ### TEST
 
-- Extended `tests/test_hearth_cli.py` with parametrized stack-command assertions and coverage for `--project-name`, `heart/compose/.env`, and status health probing.
+- Extended `tests/test_hearth_cli.py` with parametrized stack-command assertions and coverage for `--project-name`, `hearth/compose/.env`, and status health probing.
 
 ### DEV
 
-- `hearth start|stop|restart|status|logs` map to docker compose with shared `--project-name` (default `hearth`, override `HEARTH_COMPOSE_PROJECT_NAME`) and optional `heart/compose/.env` or `HEARTH_COMPOSE_ENV_FILE`.
+- `hearth start|stop|restart|status|logs` map to docker compose with shared `--project-name` (default `hearth`, override `HEARTH_COMPOSE_PROJECT_NAME`) and optional `hearth/compose/.env` or `HEARTH_COMPOSE_ENV_FILE`.
 - `hearth compose` uses the same prefix; `hearth status` runs `ps -a` then optionally GETs `/api/health` via `HEARTH_HUB_HEALTH_URL` or `docker compose port hub <port>` discovery (`--skip-health` to skip).
 
 ### VAL
@@ -147,19 +162,19 @@
 
 ### TEST
 
-- Added golden-file coverage for **`heart/state/plugins.yaml`** to **`heart/compose/overrides/generated.plugins.yml`**.
+- Added golden-file coverage for **`hearth/state/plugins.yaml`** to **`hearth/compose/overrides/generated.plugins.yml`**.
 - Covered enabled-only output, image and build-context services, plugin env injection, default registry idempotence, and missing enabled plugin dirs.
 
 ### DEV
 
 - Implemented `hearth_install.plugin_compose`: schema-v1 registry reader, validation, default registry writer, and deterministic Compose override rendering.
-- Wired `ensure_heart_layout()` to create **`state/plugins.yaml`** and added `python -m hearth_install --generate-plugin-compose`.
+- Wired `ensure_hearth_layout()` to create **`state/plugins.yaml`** and added `python -m hearth_install --generate-plugin-compose`.
 - Updated install-layout docs/templates to document the registry and generated override.
 
 ### VAL
 
 - Containerized tests: `./develop test` — **PASS** (`10 passed`).
-- Compose config check: generated two fake plugin services from a temp **`heart/`** tree and ran `docker compose -f <generated.plugins.yml> config --quiet` — **PASS**.
+- Compose config check: generated two fake plugin services from a temp **`hearth/`** tree and ran `docker compose -f <generated.plugins.yml> config --quiet` — **PASS**.
 - Integration smoke: `docker compose -f <generated.plugins.yml> up -d` with two `busybox:1.36` fake plugin services — **PASS**; both services reached running state and were stopped with `docker compose down`.
 - Host-local exception: the temp fixture generator used host `python3` with `PYTHONPATH=deploy/hearth-install` because the validation target was the generated file consumed by Docker Compose; tests themselves ran inside the repo's Docker Compose `hearth-test` service.
 
@@ -176,10 +191,10 @@
 |---------------------------------------------|----------------------------|
 | Purpose (Compose on Pi, contracts) | Opening **Authority** paragraph + **Docker profile (Pi)** |
 | Actors (operator, `./install`, `hearth`, Compose vs systemd) | **Targets** table (Pi rows), **Docker profile** supervisor vs **systemd units (prod, bare-metal alternative)** section |
-| Install root / `HEARTH_INSTALL_ROOT`, `heart/` | **Docker profile** operator + mapping table |
+| Install root / `HEARTH_INSTALL_ROOT`, `hearth/` | **Docker profile** operator + mapping table |
 | Public surfaces (`VERSION.json`, registry, compose paths, CLIs) | Mapping table rows + **Updates** (`hearth --update` intent) + cross-links to skeleton/README |
 | `hearth` / `plugin` CLI sketches | **Updates** + pointer to skeleton for full flag matrix (not duplicated) |
-| Data in/out (`heart/var`, plugins, secrets) | Mapping table (`heart/var/`, `heart/plugins/`) |
+| Data in/out (`hearth/var`, plugins, secrets) | Mapping table (`hearth/var/`, `hearth/plugins/`) |
 | Sequencing vs `deployment.md` / `install.sh` tension | Authority paragraph (pick one profile); **Install script** renamed bare-metal; FR-0003 `./install` called out |
 | Open questions (image build, rootless, hub vs file-first) | **DESIGN-GAP — Docker profile** |
 
@@ -228,7 +243,7 @@ Amended **`docs/design/deployment.md`**: Pi **Docker profile** with mermaid boot
 
 ### DEV
 
-- **`scripts/ci/hearth-install-smoke.sh`**: end-to-end host smoke — `./install --dry-run`, `./install` with `--skip-docker-check --skip-compose-up`, `hearth version`, `hearth doctor`, `hearth --plugin list`, optional compose config validation under the materialized **`heart/compose/`** tree.
+- **`scripts/ci/hearth-install-smoke.sh`**: end-to-end host smoke — `./install --dry-run`, `./install` with `--skip-docker-check --skip-compose-up`, `hearth version`, `hearth doctor`, `hearth --plugin list`, optional compose config validation under the materialized **`hearth/compose/`** tree.
 
 ### VAL
 
@@ -265,6 +280,6 @@ Amended **`docs/design/deployment.md`**: Pi **Docker profile** with mermaid boot
 
 **Stage:** Stage 0–2 (intake, L0 design, ticket DAG)
 
-**Recap (plain English):** Registered **[FR-0003](../REGISTRY.md)** as **Hearth Pi Docker CLI** (`hearth` + `./install` + per-plugin `plugin`). Wrote intake, skeleton contracts (install tree **`<install-dir>/heart`**, MVP git-only plugin add, explicit **DESIGN-GAP** for central registry), and **13** implementation tickets with a wide parallel front after **T-FR-0003-02**. Noted tension with **`docs/design/deployment.md`** systemd-first Pi story — **T-FR-0003-01** amends docs for a **Docker profile**. **T-FR-0003-13** lands **CLI parity** rules in Cursor + Claude stacks. No code or **`feat/`** branch yet.
+**Recap (plain English):** Registered **[FR-0003](../REGISTRY.md)** as **Hearth Pi Docker CLI** (`hearth` + `./install` + per-plugin `plugin`). Wrote intake, skeleton contracts (install tree **`<install-dir>/hearth`**, MVP git-only plugin add, explicit **DESIGN-GAP** for central registry), and **13** implementation tickets with a wide parallel front after **T-FR-0003-02**. Noted tension with **`docs/design/deployment.md`** systemd-first Pi story — **T-FR-0003-01** amends docs for a **Docker profile**. **T-FR-0003-13** lands **CLI parity** rules in Cursor + Claude stacks. No code or **`feat/`** branch yet.
 
 **Next:** Superseded by operator **option A** (above): no FR-0003 implementation until **FR-0002** closes.

@@ -13,13 +13,13 @@ from hearth_cli import cli
 
 
 def _write_version(root: Path, *, ref: str = "test-ref") -> Path:
-    heart = root / "heart"
-    (heart / "compose").mkdir(parents=True)
-    (heart / "VERSION.json").write_text(
+    hearth = root / "hearth"
+    (hearth / "compose").mkdir(parents=True)
+    (hearth / "VERSION.json").write_text(
         json.dumps({"schema": 1, "hearth_ref": ref}) + "\n",
         encoding="utf-8",
     )
-    return heart
+    return hearth
 
 
 def test_version_reads_manifest_from_install_root(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
@@ -31,13 +31,13 @@ def test_version_reads_manifest_from_install_root(tmp_path: Path, capsys: pytest
     assert "abc123" in capsys.readouterr().out
 
 
-def test_resolve_heart_dir_accepts_direct_heart_path(tmp_path: Path) -> None:
-    heart = _write_version(tmp_path)
+def test_resolve_hearth_dir_accepts_direct_hearth_path(tmp_path: Path) -> None:
+    hearth = _write_version(tmp_path)
 
-    resolved = cli.resolve_install(install_root=heart)
+    resolved = cli.resolve_install(install_root=hearth)
 
     assert resolved.install_root == tmp_path.resolve()
-    assert resolved.heart_dir == heart.resolve()
+    assert resolved.hearth_dir == hearth.resolve()
 
 
 def test_doctor_fails_gracefully_without_docker(
@@ -74,8 +74,8 @@ def test_compose_passthrough_runs_docker_compose_with_fixture_project(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    heart = _write_version(tmp_path)
-    compose_file = heart / "compose" / "docker-compose.yml"
+    hearth = _write_version(tmp_path)
+    compose_file = hearth / "compose" / "docker-compose.yml"
     compose_file.write_text("services: {}\n", encoding="utf-8")
     calls: list[tuple[list[str], Path]] = []
 
@@ -91,7 +91,7 @@ def test_compose_passthrough_runs_docker_compose_with_fixture_project(
     assert calls == [
         (
             [*_expected_compose_prefix(compose_file), "ps"],
-            heart / "compose",
+            hearth / "compose",
         )
     ]
 
@@ -100,10 +100,10 @@ def test_compose_passthrough_includes_env_file_when_compose_dotenv_exists(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    heart = _write_version(tmp_path)
-    compose_file = heart / "compose" / "docker-compose.yml"
+    hearth = _write_version(tmp_path)
+    compose_file = hearth / "compose" / "docker-compose.yml"
     compose_file.write_text("services: {}\n", encoding="utf-8")
-    env_path = heart / "compose" / ".env"
+    env_path = hearth / "compose" / ".env"
     env_path.write_text("HUB_HTTP_PORT=8080\n", encoding="utf-8")
     calls: list[list[str]] = []
 
@@ -123,8 +123,8 @@ def test_compose_uses_project_name_from_env(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    heart = _write_version(tmp_path)
-    compose_file = heart / "compose" / "docker-compose.yml"
+    hearth = _write_version(tmp_path)
+    compose_file = hearth / "compose" / "docker-compose.yml"
     compose_file.write_text("services: {}\n", encoding="utf-8")
     calls: list[list[str]] = []
 
@@ -162,8 +162,8 @@ def test_stack_commands_map_to_compose_invocation(
     extra_argv: list[str],
     expected_tail: list[str],
 ) -> None:
-    heart = _write_version(tmp_path)
-    compose_file = heart / "compose" / "docker-compose.yml"
+    hearth = _write_version(tmp_path)
+    compose_file = hearth / "compose" / "docker-compose.yml"
     compose_file.write_text("services: {}\n", encoding="utf-8")
     calls: list[list[str]] = []
 
@@ -184,8 +184,8 @@ def test_status_without_skip_health_invokes_ps_then_health_probe(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    heart = _write_version(tmp_path)
-    compose_file = heart / "compose" / "docker-compose.yml"
+    hearth = _write_version(tmp_path)
+    compose_file = hearth / "compose" / "docker-compose.yml"
     compose_file.write_text("services: {}\n", encoding="utf-8")
     calls: list[list[str]] = []
 

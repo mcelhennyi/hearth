@@ -3,15 +3,15 @@
 **FR:** `FR-0003` — Hearth Pi Docker CLI and install bootstrap  
 **Feature folder:** `tasks/feature-history/FR-0003-hearth-pi-docker-cli/`  
 **Branch role:** Feature integration branch  
-**Last meaningful update:** 2026-05-11
+**Last meaningful update:** 2026-05-16
 
 ## Landed on this feature branch
 
 - **`T-FR-0003-01` done:** `docs/design/deployment.md` documents the Docker-on-Pi profile and bare-metal systemd alternative.
-- **`T-FR-0003-02` done:** `deploy/hearth-install/` scaffolds the `heart/` layout, `VERSION.json` v1 parser/schema, templates, README, and `./develop test` path.
+- **`T-FR-0003-02` done:** `deploy/hearth-install/` scaffolds the `hearth/` layout, `VERSION.json` v1 parser/schema, templates, README, and `./develop test` path.
 - **`T-FR-0003-13` done:** Hearth CLI parity rules are mirrored across Cursor and Claude guidance.
 - **`T-FR-0003-04` done:** `bin/hearth` and `deploy/hearth-cli/` provide install-root resolution, `version`, `doctor`, and `compose --` passthrough with tests.
-- **`T-FR-0003-05` done:** `deploy/hearth-install/` now manages `heart/state/plugins.yaml` and generates Compose plugin overrides.
+- **`T-FR-0003-05` done:** `deploy/hearth-install/` now manages `hearth/state/plugins.yaml` and generates Compose plugin overrides.
 - **`T-FR-0003-10` done:** `deploy/kindling-contract/` mirrors the plugin `scripts/install` + `plugin` template contract until Kindling exists upstream.
 - **`T-FR-0003-03` done:** `./install` bootstraps Docker layout, shim, compose template, plugin overrides, and initial `docker compose up -d`.
 - **`T-FR-0003-06` done:** `hearth --update` supports dry-run, deploy git pull, plugin refresh, compose regeneration, optional migration hook, and compose restart.
@@ -31,8 +31,13 @@
 - `T-FR-0003-11`: `docker compose -f deploy/compose/docker-compose.yml --profile test run --rm hearth-test` — PASS (`66 passed`).
 - After merge of **`T-FR-0003-12`**: `./develop test` — PASS (`76 passed`); `./scripts/ci/hearth-install-smoke.sh` — PASS on integration host.
 
+## Recent
+
+- **2026-05-16:** Design amendment **HRT-DEP-001** — install tree **`heart/` → `hearth/`** (code + docs); revalidate before Pi VAL / PR merge.
+
 ## Next
 
-1. Human review and merge [**PR #13**](https://github.com/mcelhennyi/hearth/pull/13) (`feat/FR-0003-hearth-pi-docker-cli` → **`main`**).
-2. On merge to **`main`**: remove repo-root **`CURRENT.md`** per process docs.
-3. Write **`90-closeout.md`**; optional Pi run of **`scripts/ci/hearth-install-smoke.sh`** → **`serial-diary.md`**.
+1. Pi VAL: `./install ~/hearth-deploy` → paths under **`hearth/`**; log in **`serial-diary.md`**.
+2. Human review and merge [**PR #13**](https://github.com/mcelhennyi/hearth/pull/13) (`feat/FR-0003-hearth-pi-docker-cli` → **`main`**).
+3. On merge to **`main`**: remove repo-root **`CURRENT.md`** per process docs.
+4. Write **`90-closeout.md`**; optional Pi run of **`scripts/ci/hearth-install-smoke.sh`** → **`serial-diary.md`**.
