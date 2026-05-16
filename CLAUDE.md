@@ -15,7 +15,7 @@ Custom slash commands live in **`.claude/commands/`**:
 | **`/feature-request`** | **`FR-NNNN`** lifecycle: intake, layered design, **`20-tickets-dag.md`**, canonical **`tickets.md`**, optional frontier; repo-root **`CURRENT.md`** on **`feat/*`**; end turns with **Executive summary** + **next step** + **options** when relevant — see **`.cursor/skills/feature-request/SKILL.md`**. |
 | **`/feature-request-continue`** | Resume an in-progress **`FR-NNNN`** from **`tasks/feature-history/`** (read **`CURRENT.md`** when on **`feat/*`**). |
 | **`/identify-frontier`** | Parallel-ticket handoff from **`ticket-progress.md`** + **`tasks/feature-history/**/tickets.md`** (+ DAG). Run **after** tickets exist. |
-| **`/develop-frontier`** | One subagent per parallel-capable ticket (**TEST→DEV→VAL** per child worktree under **`.worktrees/FR-NNNN-<slug>/`**). |
+| **`/develop-frontier`** | One subagent per parallel-capable ticket (**TEST→DEV→VAL** per child worktree under **`.worktrees/FR-NNNN-<slug>/`**); each ticket subagent **Composer 2** only (`composer-2-fast` on Cursor **Task**), not the orchestrator model — **`docs/ai-context.md` §1b**. |
 | **`/finish-feature`** | Merge feature-prefixed ticket/stage branches into **`feat/FR-NNNN-<slug>`**, validate, **PR → `main`**; do not auto-delete remote **`feat/*`**. |
 | **`/finish-frontier`** | Merge parallel ticket/stage branches into **`main`** per policy. |
 | **`/commit-with-metrics`** | Commit with optional AI metrics footer — **`.cursor/skills/commit-with-ai-metrics/SKILL.md`**. |

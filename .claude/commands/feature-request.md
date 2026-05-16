@@ -25,7 +25,7 @@ End each response with **Executive summary**, **Suggested next step**, and **Opt
 
 1. **Before develop:** land tickets (**`T-FR-NNNN-xx`**) in **`tasks/feature-history/FR-NNNN-<slug>/tickets.md`**, **`tasks/feature-history/TICKET-SOURCES.md`**, **`docs/design/tickets-initial.md`** (DAG index), and **`tasks/ticket-progress.md`** (or a PR-ready “Proposed patch” in `20-tickets-dag.md` if you cannot commit yet).
 2. **Parallel handoff (optional, recommended):** `/identify-frontier`
-3. **Implement:** `/develop-frontier` (feature worktree at **`.worktrees/FR-NNNN-<slug>/feature/`**; ticket/stage child worktrees under the same feature folder)
+3. **Implement:** `/develop-frontier` (feature worktree at **`.worktrees/FR-NNNN-<slug>/feature/`**; ticket/stage child worktrees under the same feature folder; **Composer 2** per ticket subagent — **`docs/ai-context.md` §1b**)
 4. **Integrate:** `/finish-feature` (default; feature branch → **PR to `main`**) or `/finish-frontier` (direct **`main`**)
 
 **Development commands:** during implementation, run build/test/lint/package-manager/doc/dev-server commands inside Docker / Docker Compose / Dev Container / CI images where possible. Use **`./develop run …`**, `docker compose run …`, or the configured Dev Container before host-local commands; document exceptions in feature diaries or handoffs.

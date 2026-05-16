@@ -31,7 +31,7 @@ Every time work on this workflow **pauses for the human**—after a **stage**, a
 | Step | Command / skill | Role |
 |------|------------------|------|
 | Parallel handoff for **tickets** (`T-FR-NNNN-xx`) | `identify-frontier` / `/identify-frontier` | Recomputes who can run in parallel from **`tasks/feature-history/**/tickets.md`** + **`ticket-progress.md`** (DAG hints in **`tickets-initial.md`**). |
-| Implement parallel set | `develop-frontier` / `/develop-frontier` | One child worktree per ticket under **`.worktrees/FR-NNNN-<slug>/`**; **TEST→DEV→VAL** per ticket. |
+| Implement parallel set | `develop-frontier` / `/develop-frontier` | One child worktree per ticket under **`.worktrees/FR-NNNN-<slug>/`**; **TEST→DEV→VAL** per ticket; each ticket subagent **Composer 2** only (**`docs/ai-context.md` §1b**, Cursor **`composer-2-fast`** on **Task**). |
 | Merge tickets → feature branch → PR | `finish-feature` / `/finish-feature` | Merges feature-prefixed ticket/stage branches into **`feat/FR-NNNN-<slug>`**, validates, **PR to `main`** for human review; **never** auto-deletes remote branches. |
 | Merge to `main` (integration) | `finish-frontier` / `/finish-frontier` | Direct integration of parallel ticket/stage branches into **`main`** when not using the feature-branch line. |
 | Commits (optional) | `commit-with-ai-metrics` / `/commit-with-metrics` | Conventional commit + optional metrics footer. |
@@ -207,7 +207,7 @@ If the user forbids direct repo edits, keep a “Proposed patch” section under
 
 1. **Optional but recommended:** Run **`/identify-frontier`** (or the skill) to write **`tasks/handoffs/…-parallel-frontier.md`** (global queue). Also append a **feature-scoped** summary under **`handoffs/YYYY-MM-DD-identify-note.md`** in **this** `FR-NNNN` folder so the next worker reads one place.
 2. Update **`tasks/ticket-progress.md` → Current focus** per **`develop-frontier`**: `Session status` = `developing`, list worktrees and ticket ids.
-3. Run **`/develop-frontier`** (or the skill) to launch **one subagent per parallel-capable ticket**, each in a child worktree under **`.worktrees/FR-NNNN-<slug>/`** on a feature-prefixed ticket/stage branch, **TEST→DEV→VAL** in order **inside** each ticket.
+3. Run **`/develop-frontier`** (or the skill) to launch **one subagent per parallel-capable ticket**, each in a child worktree under **`.worktrees/FR-NNNN-<slug>/`** on a feature-prefixed ticket/stage branch, **TEST→DEV→VAL** in order **inside** each ticket. **Model:** each ticket **Task** uses **Composer 2** (`composer-2-fast`), never the orchestrator model (**`docs/ai-context.md` §1b**).
 4. For each parallel subagent, ensure **`parallel/…-diary.md`** gets an entry when that stream starts and when it ends.
 5. Run development-specific commands for each ticket (**build**, **test**, **lint**, **format**, package-manager scripts, doc builds, and dev servers) inside Docker / Docker Compose / Dev Container / CI images where possible; record host-local exceptions in the ticket diary or handoff.
 6. When a ticket or stream edits **`docs/`** and the project ships **`./develop`**: prefer **`./develop build`** (or **`./develop up`** to manually verify) for doc **VAL** in line with **`docs/ai-context.md`** (run verification in **Docker** / **Dev Container** for consistency).

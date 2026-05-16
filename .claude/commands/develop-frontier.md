@@ -31,6 +31,8 @@ End-to-end: discover parallel-capable tickets (**global** graph — may span **m
 
 ## 2 — Launch one subagent per frontier ticket (parallel)
 
+**Model (required):** Each ticket subagent uses **Composer 2**, not the orchestrator session model — **`docs/ai-context.md` §1b** (Cursor **Task**: **`model: "composer-2-fast"`** per ticket).
+
 Each subagent must:
 
 - Work on one ticket (**`T-FR-NNNN-xx`**, title from **`tasks/feature-history/**/tickets.md`**).

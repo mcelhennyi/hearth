@@ -32,10 +32,13 @@ End-to-end: **discover** parallel-capable tickets, ensure each owning feature ha
 
 ## 2 — Launch one subagent per frontier ticket (parallel)
 
+**Model (required):** Each ticket subagent runs on **Composer 2**, not the orchestrator’s model — **`docs/ai-context.md` §1b** (Cursor: **`model: "composer-2-fast"`** on the **Task** tool for every ticket **Task** call).
+
 Each subagent prompt must include:
 
 | Requirement | Detail |
 |-------------|--------|
+| **Model** | **Composer 2** only — **`composer-2-fast`** on **Task** in Cursor; never inherit the parent session model. |
 | **Ticket** | **`T-FR-NNNN-xx`**, title from the owning **`tasks/feature-history/FR-NNNN-<slug>/tickets.md`**. |
 | **Worktree** | Feature branch at **`.worktrees/FR-NNNN-<slug>/feature/`**. Ticket/stage work in **`.worktrees/FR-NNNN-<slug>/T-FR-NNNN-xx-short-name/`**, branch e.g. **`feat/FR-NNNN-<slug>/T-FR-NNNN-xx-short-name`**, created from the feature branch. All phases **only** here. |
 | **Phase order** | **TEST → DEV → VAL** serially for that ticket (per section in that ticket’s **`tickets.md`**). |
