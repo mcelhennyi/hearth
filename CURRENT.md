@@ -33,6 +33,6 @@
 
 ## Next
 
-1. Push **`feat/FR-0003-hearth-pi-docker-cli`** and ticket branch **`feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-12-smoke-arm-ci`** to `origin`.
-2. Run **`/finish-feature`** (or open/update PR to **`main`**); remove repo-root **`CURRENT.md`** when the feature PR merges to **`main`** per process docs.
-3. Optional: run **`scripts/ci/hearth-install-smoke.sh`** on a Pi-class host and append timing to `tasks/feature-history/FR-0003-hearth-pi-docker-cli/serial-diary.md`.
+1. Human review and merge [**PR #13**](https://github.com/mcelhennyi/hearth/pull/13) (`feat/FR-0003-hearth-pi-docker-cli` → **`main`**).
+2. On merge to **`main`**: remove repo-root **`CURRENT.md`** per process docs.
+3. Write **`90-closeout.md`**; optional Pi run of **`scripts/ci/hearth-install-smoke.sh`** → **`serial-diary.md`**.

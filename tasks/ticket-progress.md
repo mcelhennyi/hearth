@@ -4,15 +4,15 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | **FR-0003** — all **`T-FR-0003-xx`** implementation rows are **VAL `done`** on **`feat/FR-0003-hearth-pi-docker-cli`** (including **`T-FR-0003-12`** merged from **`feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-12-smoke-arm-ci`**). |
-| **Active phase** | `integrating` — push feature + ticket branches, then **`/finish-feature`** (PR **`feat/FR-0003-hearth-pi-docker-cli` → `main`**). |
-| **Branch / worktree** | Feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → **`feat/FR-0003-hearth-pi-docker-cli`**. Ticket branch retained for audit: **`feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-12-smoke-arm-ci`**. |
+| **Active ticket** | **FR-0003** — all **`T-FR-0003-xx`** implementation rows are **VAL `done`** on **`feat/FR-0003-hearth-pi-docker-cli`**. |
+| **Active phase** | `integrating` — **PR #13** (`feat/FR-0003-hearth-pi-docker-cli` → **`main`**) rebased on **`main`**; human review and merge. |
+| **Branch / worktree** | Feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → **`feat/FR-0003-hearth-pi-docker-cli`**. Remote **`feat/*`** ticket branches retained for audit. |
 | **Session status** | `integrating` |
-| **Next agent should** | **`git push`** **`feat/FR-0003-hearth-pi-docker-cli`** and the **`-12`** ticket branch to **`origin`**, run **`./develop test`** on the feature worktree if needed, then **`/finish-feature`** or **`gh pr create` / update** toward **`main`**. FR-0002 unchanged. |
+| **Next agent should** | Review [**PR #13**](https://github.com/mcelhennyi/hearth/pull/13); on merge to **`main`**, remove repo-root **`CURRENT.md`**, write **`90-closeout.md`**, update **`REGISTRY.md`**. FR-0002 unchanged. |
 
 ### Parallel streams
 
-`T-FR-0002-01` and `T-FR-0002-02` are independent. **`T-FR-0003-01`** has no FR-0002 **Deps** and may run in parallel. **`T-FR-0002-01`** and **`T-FR-0002-02`** must land before `T-FR-0002-03`.
+`T-FR-0002-01` and `T-FR-0002-02` are independent. **FR-0003** implementation is complete on the feature branch. **`T-FR-0002-01`** and **`T-FR-0002-02`** must land before `T-FR-0002-03`.
 
 | Stream label | Ticket(s) | `FR-NNNN` | Branch / worktree | Owner / note |
 |----------------|------------|-----------|-------------------|--------------|
@@ -60,6 +60,6 @@
 ## How to choose next work
 
 1. While FR-0002 is `in-progress`: pick the smallest **`T-FR-0002-xx`** with all `Deps:` satisfied. Ignore FR-0001 tickets — they are parked.
-2. **FR-0003 (`hearth` / `./install` / per-plugin `plugin`):** All **`T-FR-0003-xx`** tickets are **VAL `done`** on **`feat/FR-0003-hearth-pi-docker-cli`** (including **`T-FR-0003-12`** smoke + ARM CI, merged 2026-05-11). Next: **`/finish-feature`** (PR to **`main`**) and **`90-closeout.md`** when the team closes the FR line.
+2. **FR-0003 (`hearth` / `./install` / per-plugin `plugin`):** All **`T-FR-0003-xx`** tickets are **VAL `done`** on **`feat/FR-0003-hearth-pi-docker-cli`**. Next: merge [**PR #13**](https://github.com/mcelhennyi/hearth/pull/13) to **`main`**, then **`90-closeout.md`** when the team closes the FR line.
 3. After FR-0002 closes: re-flip FR-0001 to `design`/`in-progress` in `REGISTRY.md`, apply any FR-0002-driven amendments, and start `T-FR-0001-01`. **FR-0003** may also overlap FR-0001 once work is staffed (see `tasks/feature-history/FR-0003-hearth-pi-docker-cli/README.md`).
 4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
