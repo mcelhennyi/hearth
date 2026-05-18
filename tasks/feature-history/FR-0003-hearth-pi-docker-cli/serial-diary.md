@@ -1,3 +1,11 @@
+## 2026-05-18 — Merged to `main` (PR #13)
+
+**Merge:** `3e4404f` — `feat/FR-0003-hearth-pi-docker-cli` → **`main`**  
+**Closeout:** [`90-closeout.md`](90-closeout.md)  
+**Post-merge:** repo-root **`CURRENT.md`** removed from **`main`** per process.
+
+---
+
 ## 2026-05-16 — Pi hardware VAL (Docker profile install)
 
 **Branch:** `feat/FR-0003-hearth-pi-docker-cli`  
