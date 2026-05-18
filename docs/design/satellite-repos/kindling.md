@@ -29,6 +29,16 @@ kindling new groceries
 
 `kindling new` does roughly what `init-skeleton` does for the platform: clones the right template, points `.skeleton`-style submodules where they need to go, and stamps the chosen slug.
 
+Until the public Kindling repository exists, Hearth mirrors the plugin template contract in `deploy/kindling-contract/` so FR-0003 can validate operator flows without inventing an external repo. That mirror must produce a plugin root containing:
+
+| Path | Contract |
+|------|----------|
+| `tinder.toml` | Minimal Tinder manifest using the plugin slug and a Python backend entrypoint. |
+| `scripts/install` | Executable install hook run by `hearth --plugin --add` / update flows; non-zero exit aborts the operation with its stderr/stdout surfaced to the operator. |
+| `plugin` | Executable per-plugin admin shim with common lifecycle flags and passthrough to `python -m <plugin>.admin` when invoked as `plugin -- <args>` or with plugin-defined args. |
+
+When Kindling becomes a real submodule, the Hearth mirror should be deleted or converted to fixtures only after equivalent upstream tests prove `kindling new <slug>` still renders these paths.
+
 ## Relationship to `.skeleton`
 
 `.skeleton` is **process** (tickets, FR-NNNN flow, AI rules). Kindling is **product surface** (Mantle, Spark client, Tinder validator, plugin templates). A new plugin repo will have **both**: it `init-skeleton`'s the process tree and consumes Kindling's templates for the actual app code.

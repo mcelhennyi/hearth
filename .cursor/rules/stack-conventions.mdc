@@ -54,7 +54,7 @@ tasks/                # Process state (see docs/ai-context.md)
 
 ## Hearth CLI parity (production operator surface)
 
-- **Scope:** The **`hearth`** admin CLI and per-plugin **`plugin`** CLI (see **`FR-0003`**, `docs/design/deployment.md` Docker profile) are the **default operator control plane** for Compose-based installs on Pi-class hosts.
+- **Scope:** The **`hearth`** admin CLI and per-plugin **`plugin`** CLI (see **`FR-0003`**, design contract: [Docker profile (Pi)](../../docs/design/deployment.md#docker-profile-pi) in **`docs/design/deployment.md`**) are the **default operator control plane** for Compose-based installs on Pi-class hosts.
 - **Rule:** When you add or change an **operator-facing** platform capability (stack lifecycle, plugin lifecycle, backup/restore, TLS/CA export, updates, diagnostics), you **must** either:
   - expose it through **`hearth`** / **`plugin`** in the same change series, **or**
   - add an explicit **follow-up ticket** on the active **`FR-NNNN`** (or a new **`FR-NNNN`**) titled so `identify-frontier` can schedule CLI parity, and note the gap in the feature diary.

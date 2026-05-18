@@ -1,9 +1,8 @@
-# Next-step handoff — parallel frontier (2026-05-10, refresh **b**)
+# Next-step handoff — parallel frontier (2026-05-10)
 
-**Audience:** Next agent or maintainer.  
-**Authority:** `tasks/feature-history/**/tickets.md`, `tasks/ticket-progress.md`, `docs/design/tickets-initial.md`, `tasks/feature-history/REGISTRY.md`.
-
-**Workspace note:** This snapshot uses **`tasks/ticket-progress.md` on the current checkout** (`main`, aligned with `origin/main` when last refreshed). If **`feat/*`** PRs merged remotely but are not merged locally, **`git pull`** / merge integration branches and **re-run `/identify-frontier`** — **`triadDone`** lines in `docs/design/tickets-initial.md` should then match **`ticket-progress`** VAL rows.
+**Audience:** Next agent or maintainer picking up work from `feat/FR-0003-hearth-pi-docker-cli`.  
+**Authority:** `tasks/feature-history/**/tickets.md`, `tasks/ticket-progress.md`, `docs/design/tickets-initial.md` (DAG), `docs/ai-context.md`.  
+**Context:** FR-0003 wave 5 ticket PRs were merged into the feature branch: `T-FR-0003-03`, `T-FR-0003-06`, `T-FR-0003-07`, and `T-FR-0003-09`. Integrated validation passed with `docker compose -f deploy/compose/docker-compose.yml --profile test run --rm hearth-test` (`49 passed`).
 
 ---
 
@@ -11,74 +10,80 @@
 
 | Field | Value (as of this handoff) |
 |------|----------------------------|
-| **Active ticket** | `T-FR-0002-02` (primary); `T-FR-0002-01` — merge ticket branch into feature branch when ready |
-| **Active phase** | `T-FR-0002-02` TEST → DEV → VAL; `T-FR-0002-01` server-first VAL still open |
-| **Branch / worktree** | `.worktrees/FR-0002-iphone-pwa-prototype/` feature + ticket worktrees (see tracker **Parallel streams**) |
-| **Session status** | `developing` |
-| **Next agent should** | FR-0002 closeout per [`HOWTO-complete-FR-0002.md`](../feature-history/FR-0002-iphone-pwa-prototype/HOWTO-complete-FR-0002.md); parallel ticket work per frontier below. **`T-FR-0001-xx`** remains **parked** ([`REGISTRY.md`](../feature-history/REGISTRY.md)). |
+| **Active ticket** | `/identify-frontier 0003` after wave 5 integration: `T-FR-0003-08` and `T-FR-0003-11` are dependency-eligible from `feat/FR-0003-hearth-pi-docker-cli`; FR-0002 `T-FR-0002-01` VAL and `T-FR-0002-02` remain eligible in parallel. |
+| **Active phase** | `handoff` — wave 5 merged, feature tests pass. |
+| **Branch / worktree** | Feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → `feat/FR-0003-hearth-pi-docker-cli`. |
+| **Session status** | `handoff` |
+| **Next agent should** | Start one stream each for `T-FR-0003-08` and `T-FR-0003-11`, or continue FR-0002 if that feature is priority. |
 
-**Triad-complete (summary):** **`T-FR-0000-01`** only — matches **`triadDone`** in [`docs/design/tickets-initial.md`](../../docs/design/tickets-initial.md) (workspace copy).
+**Triad-complete (summary):** `T-FR-0000-01`; FR-0003 `T-FR-0003-01`, `-02`, `-03`, `-04`, `-05`, `-06`, `-07`, `-09`, `-10`, `-13`.
 
-**Still incomplete:** All other rows in the Progress table with any phase not **`done`**.
+**Still incomplete (summary):** FR-0003 `T-FR-0003-08`, `-11`, `-12`; FR-0002 `T-FR-0002-01` VAL, `T-FR-0002-02`, `-03`, `-04`; FR-0001 remains parked by policy.
 
 ---
 
-## Snapshot: dependency graph — eligible ∩ incomplete
+## Snapshot: what the dependency graph allows in parallel
 
-**Eligibility:** Every ticket listed under **`Deps:`** in the owning **`tickets.md`** has **VAL** = **`done`** in **`ticket-progress.md`**.
+**Eligibility rule:** Every ticket in `Deps:` has `VAL` = `done` in `tasks/ticket-progress.md`.
 
-With **only `T-FR-0000-01`** VAL-complete among dependencies, any ticket whose **`Deps:`** is **`none`** is **eligible**. Among those, **incomplete** rows are parallel-capable **by DAG**:
+With FR-0003 `T-FR-0003-07` and `T-FR-0003-10` VAL-done, and with FR-0002 `T-FR-0002-01` / `T-FR-0002-02` both having `Deps: none`, these tickets are eligible and mutually non-blocking:
 
-| Ticket | Title | FR | Deps |
-|--------|-------|-----|------|
-| [T-FR-0002-01](../feature-history/FR-0002-iphone-pwa-prototype/tickets.md#t-fr-0002-01--caddy--tls-internal--static-placeholder) | Caddy + tls internal + static placeholder | FR-0002 | `none` |
-| [T-FR-0002-02](../feature-history/FR-0002-iphone-pwa-prototype/tickets.md#t-fr-0002-02--mantle-pwa-bones-manifest--sw--bottom-tab-placeholder) | Mantle PWA bones | FR-0002 | `none` |
-| [T-FR-0003-01](../feature-history/FR-0003-hearth-pi-docker-cli/tickets.md#t-fr-0003-01--design-contract-amend-deployment-for-docker-on-pi) | Design contract: amend deployment for Docker-on-Pi | FR-0003 | `none` |
-| [T-FR-0001-01](../feature-history/FR-0001-hearth-platform/tickets.md#t-fr-0001-01--repo-scaffold-and-dev-loop) | Repo scaffold and Compose dev loop | FR-0001 | `none` *(parked — see below)* |
+| Ticket | FR | Title | Deps |
+|--------|----|-------|------|
+| `T-FR-0002-01` | FR-0002 | Caddy + `tls internal` + static placeholder | `none` |
+| `T-FR-0002-02` | FR-0002 | Mantle PWA bones | `none` |
+| `T-FR-0003-08` | FR-0003 | `hearth --plugin enter` | `T-FR-0003-07` |
+| `T-FR-0003-11` | FR-0003 | Per-plugin `plugin` executable: lifecycle + passthrough | `T-FR-0003-07`, `T-FR-0003-10` |
 
-So **up to three** practical parallel streams (**FR-0002** **-01**, **-02**, **FR-0003** **-01**) if policy allows FR-0003 work; **four** if FR-0001 parking is lifted.
+So **four implementation streams** are dependency-valid now across the global graph:
 
-### Registry / tracker policy vs DAG
+- `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` under `.worktrees/FR-0002-iphone-pwa-prototype/`
+- `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` under `.worktrees/FR-0002-iphone-pwa-prototype/`
+- `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-08-plugin-enter` under `.worktrees/FR-0003-hearth-pi-docker-cli/`
+- `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-11-plugin-executable` under `.worktrees/FR-0003-hearth-pi-docker-cli/`
 
-- **[`REGISTRY.md`](../feature-history/REGISTRY.md):** **FR-0003** is **`parked`** (“implementation deferred until FR-0002 closes”).
-- **`ticket-progress.md` → How to choose #2:** Do **not** start **`T-FR-0003-xx`** while FR-0002 is in flight.
+**Policy-excluded despite graph eligibility:** `T-FR-0001-01` has `Deps: none`, but FR-0001 is parked until FR-0002 closes or the registry policy changes.
 
-**Recommendation:** Treat **`T-FR-0003-01`** as **DAG-eligible but policy-deferred** until **FR-0003** is **`in-progress`** in the registry and the “park until FR-0002” lines are superseded. **Do not** ignore **`REGISTRY.md`** without an explicit policy amend.
+**Examples of what stays blocked until more VAL-done rows exist:**
 
-### Examples blocked until more VAL-done rows
+- `T-FR-0003-12` — needs `T-FR-0003-03`, `T-FR-0003-06`, `T-FR-0003-08`, `T-FR-0003-09`, and `T-FR-0003-11`; only `-08` and `-11` remain.
+- `T-FR-0002-03` — needs `T-FR-0002-01` and `T-FR-0002-02` VAL-done.
+- FR-0001 tickets remain parked by policy even where graph deps would otherwise allow work.
 
-- **[T-FR-0002-03](../feature-history/FR-0002-iphone-pwa-prototype/tickets.md)** — needs **`T-FR-0002-01`** and **`T-FR-0002-02`** VAL-done (both still open in tracker).
-- **[T-FR-0003-02](../feature-history/FR-0003-hearth-pi-docker-cli/tickets.md)** — needs **`T-FR-0003-01`** VAL-done.
-- **[T-FR-0003-03](../feature-history/FR-0003-hearth-pi-docker-cli/tickets.md)** — needs **`T-FR-0003-02`** and **`T-FR-0003-05`** VAL-done.
-
-Full edges: per-feature **`tickets.md`**; global mermaid: [`docs/design/tickets-initial.md`](../../docs/design/tickets-initial.md).
+Full `Deps:` edges: scan all `tasks/feature-history/**/tickets.md`; global mermaid in `docs/design/tickets-initial.md`.
 
 ---
 
 ## Process note (queue vs graph)
 
-Human priority (HOWTO, merge queue) may emphasize **FR-0002** before **FR-0003**. The **parallel-capable** set is still computed **globally** from **`Deps:`** + VAL (`docs/ai-context.md`, parallel streams across features).
+This handoff is based on the FR-0003 feature branch, not `main`. `main` may still lag until the feature PR is refreshed and reviewed. For FR-0003 ticket streams, branch from `feat/FR-0003-hearth-pi-docker-cli` and merge ticket PRs back into that feature branch first.
+
+The global graph mixes FR-0002 and FR-0003 in this frontier, which is expected under `docs/ai-context.md` §2c. Keep FR-0002 streams under the FR-0002 feature worktree and FR-0003 streams under the FR-0003 feature worktree.
 
 ---
 
-## Cross-cutting work
+## Cross-cutting work (parallel to tickets)
 
-- After merges from **`feat/*`**, reconcile **`tasks/ticket-progress.md`** with **`triadDone`** unions in **`docs/design/tickets-initial.md`**.
-- Repo-root **`CURRENT.md`** on active **`feat/FR-NNNN-<slug>`** and ticket branches per **feature-request** skill.
+- Keep `CURRENT.md` on `feat/FR-0003-hearth-pi-docker-cli` aligned as ticket branches land.
+- When `T-FR-0003-08` or `T-FR-0003-11` reaches VAL, update only that ticket's progress row and union the corresponding `triadDone` line in `docs/design/tickets-initial.md`.
+- The repo-root `./develop test` wrapper is not available on this branch; use the explicit Compose test service command until the wrapper regains a test subcommand.
 
 ---
 
 ## First concrete steps
 
-1. **FR-0002:** Finish **[T-FR-0002-01](VAL)** (server-first Pi/Mac mini) and/or complete **[T-FR-0002-02](TEST→VAL)** in the listed worktrees; merge ticket branches → **`feat/FR-0002-iphone-pwa-prototype`**.
-2. **FR-0003:** If policy allows, unpark **FR-0003** in **`REGISTRY.md`** and align **`ticket-progress.md` “How to choose”** — then implement **[T-FR-0003-01](../feature-history/FR-0003-hearth-pi-docker-cli/tickets.md)** on **`feat/FR-0003-hearth-pi-docker-cli`**.
-3. When **`T-FR-0002-01`** and **`T-FR-0002-02`** are both VAL-done, **[T-FR-0002-03](../feature-history/FR-0002-iphone-pwa-prototype/tickets.md)** becomes eligible — run **`/identify-frontier`** again.
+1. For FR-0003, create child worktrees from `feat/FR-0003-hearth-pi-docker-cli` for `T-FR-0003-08` and `T-FR-0003-11`.
+2. For FR-0002, either finish `T-FR-0002-01` server-first VAL or merge/validate `T-FR-0002-02` from its feature branch, depending on operator priority.
+3. Run TEST → DEV → VAL per each ticket's owning `tickets.md`.
+4. Validate FR-0003 in Docker with `docker compose -f deploy/compose/docker-compose.yml --profile test run --rm hearth-test`; use the FR-0002 feature's documented stack validation for FR-0002 streams.
+5. After FR-0003 `T-FR-0003-08` and `T-FR-0003-11` are VAL-done, identify `T-FR-0003-12` as the final FR-0003 capstone ticket.
 
 ---
 
 ## Related files
 
-- [`tasks/ticket-progress.md`](../ticket-progress.md)
-- [`tasks/feature-history/TICKET-SOURCES.md`](../feature-history/TICKET-SOURCES.md)
-- [`docs/design/tickets-initial.md`](../../docs/design/tickets-initial.md)
-- Prior snapshot: [`2026-05-10-parallel-frontier.md`](2026-05-10-parallel-frontier.md)
+- `tasks/ticket-progress.md`
+- `tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md`
+- `tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md`
+- `tasks/feature-history/TICKET-SOURCES.md`
+- `docs/design/tickets-initial.md`

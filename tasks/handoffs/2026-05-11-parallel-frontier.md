@@ -46,7 +46,7 @@ When **`T-FR-0003-01`** is VAL **`done`** on **`ticket-progress.md`**:
 
 | Ticket | Title | Deps |
 |--------|-------|------|
-| [T-FR-0003-02](../feature-history/FR-0003-hearth-pi-docker-cli/tickets.md#t-fr-0003-02--install-layout-heart-versionjson-readme) | Install layout: `heart/`, VERSION.json, README | **T-FR-0003-01** |
+| [T-FR-0003-02](../feature-history/FR-0003-hearth-pi-docker-cli/tickets.md#t-fr-0003-02--install-layout-hearth-versionjson-readme) | Install layout: `hearth/`, VERSION.json, README | **T-FR-0003-01** |
 | [T-FR-0003-13](../feature-history/FR-0003-hearth-pi-docker-cli/tickets.md#t-fr-0003-13--project-rules-hearth-cli-parity-cursor--claude) | Project rules: Hearth CLI parity | **T-FR-0003-01** |
 
 After **`T-FR-0003-02`** VAL **`done`**, batch **T-FR-0003-04**, **-05**, **-10** (each needs **-01** + **-02** VAL).

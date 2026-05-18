@@ -11,9 +11,9 @@ The reverse proxy is **Caddy 2.x by default** because Caddy's `tls internal` iss
 | Target | Mode | Notes |
 |--------|------|-------|
 | Developer laptop (macOS, Linux) | **Docker Compose** | Hot-reload hub, mounted plugin folders, in-tree Caddy with template config |
-| Raspberry Pi 4/5, 64-bit Raspberry Pi OS | **Docker Compose + `hearth`** | Install under `<install-dir>/heart/`; repo-root **`./install`** + **`hearth`** CLI — see [Docker profile (Pi)](#docker-profile-pi) |
+| Raspberry Pi 4/5, 64-bit Raspberry Pi OS | **Docker Compose + `hearth`** | Install under `<install-dir>/hearth/`; repo-root **`./install`** + **`hearth`** CLI — see [Docker profile (Pi)](#docker-profile-pi) |
 | Raspberry Pi 4/5 (same OS) | **systemd, bare metal** (alternative) | **`deploy/install.sh`**: Caddy as a system package, hub + plugins as `.service` units |
-| Mac mini (Apple Silicon, macOS) | **launchd** wrappers around the same binaries | Same layout under `/usr/local/var/hearth/` (bare-metal path; Docker-on-Mac mini may follow the same `heart/` mapping later) |
+| Mac mini (Apple Silicon, macOS) | **launchd** wrappers around the same binaries | Same layout under `/usr/local/var/hearth/` (bare-metal path; Docker-on-Mac mini may follow the same `hearth/` mapping later) |
 
 ## Reverse proxy — Caddy by default
 
@@ -79,7 +79,7 @@ flowchart TD
 
 ## Filesystem layout (prod)
 
-This tree is the **bare-metal** layout: paths under `/opt`, `/etc`, and `/var` as shown. The **Docker profile** keeps the same *roles* under **`<install-dir>/heart/`** (see [Docker profile (Pi)](#docker-profile-pi)); nothing in this section implies systemd is the only Pi option.
+This tree is the **bare-metal** layout: paths under `/opt`, `/etc`, and `/var` as shown. The **Docker profile** keeps the same *roles* under **`<install-dir>/hearth/`** (see [Docker profile (Pi)](#docker-profile-pi)); nothing in this section implies systemd is the only Pi option.
 
 ```
 /opt/hearth/                          (read-only code)
@@ -102,6 +102,12 @@ On macOS: prefix `/opt` and `/var` with `/usr/local` and `/etc` with `/usr/local
 
 ## Docker profile (Pi)
 
+<!-- AMENDMENT: HRT-DEP-001 -->
+<!-- Author: Cursor agent (design amendment) -->
+<!-- Date: 2026-05-16 -->
+<!-- Reason: Align install-tree directory name with product name. Early FR-0003 drafts used ``heart/`` under ``<install-dir>``; authoritative layout is now ``<install-dir>/hearth/``. Code, schemas, and tickets match this name. Existing Pi installs created before this amendment used ``heart/`` — re-run ``./install`` on a fresh install root or rename ``heart/`` → ``hearth/`` and update ``HEARTH_INSTALL_ROOT`` references before upgrading. -->
+<!-- /AMENDMENT -->
+
 **Supervisor:** **Docker Compose** runs the hub, plugins, and (typically) Caddy **in containers**. **`systemd` does not** supervise hub/plugin processes in this profile — compare [systemd units (prod, bare-metal alternative)](#systemd-units-prod-bare-metal-alternative). Day-2 lifecycle is the **`hearth`** CLI (contracts in `tasks/feature-history/FR-0003-hearth-pi-docker-cli/10-design-00-skeleton.md`; feature overview in `tasks/feature-history/FR-0003-hearth-pi-docker-cli/README.md`).
 
 **Operator:** Expect **non-root** use with **`docker` group** membership; install root is chosen at bootstrap (**`HEARTH_INSTALL_ROOT`**, defaulting to a documented convention — often `$HOME` or `/opt` — see skeleton open questions).
@@ -112,26 +118,26 @@ On macOS: prefix `/opt` and `/var` with `/usr/local` and `/etc` with `/usr/local
 flowchart TD
   A[Set HEARTH_INSTALL_ROOT] --> B[Clone or unpack deploy tree]
   B --> C[Run repo-root ./install]
-  C --> D["Materialize heart/ layout + VERSION.json"]
-  D --> E["Generate Compose under heart/compose/"]
+  C --> D["Materialize hearth/ layout + VERSION.json"]
+  D --> E["Generate Compose under hearth/compose/"]
   E --> F[docker compose up -d]
   F --> G[Day-2: hearth CLI + compose passthrough]
 ```
 
-**Filesystem mapping (`heart/` vs bare-metal paths):**
+**Filesystem mapping (`hearth/` vs bare-metal paths):**
 
-| `heart/` subtree | Role | Bare-metal analogue (above) |
+| `hearth/` subtree | Role | Bare-metal analogue (above) |
 |------------------|------|-----------------------------|
-| Checkout under **`heart/`** (deploy repo + plugins) | Read-only deploy tree | `/opt/hearth/` |
-| **`heart/var/`** | Mutable DB, per-plugin data, logs, `run/` | `/var/hearth/` |
-| **`heart/state/`**, generated proxy fragments, registry files | Machine-local config and derived files | `/etc/hearth/` |
-| **`heart/compose/`** | Compose project + generated plugin overrides | *(native units + `/etc/caddy` instead on bare metal)* |
-| **`heart/plugins/<slug>/`** | Plugin source checkouts | `/opt/hearth/apps/<slug>/` (submodule shape) |
-| **`heart/VERSION.json`** | Install manifest (schema + `hearth_ref`, …) — **`T-FR-0003-02`** | *(no single analogue; bare metal uses git checkout under `/opt/hearth`)* |
-| **`heart/state/plugins.yaml`** (or `.json`) | Local plugin registry for Compose generation — **`T-FR-0003-05`** | Split between hub DB + `/etc/hearth` on bare metal; Docker profile stays **file-first** until hub sync exists |
-| **`heart/bin/`** | `hearth` shim on `PATH` (install policy) — **`T-FR-0003-04`** | `/usr/local/bin` or equivalent from **`deploy/install.sh`** |
+| Checkout under **`hearth/`** (deploy repo + plugins) | Read-only deploy tree | `/opt/hearth/` |
+| **`hearth/var/`** | Mutable DB, per-plugin data, logs, `run/` | `/var/hearth/` |
+| **`hearth/state/`**, generated proxy fragments, registry files | Machine-local config and derived files | `/etc/hearth/` |
+| **`hearth/compose/`** | Compose project + generated plugin overrides | *(native units + `/etc/caddy` instead on bare metal)* |
+| **`hearth/plugins/<slug>/`** | Plugin source checkouts | `/opt/hearth/apps/<slug>/` (submodule shape) |
+| **`hearth/VERSION.json`** | Install manifest (schema v1; JSON Schema [`deploy/hearth-install/schemas/version-1.schema.json`](../../deploy/hearth-install/schemas/version-1.schema.json)) — **`T-FR-0003-02`** | *(no single analogue; bare metal uses git checkout under `/opt/hearth`)* |
+| **`hearth/state/plugins.yaml`** (or `.json`) | Local plugin registry for Compose generation — **`T-FR-0003-05`** | Split between hub DB + `/etc/hearth` on bare metal; Docker profile stays **file-first** until hub sync exists |
+| **`hearth/bin/`** | `hearth` shim on `PATH` (install policy) — **`T-FR-0003-04`** | `/usr/local/bin` or equivalent from **`deploy/install.sh`** |
 
-**Updates (intent):** **`hearth --update`** pulls the deploy ref, refreshes images/builds, runs **`docker compose up -d`**, and applies migration hooks when present — details track **`T-FR-0003-06`**. Until implementation lands, treat command names as **contracts**, not promises.
+**Updates:** **`hearth --update`** (with optional **`--dry-run`**) runs **`git pull --ff-only`** at the deploy checkout root, refreshes enabled plugin git checkouts per **`hearth/state/plugins.yaml`** (`git pull --ff-only` or **`git checkout <pinned_ref>`** when set), regenerates **`compose/overrides/generated.plugins.yml`**, optionally runs an executable **`hearth/bin/hearth-migrate`** when the hub supplies one, then **`docker compose up -d --pull always`** for the install Compose project. **`VERSION.json` `hearth_ref`** is rewritten when the deploy HEAD changes after the pull.
 
 **DESIGN-GAP — Docker profile (explicit):**
 
@@ -155,7 +161,7 @@ The hub `--regenerate-proxy` subcommand writes both Caddyfile fragments and runs
 
 ## Compose stack (dev)
 
-The **shape** of this stack (Caddy + hub + plugins) is the reference for **Compose supervision**; the **Docker profile (Pi)** uses install-local paths under **`heart/compose/`** and release images instead of dev bind-mounts. See [Docker profile (Pi)](#docker-profile-pi).
+The **shape** of this stack (Caddy + hub + plugins) is the reference for **Compose supervision**; the **Docker profile (Pi)** uses install-local paths under **`hearth/compose/`** and release images instead of dev bind-mounts. See [Docker profile (Pi)](#docker-profile-pi).
 
 `deploy/compose/docker-compose.yml`:
 

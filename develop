@@ -41,7 +41,7 @@ compose() {
 
 usage() {
   cat <<USAGE
-${DEVELOP_LABEL} — FR-0002 local stack
+${DEVELOP_LABEL} — local stack + docs + tests
 
 Usage: $(basename "$0") <command> [arguments]
 
@@ -54,6 +54,7 @@ Commands
   down [args]       Stop Compose services for this project file.
   ca-export         Serve local CA cert at :8080/ca.crt for <= 10 minutes.
   ps                Show Compose service status.
+  test [pytest…]    Run pytest in python:3.12-slim (profile test; needs network for pip).
 
 HTTP quick mode serves the same static tree on port 5080 (plain HTTP, any Host),
 e.g. http://127.0.0.1:5080/ or, with /etc/hosts, http://hearth.local:5080/.
@@ -87,6 +88,10 @@ cmd_down() {
 
 cmd_ca_export() {
   compose up --abort-on-container-exit --exit-code-from ca-export ca-export
+}
+
+cmd_test() {
+  compose --profile test run --rm hearth-test "$@"
 }
 
 main() {
@@ -123,6 +128,10 @@ main() {
     ps)
       shift
       compose ps "$@"
+      ;;
+    test)
+      shift
+      cmd_test "$@"
       ;;
     *)
       echo "develop: unknown command: $cmd" >&2
