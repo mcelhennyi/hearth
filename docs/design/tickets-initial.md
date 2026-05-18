@@ -20,6 +20,7 @@
 | FR-0001 | `tasks/feature-history/FR-0001-hearth-platform/tickets.md` *(parked pending FR-0002)* |
 | FR-0002 | `tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md` |
 | FR-0003 | `tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md` |
+| FR-0004 | `tasks/feature-history/FR-0004-centralized-users-auth/tickets.md` *(parked: FR-0002 cert VAL + FR-0001-04 UI VAL)* |
 
 ---
 

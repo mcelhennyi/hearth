@@ -53,12 +53,24 @@
 | T-FR-0001-08 | groceries reference plugin | — | — | — | `FR-0001` parked. |
 | T-FR-0001-09 | Auth, VAPID, Web Push + ntfy | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-03` output. |
 | T-FR-0001-10 | Pi/Mac mini install.sh + backup | — | — | — | `FR-0001` parked (closeout). |
+| T-FR-0004-01 | Design amendments: centralized auth architecture | done | done | done | `FR-0004` **parked**. Design in feature tree; see diary. |
+| T-FR-0004-02 | Built-in hearth-users plugin scaffold | — | — | — | `FR-0004` **parked** — after FR-0002 cert VAL + FR-0001-04 VAL. |
+| T-FR-0004-03 | Users plugin: password, session, verify API | — | — | — | `FR-0004` **parked**. |
+| T-FR-0004-04 | Hub auth verify alias and provider settings | — | — | — | `FR-0004` **parked**. |
+| T-FR-0004-05 | Caddy auth_request and header injection | — | — | — | `FR-0004` **parked**. |
+| T-FR-0004-06 | Spark session capabilities and builtin registry rules | — | — | — | `FR-0004` **parked**. |
+| T-FR-0004-07 | Kindling template: trust middleware and no local login | — | — | — | `FR-0004` **parked**. |
+| T-FR-0004-08 | Mantle shell: login via hearth-users and useUser contract | — | — | — | `FR-0004` **parked**. |
+| T-FR-0004-09 | External auth provider stub and operator settings UI | — | — | — | `FR-0004` **parked**. |
+| T-FR-0004-10 | E2E: plugin trusts gateway identity | — | — | — | `FR-0004` **parked** (capstone). |
 
 ---
 
 ## How to choose next work
 
 1. **FR-0003** is **closed** on **`main`** — see [`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md).
-2. While FR-0002 is `in-progress`: pick the smallest **`T-FR-0002-xx`** with all `Deps:` satisfied. Ignore FR-0001 tickets — they are parked.
-3. After FR-0002 closes: re-flip FR-0001 to `design`/`in-progress` in `REGISTRY.md`, apply FR-0002-driven amendments, and start `T-FR-0001-01`.
-4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
+2. **FR-0004** is **`parked`** — do not staff **`T-FR-0004-02`…`10`** until FR-0002 Pi certificate VAL (**`T-FR-0002-01`**, **`T-FR-0002-04`**) and FR-0001 Mantle shell VAL (**`T-FR-0001-04`**) are done. See [`FR-0004-centralized-users-auth/README.md`](feature-history/FR-0004-centralized-users-auth/README.md).
+3. While FR-0002 is `in-progress`: pick the smallest **`T-FR-0002-xx`** with all `Deps:` satisfied. Ignore FR-0001 tickets — they are parked.
+4. After FR-0002 closes: re-flip FR-0001 to `design`/`in-progress` in `REGISTRY.md`, apply FR-0002-driven amendments, and start `T-FR-0001-01` (then **`T-FR-0001-04`** for the UI gate FR-0004 needs).
+5. After FR-0002 cert closeout **and** **`T-FR-0001-04` VAL**: set FR-0004 to `in-progress` in `REGISTRY.md` and resume with **`T-FR-0004-02`**.
+6. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
