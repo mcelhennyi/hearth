@@ -33,11 +33,9 @@
 
 ## Recent
 
-- **2026-05-16:** Design amendment **HRT-DEP-001** — install tree **`heart/` → `hearth/`** (code + docs); revalidate before Pi VAL / PR merge.
+- **2026-05-16:** **HRT-DEP-001** (`heart/` → `hearth/`); **`SETUP.md`**; Pi hardware VAL **PASS**; finish-feature re-merge with **`main`**.
 
 ## Next
 
-1. Pi VAL: `./install ~/hearth-deploy` → paths under **`hearth/`**; log in **`serial-diary.md`**.
-2. Human review and merge [**PR #13**](https://github.com/mcelhennyi/hearth/pull/13) (`feat/FR-0003-hearth-pi-docker-cli` → **`main`**).
-3. On merge to **`main`**: remove repo-root **`CURRENT.md`** per process docs.
-4. Write **`90-closeout.md`**; optional Pi run of **`scripts/ci/hearth-install-smoke.sh`** → **`serial-diary.md`**.
+1. Merge [**PR #13**](https://github.com/mcelhennyi/hearth/pull/13) (`feat/FR-0003-hearth-pi-docker-cli` → **`main`**).
+2. On merge: remove repo-root **`CURRENT.md`**; write **`90-closeout.md`**; update **`REGISTRY.md`**.

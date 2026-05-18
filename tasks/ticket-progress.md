@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | **FR-0003** — all **`T-FR-0003-xx`** implementation rows are **VAL `done`** on **`feat/FR-0003-hearth-pi-docker-cli`**. |
-| **Active phase** | `integrating` — **PR #13** (`feat/FR-0003-hearth-pi-docker-cli` → **`main`**) rebased on **`main`**; human review and merge. |
+| **Active ticket** | **FR-0003** — all **`T-FR-0003-xx`** implementation rows are **VAL `done`** on **`feat/FR-0003-hearth-pi-docker-cli`** (Pi hardware VAL confirmed). |
+| **Active phase** | `integrating` — **PR #13** (`feat/FR-0003-hearth-pi-docker-cli` → **`main`**) ready for human merge. |
 | **Branch / worktree** | Feature: `.worktrees/FR-0003-hearth-pi-docker-cli/feature/` → **`feat/FR-0003-hearth-pi-docker-cli`**. Remote **`feat/*`** ticket branches retained for audit. |
 | **Session status** | `integrating` |
-| **Next agent should** | Review [**PR #13**](https://github.com/mcelhennyi/hearth/pull/13); on merge to **`main`**, remove repo-root **`CURRENT.md`**, write **`90-closeout.md`**, update **`REGISTRY.md`**. FR-0002 unchanged. |
+| **Next agent should** | Merge [**PR #13**](https://github.com/mcelhennyi/hearth/pull/13); on merge to **`main`**, remove repo-root **`CURRENT.md`**, write **`90-closeout.md`**, update **`REGISTRY.md`**. Operator guide: repo-root **`SETUP.md`**. |
 
 ### Parallel streams
 
@@ -18,7 +18,7 @@
 |----------------|------------|-----------|-------------------|--------------|
 | caddy-tls | `T-FR-0002-01` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-01-caddy-tls/` | unassigned |
 | mantle-bones | `T-FR-0002-02` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones` at `.worktrees/FR-0002-iphone-pwa-prototype/T-FR-0002-02-mantle-bones/` | unassigned |
-| install-smoke-arm-ci | `T-FR-0003-12` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-12-smoke-arm-ci` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-12-smoke-arm-ci/` | Merged into **`feat/FR-0003-hearth-pi-docker-cli`** (2026-05-11) |
+| install-smoke-arm-ci | `T-FR-0003-12` | `FR-0003` | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-12-smoke-arm-ci` at `.worktrees/FR-0003-hearth-pi-docker-cli/T-FR-0003-12-smoke-arm-ci/` | Merged into **`feat/FR-0003-hearth-pi-docker-cli`** |
 
 ---
 
@@ -42,7 +42,7 @@
 | T-FR-0003-09 | `hearth` stack control: start/stop/restart/status/logs | done | done | done | `FR-0003`. `hearth start|stop|restart|status|logs` + shared compose project/env-file; hub `/api/health` optional. VAL: `./develop test`. |
 | T-FR-0003-10 | Kindling contract: `scripts/install` + `plugin` template | done | done | done | `FR-0003`. Hearth-side Kindling mirror implemented under `deploy/kindling-contract/`; Docker validation passes (`./develop test tests/test_kindling_plugin_contract.py`, `./develop test`). No upstream Kindling repo/submodule present. |
 | T-FR-0003-11 | Per-plugin `plugin` executable: lifecycle + passthrough | done | done | done | `FR-0003`. `deploy/hearth-plugin-cli`, Kindling `plugin` shim, `plugin_lifecycle.py`, compose override `-f`; VAL: Docker `hearth-test` pytest (66 passed). |
-| T-FR-0003-12 | Smoke tests + ARM CI for install path | done | done | done | `FR-0003`. `scripts/ci/hearth-install-smoke.sh` + `.github/workflows/hearth-install-smoke.yml` (amd64 + arm64). Host smoke PASS; Pi hardware timing deferred to operator (see `serial-diary.md`). |
+| T-FR-0003-12 | Smoke tests + ARM CI for install path | done | done | done | `FR-0003`. CI smoke + **Pi hardware VAL PASS** (operator); see **`SETUP.md`** and `serial-diary.md`. |
 | T-FR-0003-13 | Project rules: Hearth CLI parity (Cursor + Claude) | done | done | done | `FR-0003`. Deps: `T-FR-0003-01`. Rules + FR-0003 README process rule; PR into `feat/FR-0003-hearth-pi-docker-cli`. |
 | T-FR-0001-01 | Repo scaffold and Compose dev loop | — | — | — | `FR-0001` parked — eligible after FR-0002 closes. |
 | T-FR-0001-02 | Hub API skeleton and SQLite registry | — | — | — | `FR-0001` parked. |
@@ -60,6 +60,6 @@
 ## How to choose next work
 
 1. While FR-0002 is `in-progress`: pick the smallest **`T-FR-0002-xx`** with all `Deps:` satisfied. Ignore FR-0001 tickets — they are parked.
-2. **FR-0003 (`hearth` / `./install` / per-plugin `plugin`):** All **`T-FR-0003-xx`** tickets are **VAL `done`** on **`feat/FR-0003-hearth-pi-docker-cli`**. Next: merge [**PR #13**](https://github.com/mcelhennyi/hearth/pull/13) to **`main`**, then **`90-closeout.md`** when the team closes the FR line.
+2. **FR-0003 (`hearth` / `./install` / per-plugin `plugin`):** All **`T-FR-0003-xx`** tickets are **VAL `done`** including Pi hardware. Merge [**PR #13**](https://github.com/mcelhennyi/hearth/pull/13) to **`main`**, then **`90-closeout.md`** when the team closes the FR line.
 3. After FR-0002 closes: re-flip FR-0001 to `design`/`in-progress` in `REGISTRY.md`, apply any FR-0002-driven amendments, and start `T-FR-0001-01`. **FR-0003** may also overlap FR-0001 once work is staffed (see `tasks/feature-history/FR-0003-hearth-pi-docker-cli/README.md`).
 4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.

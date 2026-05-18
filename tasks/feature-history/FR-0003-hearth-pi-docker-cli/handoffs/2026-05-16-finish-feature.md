@@ -28,13 +28,14 @@ This finish-feature pass merged **`origin/main`** into the feature branch to cle
 | T-FR-0003-12 | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-12-smoke-arm-ci` |
 | T-FR-0003-13 | `feat/FR-0003-hearth-pi-docker-cli-T-FR-0003-13-cli-parity` |
 
-Feature tip before main merge: **`5a21995`** (may advance after this handoff commit).
+Feature tip (latest finish-feature pass): see git log on **`feat/FR-0003-hearth-pi-docker-cli`**.
 
 ## Validation summary
 
-- **`./develop test`** on feature worktree (required for finish-feature).
-- **`./scripts/ci/hearth-install-smoke.sh`** — install path smoke (**T-FR-0003-12**); CI workflow **`.github/workflows/hearth-install-smoke.yml`** on push/PR.
-- **Pi hardware VAL** for install timing: deferred — operator may append to **`serial-diary.md`**.
+- **`./develop test`** — **76 passed** (feature worktree).
+- **`./scripts/ci/hearth-install-smoke.sh`** — PASS; workflow **`.github/workflows/hearth-install-smoke.yml`** (amd64 + arm64).
+- **Pi hardware VAL** — **PASS** (operator confirmed); steps captured in repo-root **`SETUP.md`**.
+- **Design amendment HRT-DEP-001** — install tree **`heart/` → `hearth/`** (code + docs).
 
 ## Suggested next step
 

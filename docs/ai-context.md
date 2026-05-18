@@ -108,6 +108,7 @@ Use planning for multi-step or architectural work.
 - **Orchestrator role:** define success criteria, boundaries, and return format; merge **bounded handoffs** (paths, decisions, short markdown) from subagents instead of inlining huge tool dumps in the parent thread.
 - **Examples:** repo-wide search → delegated exploration; parallel implementation tickets (**`T-FR-NNNN-xx`**) → **`develop-frontier`** (one subagent per ticket); large **`FR-NNNN`** design → subagents per subsystem with one **serial diary** owner; **several `FR-NNNN` in design** → one subagent **per feature directory** so each **`serial-diary.md`** stays coherent.
 - **Platform:** In Cursor, use the **Task** tool with an appropriate `subagent_type` where available; in Claude Code, use **subagents** per product docs. If subagents are unavailable, **stop and split** the work into smaller user-visible steps rather than monolithic execution.
+- **Ticket implementation subagents** (each **`T-FR-NNNN-xx`** from **`develop-frontier`** / parallel ticket work): **always use Composer 2** — do **not** inherit or default to the top-level orchestrator session model. In Cursor, set **`model: "composer-2-fast"`** on every **Task** invocation for a ticket stream. In other hosts, choose the **Composer 2** (or equivalent) model for ticket subagents explicitly when the product allows per-subagent model selection; if only one model is available, note the limitation in the handoff rather than silently matching the parent.
 
 ### 2. Subagent strategy
 

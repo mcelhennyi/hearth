@@ -1,3 +1,12 @@
+## 2026-05-16 — Pi hardware VAL (Docker profile install)
+
+**Branch:** `feat/FR-0003-hearth-pi-docker-cli`  
+**Guide:** repo-root **`SETUP.md`**
+
+**Result:** Operator confirmed **PASS** — `./install`, **`hearth/`** layout, **`hearth doctor`**, and compose stack on Raspberry Pi hardware. Closes **T-FR-0003-12** hardware VAL for FR-0003 closeout.
+
+---
+
 ## 2026-05-16 — Design amendment HRT-DEP-001 (`heart/` → `hearth/`)
 
 **Branch:** `feat/FR-0003-hearth-pi-docker-cli`  
