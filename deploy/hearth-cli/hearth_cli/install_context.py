@@ -51,6 +51,23 @@ def resolve_install(
     )
 
 
+def _repo_root_from_hearth_shim(hearth_dir: Path) -> Path | None:
+    """Infer deploy checkout from ``hearth/bin/hearth`` → ``<repo>/bin/hearth`` symlink."""
+    shim = hearth_dir / "bin" / "hearth"
+    if not shim.is_symlink():
+        return None
+    try:
+        target = shim.resolve()
+    except OSError:
+        return None
+    if target.name != "hearth" or target.parent.name != "bin":
+        return None
+    repo_root = target.parent.parent
+    if (repo_root / "develop").is_file() and (repo_root / "install").is_file():
+        return repo_root
+    return None
+
+
 def read_compose_dotenv(path: Path) -> dict[str, str]:
     """Parse a simple KEY=VALUE compose ``.env`` file (no export syntax)."""
     if not path.is_file():
@@ -75,16 +92,24 @@ def resolve_deploy_repo_root(
     """Deploy checkout used to build hub images and Mantle static assets.
 
     Preference: ``HEARTH_REPO_ROOT`` in ``compose/.env`` (written by ``./install``),
-    then ``HEARTH_REPO_ROOT`` in the process environment.
+    then the process environment, then the ``hearth/bin/hearth`` shim target.
     """
     source_env = env if env is not None else os.environ
     dotenv = read_compose_dotenv(resolved.compose_env_file)
     raw = dotenv.get("HEARTH_REPO_ROOT") or source_env.get("HEARTH_REPO_ROOT")
     if not raw:
+        inferred = _repo_root_from_hearth_shim(resolved.hearth_dir)
+        if inferred is not None:
+            return inferred
         msg = (
-            "hearth: HEARTH_REPO_ROOT is not set. Re-run ./install from the Hearth "
-            f"repository or set HEARTH_REPO_ROOT to the deploy checkout (expected in "
-            f"{resolved.compose_env_file})."
+            "hearth: HEARTH_REPO_ROOT is not set.\n"
+            f"  Expected in: {resolved.compose_env_file}\n"
+            "  Fix: from your git checkout, re-run:\n"
+            f"    ./install {resolved.install_root}\n"
+            "  Or append one line (replace path if your checkout differs):\n"
+            f"    echo 'HEARTH_REPO_ROOT=/path/to/hearth' >> {resolved.compose_env_file}\n"
+            "  And export HEARTH_INSTALL_ROOT for this shell:\n"
+            f"    export HEARTH_INSTALL_ROOT={resolved.install_root}"
         )
         raise ValueError(msg)
     root = Path(raw).expanduser().resolve()

@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from hearth_cli import cli
+from hearth_cli.install_context import resolve_deploy_repo_root
 
 
 def _write_version(root: Path, *, ref: str = "test-ref") -> Path:
@@ -217,6 +218,26 @@ def test_status_without_skip_health_invokes_ps_then_health_probe(
     out = capsys.readouterr().out
     assert "hub /api/health: HTTP 200" in out
     assert "9999" in out
+
+
+def test_resolve_deploy_repo_root_from_shim_when_dotenv_missing(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    (repo / "bin").mkdir(parents=True)
+    (repo / "bin" / "hearth").write_text("#!/bin/sh\ntrue\n", encoding="utf-8")
+    (repo / "develop").write_text("#!/bin/sh\ntrue\n", encoding="utf-8")
+    (repo / "install").write_text("#!/bin/sh\ntrue\n", encoding="utf-8")
+
+    install = tmp_path / "install"
+    hearth = _write_version(install)
+    (hearth / "bin").mkdir(parents=True, exist_ok=True)
+    shim = hearth / "bin" / "hearth"
+    if shim.exists() or shim.is_symlink():
+        shim.unlink()
+    shim.symlink_to(repo / "bin" / "hearth")
+
+    resolved = cli.resolve_install(install)
+    root = resolve_deploy_repo_root(resolved)
+    assert root == repo.resolve()
 
 
 def test_ca_export_runs_compose_profile(

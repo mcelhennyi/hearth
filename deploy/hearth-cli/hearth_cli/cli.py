@@ -204,6 +204,24 @@ def cmd_doctor(resolved: ResolvedInstall, stdout: TextIO) -> int:
         print(f"compose file: missing ({resolved.compose_file})", file=stdout)
         ok = False
 
+    if resolved.compose_env_file.is_file():
+        from hearth_cli.install_context import read_compose_dotenv
+
+        dotenv = read_compose_dotenv(resolved.compose_env_file)
+        repo_root = dotenv.get("HEARTH_REPO_ROOT", "")
+        if repo_root:
+            print(f"HEARTH_REPO_ROOT: {repo_root}", file=stdout)
+        else:
+            print(
+                f"HEARTH_REPO_ROOT: missing in {resolved.compose_env_file} "
+                "(re-run ./install from the deploy checkout)",
+                file=stdout,
+            )
+            ok = False
+    else:
+        print(f"compose .env: missing ({resolved.compose_env_file})", file=stdout)
+        ok = False
+
     docker = shutil.which("docker")
     if docker is None:
         print("docker: not found on PATH", file=stdout)
