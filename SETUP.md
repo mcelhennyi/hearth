@@ -141,13 +141,15 @@ On each **iPhone** (same Wi‑Fi):
 
 ## 7. iPhone PWA + push walkthrough
 
-1. Safari → **`https://hearth.home.arpa/`** — no certificate warning.
+1. Safari → **`https://hearth.home.arpa/`** — no certificate warning (install CA first).
 2. Confirm the **PWA-ready** screen and bottom tabs.
 3. **Share → Add to Home Screen**.
-4. Open the home-screen icon (standalone, no Safari chrome).
-5. Tap **Send test notification** → allow notifications.
-6. Push should arrive within ~30 seconds.
-7. Optional: force-quit and relaunch to confirm the shell still loads.
+4. **Close Safari.** Open **Hearth** from the **home-screen icon** (not Safari).  
+   Web Push and notifications **do not work** in an ordinary Safari tab on iOS.
+5. If the home-screen app is a **white screen**: delete the icon, clear Safari website data for `hearth.home.arpa`, run `hearth pwa build` on the Pi, `hearth restart caddy`, then add to home screen again (stale service-worker cache).
+6. Tap **Send test notification** → allow notifications.
+7. Push should arrive within ~30 seconds.
+8. After any `hearth pwa vapid-gen`, run `sudo rm -f ~/hearth/var/hearth/push-subscriptions.json` (file is owned by Docker) and repeat steps 4–7.
 
 Record results in  
 `tasks/feature-history/FR-0002-iphone-pwa-prototype/40-prototype-report.md`.
@@ -180,6 +182,9 @@ Low-level compose passthrough: `hearth compose -- ps`
 | `hearth doctor` / docker errors | Re-login after `usermod -aG docker`; run `docker info`. |
 | Wrong hostname | Use **`hearth.home.arpa`**, not the raw IP, in Safari after trust. |
 | Orphan **hub-smoke** container | From an old install — `docker rm -f hearth-hub-smoke` after `hearth stop`. |
+| PWA white screen, Safari OK | Stale service worker — `hearth pwa build`, `hearth restart caddy`, delete home-screen icon, clear website data, re-add. |
+| `rm push-subscriptions.json` permission denied | Created by Docker as root — `sudo rm -f ~/hearth/var/hearth/push-subscriptions.json` |
+| `VapidPkHashMismatch` in hub logs | Re-subscribe after `vapid-gen` — clear subscriptions file + reset PWA (step 8 above). |
 
 ---
 

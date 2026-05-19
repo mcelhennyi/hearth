@@ -34,8 +34,20 @@ function PlaceholderTile() {
     return output.slice().buffer
   }
 
+  function isStandalonePwa(): boolean {
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      ('standalone' in navigator && Boolean((navigator as Navigator & { standalone?: boolean }).standalone))
+    )
+  }
+
   async function ensurePushSubscription(): Promise<void> {
     if (!('Notification' in window)) {
+      if (!isStandalonePwa()) {
+        throw new Error(
+          'Web Push on iPhone requires opening Hearth from the Home Screen icon (Add to Home Screen first), not from Safari.',
+        )
+      }
       throw new Error('Notifications are not supported in this browser.')
     }
     if (!('serviceWorker' in navigator)) {
