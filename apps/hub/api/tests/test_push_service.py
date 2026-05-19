@@ -56,6 +56,7 @@ def test_send_test_notification_prunes_410_subscriptions() -> None:
                 response = type("Resp", (), {"status_code": 410})()
                 raise WebPushException("gone", response=response)
 
-        sent, remaining = send_test_notification(subscriptions, config, sender=fake_sender)
+        sent, remaining, err = send_test_notification(subscriptions, config, sender=fake_sender)
         assert sent == 1
+        assert err is None
         assert [item["endpoint"] for item in remaining] == ["https://web.push.apple.com/new"]

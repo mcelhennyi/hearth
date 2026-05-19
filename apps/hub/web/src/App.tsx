@@ -97,8 +97,17 @@ function PlaceholderTile() {
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`)
       }
-      const data = (await response.json()) as { attempted: number; sent: number; remaining: number }
-      setStatus(`Sent ${data.sent}/${data.attempted}. Active subscriptions: ${data.remaining}.`)
+      const data = (await response.json()) as {
+        attempted: number
+        sent: number
+        remaining: number
+        error?: string | null
+      }
+      if (data.error && data.sent === 0) {
+        throw new Error(data.error)
+      }
+      const suffix = data.error ? ` Last error: ${data.error}` : ''
+      setStatus(`Sent ${data.sent}/${data.attempted}. Active subscriptions: ${data.remaining}.${suffix}`)
     } catch (error) {
       setStatus(`Failed to send test notification: ${error instanceof Error ? error.message : 'unknown error'}`)
     }

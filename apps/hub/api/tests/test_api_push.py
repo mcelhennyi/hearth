@@ -48,7 +48,11 @@ def test_push_test_endpoint_sends_to_all_and_prunes_410(monkeypatch: Any) -> Non
         client = TestClient(app)
         response = client.post("/api/push/test")
         assert response.status_code == 200
-        assert response.json() == {"attempted": 2, "sent": 1, "remaining": 1}
+        payload = response.json()
+        assert payload["attempted"] == 2
+        assert payload["sent"] == 1
+        assert payload["remaining"] == 1
+        assert payload["error"] is None
         assert sent_endpoints == [
             "https://web.push.apple.com/gone",
             "https://web.push.apple.com/live",

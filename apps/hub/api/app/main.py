@@ -50,10 +50,29 @@ def vapid_public_key() -> dict[str, str]:
 
 
 @app.post("/api/push/test")
-def push_test() -> dict[str, int]:
+def push_test() -> dict[str, int | str | None]:
     config: PushConfig = app.state.push_config
     subscriptions = load_subscriptions(config.subscriptions_path)
-    sent, remaining = send_test_notification(subscriptions, config)
+    if not subscriptions:
+        raise HTTPException(
+            status_code=400,
+            detail="No push subscriptions stored. Allow notifications in the PWA, then try again.",
+        )
+    try:
+        sent, remaining, last_error = send_test_notification(subscriptions, config)
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail="VAPID keys missing. Run hearth pwa vapid-gen or ./develop vapid-gen.",
+        ) from exc
+    except OSError as exc:
+        raise HTTPException(status_code=500, detail=f"Failed to read VAPID keys: {exc}") from exc
     if len(remaining) != len(subscriptions):
         save_subscriptions(config.subscriptions_path, remaining)
-    return {"attempted": len(subscriptions), "sent": sent, "remaining": len(remaining)}
+    body: dict[str, int | str | None] = {
+        "attempted": len(subscriptions),
+        "sent": sent,
+        "remaining": len(remaining),
+        "error": last_error,
+    }
+    return body

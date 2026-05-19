@@ -46,17 +46,43 @@ def build_vapid_headers(
     return vapid.sign(claims)
 
 
+def _webpush_error_detail(exc: WebPushException) -> str:
+    response = getattr(exc, "response", None)
+    status_code = getattr(response, "status_code", None)
+    body = ""
+    if response is not None:
+        try:
+            body = (getattr(response, "text", None) or getattr(response, "content", b"") or b"")[:200]
+            if isinstance(body, bytes):
+                body = body.decode("utf-8", errors="replace")
+        except Exception:  # pragma: no cover - defensive
+            body = ""
+    parts = [str(exc)]
+    if status_code is not None:
+        parts.append(f"HTTP {status_code}")
+    if body:
+        parts.append(body)
+    return ": ".join(parts)
+
+
 def send_test_notification(
     subscriptions: list[dict[str, Any]],
     config: PushConfig,
     sender: Callable[..., Any] | None = None,
-) -> tuple[int, list[dict[str, Any]]]:
+) -> tuple[int, list[dict[str, Any]], str | None]:
+    """Send a test push to each subscription.
+
+    Returns ``(sent_count, remaining_subscriptions, last_error)``. Expired endpoints
+  (HTTP 410) are dropped from ``remaining``. Other delivery errors are recorded in
+    ``last_error`` but do not abort the batch (avoids opaque HTTP 500 on the button).
+    """
     sender_fn = sender or webpush
     _, private_key = load_vapid_keys(config)
     payload = json.dumps({"title": "Hearth test", "body": "Push path is working.", "url": "/"})
 
     sent_count = 0
     remaining: list[dict[str, Any]] = []
+    last_error: str | None = None
     for subscription in subscriptions:
         try:
             sender_fn(
@@ -71,5 +97,5 @@ def send_test_notification(
             status_code = getattr(getattr(exc, "response", None), "status_code", None)
             if status_code == 410:
                 continue
-            raise
-    return sent_count, remaining
+            last_error = _webpush_error_detail(exc)
+    return sent_count, remaining, last_error
