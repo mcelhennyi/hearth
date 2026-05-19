@@ -22,7 +22,7 @@ function useDesktopLayout(): boolean {
 function PlaceholderTile() {
   const [status, setStatus] = useState<string | null>(null)
 
-  function decodeBase64Url(base64Url: string): Uint8Array {
+  function decodeBase64Url(base64Url: string): ArrayBuffer {
     const padded = `${base64Url}${'='.repeat((4 - (base64Url.length % 4)) % 4)}`
     const base64 = padded.replace(/-/g, '+').replace(/_/g, '/')
     const raw = window.atob(base64)
@@ -30,7 +30,8 @@ function PlaceholderTile() {
     for (let i = 0; i < raw.length; i += 1) {
       output[i] = raw.charCodeAt(i)
     }
-    return output
+    // .slice() yields a Uint8Array backed by a plain ArrayBuffer (TS 6 / PushManager typing).
+    return output.slice().buffer
   }
 
   async function ensurePushSubscription(): Promise<void> {
