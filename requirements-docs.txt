@@ -1,0 +1,6 @@
+# Pinned to match ../loom/requirements_lock.txt (MkDocs stack) for identical rendering.
+mkdocs==1.6.1
+mkdocs-get-deps==0.2.0
+mkdocs-material==9.7.1
+mkdocs-material-extensions==1.3.1
+pymdown-extensions==10.20.1

@@ -8,7 +8,9 @@ The reason FR-0001 has ten tickets is that the platform is real. The reason we d
 
 ## What "succeed" means
 
-Concretely, the same five-step demo from FR-0002's README runs on a real iPhone, end-to-end, on Mac mini and on Pi 4, with a written record of every friction point. *Succeed* does **not** mean "everything was clean" — it means we can answer **yes/no** to each of the five risks and either:
+**Primary (2026-04-30):** The **server-first** acceptance in FR-0002's README runs on **Mac mini and Pi 4** — TLS, Mantle shell, service worker, and Web Push to a **desktop** subscriber — with a written record of every friction point. **iPhone** end-to-end checks are a **side goal** documented in `40-prototype-report.md` → **Follow-up: iPhone**; they improve confidence in the deployed product on real iOS but **do not** gate closing FR-0002 once primary acceptance is met.
+
+*Succeed* does **not** mean "everything was clean" — it means we can answer **yes/no** to each risk relevant to the **validated** clients (server + desktop browser first; iPhone when exercised) and either:
 
 - continue FR-0001 unchanged, or
 - amend FR-0001 docs (`mantle-ui.md`, `deployment.md`, `notifications.md`) per the `docs/ai-context.md` amendment process and then continue.

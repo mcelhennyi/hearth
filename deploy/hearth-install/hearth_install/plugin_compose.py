@@ -1,0 +1,399 @@
+"""@HRT-OPS-002 Generate Docker Compose fragments from ``hearth/state/plugins.yaml``."""
+
+from __future__ import annotations
+
+import json
+import re
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any
+
+_SLUG_RE = re.compile(r"^[a-z][a-z0-9-]{0,31}$")
+_DEFAULT_REGISTRY = """\
+# Hearth Docker profile plugin registry (schema v1).
+# T-FR-0003-05 keeps this file first-class until hub registry sync exists.
+schema: 1
+plugins: []
+"""
+
+
+class PluginRegistryError(ValueError):
+    """Raised when ``plugins.yaml`` cannot produce a valid Compose fragment."""
+
+
+@dataclass(frozen=True)
+class PluginRecord:
+    """Validated registry row for one plugin."""
+
+    slug: str
+    source_git: str
+    enabled: bool
+    pinned_ref: str | None = None
+    image: str | None = None
+    build: str | None = None
+    command: list[str] | None = None
+    port: int = 8201
+    env: dict[str, str] = field(default_factory=dict)
+
+
+def write_default_plugin_registry(hearth: Path) -> Path:
+    """Create ``hearth/state/plugins.yaml`` if absent and preserve operator edits."""
+
+    registry = hearth / "state" / "plugins.yaml"
+    registry.parent.mkdir(parents=True, exist_ok=True)
+    if not registry.exists():
+        registry.write_text(_DEFAULT_REGISTRY, encoding="utf-8")
+    return registry
+
+
+def load_plugin_registry(hearth: Path) -> list[PluginRecord]:
+    """Read and validate ``hearth/state/plugins.yaml``.
+
+    This is intentionally a tiny schema-v1 YAML reader instead of a general YAML
+    dependency. FR-0003's MVP registry only needs scalars, ``plugins: []``, and
+    per-plugin ``env`` maps.
+    """
+
+    registry = write_default_plugin_registry(hearth)
+    try:
+        data = _parse_registry_yaml(registry.read_text(encoding="utf-8"))
+    except PluginRegistryError:
+        raise
+    except Exception as exc:  # pragma: no cover - defensive wrapper around parser bugs.
+        msg = f"invalid plugin registry {registry}: {exc}"
+        raise PluginRegistryError(msg) from exc
+
+    if data.get("schema") != 1:
+        msg = f"{registry} must declare schema: 1"
+        raise PluginRegistryError(msg)
+
+    plugins = data.get("plugins")
+    if not isinstance(plugins, list):
+        msg = f"{registry} must contain a plugins list"
+        raise PluginRegistryError(msg)
+
+    return [_validate_plugin(item, registry, index) for index, item in enumerate(plugins)]
+
+
+def generate_plugin_compose(hearth: Path) -> Path:
+    """Generate ``hearth/compose/overrides/generated.plugins.yml`` for enabled plugins."""
+
+    hearth = hearth.resolve()
+    records = [record for record in load_plugin_registry(hearth) if record.enabled]
+    output = hearth / "compose" / "overrides" / "generated.plugins.yml"
+    output.parent.mkdir(parents=True, exist_ok=True)
+
+    services = [_compose_service(hearth, record) for record in records]
+    output.write_text(_render_compose(services), encoding="utf-8")
+    return output
+
+
+def _validate_plugin(data: Any, registry: Path, index: int) -> PluginRecord:
+    if not isinstance(data, dict):
+        msg = f"{registry} plugin entry {index} must be a mapping"
+        raise PluginRegistryError(msg)
+
+    slug = _required_str(data, "slug", registry, index)
+    if not _SLUG_RE.fullmatch(slug):
+        msg = f"{registry} plugin entry {index} has invalid slug {slug!r}"
+        raise PluginRegistryError(msg)
+
+    enabled = data.get("enabled")
+    if not isinstance(enabled, bool):
+        msg = f"{registry} plugin {slug} must set enabled to true or false"
+        raise PluginRegistryError(msg)
+
+    source_git = _required_str(data, "source_git", registry, index)
+    pinned_ref = _optional_str(data, "pinned_ref", registry, index)
+    image = _optional_str(data, "image", registry, index)
+    build = _optional_str(data, "build", registry, index)
+    port = _optional_int(data, "port", registry, index, default=8201)
+    command = _optional_command(data, registry, index)
+    env = _optional_env(data, registry, index)
+
+    return PluginRecord(
+        slug=slug,
+        source_git=source_git,
+        enabled=enabled,
+        pinned_ref=pinned_ref,
+        image=image,
+        build=build,
+        command=command,
+        port=port,
+        env=env,
+    )
+
+
+def _compose_service(hearth: Path, record: PluginRecord) -> dict[str, Any]:
+    plugin_dir = hearth / "plugins" / record.slug
+    if not plugin_dir.is_dir():
+        msg = f"enabled plugin {record.slug} requires hearth/plugins/{record.slug}"
+        raise PluginRegistryError(msg)
+
+    service: dict[str, Any] = {"name": record.slug}
+    if record.image:
+        service["image"] = record.image
+    else:
+        build_path = record.build or f"plugins/{record.slug}"
+        service["build_context"] = _compose_path_from_hearth(build_path)
+
+    if record.command:
+        service["command"] = record.command
+
+    env = {
+        **record.env,
+        "HEARTH_HOME": "/hearth",
+        "HEARTH_PLUGIN_PORT": str(record.port),
+        "HEARTH_PLUGIN_SLUG": record.slug,
+    }
+    service.update(
+        {
+            "restart": "unless-stopped",
+            "expose": [str(record.port)],
+            "environment": dict(sorted(env.items())),
+            "volumes": [
+                f"../plugins/{record.slug}:/app:ro",
+                f"../var/plugins/{record.slug}:/var/hearth/plugins/{record.slug}",
+            ],
+        },
+    )
+    return service
+
+
+def _compose_path_from_hearth(path: str) -> str:
+    clean = path.strip().removeprefix("./")
+    if clean.startswith("../") or clean.startswith("/"):
+        msg = f"compose paths must stay under hearth/: {path}"
+        raise PluginRegistryError(msg)
+    return f"../{clean}"
+
+
+def _render_compose(services: list[dict[str, Any]]) -> str:
+    header = "# Generated by hearth_install.plugin_compose. Do not edit by hand.\n"
+    if not services:
+        return header + "services: {}\n"
+    lines = [
+        "# Generated by hearth_install.plugin_compose. Do not edit by hand.",
+        "services:",
+    ]
+    for service in services:
+        lines.extend(_render_service(service))
+    return "\n".join(lines) + "\n"
+
+
+def _render_service(service: dict[str, Any]) -> list[str]:
+    lines = [f"  {service['name']}:"]
+    if "image" in service:
+        lines.append(f"    image: {_yaml_scalar(service['image'])}")
+    if "build_context" in service:
+        lines.extend(["    build:", f"      context: {_yaml_scalar(service['build_context'])}"])
+    if "command" in service:
+        lines.append("    command:")
+        for item in service["command"]:
+            lines.append(f"      - {_yaml_scalar(item)}")
+    lines.append(f"    restart: {_yaml_scalar(service['restart'])}")
+    lines.append("    expose:")
+    for port in service["expose"]:
+        lines.append(f"      - {_yaml_scalar(port)}")
+    lines.append("    environment:")
+    for key, value in service["environment"].items():
+        lines.append(f"      {key}: {_yaml_scalar(value)}")
+    lines.append("    volumes:")
+    for volume in service["volumes"]:
+        lines.append(f"      - {_yaml_scalar(volume)}")
+    return lines
+
+
+def _parse_registry_yaml(text: str) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    plugins: list[dict[str, Any]] = []
+    current: dict[str, Any] | None = None
+    nested_key: str | None = None
+
+    for line_number, raw_line in enumerate(text.splitlines(), start=1):
+        line = raw_line.split("#", 1)[0].rstrip()
+        if not line:
+            continue
+
+        indent = len(line) - len(line.lstrip(" "))
+        stripped = line.strip()
+
+        if indent == 0:
+            key, value = _split_key_value(stripped, line_number)
+            if key == "plugins":
+                if value == "[]":
+                    result["plugins"] = plugins
+                elif value == "":
+                    result["plugins"] = plugins
+                else:
+                    msg = f"line {line_number}: plugins must be [] or a block list"
+                    raise PluginRegistryError(msg)
+            else:
+                result[key] = _parse_scalar(value, line_number)
+            current = None
+            nested_key = None
+            continue
+
+        if indent == 2 and stripped.startswith("- "):
+            current = {}
+            plugins.append(current)
+            nested_key = None
+            remainder = stripped[2:]
+            if remainder:
+                key, value = _split_key_value(remainder, line_number)
+                current[key] = _parse_scalar(value, line_number)
+            continue
+
+        if current is None:
+            msg = f"line {line_number}: plugin fields must appear under plugins"
+            raise PluginRegistryError(msg)
+
+        if indent == 4:
+            key, value = _split_key_value(stripped, line_number)
+            if value == "":
+                current[key] = {}
+                nested_key = key
+            else:
+                current[key] = _parse_scalar(value, line_number)
+                nested_key = None
+            continue
+
+        if indent == 6 and nested_key:
+            nested = current.get(nested_key)
+            if not isinstance(nested, dict):
+                msg = f"line {line_number}: {nested_key} must be a mapping"
+                raise PluginRegistryError(msg)
+            key, value = _split_key_value(stripped, line_number)
+            nested[key] = str(_parse_scalar(value, line_number))
+            continue
+
+        msg = f"line {line_number}: unsupported registry YAML shape"
+        raise PluginRegistryError(msg)
+
+    result.setdefault("plugins", plugins)
+    return result
+
+
+def _split_key_value(text: str, line_number: int) -> tuple[str, str]:
+    if ":" not in text:
+        msg = f"line {line_number}: expected key: value"
+        raise PluginRegistryError(msg)
+    key, value = text.split(":", 1)
+    return key.strip(), value.strip()
+
+
+def _parse_scalar(value: str, line_number: int) -> Any:
+    if value == "":
+        return ""
+    if value == "true":
+        return True
+    if value == "false":
+        return False
+    if value.startswith("["):
+        try:
+            parsed = json.loads(value)
+        except json.JSONDecodeError as exc:
+            msg = f"line {line_number}: invalid JSON-style list"
+            raise PluginRegistryError(msg) from exc
+        if not isinstance(parsed, list) or not all(isinstance(item, str) for item in parsed):
+            msg = f"line {line_number}: list values must be strings"
+            raise PluginRegistryError(msg)
+        return parsed
+    if value.startswith('"') and value.endswith('"'):
+        return value[1:-1]
+    if value.isdigit():
+        return int(value)
+    return value
+
+
+def _yaml_scalar(value: str) -> str:
+    if value == "" or any(char in value for char in "#[]{}&,*!|>'\"%@`") or value.isdigit():
+        return json.dumps(value)
+    return value
+
+
+def _required_str(data: dict[str, Any], key: str, registry: Path, index: int) -> str:
+    value = data.get(key)
+    if not isinstance(value, str) or not value:
+        msg = f"{registry} plugin entry {index} requires non-empty {key}"
+        raise PluginRegistryError(msg)
+    return value
+
+
+def _optional_str(data: dict[str, Any], key: str, registry: Path, index: int) -> str | None:
+    value = data.get(key)
+    if value is None:
+        return None
+    if not isinstance(value, str) or not value:
+        msg = f"{registry} plugin entry {index} field {key} must be a non-empty string"
+        raise PluginRegistryError(msg)
+    return value
+
+
+def _optional_int(data: dict[str, Any], key: str, registry: Path, index: int, *, default: int) -> int:
+    value = data.get(key, default)
+    if not isinstance(value, int):
+        msg = f"{registry} plugin entry {index} field {key} must be an integer"
+        raise PluginRegistryError(msg)
+    return value
+
+
+def _optional_command(data: dict[str, Any], registry: Path, index: int) -> list[str] | None:
+    value = data.get("command")
+    if value is None:
+        return None
+    if not isinstance(value, list) or not all(isinstance(item, str) and item for item in value):
+        msg = f"{registry} plugin entry {index} field command must be a list of strings"
+        raise PluginRegistryError(msg)
+    return value
+
+
+def _optional_env(data: dict[str, Any], registry: Path, index: int) -> dict[str, str]:
+    value = data.get("env", {})
+    if not isinstance(value, dict) or not all(isinstance(k, str) for k in value):
+        msg = f"{registry} plugin entry {index} field env must be a mapping"
+        raise PluginRegistryError(msg)
+    return {key: str(env_value) for key, env_value in value.items()}
+
+
+def save_plugin_registry(hearth: Path, records: list[PluginRecord]) -> Path:
+    """Overwrite ``plugins.yaml`` with validated rows (same schema-v1 dialect as parser)."""
+
+    registry = write_default_plugin_registry(hearth)
+    registry.write_text(_render_registry_yaml(records), encoding="utf-8")
+    load_plugin_registry(hearth)
+    return registry
+
+
+def _render_registry_yaml(records: list[PluginRecord]) -> str:
+    header = """\
+# Hearth Docker profile plugin registry (schema v1).
+# T-FR-0003-05 keeps this file first-class until hub registry sync exists.
+schema: 1
+plugins:
+"""
+    if not records:
+        return header.replace("plugins:\n", "plugins: []\n")
+
+    lines = header.rstrip("\n").splitlines()
+    for record in records:
+        dash_indent = "  "
+        field_indent = "    "
+        lines.append(f"{dash_indent}- slug: {_yaml_scalar(record.slug)}")
+        lines.append(f"{field_indent}source_git: {_yaml_scalar(record.source_git)}")
+        lines.append(f"{field_indent}enabled: {str(record.enabled).lower()}")
+        if record.pinned_ref:
+            lines.append(f"{field_indent}pinned_ref: {_yaml_scalar(record.pinned_ref)}")
+        if record.image:
+            lines.append(f"{field_indent}image: {_yaml_scalar(record.image)}")
+        if record.build:
+            lines.append(f"{field_indent}build: {_yaml_scalar(record.build)}")
+        if record.port != 8201:
+            lines.append(f"{field_indent}port: {record.port}")
+        if record.command:
+            lines.append(f"{field_indent}command: {_yaml_scalar(json.dumps(record.command))}")
+        if record.env:
+            lines.append(f"{field_indent}env:")
+            for key in sorted(record.env):
+                lines.append(f"{field_indent}  {key}: {_yaml_scalar(record.env[key])}")
+    return "\n".join(lines) + "\n"

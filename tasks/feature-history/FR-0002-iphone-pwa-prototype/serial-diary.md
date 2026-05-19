@@ -4,6 +4,13 @@ Append-only. Newest entries at the top.
 
 ---
 
+## 2026-05-19 — Merged `origin/main` (FR-0003 install + `./install`)
+
+- Merged **`origin/main`** into **`feat/FR-0002-iphone-pwa-prototype`** so the branch carries **`./install`**, **`hearth` CLI**, and updated **`develop`** / compose (docs + test profiles retained alongside FR-0002 `hub`/`web` tooling).
+- Resuming **`T-FR-0002-04`**: real-iPhone walkthrough per `40-prototype-report.md` (Mac mini first, then Pi 4).
+
+---
+
 ## 2026-04-27 — `T-FR-0002-04` preflight + closeout scaffold
 
 - Started closeout ticket by running containerized preflight checks on `feat/FR-0002-iphone-pwa-prototype`: `./develop vapid-gen`, `./develop api pytest`, `./develop web npm run test`, and stack health/push sanity via `./develop up` + curl + `./develop down`.

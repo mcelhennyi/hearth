@@ -1,0 +1,41 @@
+site_name: Hearth
+site_description: Design and process documentation for the Hearth home hub.
+docs_dir: docs
+site_dir: site
+theme:
+  name: material
+  palette:
+    scheme: slate
+  features:
+    - navigation.footer
+extra_css:
+  - stylesheets/loom-extra.css
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+nav:
+  - Home: index.md
+  - AI workflow: ai-context.md
+  - Design:
+      - Architecture: design/architecture/overview.md
+      - Plugin contract: design/plugin-contract.md
+      - Spark API: design/spark-api.md
+      - Mantle UI: design/mantle-ui.md
+      - Deployment: design/deployment.md
+      - Notifications: design/notifications.md
+      - Roadmap: design/roadmap.md
+      - Documentation style: design/documentation-style.md
+      - Tickets (initial DAG): design/tickets-initial.md
+      - Native plugin ideas: design/native-plugin-ideas.md
+      - Plugin ideas:
+          - Local RAID backup: design/plugin-ideas/local-raid-backup.md
+          - Remote access: design/plugin-ideas/remote-access.md
+          - System backup: design/plugin-ideas/system-backup.md
+      - Satellite repos:
+          - Ember: design/satellite-repos/ember.md
+          - Kindling: design/satellite-repos/kindling.md
+  - Skeleton maintainers: skeleton-MAINTAINERS.md

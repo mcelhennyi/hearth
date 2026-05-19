@@ -20,6 +20,7 @@
 
 ## Next Action
 
+- Branch merged with **`origin/main`** (2026-05-19): includes **`./install`** and FR-0003 tooling; PWA stack unchanged (`./develop up`, `hearth.home.arpa`).
 - Execute real-iPhone acceptance walkthrough on Mac mini and Pi 4.
 - Fill evidence in `tasks/feature-history/FR-0002-iphone-pwa-prototype/40-prototype-report.md`.
 - If any R1-R5 risk fails, file DESIGN-FLAW amendment(s) against `docs/design/mantle-ui.md`, `docs/design/deployment.md`, or `docs/design/notifications.md`.

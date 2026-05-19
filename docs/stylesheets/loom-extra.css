@@ -1,0 +1,41 @@
+.loom-refine {
+  color: #c084fc; /* purple-400-ish */
+  font-weight: 700;
+}
+
+/* MkDocs Material admonition accents (when we use !!! loom-refine) */
+.md-typeset .admonition.loom-refine,
+.md-typeset details.loom-refine {
+  border-color: #c084fc;
+}
+
+.md-typeset .loom-refine > .admonition-title,
+.md-typeset .loom-refine > summary {
+  border-color: #c084fc;
+}
+
+.md-typeset .loom-refine > .admonition-title::before,
+.md-typeset .loom-refine > summary::before {
+  background-color: #c084fc;
+}
+
+.loom-design-gap {
+  color: #fb923c; /* orange-400-ish */
+  font-weight: 700;
+}
+
+/* MkDocs Material admonition accents (when we use !!! loom-design-gap) */
+.md-typeset .admonition.loom-design-gap,
+.md-typeset details.loom-design-gap {
+  border-color: #fb923c;
+}
+
+.md-typeset .loom-design-gap > .admonition-title,
+.md-typeset .loom-design-gap > summary {
+  border-color: #fb923c;
+}
+
+.md-typeset .loom-design-gap > .admonition-title::before,
+.md-typeset .loom-design-gap > summary::before {
+  background-color: #fb923c;
+}
