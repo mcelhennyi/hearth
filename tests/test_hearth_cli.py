@@ -219,6 +219,33 @@ def test_status_without_skip_health_invokes_ps_then_health_probe(
     assert "9999" in out
 
 
+def test_ca_export_runs_compose_profile(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    hearth = _write_version(tmp_path)
+    compose_file = hearth / "compose" / "docker-compose.yml"
+    compose_file.write_text("services: {}\n", encoding="utf-8")
+    calls: list[list[str]] = []
+
+    def fake_run(command: list[str], *, cwd: Path) -> subprocess.CompletedProcess[str]:
+        calls.append(command)
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr(cli.subprocess, "run", fake_run)
+
+    code = cli.run(["--install-root", str(tmp_path), "ca-export"])
+
+    captured = capsys.readouterr()
+    assert code == 0
+    assert calls
+    joined = " ".join(calls[0])
+    assert "--profile" in joined
+    assert "ca-export" in joined
+    assert "Certificate Trust" in captured.out
+
+
 def test_global_help_is_available(capsys: pytest.CaptureFixture[str]) -> None:
     with pytest.raises(SystemExit) as exc:
         cli.run(["--help"])

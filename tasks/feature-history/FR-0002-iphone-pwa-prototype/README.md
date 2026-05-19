@@ -1,6 +1,6 @@
 # FR-0002 — iPhone PWA prototype
 
-**Status:** `in-progress` (tickets `T-FR-0002-01` and `T-FR-0002-02` integrated on `feat/FR-0002-iphone-pwa-prototype`)
+**Status:** `closeout` — PR to `main` pending review (`feat/FR-0002-iphone-pwa-prototype`)
 **Owner:** project lead (Ian)
 **Allocated:** 2026-04-27
 **Relationship:** parks FR-0001 implementation while we de-risk the **home-server PWA** story (TLS + shell + push on Pi/Mac mini first; iPhone as follow-up). FR-0001 design stays authoritative for MVP; this FR may produce **design amendments** to FR-0001 if reality disagrees.

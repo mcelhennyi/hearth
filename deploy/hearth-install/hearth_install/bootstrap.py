@@ -62,6 +62,9 @@ def plan_bootstrap(
         f"VERSION.json hearth_ref (when created): {hearth_ref}",
         f"ensure layout under {hearth}",
         f"write {hearth / 'compose' / 'docker-compose.yml'} from packaged template",
+        f"write {hearth / 'compose' / '.env'} with HEARTH_REPO_ROOT={paths.repo_root}",
+        f"copy Caddy configs to {hearth / 'compose' / 'caddy'}",
+        f"ensure static publish dir at {hearth / 'compose' / 'static'}",
         f"generate {hearth / 'compose' / 'overrides' / 'generated.plugins.yml'}",
         f"symlink {hearth / 'bin' / 'hearth'} -> {paths.repo_root / 'bin' / 'hearth'}",
     ]
@@ -134,6 +137,42 @@ def materialize_compose_template(hearth: Path, *, dry_run: bool) -> Path:
     dest_dir.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(src, dest)
     return dest
+
+
+def write_compose_env_file(hearth: Path, repo_root: Path, *, dry_run: bool) -> Path:
+    """Write ``compose/.env`` with ``HEARTH_REPO_ROOT`` for image build contexts."""
+
+    dest = hearth / "compose" / ".env"
+    body = (
+        f"HEARTH_REPO_ROOT={repo_root.resolve()}\n"
+        "HEARTH_COMPOSE_PROJECT_NAME=hearth\n"
+    )
+    if dry_run:
+        return dest
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(body, encoding="utf-8")
+    return dest
+
+
+def materialize_compose_assets(repo_root: Path, hearth: Path, *, dry_run: bool) -> None:
+    """Copy Caddy dev configs and ensure a static publish directory exists."""
+
+    caddy_src = repo_root / "deploy" / "caddy"
+    caddy_dest = hearth / "compose" / "caddy"
+    static_dest = hearth / "compose" / "static"
+    if dry_run:
+        return
+    if not caddy_src.is_dir():
+        msg = f"bootstrap: missing Caddy config directory: {caddy_src}"
+        raise FileNotFoundError(msg)
+    if caddy_dest.exists():
+        shutil.rmtree(caddy_dest)
+    shutil.copytree(caddy_src, caddy_dest)
+    static_dest.mkdir(parents=True, exist_ok=True)
+    placeholder = repo_root / "deploy" / "static" / "index.html"
+    index_dest = static_dest / "index.html"
+    if placeholder.is_file() and not index_dest.is_file():
+        shutil.copyfile(placeholder, index_dest)
 
 
 def run_compose_up(
@@ -234,6 +273,8 @@ def run_bootstrap(
 
     hearth = ensure_hearth_layout(install_root, hearth_ref=ns.hearth_ref)
     materialize_compose_template(hearth, dry_run=False)
+    write_compose_env_file(hearth, repo_root, dry_run=False)
+    materialize_compose_assets(repo_root, hearth, dry_run=False)
     generate_plugin_compose(hearth)
     launcher = repo_root / "bin" / "hearth"
     if not launcher.is_file():

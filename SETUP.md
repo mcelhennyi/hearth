@@ -1,12 +1,10 @@
-# Hearth Docker-profile setup (Raspberry Pi)
+# Hearth setup — Pi Docker profile + iPhone PWA prototype (FR-0002 / FR-0003)
 
-Operator guide for validating **FR-0003** on real Pi hardware: repo-root **`./install`**, **`<install-dir>/hearth/`** layout, and the **`hearth`** CLI.
+Operator guide for a **Raspberry Pi** (or similar ARM host) using repo-root **`./install`**, the **`hearth`** CLI, and the **FR-0002** Mantle PWA + Web Push stack at **`https://hearth.home.arpa/`**.
 
-**Branch:** `feat/FR-0003-hearth-pi-docker-cli` (see [PR #13](https://github.com/mcelhennyi/hearth/pull/13)).
+**Branch:** `feat/FR-0002-iphone-pwa-prototype` (merge via PR to `main`).
 
-**What this tests:** Install bootstrap, filesystem layout, CLI, and `docker compose up -d` on ARM. The default stack is **hub-smoke** (Alpine placeholder) until FR-0001 hub images exist — not the full hub UI, Caddy, or iPhone PWA (FR-0002).
-
-**Install tree name:** **`hearth/`** under your install root (design amendment **HRT-DEP-001**). Do not use the old `heart/` directory name.
+**Install tree:** `<install-dir>/hearth/` (design amendment **HRT-DEP-001** — not `heart/`).
 
 ---
 
@@ -15,166 +13,184 @@ Operator guide for validating **FR-0003** on real Pi hardware: repo-root **`./in
 On the Pi (SSH or local terminal):
 
 ```bash
-# 64-bit Raspberry Pi OS recommended
 uname -m    # expect aarch64
 
-# Git + Python 3
 sudo apt update
 sudo apt install -y git python3
 
-# Docker Engine + Compose v2 (needs 2.20+ for compose "include:")
 curl -fsSL https://get.docker.com | sudo sh
 sudo usermod -aG docker "$USER"
 ```
 
-**Log out and back in** (or run `newgrp docker`) so `docker` works without `sudo`.
-
-Verify:
+Log out and back in (or `newgrp docker`) so `docker` works without `sudo`.
 
 ```bash
 docker info
 docker compose version   # v2.20 or newer
-python3 --version        # 3.11+ is fine; 3.12 ideal
+python3 --version
 ```
 
 ---
 
-## 2. Get the code
+## 2. Clone the deploy repository
 
 ```bash
 cd ~
 git clone https://github.com/mcelhennyi/hearth.git
 cd hearth
-git fetch origin feat/FR-0003-hearth-pi-docker-cli
-git checkout feat/FR-0003-hearth-pi-docker-cli
+git fetch origin feat/FR-0002-iphone-pwa-prototype
+git checkout feat/FR-0002-iphone-pwa-prototype
 git pull
 ```
 
-If you already cloned the repo:
-
-```bash
-cd ~/hearth
-git fetch origin
-git checkout feat/FR-0003-hearth-pi-docker-cli
-git pull
-```
-
-Choose an **install root** (parent directory; the tool creates **`hearth/`** inside it):
+Choose an **install root** (parent directory; `./install` creates **`hearth/`** inside it):
 
 ```bash
 export HEARTH_DEPLOY=~/hearth-deploy
+export HEARTH_INSTALL_ROOT="$HEARTH_DEPLOY"
 ```
 
 ---
 
-## 3. Optional: automated smoke (quick check)
+## 3. Install layout and start the stack
 
-From the repository root:
-
-```bash
-chmod +x ./install scripts/ci/hearth-install-smoke.sh
-./scripts/ci/hearth-install-smoke.sh
-```
-
-Expect **`hearth-install-smoke: OK`** at the end. This uses a temporary directory and skips `docker compose up`; useful before a full install.
-
----
-
-## 4. Full install
+From the **repository root** (`~/hearth`):
 
 ```bash
-cd ~/hearth   # repository root
-
-# Plan only — no filesystem changes
+chmod +x ./install
 ./install --dry-run "$HEARTH_DEPLOY"
 
-# Layout + hearth shim + compose files + docker compose up -d
 ./install "$HEARTH_DEPLOY" --hearth-ref "$(git rev-parse --short HEAD)"
 ```
 
-**Success indicators:**
+This writes:
 
-- Exit code **0**
-- **`$HEARTH_DEPLOY/hearth/`** exists with `compose/`, `plugins/`, `state/`, `var/`, `bin/`, `VERSION.json`, `README.md`
-- **hub-smoke** container running (Alpine placeholder)
+- `$HEARTH_DEPLOY/hearth/compose/docker-compose.yml` — Caddy (`tls internal`) + hub API
+- `$HEARTH_DEPLOY/hearth/compose/.env` — `HEARTH_REPO_ROOT` pointing at your git checkout (required for builds)
+- `$HEARTH_DEPLOY/hearth/compose/caddy/` — Caddy configs copied from the repo
+- `$HEARTH_DEPLOY/hearth/bin/hearth` — CLI shim
 
-```bash
-ls -la "$HEARTH_DEPLOY/hearth/"
-docker compose -f "$HEARTH_DEPLOY/hearth/compose/docker-compose.yml" ps
-```
-
----
-
-## 5. `hearth` CLI smoke
+Add the CLI to your shell (optional but recommended):
 
 ```bash
-export HEARTH_INSTALL_ROOT="$HEARTH_DEPLOY"
 export PATH="$HEARTH_DEPLOY/hearth/bin:$PATH"
-
-hearth version
-hearth doctor
-hearth --plugin list
-hearth status
 ```
 
-Optional stack control:
+---
+
+## 4. Build the Mantle PWA and VAPID keys
+
+Still from the repo checkout; uses Docker via `./develop` under the hood:
 
 ```bash
-hearth stop
-hearth start
-hearth logs
+hearth pwa vapid-gen
+hearth pwa build
 ```
 
-Add **`export PATH=...`** and **`export HEARTH_INSTALL_ROOT=...`** to `~/.bashrc` or `~/.profile` if you want `hearth` on every login.
+`hearth pwa build` compiles `apps/hub/web` and publishes the bundle to  
+`$HEARTH_DEPLOY/hearth/compose/static/` (what Caddy serves).
+
+Restart Caddy so it picks up new static files:
+
+```bash
+hearth restart caddy
+```
+
+Verify:
+
+```bash
+hearth status --skip-health
+curl -sk --resolve hearth.home.arpa:443:127.0.0.1 https://hearth.home.arpa/api/health
+```
+
+Expect `{"status":"ok"}`.
 
 ---
 
-## 6. Record hardware validation (VAL)
+## 5. DNS — `hearth.home.arpa`
 
-For the feature diary, note:
+The iPhone and Pi must resolve **`hearth.home.arpa`** to the Pi’s **LAN IP** (e.g. `192.168.1.50`):
 
-- Pi **model** and OS (`cat /etc/os-release`)
-- **Date** and rough duration of `./install`
-- Pass/fail: dry-run, full install, `hearth doctor`, `docker compose ps`
+- **Pi-hole / router DNS** (recommended), or
+- **`/etc/hosts`** on the Pi, and equivalent DNS on the iPhone.
 
-Append to:
-
-`tasks/feature-history/FR-0003-hearth-pi-docker-cli/serial-diary.md`
+Find the Pi IP: `hostname -I`
 
 ---
 
-## 7. Troubleshooting
+## 6. Trust the local CA on each iPhone (required)
+
+On the **Pi**, with the stack running (`hearth start` if needed):
+
+```bash
+hearth ca-export
+```
+
+This blocks for up to **10 minutes** and serves the root CA at **`http://<PI-LAN-IP>:8080/ca.crt`**.
+
+On each **iPhone** (same Wi‑Fi):
+
+1. Safari → **`http://<PI-LAN-IP>:8080/ca.crt`** (use **http**, not https; use the Pi’s IP).
+2. Install the downloaded configuration profile.
+3. **Settings → General → VPN & Device Management** → install the profile.
+4. **Settings → General → About → Certificate Trust Settings** → enable **full trust** for the Caddy local root CA.  
+   **Without step 4, Safari shows “This Connection Is Not Private.”**
+5. Force-quit Safari, then open **`https://hearth.home.arpa/`**.
+
+---
+
+## 7. iPhone PWA + push walkthrough
+
+1. Safari → **`https://hearth.home.arpa/`** — no certificate warning.
+2. Confirm the **PWA-ready** screen and bottom tabs.
+3. **Share → Add to Home Screen**.
+4. Open the home-screen icon (standalone, no Safari chrome).
+5. Tap **Send test notification** → allow notifications.
+6. Push should arrive within ~30 seconds.
+7. Optional: force-quit and relaunch to confirm the shell still loads.
+
+Record results in  
+`tasks/feature-history/FR-0002-iphone-pwa-prototype/40-prototype-report.md`.
+
+---
+
+## 8. Day-2 operator commands
+
+| Task | Command |
+|------|---------|
+| Start stack | `hearth start` |
+| Stop stack | `hearth stop` |
+| Logs | `hearth logs` or `hearth logs -f caddy` |
+| Re-export CA | `hearth ca-export` |
+| Rebuild UI after git pull | `hearth pwa build` then `hearth restart caddy` |
+| Plugin registry | `hearth --plugin list` |
+| Doctor | `hearth doctor` |
+
+Low-level compose passthrough: `hearth compose -- ps`
+
+---
+
+## 9. Troubleshooting
 
 | Problem | What to try |
 |--------|-------------|
-| `permission denied` on `docker` | Re-login after `usermod -aG docker`, or `newgrp docker` |
-| Compose errors about `include:` | Upgrade Docker; need Compose **v2.20+** (`docker compose version`) |
-| Leftover **`heart/`** directory from an old try | Remove install root or rename `heart` → `hearth` |
-| `./install: Permission denied` | `chmod +x ./install` |
-| `hearth doctor` fails | Run `docker info` as the same user who will run `hearth` |
+| “Connection is not private” on iPhone | Enable **Certificate Trust Settings** (section 6 step 4), not just the profile. |
+| `:8080/ca.crt` does not download | Ensure `hearth ca-export` is running; check Pi firewall; use LAN IP. |
+| `hearth pwa build` fails TypeScript | `git pull` on `feat/FR-0002-iphone-pwa-prototype`; run `hearth pwa build` again. |
+| `hearth doctor` / docker errors | Re-login after `usermod -aG docker`; run `docker info`. |
+| Wrong hostname | Use **`hearth.home.arpa`**, not the raw IP, in Safari after trust. |
+| Orphan **hub-smoke** container | From an old install — `docker rm -f hearth-hub-smoke` after `hearth stop`. |
 
 ---
 
-## 8. Clean re-test
+## 10. Clean re-test
 
 ```bash
-export HEARTH_DEPLOY=~/hearth-deploy
-hearth stop    # if a previous install succeeded
+hearth stop
 rm -rf "$HEARTH_DEPLOY"
 ```
 
-Then repeat [section 4](#4-full-install).
-
----
-
-## 9. Out of scope for this setup
-
-| Topic | Where it lives |
-|-------|----------------|
-| Full hub app + Mantle PWA | FR-0001 / FR-0002 |
-| `hearth.home.arpa`, TLS, iPhone trust | FR-0002, `docs/design/deployment.md` |
-| Bare-metal systemd install | `deploy/install.sh`, FR-0001-10 |
-| Central plugin registry names | DESIGN-GAP; MVP is git URL only |
+Repeat from [section 3](#3-install-layout-and-start-the-stack).
 
 ---
 
@@ -182,7 +198,7 @@ Then repeat [section 4](#4-full-install).
 
 | Path | Role |
 |------|------|
-| [`deploy/hearth-install/README.md`](deploy/hearth-install/README.md) | Layout generator and `./install` details |
-| [`docs/design/deployment.md`](docs/design/deployment.md) | Docker profile (Pi), amendment **HRT-DEP-001** |
-| [`tasks/feature-history/FR-0003-hearth-pi-docker-cli/`](tasks/feature-history/FR-0003-hearth-pi-docker-cli/) | Feature tickets, diary, handoffs |
-| [`scripts/ci/hearth-install-smoke.sh`](scripts/ci/hearth-install-smoke.sh) | Host/CI smoke script |
+| [`deploy/hearth-install/README.md`](deploy/hearth-install/README.md) | `./install` layout |
+| [`docs/design/deployment.md`](docs/design/deployment.md) | Docker profile + iPhone trust |
+| [`deploy/compose/README.md`](deploy/compose/README.md) | Dev `./develop` stack (repo checkout) |
+| [`tasks/feature-history/FR-0002-iphone-pwa-prototype/40-prototype-report.md`](tasks/feature-history/FR-0002-iphone-pwa-prototype/40-prototype-report.md) | Prototype closeout evidence |

@@ -1,7 +1,7 @@
 ## Current Branch
 
 - Branch: `feat/FR-0002-iphone-pwa-prototype`
-- Status: `testing`
+- Status: `closeout` (PR to `main` pending)
 - Merged tickets: `T-FR-0002-01`, `T-FR-0002-02`, `T-FR-0002-03`
 - Active ticket: `T-FR-0002-04` (real-device walkthrough + closeout)
 
@@ -20,7 +20,6 @@
 
 ## Next Action
 
-- Branch merged with **`origin/main`** (2026-05-19): includes **`./install`** and FR-0003 tooling; PWA stack unchanged (`./develop up`, `hearth.home.arpa`).
-- Execute real-iPhone acceptance walkthrough on Mac mini and Pi 4.
-- Fill evidence in `tasks/feature-history/FR-0002-iphone-pwa-prototype/40-prototype-report.md`.
-- If any R1-R5 risk fails, file DESIGN-FLAW amendment(s) against `docs/design/mantle-ui.md`, `docs/design/deployment.md`, or `docs/design/notifications.md`.
+- Human: review and merge feature PR to **`main`**; delete this **`CURRENT.md`** on merge.
+- Pi validation done (TLS + push). Optional Home Screen checklist items deferred in `40-prototype-report.md`.
+- Operator docs: repo-root **`SETUP.md`** (`./install`, `hearth pwa build`, `hearth ca-export`).

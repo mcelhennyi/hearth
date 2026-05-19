@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0002-04` (closeout and real-device walkthrough) |
-| **Active phase** | TEST (real-device acceptance capture) |
-| **Branch / worktree** | `feat/FR-0002-iphone-pwa-prototype` at `.worktrees/FR-0002-iphone-pwa-prototype/feature/` (merged **`origin/main`** 2026-05-19) |
-| **Session status** | `testing` |
-| **Next agent should** | Run the full iPhone acceptance flow on Mac mini and Pi 4, fill `40-prototype-report.md` evidence + R1-R5 verdicts, then apply any required DESIGN-FLAW amendments and finish FR-0002 closeout. FR-0003 is **done** on **`main`** ([`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md)). |
+| **Active ticket** | — (FR-0002 closeout complete; awaiting PR merge) |
+| **Active phase** | — |
+| **Branch / worktree** | `feat/FR-0002-iphone-pwa-prototype` → PR **`main`** |
+| **Session status** | `handoff` |
+| **Next agent should** | Review feature PR; merge to `main`; delete repo-root **`CURRENT.md`**; set FR-0002 **`done`** in `REGISTRY.md`; unpark FR-0001. |
 
 ### Parallel streams
 
@@ -28,7 +28,7 @@
 | T-FR-0002-01 | Caddy + tls internal + static placeholder | done | done | done | `FR-0002`. Caddy `tls internal` stack + `./develop` `up/down/ca-export`. |
 | T-FR-0002-02 | Mantle PWA bones (manifest + SW + nav) | done | done | done | `FR-0002`. Reuses into `T-FR-0001-04`. `apps/hub/web` with Vite-PWA + responsive nav. |
 | T-FR-0002-03 | Web Push round-trip (VAPID + subscribe + send) | done | done | done | `FR-0002`. Reuses into `T-FR-0001-09`. FastAPI push endpoints + SW/UI + VAPID generator. |
-| T-FR-0002-04 | Real-iPhone walkthrough + closeout report | in-progress | — | — | `FR-0002`. Preflight passed; awaiting real-device evidence (Mac mini + Pi 4). |
+| T-FR-0002-04 | Real-iPhone walkthrough + closeout report | done | done | done | `FR-0002`. Pi + iPhone TLS/push validated; report at `40-prototype-report.md`; optional Home Screen items deferred. |
 | T-FR-0003-01 | Design contract: amend deployment for Docker-on-Pi | done | done | done | `FR-0003` **done** on `main` (PR #13). |
 | T-FR-0003-02 | Install layout: `hearth/`, VERSION.json, README | done | done | done | `FR-0003` **done** on `main`. |
 | T-FR-0003-03 | `./install` bootstrap: Docker + layout + first `compose up` | done | done | done | `FR-0003` **done** on `main`. |

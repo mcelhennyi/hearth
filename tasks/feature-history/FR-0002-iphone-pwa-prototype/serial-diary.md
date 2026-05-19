@@ -4,6 +4,16 @@ Append-only. Newest entries at the top.
 
 ---
 
+## 2026-05-19 — FR-0002 closeout (finish-feature)
+
+- Pi operator validation on `hearth-server`: TLS trust after Certificate Trust Settings; Web Push delivered to iPhone.
+- Filled `40-prototype-report.md` (R1 pass, R2 pass-with-caveat, R5 pass; R3 deferred; R4 pass-with-caveat).
+- Install template now ships FR-0002 Caddy+hub stack; `./install` writes `HEARTH_REPO_ROOT` and copies Caddy/static dirs.
+- `hearth ca-export`, `hearth pwa build`, `hearth pwa vapid-gen` added; `SETUP.md` rewritten for install + CLI path.
+- Feature PR opened to `main` (see `handoffs/2026-05-19-finish-feature.md`).
+
+---
+
 ## 2026-05-19 — Merged `origin/main` (FR-0003 install + `./install`)
 
 - Merged **`origin/main`** into **`feat/FR-0002-iphone-pwa-prototype`** so the branch carries **`./install`**, **`hearth` CLI**, and updated **`develop`** / compose (docs + test profiles retained alongside FR-0002 `hub`/`web` tooling).

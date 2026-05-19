@@ -65,17 +65,17 @@ Web Push and the service worker need a TLS cert the iPhone trusts. With Caddy `t
 
 ```mermaid
 flowchart TD
-  A[On Hearth box: ./develop ca-export]
-  --> B[Generates hearth-local-ca.crt]
-  --> C[Serve it temporarily at http://hearth.home.arpa:8080/ca.crt]
-  --> D[On iPhone, Safari → http://hearth.home.arpa:8080/ca.crt]
+  A[On Hearth box: hearth ca-export or ./develop ca-export]
+  --> B[Copy Caddy local root CA to ca.crt]
+  --> C[Serve at http://HOST-LAN-IP:8080/ca.crt for up to 10 minutes]
+  --> D[On iPhone Safari → same URL using the box LAN IP]
   --> E[iOS prompts to install profile]
   --> F[Settings → General → VPN & Device Management → install]
-  --> G[Settings → General → About → Certificate Trust Settings → enable]
+  --> G[Settings → General → About → Certificate Trust Settings → enable full trust]
   --> H[Visit https://hearth.home.arpa/ → Add to Home Screen]
 ```
 
-`./develop ca-export` is a tiny wrapper around `caddy file-server -listen :8080 -root /tmp/hearth-ca/` that times out after 10 minutes. It is documented in the dashboard's "Add a device" tile.
+**Operators (Docker profile):** run **`hearth ca-export`** from an install with the FR-0002 stack (see repo-root **`SETUP.md`**). **Developers (repo checkout):** run **`./develop ca-export`**. Both serve the root CA over plain HTTP on port **8080**; use the host **LAN IP**, not `localhost`, on the phone. **Profile install alone is not enough on iOS** — step **G** (Certificate Trust Settings) is required or Safari reports "This Connection Is Not Private." The export times out after 10 minutes. Documented for the dashboard "Add a device" tile in a later FR.
 
 ## Filesystem layout (prod)
 
