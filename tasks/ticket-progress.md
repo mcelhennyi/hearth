@@ -45,7 +45,7 @@
 | T-FR-0001-01 | Repo scaffold and Compose dev loop | done | done | done | `FR-0001`. Smoke test passes: HTTP 200 + "Hearth" body. `.dockerignore`, pnpm workspace, static placeholder updated. Host-only VAL (Docker-in-Docker not available in hearth-test). |
 | T-FR-0001-02 | Hub API skeleton and SQLite registry | — | — | — | `FR-0001` parked. |
 | T-FR-0001-03 | Tinder loader and manifest schema | — | — | — | `FR-0001` parked. |
-| T-FR-0001-04 | Mantle PWA shell and iframe embed | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-02` output. |
+| T-FR-0001-04 | Mantle PWA shell and iframe embed | done | done | done | `FR-0001`. Dynamic nav from registry, PluginFrame, useMantle/useTheme/InstallPrompt in `src/mantle/`. 7 tests pass via Docker. |
 | T-FR-0001-05 | Caddy generation and local TLS | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-01` output. |
 | T-FR-0001-06 | Spark v1 broker and client libs | — | — | — | `FR-0001` parked. |
 | T-FR-0001-07 | Kindling repo and CLI | — | — | — | `FR-0001` parked. |
