@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | T-FR-0001-03 ‖ T-FR-0001-06 ‖ T-FR-0001-09 (parallel) |
-| **Active phase** | developing |
-| **Branch / worktree** | `feat/FR-0001-hearth-platform` |
-| **Session status** | `developing` |
-| **Next agent should** | Complete TEST→DEV→VAL for T03, T06, T09 in their child worktrees; merge each into `feat/FR-0001-hearth-platform`; then run `/identify-frontier` for the T05/T07 wave. |
+| **Active ticket** | T-FR-0001-05 (next wave) |
+| **Active phase** | integrating |
+| **Branch / worktree** | `feat/FR-0001-hearth-platform` @ `.worktrees/FR-0001-hearth-platform/feature/` |
+| **Session status** | `integrating` |
+| **Next agent should** | Merge PRs #23 (T03), #24 (T06), #25 (T09) into `feat/FR-0001-hearth-platform`; revalidate feature branch via Docker; update `triadDone` in `docs/design/tickets-initial.md` for T03/T06/T09; run `/identify-frontier` for next wave (T05 eligible after T03, T07 eligible after T03+T06). |
 
 ### Parallel streams
 
@@ -44,13 +44,13 @@
 | T-FR-0003-13 | Project rules: Hearth CLI parity (Cursor + Claude) | done | done | done | `FR-0003` **done** on `main`. |
 | T-FR-0001-01 | Repo scaffold and Compose dev loop | done | done | done | `FR-0001`. Smoke test passes: HTTP 200 + "Hearth" body. `.dockerignore`, pnpm workspace, static placeholder. Host-only VAL (Docker-in-Docker not available in hearth-test). Merged to `feat/FR-0001-hearth-platform` via [PR #20](https://github.com/mcelhennyi/hearth/pull/20). |
 | T-FR-0001-02 | Hub API skeleton and SQLite registry | done | done | done | `FR-0001`. FastAPI routes, SQLAlchemy models, Alembic migration. 26 tests pass via Docker. Merged to `feat/FR-0001-hearth-platform` via [PR #21](https://github.com/mcelhennyi/hearth/pull/21). |
-| T-FR-0001-03 | Tinder loader and manifest schema | — | — | — | `FR-0001` parked. |
+| T-FR-0001-03 | Tinder loader and manifest schema | done | done | done | `FR-0001`. Pydantic schema + loader + 5 fixtures + 17 tests. Wired into POST /api/plugins/install. 43 total tests pass via Docker. [PR #23](https://github.com/mcelhennyi/hearth/pull/23). |
 | T-FR-0001-04 | Mantle PWA shell and iframe embed | done | done | done | `FR-0001`. Dynamic nav from registry, `mantle/` components, no hardcoded plugin slugs. 7 tests pass via Docker. Merged to `feat/FR-0001-hearth-platform` via [PR #22](https://github.com/mcelhennyi/hearth/pull/22). |
 | T-FR-0001-05 | Caddy generation and local TLS | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-01` output. |
-| T-FR-0001-06 | Spark v1 broker and client libs | — | — | — | `FR-0001` parked. |
+| T-FR-0001-06 | Spark v1 broker and client libs | done | done | done | `FR-0001`. Broker + Python client + TS stub + 23 tests. 127 total tests pass. [PR #24](https://github.com/mcelhennyi/hearth/pull/24). |
 | T-FR-0001-07 | Kindling repo and CLI | — | — | — | `FR-0001` parked. |
 | T-FR-0001-08 | groceries reference plugin | — | — | — | `FR-0001` parked. |
-| T-FR-0001-09 | Auth, VAPID, Web Push + ntfy | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-03` output. |
+| T-FR-0001-09 | Auth, VAPID, Web Push + ntfy | done | done | done | `FR-0001`. argon2id auth, itsdangerous sessions, lockout, Web Push (VAPID+410 pruning), ntfy. 141 tests pass via Docker. Manual iPhone VAL deferred (needs real device). [PR #25](https://github.com/mcelhennyi/hearth/pull/25). |
 | T-FR-0001-10 | Pi/Mac mini install.sh + backup | — | — | — | `FR-0001` parked (closeout). |
 | T-FR-0004-01 | Design amendments: centralized auth architecture | done | done | done | `FR-0004` **parked**. Design in feature tree; see diary. |
 | T-FR-0004-02 | Built-in hearth-users plugin scaffold | — | — | — | `FR-0004` **parked** — after FR-0002 cert VAL + FR-0001-04 VAL. |
