@@ -1,0 +1,10 @@
+[plugin]
+slug       = "unknown-kind"
+name       = "Unknown kind"
+version    = "0.1.0"
+hearth_min = "0.1.0"
+kind       = "daemon"
+
+[entrypoint]
+backend = { kind = "python", module = "unknown.app:create_app", port_env = "HEARTH_PLUGIN_PORT" }
+ui      = { kind = "static", path = "web/dist" }

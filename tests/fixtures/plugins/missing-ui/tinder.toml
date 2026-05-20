@@ -1,0 +1,10 @@
+[plugin]
+slug       = "missing-ui"
+name       = "Missing UI"
+version    = "0.1.0"
+hearth_min = "0.1.0"
+kind       = "app"
+
+[entrypoint]
+backend = { kind = "python", module = "missing_ui.app:create_app", port_env = "HEARTH_PLUGIN_PORT" }
+# no [entrypoint.ui] — invalid for kind=app

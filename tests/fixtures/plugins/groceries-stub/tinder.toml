@@ -1,0 +1,30 @@
+[plugin]
+slug        = "groceries-stub"
+name        = "Groceries stub"
+version     = "0.1.0"
+hearth_min  = "0.1.0"
+kind        = "app"
+description = "Stub plugin used in Tinder loader tests."
+
+[entrypoint]
+backend = { kind = "python", module = "groceries_stub.app:create_app", port_env = "HEARTH_PLUGIN_PORT" }
+ui      = { kind = "static", path = "web/dist" }
+
+[capabilities.list]
+methods = ["add", "remove", "items"]
+events  = ["added", "removed"]
+
+[permissions]
+spark_publish   = ["groceries-stub.*"]
+spark_subscribe = ["pantry.changed"]
+network         = "loopback"
+
+[backup]
+include = ["plugins/groceries-stub/db.sqlite"]
+exclude = ["plugins/groceries-stub/cache/"]
+
+[ui.nav]
+label           = "Groceries"
+icon            = "shopping-cart"
+order           = 30
+show_in_tab_bar = true
