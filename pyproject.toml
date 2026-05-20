@@ -16,6 +16,7 @@ hearth = "hearth_cli.cli:main"
 [project.optional-dependencies]
 test = [
     "pytest>=8",
+    "pytest-asyncio>=0.23",
     "httpx>=0.27",
     "fastapi",
     "uvicorn[standard]",
@@ -34,6 +35,7 @@ hearth_kindling_contract = ["templates/plugin-python/*", "templates/plugin-pytho
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+asyncio_mode = "auto"
 pythonpath = [
     "deploy/hearth-install",
     "deploy/hearth-cli",
