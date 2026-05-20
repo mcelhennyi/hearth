@@ -24,6 +24,8 @@ test = [
     "aiosqlite",
     "pydantic>=2",
     "pywebpush",
+    "argon2-cffi>=23",
+    "itsdangerous>=2",
 ]
 
 [tool.setuptools.packages.find]
