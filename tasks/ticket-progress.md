@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | — (pick next **`T-FR-0001-xx`** or run **`/identify-frontier`**) |
-| **Active phase** | — |
-| **Branch / worktree** | **`main`** |
-| **Session status** | `handoff` |
-| **Next agent should** | Resume **FR-0001** platform MVP per [`REGISTRY.md`](feature-history/REGISTRY.md); start with **`T-FR-0001-01`** or frontier; reuse FR-0002 code in `-04`/`-05`/`-09`. Operator stack: **`SETUP.md`**. |
+| **Active ticket** | T-FR-0001-01 |
+| **Active phase** | VAL complete |
+| **Branch / worktree** | `feat/FR-0001-hearth-platform-T-FR-0001-01-repo-scaffold` / `.worktrees/FR-0001-hearth-platform/T-FR-0001-01-repo-scaffold/` |
+| **Session status** | `integrating` |
+| **Next agent should** | Merge T-FR-0001-01 PR into `feat/FR-0001-hearth-platform`; then start T-FR-0001-02 (Hub API skeleton and SQLite registry). |
 
 ### Parallel streams
 
@@ -16,7 +16,7 @@
 
 | Stream label | Ticket(s) | `FR-NNNN` | Branch / worktree | Owner / note |
 |----------------|------------|-----------|-------------------|--------------|
-| — | — | — | — | No active parallel streams |
+| T-FR-0001-01 scaffold | T-FR-0001-01 | FR-0001 | `feat/FR-0001-hearth-platform-T-FR-0001-01-repo-scaffold` | PR open → merge into `feat/FR-0001-hearth-platform` |
 
 ---
 
@@ -42,7 +42,7 @@
 | T-FR-0003-11 | Per-plugin `plugin` executable: lifecycle + passthrough | done | done | done | `FR-0003` **done** on `main`. |
 | T-FR-0003-12 | Smoke tests + ARM CI for install path | done | done | done | `FR-0003` **done** on `main`. |
 | T-FR-0003-13 | Project rules: Hearth CLI parity (Cursor + Claude) | done | done | done | `FR-0003` **done** on `main`. |
-| T-FR-0001-01 | Repo scaffold and Compose dev loop | — | — | — | `FR-0001` **design** — eligible on `main` (FR-0002 merged). |
+| T-FR-0001-01 | Repo scaffold and Compose dev loop | done | done | done | `FR-0001`. Smoke test passes: HTTP 200 + "Hearth" body. `.dockerignore`, pnpm workspace, static placeholder updated. Host-only VAL (Docker-in-Docker not available in hearth-test). |
 | T-FR-0001-02 | Hub API skeleton and SQLite registry | — | — | — | `FR-0001` parked. |
 | T-FR-0001-03 | Tinder loader and manifest schema | — | — | — | `FR-0001` parked. |
 | T-FR-0001-04 | Mantle PWA shell and iframe embed | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-02` output. |
