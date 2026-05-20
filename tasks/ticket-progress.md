@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | T-FR-0001-08 (next) |
-| **Active phase** | integrating |
-| **Branch / worktree** | `feat/FR-0001-hearth-platform` @ `.worktrees/FR-0001-hearth-platform/feature/` |
-| **Session status** | `integrating` |
-| **Next agent should** | T05+T07 done and merged (206 tests green). Run `/identify-frontier` for next wave: T-FR-0001-08 (groceries plugin, external `grocery-list` repo) is now unblocked. T-FR-0001-10 (install+backup) still blocked by T08. |
+| **Active ticket** | T-FR-0001-08 |
+| **Active phase** | developing |
+| **Branch / worktree** | `feat/FR-0001-hearth-platform-T-FR-0001-08-groceries-plugin` @ `.worktrees/FR-0001-hearth-platform/T-FR-0001-08-groceries-plugin/` |
+| **Session status** | `developing` |
+| **Next agent should** | Complete TEST→DEV→VAL for T08 in its worktree. External plugin lives in `grocery-list` repo (empty, needs scaffold + implementation). Hearth consumes it as submodule at `apps/groceries/`. Merge into `feat/FR-0001-hearth-platform` when done. |
 
 ### Parallel streams
 
