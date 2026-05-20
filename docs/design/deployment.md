@@ -75,7 +75,9 @@ flowchart TD
   --> H[Visit https://hearth.home.arpa/ → Add to Home Screen]
 ```
 
-**Operators (Docker profile):** run **`hearth ca-export`** from an install with the FR-0002 stack (see repo-root **`SETUP.md`**). **Developers (repo checkout):** run **`./develop ca-export`**. Both serve the root CA over plain HTTP on port **8080**; use the host **LAN IP**, not `localhost`, on the phone. **Profile install alone is not enough on iOS** — step **G** (Certificate Trust Settings) is required or Safari reports "This Connection Is Not Private." The export times out after 10 minutes. Documented for the dashboard "Add a device" tile in a later FR.
+**DNS (before trust):** Every iPhone must resolve **`hearth.home.arpa`** to the Hearth host on the LAN (Pi-hole local DNS record is the recommended approach; Mac `/etc/hosts` does not help phones). See repo-root **`SETUP.md`** §5.
+
+**Operators (Docker profile):** run **`hearth ca-export`** from an install with the FR-0002 stack (see repo-root **`SETUP.md`** §6). **Developers (repo checkout):** run **`./develop ca-export`**. Both serve the root CA over plain HTTP on port **8080**; use the host **LAN IP**, not `localhost`, on the phone. **Profile install alone is not enough on iOS** — step **G** (Certificate Trust Settings) is required or Safari reports "This Connection Is Not Private." The export times out after 10 minutes. Documented for the dashboard "Add a device" tile in a later FR.
 
 ## Filesystem layout (prod)
 
