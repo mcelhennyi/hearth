@@ -1,22 +1,21 @@
 # Current branch state
 
-**Branch:** `feat/FR-0001-hearth-platform`
-**Status:** T03 + T06 + T09 merged; 181 tests passing; next wave T05/T07
+**Branch:** `feat/FR-0001-hearth-platform-T-FR-0001-07-kindling-repo`
+**Status:** T-FR-0001-07 complete (TEST/DEV/VAL done); 198 tests passing
 
-## What was done (this integration)
+## What was done (this ticket)
 
-- Merged T-FR-0001-03 (Tinder loader): Pydantic schema + loader + 17 tests
-- Merged T-FR-0001-06 (Spark v1): broker, Python client, TS stub + 23 tests
-- Merged T-FR-0001-09 (Auth/Push): argon2id auth, itsdangerous sessions,
-  Web Push VAPID, ntfy notify handler + 37 tests
-- Revalidated: 181 tests pass via `docker compose hearth-test`
-- Updated `docs/design/tickets-initial.md` triadDone for T01–T04, T06, T09
+- Created `kindling/` local directory (scope-right: separate repo/submodule deferred)
+- Migrated tinder schema → `kindling/tinder/schema.py`
+- Migrated Spark Python client → `kindling/spark/python/client.py`
+- Migrated Spark TS client → `kindling/spark/typescript/client.ts`
+- Migrated Mantle components → `kindling/mantle/`
+- Implemented `kindling_cli` Python package (`kindling new`, `kindling validate`, `kindling install`)
+- Added `kindling` script entry point to `pyproject.toml`
+- 17 new tests in `tests/test_kindling_cli.py`; 198 total pass via Docker
 
 ## Next step
 
-Run `/identify-frontier` — eligible next wave:
-- **T-FR-0001-05** (Caddy generation + local TLS): unblocked by T-FR-0001-03 VAL
-- **T-FR-0001-07** (Kindling repo and CLI): unblocked by T-FR-0001-03 + T-FR-0001-06 VAL
-
-T-FR-0001-08 (groceries reference plugin) blocked by T07.
-T-FR-0001-10 (Pi/Mac install + backup) blocked by T09.
+Merge T-FR-0001-07 PR into `feat/FR-0001-hearth-platform`; then eligible next:
+- **T-FR-0001-05** (Caddy generation + local TLS)
+- **T-FR-0001-08** (groceries reference plugin) — now unblocked by T07
