@@ -12,6 +12,7 @@ from typing import TextIO
 from hearth_cli.install_context import ResolvedInstall, resolve_deploy_repo_root
 
 _DEFAULT_PWA_ORIGIN = "https://hearth.home.arpa"
+_DEFAULT_PWA_START = "/dashboard"
 
 
 def _develop_script(repo_root: Path) -> Path:
@@ -22,15 +23,16 @@ def _develop_script(repo_root: Path) -> Path:
     return script
 
 
-def _patch_manifest_origin(static_dir: Path, origin: str) -> None:
+def _patch_manifest_origin(static_dir: Path, origin: str, *, start_path: str = _DEFAULT_PWA_START) -> None:
     """iOS home-screen apps are more reliable with absolute ``start_url`` / ``scope``."""
     manifest_path = static_dir / "manifest.webmanifest"
     if not manifest_path.is_file():
         return
-    normalized = origin.rstrip("/") + "/"
+    base = origin.rstrip("/")
+    start = start_path if start_path.startswith("/") else f"/{start_path}"
     data = json.loads(manifest_path.read_text(encoding="utf-8"))
-    data["start_url"] = normalized
-    data["scope"] = normalized
+    data["start_url"] = f"{base}{start}"
+    data["scope"] = f"{base}/"
     manifest_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 
 
@@ -66,9 +68,10 @@ def cmd_pwa_build(resolved: ResolvedInstall, stderr: TextIO) -> int:
         shutil.rmtree(static_dest)
     shutil.copytree(dist, static_dest)
     origin = os.environ.get("HEARTH_PWA_ORIGIN", _DEFAULT_PWA_ORIGIN).strip() or _DEFAULT_PWA_ORIGIN
-    _patch_manifest_origin(static_dest, origin)
+    start = os.environ.get("HEARTH_PWA_START", _DEFAULT_PWA_START).strip() or _DEFAULT_PWA_START
+    _patch_manifest_origin(static_dest, origin, start_path=start)
     print(f"hearth pwa build: published static bundle to {static_dest}")
-    print(f"hearth pwa build: manifest start_url/scope set to {origin.rstrip('/')}/")
+    print(f"hearth pwa build: manifest start_url={origin.rstrip('/')}{start} scope={origin.rstrip('/')}/")
     return 0
 
 

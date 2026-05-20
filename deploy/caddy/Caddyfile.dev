@@ -3,6 +3,10 @@ hearth.home.arpa {
   handle /api/* {
     reverse_proxy hub:8200
   }
-  root * /srv
-  file_server
+  handle {
+    root * /srv
+    # SPA: /dashboard etc. are client routes — serve index.html when no static file exists.
+    try_files {path} /index.html
+    file_server
+  }
 }
