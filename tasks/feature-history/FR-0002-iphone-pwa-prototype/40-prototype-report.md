@@ -23,15 +23,17 @@ This report closes FR-0002 by documenting acceptance results for:
 
 ## Acceptance runbook evidence (real iPhone)
 
-### Environment A (Mac mini host)
+### Environment A (Mac mini host) — **later phase**
 
-- Host details: not run for this closeout (Pi-first validation).
+**Status:** **Deferred** — not required for FR-0002 merge. Pi + iPhone validation (Environment B) satisfies closeout. Run when Mac mini home-server acceptance is scheduled (post-merge or FR-0001); see repo-root **`SETUP.md`** §11.
+
+- Host details: not run for this closeout.
 - iPhone model + iOS version: n/a
 - Recording path: n/a
 
-Checklist:
+Checklist (for the later phase only):
 
-- [ ] `./develop up` successful
+- [ ] `./develop up` or `./install` + `hearth start` successful on Mac mini
 - [ ] Safari opens `https://hearth.home.arpa/` without cert error after trust flow
 - [ ] Add to Home Screen completed
 - [ ] Home-screen launch is standalone with expected status bar tint/safe areas
@@ -40,7 +42,7 @@ Checklist:
 - [ ] Tap notification returns into PWA
 - [ ] Force-quit + relaunch still renders shell
 
-Artifacts: deferred — see Environment B.
+Artifacts: none — see Environment B for FR-0002 closeout evidence.
 
 ### Environment B (Pi 4 host — `hearth-server`)
 

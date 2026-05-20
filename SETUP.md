@@ -2,6 +2,8 @@
 
 Operator guide for a **Raspberry Pi** (or similar ARM host) using repo-root **`./install`**, the **`hearth`** CLI, and the **FR-0002** Mantle PWA + Web Push stack at **`https://hearth.home.arpa/`**.
 
+**Deployment target (this guide):** **Raspberry Pi** — the FR-0002 closeout host. **Mac mini** home-server validation is a **later phase** (after merge or under FR-0001); it is **not** required to follow this SETUP. On macOS, use **`./develop`** in the repo checkout for local dev only until a Mac mini operator runbook exists.
+
 **Branch:** `feat/FR-0002-iphone-pwa-prototype` (merge via PR to `main`).
 
 **Install tree:** `<install-dir>/hearth/` (design amendment **HRT-DEP-001** — not `heart/`).
@@ -72,7 +74,32 @@ This writes:
 - `$HEARTH_DEPLOY/hearth/compose/caddy/` — Caddy configs copied from the repo
 - `$HEARTH_DEPLOY/hearth/bin/hearth` — CLI shim
 
-Add the CLI to your shell (optional but recommended):
+### Install the `hearth` CLI permanently (`~/.bashrc`)
+
+After `./install`, add the install root and CLI to your login shell so new SSH sessions have `hearth` on `PATH` (adjust the path if you used a different **`HEARTH_DEPLOY`**):
+
+```bash
+# Append once (idempotent marker — safe to re-run)
+grep -q 'HEARTH_INSTALL_ROOT' ~/.bashrc 2>/dev/null || cat >> ~/.bashrc <<'EOF'
+
+# Hearth operator CLI (hearth start, hearth pwa build, hearth ca-export, …)
+export HEARTH_INSTALL_ROOT="${HEARTH_INSTALL_ROOT:-$HOME/hearth-deploy}"
+export PATH="$HEARTH_INSTALL_ROOT/hearth/bin:$PATH"
+EOF
+
+source ~/.bashrc
+hearth doctor
+```
+
+If your install root is not `~/hearth-deploy`, set it explicitly before appending, for example:
+
+```bash
+export HEARTH_INSTALL_ROOT=/home/pi/hearth
+```
+
+**zsh (optional):** use the same two `export` lines in `~/.zshrc` instead of `~/.bashrc`.
+
+For the current session only (without editing `~/.bashrc`):
 
 ```bash
 export PATH="$HEARTH_DEPLOY/hearth/bin:$PATH"
@@ -293,11 +320,24 @@ Repeat from [section 3](#3-install-layout-and-start-the-stack).
 
 ---
 
+## 11. Later phase — Mac mini (not in this SETUP)
+
+FR-0002 **closed on Pi + iPhone**; a second acceptance pass on **Mac mini** (Apple Silicon, always-on macOS) is **deferred** to a later phase — likely FR-0001 platform work or a short follow-up runbook.
+
+When that phase runs, expect the same checklist (TLS, Mantle shell, Web Push) using either:
+
+- **`./develop up`** from a repo checkout on the Mac mini (dev Compose profile), or  
+- **`./install`** + **`hearth`** once the Docker-on-Mac install path is documented in `docs/design/deployment.md`.
+
+Record results in **`40-prototype-report.md`** → **Environment A (Mac mini)**. Until then, treat Pi + **`SETUP.md`** as the operator source of truth.
+
+---
+
 ## Related docs
 
 | Path | Role |
 |------|------|
 | [`deploy/hearth-install/README.md`](deploy/hearth-install/README.md) | `./install` layout |
 | [`docs/design/deployment.md`](docs/design/deployment.md) | Docker profile + iPhone trust |
-| [`deploy/compose/README.md`](deploy/compose/README.md) | Dev `./develop` stack (repo checkout) |
-| [`tasks/feature-history/FR-0002-iphone-pwa-prototype/40-prototype-report.md`](tasks/feature-history/FR-0002-iphone-pwa-prototype/40-prototype-report.md) | Prototype closeout evidence |
+| [`deploy/compose/README.md`](deploy/compose/README.md) | Dev `./develop` stack (repo checkout; macOS dev, not Mac mini closeout) |
+| [`tasks/feature-history/FR-0002-iphone-pwa-prototype/40-prototype-report.md`](tasks/feature-history/FR-0002-iphone-pwa-prototype/40-prototype-report.md) | Prototype closeout evidence (Pi validated; Mac mini deferred) |

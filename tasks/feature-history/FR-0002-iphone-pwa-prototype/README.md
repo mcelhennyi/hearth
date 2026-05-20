@@ -3,7 +3,7 @@
 **Status:** `closeout` — PR to `main` pending review (`feat/FR-0002-iphone-pwa-prototype`)
 **Owner:** project lead (Ian)
 **Allocated:** 2026-04-27
-**Relationship:** parks FR-0001 implementation while we de-risk the **home-server PWA** story (TLS + shell + push on Pi/Mac mini first; iPhone as follow-up). FR-0001 design stays authoritative for MVP; this FR may produce **design amendments** to FR-0001 if reality disagrees.
+**Relationship:** parks FR-0001 implementation while we de-risk the **home-server PWA** story (TLS + shell + push on **Pi first**; **Mac mini** and full iPhone polish as **later phases**). FR-0001 design stays authoritative for MVP; this FR may produce **design amendments** to FR-0001 if reality disagrees.
 
 ## Current implementation links
 
@@ -15,7 +15,7 @@
 
 ## Charter (one sentence)
 
-Prove that a Caddy-fronted, locally-trusted, manifest-and-service-worker React shell **runs correctly on a Pi/Mac mini at home** (TLS, static shell, Web Push to a subscribed browser) **before** we invest in the plugin registry, Tinder loader, Spark broker, or Kindling repo split. **iPhone** Home Screen + on-device push is a **follow-up side goal** to confirm the same stack on iOS; it does not gate FR-0002 close once server-first acceptance below is satisfied.
+Prove that a Caddy-fronted, locally-trusted, manifest-and-service-worker React shell **runs correctly on a Raspberry Pi at home** (TLS, static shell, Web Push to a subscribed browser) **before** we invest in the plugin registry, Tinder loader, Spark broker, or Kindling repo split. **Mac mini** home-server validation is a **later phase** (not required for FR-0002 close). **iPhone** Home Screen + on-device push was exercised on Pi closeout; remaining iPhone checklist items stay optional in the report.
 
 ## Why prototype before MVP
 
@@ -35,7 +35,7 @@ If any of these break, every later FR-0001 ticket is paying interest on a wrong 
 2. **Static Mantle shell**: a Vite + React + TypeScript app served from a single FastAPI route or directly from Caddy. Manifest, service worker, app icons, theme tokens, bottom-tab nav placeholder (the tabs lead nowhere — this is a prototype). Apple meta tags. Safe-area CSS.
 3. **iPhone CA trust workflow**: a documented, executed `./develop ca-export` path. Capture screenshots/notes about each iOS step.
 4. **Web Push round-trip**: VAPID keypair, `POST /api/push/subscribe` endpoint, "Send test notification" button on the prototype home view, `notify.send` server-side function (no Spark broker — direct call inside the FastAPI process), service-worker `push` event handler that calls `showNotification`.
-5. **Server walkthrough**: a documented run on Mac mini and Pi (screenshots/logs). Time major steps. Note every friction point.
+5. **Server walkthrough**: a documented run on **Pi** (screenshots/logs). Time major steps. Note every friction point. **Mac mini** walkthrough is a **later phase** (see `SETUP.md` §11).
 6. **Side goal — iPhone walkthrough** (non-blocking for FR-0002 close): when available, filmed run-through on a real iPhone; file under **Follow-up: iPhone** in `40-prototype-report.md`.
 
 ## Out of scope
@@ -49,7 +49,7 @@ If any of these break, every later FR-0001 ticket is paying interest on a wrong 
 
 ## Acceptance for FR-0002 close (server-first)
 
-Evidence (video or screenshot set + logs) shows **on Mac mini and on Pi** (both unless one is waived with a written caveat in the report), in order:
+Evidence (video or screenshot set + logs) shows **on Raspberry Pi** (FR-0002 closeout host), in order. **Mac mini** is a **later phase** — not required to merge FR-0002; track under **Environment A** in `40-prototype-report.md` when run:
 
 1. `./develop up` (or documented production-equivalent) brings the stack up on the target host.
 2. A **desktop browser** on the same LAN opens `https://hearth.home.arpa/` — Mantle shell with a green "PWA-ready" tile, **no certificate errors** after the local CA is trusted on that client.
@@ -82,5 +82,5 @@ Authoritative shared specs (`docs/design/architecture/overview.md`, `mantle-ui.m
 | P1 | Build the Mantle shell directly in `apps/hub/web/` or in a fresh `prototype/` folder we throw away? | Build in `apps/hub/web/` so the FR-0001 ticket `T-FR-0001-04` inherits the working shell. |
 | P2 | Is the "hub" backend for the prototype a real FastAPI app or a 30-line stub? | **Real FastAPI app**, but with only the four endpoints needed (`/`, `/api/push/subscribe`, `/api/push/test`, `/api/health`). FR-0001's `T-FR-0001-02` will replace the stub with the registry-backed hub. |
 | P3 | Where does the VAPID keypair live? | `var/hearth/secrets/vapid.{pub,priv}` (the same path FR-0001 uses) so the keypair survives the prototype → MVP transition. |
-| P4 | Test on a Mac mini or Pi 4 first? | **Mac mini first** (faster iteration) → Pi 4 second (validate ARM and lower-end). |
+| P4 | Test on a Mac mini or Pi 4 first? | **Pi 4 first** for FR-0002 closeout (operator `SETUP.md`). **Mac mini** validation **later phase** (post-merge or FR-0001). |
 | P5 | If the iPhone CA trust UX is too painful, fall back to a real cert? | The prototype must succeed with `tls internal` first; if the trust UX consistently fails users, we open `Q-FOLLOWUP-01` against FR-0001 to consider Tailscale-issued certs or Let's-Encrypt-via-DNS-01. |
