@@ -28,11 +28,11 @@ The primary client is an **iPhone PWA** added to the Home Screen. Desktop browse
 
 ## Status
 
-Hearth is currently in the **design and prototype phase**. The architecture, interfaces, and workflow are documented; the first runnable scaffold lands inside an iPhone-PWA-de-risking prototype rather than the platform MVP, so we don't pay interest on assumptions that real-device testing might refute.
+Hearth has a **runnable Pi + iPhone PWA prototype** on **`main`** (TLS, Mantle shell, Web Push). Platform MVP implementation resumes under [**FR-0001**](tasks/feature-history/FR-0001-hearth-platform/).
 
-- **Active feature:** [`FR-0002 iPhone PWA prototype`](tasks/feature-history/FR-0002-iphone-pwa-prototype/) — Caddy + `tls internal`, a static Mantle shell with manifest + service worker + bottom-tab nav, the iPhone CA-trust workflow, and one Web Push round-trip on a real device.
-- **Parked:** [`FR-0001 Hearth Platform`](tasks/feature-history/FR-0001-hearth-platform/) — design stays authoritative; implementation resumes after FR-0002 closes (and applies any DESIGN-FLAW amendments FR-0002 surfaces).
-- **First runnable-code tickets:** [`T-FR-0002-01`](tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md) and [`T-FR-0002-02`](tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md) (parallel-eligible).
+- **Done on `main`:** [`FR-0002 iPhone PWA prototype`](tasks/feature-history/FR-0002-iphone-pwa-prototype/) ([PR #3](https://github.com/mcelhennyi/hearth/pull/3)) — operator guide [`SETUP.md`](SETUP.md).
+- **Done on `main`:** [`FR-0003 Pi Docker + hearth CLI`](tasks/feature-history/FR-0003-hearth-pi-docker-cli/) ([PR #13](https://github.com/mcelhennyi/hearth/pull/13)).
+- **Next:** [`FR-0001 Hearth Platform`](tasks/feature-history/FR-0001-hearth-platform/) — registry, Tinder, Spark, Kindling; reuse FR-0002 hub web/API/Caddy work.
 - **Design source of truth:** [`docs/design/`](docs/design/).
 
 ## What Hearth Provides

@@ -4,19 +4,19 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | — (FR-0002 closeout complete; awaiting PR merge) |
+| **Active ticket** | — (pick next **`T-FR-0001-xx`** or run **`/identify-frontier`**) |
 | **Active phase** | — |
-| **Branch / worktree** | `feat/FR-0002-iphone-pwa-prototype` → PR **`main`** |
+| **Branch / worktree** | **`main`** |
 | **Session status** | `handoff` |
-| **Next agent should** | Review feature PR; merge to `main`; delete repo-root **`CURRENT.md`**; set FR-0002 **`done`** in `REGISTRY.md`; unpark FR-0001. |
+| **Next agent should** | Resume **FR-0001** platform MVP per [`REGISTRY.md`](feature-history/REGISTRY.md); start with **`T-FR-0001-01`** or frontier; reuse FR-0002 code in `-04`/`-05`/`-09`. Operator stack: **`SETUP.md`**. |
 
 ### Parallel streams
 
-**FR-0003** is **done** on **`main`** ([PR #13](https://github.com/mcelhennyi/hearth/pull/13)). FR-0002 closeout (`T-FR-0002-04`) is the active stream.
+**FR-0002** and **FR-0003** are **done** on **`main`** ([PR #3](https://github.com/mcelhennyi/hearth/pull/3), [PR #13](https://github.com/mcelhennyi/hearth/pull/13)).
 
 | Stream label | Ticket(s) | `FR-NNNN` | Branch / worktree | Owner / note |
 |----------------|------------|-----------|-------------------|--------------|
-| closeout | `T-FR-0002-04` | `FR-0002` | `feat/FR-0002-iphone-pwa-prototype` at `.worktrees/FR-0002-iphone-pwa-prototype/feature/` | real-device walkthrough |
+| — | — | — | — | No active parallel streams |
 
 ---
 
@@ -42,7 +42,7 @@
 | T-FR-0003-11 | Per-plugin `plugin` executable: lifecycle + passthrough | done | done | done | `FR-0003` **done** on `main`. |
 | T-FR-0003-12 | Smoke tests + ARM CI for install path | done | done | done | `FR-0003` **done** on `main`. |
 | T-FR-0003-13 | Project rules: Hearth CLI parity (Cursor + Claude) | done | done | done | `FR-0003` **done** on `main`. |
-| T-FR-0001-01 | Repo scaffold and Compose dev loop | — | — | — | `FR-0001` parked — eligible after FR-0002 closes. |
+| T-FR-0001-01 | Repo scaffold and Compose dev loop | — | — | — | `FR-0001` **design** — eligible on `main` (FR-0002 merged). |
 | T-FR-0001-02 | Hub API skeleton and SQLite registry | — | — | — | `FR-0001` parked. |
 | T-FR-0001-03 | Tinder loader and manifest schema | — | — | — | `FR-0001` parked. |
 | T-FR-0001-04 | Mantle PWA shell and iframe embed | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-02` output. |
@@ -69,7 +69,6 @@
 
 1. **FR-0003** is **closed** on **`main`** — see [`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md).
 2. **FR-0004** is **`parked`** — do not staff **`T-FR-0004-02`…`10`** until FR-0002 Pi certificate VAL (**`T-FR-0002-01`**, **`T-FR-0002-04`**) and FR-0001 Mantle shell VAL (**`T-FR-0001-04`**) are done. See [`FR-0004-centralized-users-auth/README.md`](feature-history/FR-0004-centralized-users-auth/README.md).
-3. While FR-0002 is `in-progress`: pick the smallest **`T-FR-0002-xx`** with all `Deps:` satisfied. Ignore FR-0001 tickets — they are parked.
-4. After FR-0002 closes: re-flip FR-0001 to `design`/`in-progress` in `REGISTRY.md`, apply FR-0002-driven amendments, and start `T-FR-0001-01` (then **`T-FR-0001-04`** for the UI gate FR-0004 needs).
-5. After FR-0002 cert closeout **and** **`T-FR-0001-04` VAL**: set FR-0004 to `in-progress` in `REGISTRY.md` and resume with **`T-FR-0004-02`**.
+3. **FR-0002 is `done` on `main`** — resume FR-0001: start `T-FR-0001-01` (or `/identify-frontier`); reuse FR-0002 artifacts for **`T-FR-0001-04`**, **`-05`**, **`-09`**.
+4. After **`T-FR-0001-04` VAL**: set FR-0004 to `in-progress` in `REGISTRY.md` and resume with **`T-FR-0004-02`**.
 6. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.

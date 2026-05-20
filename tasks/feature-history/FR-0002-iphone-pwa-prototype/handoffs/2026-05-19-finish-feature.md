@@ -20,7 +20,7 @@ Latest integration commits include merge with `origin/main` (`91a912e`), TS buil
 
 ## PR
 
-- Feature PR → `main`: (created/updated by finish-feature run)
+- Feature PR → `main`: [**#3**](https://github.com/mcelhennyi/hearth/pull/3) — **merged** 2026-05-20 (`8bb7eff`). Post-merge handoff: [`2026-05-20-merged-to-main.md`](2026-05-20-merged-to-main.md).
 
 ## Executive summary
 

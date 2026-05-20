@@ -4,7 +4,7 @@ Operator guide for a **Raspberry Pi** (or similar ARM host) using repo-root **`.
 
 **Deployment target (this guide):** **Raspberry Pi** — the FR-0002 closeout host. **Mac mini** home-server validation is a **later phase** (after merge or under FR-0001); it is **not** required to follow this SETUP. On macOS, use **`./develop`** in the repo checkout for local dev only until a Mac mini operator runbook exists.
 
-**Branch:** `feat/FR-0002-iphone-pwa-prototype` (merge via PR to `main`).
+**Branch:** use **`main`** (FR-0002 merged via [PR #3](https://github.com/mcelhennyi/hearth/pull/3)).
 
 **Install tree:** `<install-dir>/hearth/` (design amendment **HRT-DEP-001** — not `heart/`).
 
@@ -42,8 +42,7 @@ python3 --version
 cd ~
 git clone https://github.com/mcelhennyi/hearth.git
 cd hearth
-git fetch origin feat/FR-0002-iphone-pwa-prototype
-git checkout feat/FR-0002-iphone-pwa-prototype
+git checkout main
 git pull
 ```
 

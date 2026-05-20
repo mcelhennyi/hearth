@@ -2,7 +2,11 @@
 
 This is a **direction-of-travel** doc, not a contract. Items here are not authoritative product specs until they get an `FR-NNNN` and move into `docs/design/...` or `tasks/feature-history/FR-NNNN-*/10-design/`.
 
-## Phase 1 — MVP (FR-0001, in design)
+## Phase 0 — PWA prototype (FR-0002, **done** on `main`)
+
+- Caddy `tls internal`, Mantle static shell, iPhone CA trust, Web Push on Pi — see [`SETUP.md`](../../SETUP.md) and [`40-prototype-report.md`](../../tasks/feature-history/FR-0002-iphone-pwa-prototype/40-prototype-report.md).
+
+## Phase 1 — MVP (FR-0001, eligible to resume)
 
 - Hub app (gateway, plugin registry, dashboard, settings).
 - Tinder plugin manifest + on-disk discovery (submodules and drop-in).
@@ -33,7 +37,7 @@ Sketch: [`satellite-repos/ember.md`](satellite-repos/ember.md).
 These were named in the original product brief and are explicitly **not** part of FR-0001. Each becomes its own FR when the platform can host it.
 
 - **Cross-app notifications + reminders** — uses Spark events and a small `notifier` plugin.
-- **Unified dashboard** — aggregates Spark events into "today" tiles. The hub already shows enabled plugins; this is richer aggregation.
+- **Unified dashboard** — live refresh of **widget** blocks from Spark events (see [`dashboard.md`](dashboard.md)); complements the static home grid and user layout from MVP/P2.
 - **AI recommendations** — recipes-from-pantry, idea catcher → developer agent handoff. Builds on Spark capability surface; agentic developer is the existing `../project_02` (Colony) reachable via a Spark adapter.
 - **Usage analytics (private)** — per-user histograms of plugin usage; never leaves the box without explicit export.
 - **Plugin store / community plugins** — Tinder manifests are the unit of distribution; a store is a curated index plus signature verification.

@@ -1,10 +1,10 @@
 # FR-0001 — Hearth platform (MVP)
 
-**Status:** `parked` (design authoritative; implementation paused pending [FR-0002](../FR-0002-iphone-pwa-prototype/) prototype findings)
+**Status:** `design` (eligible to resume implementation on **`main`**)
 **Owner:** project lead (Ian)
 **Allocated:** 2026-04-27
 
-> **Parked 2026-04-27.** Before investing in the registry, Tinder loader, Spark broker, and Kindling split, we are de-risking the iPhone-PWA story end-to-end via [FR-0002](../FR-0002-iphone-pwa-prototype/README.md). The design in `docs/design/` and in this folder remains the source of truth for the MVP target; FR-0002 may produce **amendments** (per `docs/ai-context.md`) to `mantle-ui.md`, `deployment.md`, or `notifications.md` if a real-device test refutes an assumption. **Tickets `T-FR-0001-01..10` are unchanged but eligible only after FR-0002 closes.**
+> **FR-0002 closed 2026-05-20** ([PR #3](https://github.com/mcelhennyi/hearth/pull/3)). Pi + iPhone TLS/Web Push validated; see [prototype report](../FR-0002-iphone-pwa-prototype/40-prototype-report.md). Reuse `apps/hub/web`, Caddy TLS, and push stack from **`main`** in **`T-FR-0001-04`**, **`-05`**, **`-09`**. Design in `docs/design/` and this folder remains authoritative; apply any remaining FR-0002 amendments per `docs/ai-context.md` as you implement.
 
 ## Charter (one sentence)
 
