@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | — (pick next **`T-FR-0001-xx`** or run **`/identify-frontier`**) |
-| **Active phase** | — |
-| **Branch / worktree** | **`main`** |
-| **Session status** | `handoff` |
-| **Next agent should** | Resume **FR-0001** platform MVP per [`REGISTRY.md`](feature-history/REGISTRY.md); start with **`T-FR-0001-01`** or frontier; reuse FR-0002 code in `-04`/`-05`/`-09`. Operator stack: **`SETUP.md`**. |
+| **Active ticket** | **T-FR-0001-02** ‖ **T-FR-0001-04** (parallel) |
+| **Active phase** | TEST → DEV → VAL |
+| **Branch / worktree** | `feat/FR-0001-hearth-platform-T-FR-0001-02-hub-api-skeleton` / `.worktrees/FR-0001-hearth-platform/T-FR-0001-02-hub-api-skeleton/`<br>`feat/FR-0001-hearth-platform-T-FR-0001-04-mantle-pwa-shell` / `.worktrees/FR-0001-hearth-platform/T-FR-0001-04-mantle-pwa-shell/` |
+| **Session status** | `developing` |
+| **Next agent should** | T-FR-0001-02 and T-FR-0001-04 are running in parallel. Merge both PRs into `feat/FR-0001-hearth-platform`, then identify next wave (T03 ‖ T06 unlock after T02; T09 unlocks after T02+T04; T05 unlocks after T03+T04). |
 
 ### Parallel streams
 
@@ -16,7 +16,8 @@
 
 | Stream label | Ticket(s) | `FR-NNNN` | Branch / worktree | Owner / note |
 |----------------|------------|-----------|-------------------|--------------|
-| — | — | — | — | No active parallel streams |
+| Hub API skeleton | T-FR-0001-02 | FR-0001 | `feat/FR-0001-hearth-platform-T-FR-0001-02-hub-api-skeleton` / `.worktrees/…/T-FR-0001-02-hub-api-skeleton/` | subagent |
+| Mantle PWA shell | T-FR-0001-04 | FR-0001 | `feat/FR-0001-hearth-platform-T-FR-0001-04-mantle-pwa-shell` / `.worktrees/…/T-FR-0001-04-mantle-pwa-shell/` | subagent |
 
 ---
 
@@ -24,11 +25,11 @@
 
 | Ticket | Title | TEST | DEV | VAL | Notes |
 |--------|-------|------|-----|-----|-------|
-| T-FR-0000-01 | Choose stack and scaffold repository | done | done | done | Stack chosen; FR-0000 tooling/process scaffold complete via `init-skeleton`. Implementation scaffold lives in `T-FR-0001-01` (parked). |
+| T-FR-0000-01 | Choose stack and scaffold repository | done | done | done | **FR-0000 closed** — [`90-closeout.md`](feature-history/FR-0000-bootstrap/90-closeout.md). Implementation scaffold: **FR-0001** `T-FR-0001-01` (active). |
 | T-FR-0002-01 | Caddy + tls internal + static placeholder | done | done | done | `FR-0002`. Caddy `tls internal` stack + `./develop` `up/down/ca-export`. |
 | T-FR-0002-02 | Mantle PWA bones (manifest + SW + nav) | done | done | done | `FR-0002`. Reuses into `T-FR-0001-04`. `apps/hub/web` with Vite-PWA + responsive nav. |
 | T-FR-0002-03 | Web Push round-trip (VAPID + subscribe + send) | done | done | done | `FR-0002`. Reuses into `T-FR-0001-09`. FastAPI push endpoints + SW/UI + VAPID generator. |
-| T-FR-0002-04 | Real-iPhone walkthrough + closeout report | done | done | done | `FR-0002`. Pi + iPhone TLS/push validated; report at `40-prototype-report.md`; optional Home Screen items deferred. |
+| T-FR-0002-04 | Real-iPhone walkthrough + closeout report | done | done | done | **FR-0002 closed** — Pi + iPhone TLS/push validated; `40-prototype-report.md`. |
 | T-FR-0003-01 | Design contract: amend deployment for Docker-on-Pi | done | done | done | `FR-0003` **done** on `main` (PR #13). |
 | T-FR-0003-02 | Install layout: `hearth/`, VERSION.json, README | done | done | done | `FR-0003` **done** on `main`. |
 | T-FR-0003-03 | `./install` bootstrap: Docker + layout + first `compose up` | done | done | done | `FR-0003` **done** on `main`. |
@@ -42,10 +43,10 @@
 | T-FR-0003-11 | Per-plugin `plugin` executable: lifecycle + passthrough | done | done | done | `FR-0003` **done** on `main`. |
 | T-FR-0003-12 | Smoke tests + ARM CI for install path | done | done | done | `FR-0003` **done** on `main`. |
 | T-FR-0003-13 | Project rules: Hearth CLI parity (Cursor + Claude) | done | done | done | `FR-0003` **done** on `main`. |
-| T-FR-0001-01 | Repo scaffold and Compose dev loop | — | — | — | `FR-0001` **design** — eligible on `main` (FR-0002 merged). |
-| T-FR-0001-02 | Hub API skeleton and SQLite registry | — | — | — | `FR-0001` parked. |
+| T-FR-0001-01 | Repo scaffold and Compose dev loop | done | done | done | `FR-0001`. Smoke test passes: HTTP 200 + "Hearth" body. `.dockerignore`, pnpm workspace, static placeholder. Host-only VAL (Docker-in-Docker not available in hearth-test). Merged to `feat/FR-0001-hearth-platform` via [PR #20](https://github.com/mcelhennyi/hearth/pull/20). |
+| T-FR-0001-02 | Hub API skeleton and SQLite registry | wip | — | — | `FR-0001` **in-progress** — worktree `.worktrees/FR-0001-hearth-platform/T-FR-0001-02-hub-api-skeleton/`. |
 | T-FR-0001-03 | Tinder loader and manifest schema | — | — | — | `FR-0001` parked. |
-| T-FR-0001-04 | Mantle PWA shell and iframe embed | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-02` output. |
+| T-FR-0001-04 | Mantle PWA shell and iframe embed | wip | — | — | `FR-0001` **in-progress** — worktree `.worktrees/FR-0001-hearth-platform/T-FR-0001-04-mantle-pwa-shell/`. Reuses `T-FR-0002-02` output. |
 | T-FR-0001-05 | Caddy generation and local TLS | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-01` output. |
 | T-FR-0001-06 | Spark v1 broker and client libs | — | — | — | `FR-0001` parked. |
 | T-FR-0001-07 | Kindling repo and CLI | — | — | — | `FR-0001` parked. |
@@ -68,7 +69,7 @@
 ## How to choose next work
 
 1. **FR-0003** is **closed** on **`main`** — see [`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md).
-2. **FR-0004** is **`parked`** — do not staff **`T-FR-0004-02`…`10`** until FR-0002 Pi certificate VAL (**`T-FR-0002-01`**, **`T-FR-0002-04`**) and FR-0001 Mantle shell VAL (**`T-FR-0001-04`**) are done. See [`FR-0004-centralized-users-auth/README.md`](feature-history/FR-0004-centralized-users-auth/README.md).
-3. **FR-0002 is `done` on `main`** — resume FR-0001: start `T-FR-0001-01` (or `/identify-frontier`); reuse FR-0002 artifacts for **`T-FR-0001-04`**, **`-05`**, **`-09`**.
+2. **FR-0004** is **`parked`** — do not staff **`T-FR-0004-02`…`10`** until FR-0001 Mantle shell VAL (**`T-FR-0001-04`**) is done. See [`FR-0004-centralized-users-auth/README.md`](feature-history/FR-0004-centralized-users-auth/README.md).
+3. **FR-0001** is `in-progress` on `feat/FR-0001-hearth-platform`. T-FR-0001-02 ‖ T-FR-0001-04 are the active parallel wave.
 4. After **`T-FR-0001-04` VAL**: set FR-0004 to `in-progress` in `REGISTRY.md` and resume with **`T-FR-0004-02`**.
-6. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
+5. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.

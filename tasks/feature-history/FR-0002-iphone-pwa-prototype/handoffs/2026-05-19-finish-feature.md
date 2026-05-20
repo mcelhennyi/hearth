@@ -26,11 +26,16 @@ Latest integration commits include merge with `origin/main` (`91a912e`), TS buil
 
 FR-0002 proves the home-server PWA slice: Caddy `tls internal` on `hearth.home.arpa`, Mantle static shell with service worker, FastAPI Web Push, and real iPhone delivery after the two-step iOS CA trust flow. Docker-profile operators use **`./install`** + **`hearth pwa build`** + **`hearth ca-export`** per **`SETUP.md`**.
 
+## Closeout hygiene (2026-05-19 `/finish-feature` rerun)
+
+- **`90-closeout.md`:** created (was missing; PR #3 already merged).
+- **`REGISTRY.md`**, feature **`README.md`**, **`ticket-progress.md`:** updated to link closeout.
+
 ## Suggested next step
 
-Human review and merge PR to `main`; delete repo-root **`CURRENT.md`** on merge. Unpark FR-0001 per registry; apply FR-0002 reuse into `T-FR-0001-04`, `-05`, `-09`.
+Resume **FR-0001** — **`T-FR-0001-01`** in `.worktrees/FR-0001-hearth-platform/T-FR-0001-01-repo-scaffold/`. Reuse FR-0002 into `T-FR-0001-04`, `-05`, `-09`.
 
 ## Options
 
-- **Merge** when CI green and report accepted.
-- **Request changes** if additional iPhone Home Screen evidence is required before close.
+- **Continue FR-0001** (default).
+- Optional Mac mini walkthrough — does not reopen FR-0002.

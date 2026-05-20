@@ -1,6 +1,6 @@
 # FR-0002 — iPhone PWA prototype
 
-**Status:** `done` — merged to **`main`** via [**PR #3**](https://github.com/mcelhennyi/hearth/pull/3) (2026-05-20, merge commit `8bb7eff`)
+**Status:** `done` — merged to **`main`** via [**PR #3**](https://github.com/mcelhennyi/hearth/pull/3) (2026-05-20, merge commit `8bb7eff`). Closeout: [`90-closeout.md`](90-closeout.md).
 **Owner:** project lead (Ian)
 **Allocated:** 2026-04-27
 **Relationship:** parks FR-0001 implementation while we de-risk the **home-server PWA** story (TLS + shell + push on **Pi first**; **Mac mini** and full iPhone polish as **later phases**). FR-0001 design stays authoritative for MVP; this FR may produce **design amendments** to FR-0001 if reality disagrees.
