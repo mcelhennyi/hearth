@@ -143,8 +143,9 @@ On each **iPhone** (same Wi‑Fi):
 
 1. Safari → **`https://hearth.home.arpa/`** — no certificate warning (install CA first).
 2. Confirm the **PWA-ready** screen and bottom tabs.
-3. **Share → Add to Home Screen**.
-4. **Close Safari.** Open **Hearth** from the **home-screen icon** (not Safari).  
+3. **Share → Add to Home Screen** while the address bar shows **`https://hearth.home.arpa/`** (not the Pi IP address).
+4. Stay on **home Wi‑Fi** (not cellular). **Close Safari.** Open **Hearth** from the **home-screen icon** (not Safari).  
+   If iOS says **“server can’t be found”**: Settings → Wi‑Fi → your network → confirm DNS reaches the Pi (Pi-hole/router), or add `hearth.home.arpa` in DNS; try Settings → Privacy & Security → **Local Network** and allow **Hearth** if listed.  
    Web Push and notifications **do not work** in an ordinary Safari tab on iOS.
 5. If the home-screen app is a **white screen**: delete the icon, clear Safari website data for `hearth.home.arpa`, run `hearth pwa build` on the Pi, `hearth restart caddy`, then add to home screen again (stale service-worker cache).
 6. Tap **Send test notification** → allow notifications.
@@ -183,6 +184,7 @@ Low-level compose passthrough: `hearth compose -- ps`
 | Wrong hostname | Use **`hearth.home.arpa`**, not the raw IP, in Safari after trust. |
 | Orphan **hub-smoke** container | From an old install — `docker rm -f hearth-hub-smoke` after `hearth stop`. |
 | PWA white screen, Safari OK | Stale service worker — `hearth pwa build`, `hearth restart caddy`, delete home-screen icon, clear website data, re-add. |
+| Home Screen app: “server can’t be found” | iPhone not on home Wi‑Fi, or DNS for `hearth.home.arpa` missing for standalone apps. See [§7](#7-iphone-pwa--push-walkthrough). |
 | `rm push-subscriptions.json` permission denied | Created by Docker as root — `sudo rm -f ~/hearth/var/hearth/push-subscriptions.json` |
 | `VapidPkHashMismatch` in hub logs | Re-subscribe after `vapid-gen` — clear subscriptions file + reset PWA (step 8 above). |
 
