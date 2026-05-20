@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Local development entrypoint for FR-0002 Caddy TLS prototype.
+# Local development entrypoint (FR-0002 PWA prototype + main dev tooling).
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -53,6 +53,9 @@ Commands
                     http://127.0.0.1:${DEVELOP_DOCS_PORT}/ (set DEVELOP_DOCS_PORT in develop.conf).
   down [args]       Stop Compose services for this project file.
   ca-export         Serve local CA cert at :8080/ca.crt for <= 10 minutes.
+  web <args...>     Run web tooling command in Docker (apps/hub/web).
+  api <args...>     Run API tooling command in Docker (apps/hub/api).
+  vapid-gen         Generate var/hearth/secrets/vapid.{pub,priv} in Docker.
   ps                Show Compose service status.
   test [pytest…]    Run pytest in python:3.12-slim (profile test; needs network for pip).
 
@@ -68,13 +71,11 @@ cmd_up() {
 }
 
 cmd_up_quick() {
-  # Explicit service name activates the http-quick profile for caddy-http.
   compose up "$@" caddy-http
 }
 
 cmd_docs() {
   export HEARTH_DOCS_PORT="${DEVELOP_DOCS_PORT}"
-  # Profile activates the docs service without pulling it into bare `compose up`.
   compose --profile docs up "$@" "$DEVELOP_DOCS_SERVICE"
 }
 
@@ -88,6 +89,20 @@ cmd_down() {
 
 cmd_ca_export() {
   compose up --abort-on-container-exit --exit-code-from ca-export ca-export
+}
+
+cmd_web() {
+  [[ "$#" -gt 0 ]] || { echo "develop: web command requires arguments (example: ./develop web npm run test)." >&2; exit 1; }
+  compose run --rm --no-deps web "$@"
+}
+
+cmd_api() {
+  [[ "$#" -gt 0 ]] || { echo "develop: api command requires arguments (example: ./develop api pytest)." >&2; exit 1; }
+  compose run --rm --no-deps -e PYTHONPATH=/app hub "$@"
+}
+
+cmd_vapid_gen() {
+  compose run --rm --no-deps -e PYTHONPATH=/app hub python /workspace/scripts/gen-vapid.py
 }
 
 cmd_test() {
@@ -124,6 +139,18 @@ main() {
     ca-export)
       shift
       cmd_ca_export "$@"
+      ;;
+    web)
+      shift
+      cmd_web "$@"
+      ;;
+    api)
+      shift
+      cmd_api "$@"
+      ;;
+    vapid-gen)
+      shift
+      cmd_vapid_gen "$@"
       ;;
     ps)
       shift

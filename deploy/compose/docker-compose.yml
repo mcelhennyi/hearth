@@ -1,9 +1,31 @@
 # HTTP quick stack: `docker compose up -d caddy-http` or `./develop up-quick`
 # Docs: `./develop docs` (squidfunk/mkdocs-material:9.7.1, profile `docs`; host HEARTH_DOCS_PORT → :8000)
+# FR-0002 PWA stack: `./develop up` (TLS on https://hearth.home.arpa/)
 services:
+  web:
+    image: node:20-alpine
+    container_name: hearth-web-tooling
+    working_dir: /workspace/apps/hub/web
+    command: sh -lc "sleep infinity"
+    volumes:
+      - ../../:/workspace
+    profiles:
+      - tooling
+
+  hub:
+    build:
+      context: ../../apps/hub/api
+    container_name: hearth-hub-api
+    working_dir: /app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8200 --reload
+    volumes:
+      - ../../apps/hub/api:/app
+      - ../../:/workspace
+    environment:
+      - PYTHONUNBUFFERED=1
+
   docs:
     profiles: ["docs"]
-    # Same MkDocs Material build as Loom’s locked 9.7.1 stack; official image uses WORKDIR /docs.
     image: squidfunk/mkdocs-material:9.7.1
     container_name: hearth-docs
     restart: unless-stopped
@@ -11,7 +33,6 @@ services:
     ports:
       - "${HEARTH_DOCS_PORT:-5081}:8000"
     environment:
-      # Bind-mount file events are unreliable on some Docker hosts; polling keeps live reload working.
       - WATCHDOG_FORCE_POLLING=true
     volumes:
       - ../..:/docs:cached
@@ -47,6 +68,8 @@ services:
       - ../static:/srv:ro
       - caddy_data:/data
       - caddy_config:/config
+    depends_on:
+      - hub
 
   ca-export:
     image: caddy:2.8-alpine

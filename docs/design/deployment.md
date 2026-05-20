@@ -13,7 +13,7 @@ The reverse proxy is **Caddy 2.x by default** because Caddy's `tls internal` iss
 | Developer laptop (macOS, Linux) | **Docker Compose** | Hot-reload hub, mounted plugin folders, in-tree Caddy with template config |
 | Raspberry Pi 4/5, 64-bit Raspberry Pi OS | **Docker Compose + `hearth`** | Install under `<install-dir>/hearth/`; repo-root **`./install`** + **`hearth`** CLI — see [Docker profile (Pi)](#docker-profile-pi) |
 | Raspberry Pi 4/5 (same OS) | **systemd, bare metal** (alternative) | **`deploy/install.sh`**: Caddy as a system package, hub + plugins as `.service` units |
-| Mac mini (Apple Silicon, macOS) | **launchd** wrappers around the same binaries | Same layout under `/usr/local/var/hearth/` (bare-metal path; Docker-on-Mac mini may follow the same `hearth/` mapping later) |
+| Mac mini (Apple Silicon, macOS) | **launchd** wrappers around the same binaries | Same layout under `/usr/local/var/hearth/` (bare-metal path; Docker-on-Mac mini may follow the same `hearth/` mapping later). **FR-0002 operator validation:** Pi only — Mac mini walkthrough is a **later phase** ([`SETUP.md`](../../SETUP.md) §11). |
 
 ## Reverse proxy — Caddy by default
 
@@ -65,17 +65,19 @@ Web Push and the service worker need a TLS cert the iPhone trusts. With Caddy `t
 
 ```mermaid
 flowchart TD
-  A[On Hearth box: ./develop ca-export]
-  --> B[Generates hearth-local-ca.crt]
-  --> C[Serve it temporarily at http://hearth.home.arpa:8080/ca.crt]
-  --> D[On iPhone, Safari → http://hearth.home.arpa:8080/ca.crt]
+  A[On Hearth box: hearth ca-export or ./develop ca-export]
+  --> B[Copy Caddy local root CA to ca.crt]
+  --> C[Serve at http://HOST-LAN-IP:8080/ca.crt for up to 10 minutes]
+  --> D[On iPhone Safari → same URL using the box LAN IP]
   --> E[iOS prompts to install profile]
   --> F[Settings → General → VPN & Device Management → install]
-  --> G[Settings → General → About → Certificate Trust Settings → enable]
+  --> G[Settings → General → About → Certificate Trust Settings → enable full trust]
   --> H[Visit https://hearth.home.arpa/ → Add to Home Screen]
 ```
 
-`./develop ca-export` is a tiny wrapper around `caddy file-server -listen :8080 -root /tmp/hearth-ca/` that times out after 10 minutes. It is documented in the dashboard's "Add a device" tile.
+**DNS (before trust):** Every iPhone must resolve **`hearth.home.arpa`** to the Hearth host on the LAN (Pi-hole local DNS record is the recommended approach; Mac `/etc/hosts` does not help phones). See repo-root **`SETUP.md`** §5.
+
+**Operators (Docker profile):** run **`hearth ca-export`** from an install with the FR-0002 stack (see repo-root **`SETUP.md`** §6). **Developers (repo checkout):** run **`./develop ca-export`**. Both serve the root CA over plain HTTP on port **8080**; use the host **LAN IP**, not `localhost`, on the phone. **Profile install alone is not enough on iOS** — step **G** (Certificate Trust Settings) is required or Safari reports "This Connection Is Not Private." The export times out after 10 minutes. Documented for the dashboard "Add a device" tile in a later FR.
 
 ## Filesystem layout (prod)
 

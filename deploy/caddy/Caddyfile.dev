@@ -1,5 +1,12 @@
 hearth.home.arpa {
   tls internal
-  root * /srv
-  file_server
+  handle /api/* {
+    reverse_proxy hub:8200
+  }
+  handle {
+    root * /srv
+    # SPA: /dashboard etc. are client routes — serve index.html when no static file exists.
+    try_files {path} /index.html
+    file_server
+  }
 }

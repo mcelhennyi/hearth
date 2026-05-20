@@ -1,11 +1,60 @@
-# @HRT-OPS-003 MVP placeholder stack for the Docker profile (T-FR-0003-03).
-# Replace hub-smoke with the real hub service when FR-0001 images are available.
+# @HRT-OPS-003 Docker-profile install stack — FR-0002 PWA prototype (Caddy tls internal + hub API).
+# Requires HEARTH_REPO_ROOT in compose/.env (written by ./install) for hub build + secrets paths.
 services:
-  hub-smoke:
-    image: alpine:3.19
-    container_name: hearth-hub-smoke
+  hub:
+    build:
+      context: ${HEARTH_REPO_ROOT}/apps/hub/api
+    container_name: hearth-hub-api
     restart: unless-stopped
-    command: ["sleep", "infinity"]
+    working_dir: /app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8200
+    volumes:
+      - ${HEARTH_REPO_ROOT}/apps/hub/api:/app
+      - ${HEARTH_REPO_ROOT}:/workspace
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  caddy:
+    image: caddy:2.8-alpine
+    container_name: hearth-caddy
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile.dev:/etc/caddy/Caddyfile:ro
+      - ./static:/srv:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - hub
+
+  ca-export:
+    image: caddy:2.8-alpine
+    container_name: hearth-ca-export
+    restart: "no"
+    profiles:
+      - ca-export
+    depends_on:
+      - caddy
+    ports:
+      - "8080:8080"
+    environment:
+      - CA_EXPORT_SECONDS=600
+    command: >-
+      sh -eu -c '
+      CERT=/data/caddy/pki/authorities/local/root.crt;
+      while [ ! -s "$$CERT" ]; do sleep 1; done;
+      cp "$$CERT" /srv/ca.crt;
+      timeout "$${CA_EXPORT_SECONDS}" caddy file-server --root /srv --listen :8080
+      '
+    volumes:
+      - caddy_data:/data:ro
+      - ca_export_data:/srv
+
+volumes:
+  caddy_data:
+  caddy_config:
+  ca_export_data:
 
 include:
   - path: overrides/generated.plugins.yml

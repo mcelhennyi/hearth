@@ -43,6 +43,12 @@ def test_bootstrap_materializes_hearth_and_shim(tmp_path: Path, monkeypatch: pyt
     repo = tmp_path / "repo"
     (repo / "bin").mkdir(parents=True)
     (repo / "bin" / "hearth").write_text("#!/usr/bin/env false\n", encoding="utf-8")
+    caddy_dir = repo / "deploy" / "caddy"
+    caddy_dir.mkdir(parents=True)
+    (caddy_dir / "Caddyfile.dev").write_text("hearth.home.arpa {\n  respond ok\n}\n", encoding="utf-8")
+    static_dir = repo / "deploy" / "static"
+    static_dir.mkdir(parents=True)
+    (static_dir / "index.html").write_text("<html></html>\n", encoding="utf-8")
 
     inst = tmp_path / "install"
     calls: list[tuple[list[str], str]] = []
@@ -71,6 +77,10 @@ def test_bootstrap_materializes_hearth_and_shim(tmp_path: Path, monkeypatch: pyt
     assert (hearth / "VERSION.json").is_file()
     assert json.loads((hearth / "VERSION.json").read_text(encoding="utf-8"))["hearth_ref"] == "test-ref"
     assert (hearth / "compose" / "docker-compose.yml").is_file()
+    assert (hearth / "compose" / ".env").is_file()
+    assert f"HEARTH_REPO_ROOT={repo.resolve()}" in (hearth / "compose" / ".env").read_text(encoding="utf-8")
+    assert (hearth / "compose" / "caddy" / "Caddyfile.dev").is_file()
+    assert (hearth / "compose" / "static" / "index.html").is_file()
     assert (hearth / "compose" / "overrides" / "generated.plugins.yml").is_file()
     shim = hearth / "bin" / "hearth"
     assert shim.is_symlink()
@@ -81,6 +91,12 @@ def test_compose_up_invokes_docker(monkeypatch: pytest.MonkeyPatch, tmp_path: Pa
     repo = tmp_path / "repo"
     (repo / "bin").mkdir(parents=True)
     (repo / "bin" / "hearth").write_text("#!/usr/bin/env false\n", encoding="utf-8")
+    caddy_dir = repo / "deploy" / "caddy"
+    caddy_dir.mkdir(parents=True)
+    (caddy_dir / "Caddyfile.dev").write_text("hearth.home.arpa {\n  respond ok\n}\n", encoding="utf-8")
+    static_dir = repo / "deploy" / "static"
+    static_dir.mkdir(parents=True)
+    (static_dir / "index.html").write_text("<html></html>\n", encoding="utf-8")
     inst = tmp_path / "install"
 
     checked = {"docker": False}

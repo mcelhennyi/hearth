@@ -6,7 +6,7 @@
 **Progress tracker:** [`tasks/ticket-progress.md`](../../ticket-progress.md)
 **Charter:** [`README.md`](README.md), [`10-design/charter.md`](10-design/charter.md), [`10-design/risks.md`](10-design/risks.md)
 
-These tickets are intentionally small — each is a vertical slice. Phases follow `docs/ai-context.md` (TEST → DEV → VAL). **Priority (2026-04-30):** **VAL** for each ticket is satisfied first by proving the stack on the **deployment targets** (Mac mini and/or Pi) with a normal desktop browser on the same network as the server (or documented localhost loopback for early gates). **iPhone-specific checks** (CA profile, Add to Home Screen, on-device push) are a **side goal** tracked in `40-prototype-report.md` under **Follow-up: iPhone** — they do not block marking ticket VAL `done` once server-first criteria below are met.
+These tickets are intentionally small — each is a vertical slice. Phases follow `docs/ai-context.md` (TEST → DEV → VAL). **Priority (2026-04-30):** **VAL** for each ticket is satisfied by proving the stack on a **Raspberry Pi** (FR-0002 closeout host) with a desktop browser and/or iPhone on the same LAN as documented in `SETUP.md` and `40-prototype-report.md`. **Mac mini** validation is a **later phase** — not required for ticket VAL `done`. **iPhone-specific checks** beyond TLS/push are a **side goal** under **Follow-up: iPhone** in the closeout report.
 
 The **TEST/DEV/VAL exit criteria below are concise**; the next worker may flesh them out before starting work, recording any expansion in `serial-diary.md`. Reuse code that ends up working — these tickets are also the seeds for FR-0001 tickets `T-FR-0001-04`, `-05`, and `-09`.
 
@@ -28,7 +28,7 @@ Stand up a Compose stack with one Caddy container that serves a static placehold
 |-------|----------------|
 | **TEST** | A bash test brings the stack up, `curl -k https://hearth.home.arpa/` returns a known-good HTML body, `./develop ca-export` serves the local-CA cert at `:8080/ca.crt` for ≤ 10 minutes, then tears down. |
 | **DEV** | `deploy/compose/docker-compose.yml`, `deploy/caddy/Caddyfile.dev`, `./develop` wrapper subcommands `up`, `down`, `ca-export`. mDNS or `/etc/hosts` documented in `deploy/compose/README.md`. |
-| **VAL** | **Server-first:** On a real Mac mini **or** a real Pi 4 (at least one; both preferred), run the Compose stack; from a desktop browser on the same LAN (or SSH port-forward if documented), open `https://hearth.home.arpa/` after trusting the exported local CA on **that** client — **no TLS warning**. Note host IP, OS, and client in `serial-diary.md` or the closeout report. **Side goal (non-blocking):** repeat from Safari on iPhone after CA trust — record under **Follow-up: iPhone** in `40-prototype-report.md`. |
+| **VAL** | **Server-first:** On a real **Pi 4** (FR-0002 closeout host), run the Compose stack; from a desktop browser on the same LAN (or SSH port-forward if documented), open `https://hearth.home.arpa/` after trusting the exported local CA — **no TLS warning**. **Mac mini:** later phase (not required). Note host IP, OS, and client in `serial-diary.md` or the closeout report. **Side goal (non-blocking):** Safari on iPhone after CA trust — **Follow-up: iPhone** in `40-prototype-report.md`. |
 
 ---
 
@@ -48,7 +48,7 @@ Build the Mantle shell at `apps/hub/web/`. The shell is **static** — no plugin
 |-------|----------------|
 | **TEST** | Vitest covers the bottom-tab/top-bar layout switch at the 768 px breakpoint and the SW registration. Lighthouse PWA audit ≥ 90 in CI (Playwright + headless Chrome). |
 | **DEV** | `apps/hub/web/` Vite + TS scaffold, Tailwind, Vite-PWA config, `manifest.webmanifest`, `index.html` with Apple meta tags, four placeholder tab routes, theme tokens. |
-| **VAL** | **Server-first:** With Caddy serving the built bundle on Mac mini or Pi, load `https://hearth.home.arpa/` from a desktop browser (same LAN); no TLS errors after CA trust; manifest loads; SW registers (verify in devtools); layout matches ticket intent at desktop and a mobile **viewport** width in devtools. **Side goal (non-blocking):** real iPhone — Add to Home Screen, standalone launch, safe-area tabs, force-quit + relaunch — under **Follow-up: iPhone** in `40-prototype-report.md`. |
+| **VAL** | **Server-first:** With Caddy serving the built bundle on **Pi**, load `https://hearth.home.arpa/` from a desktop browser (same LAN); no TLS errors after CA trust; manifest loads; SW registers (verify in devtools); layout matches ticket intent at desktop and a mobile **viewport** width in devtools. **Mac mini:** later phase. **Side goal (non-blocking):** real iPhone — Add to Home Screen, standalone launch, safe-area tabs, force-quit + relaunch — **Follow-up: iPhone** in `40-prototype-report.md`. |
 
 ---
 
@@ -76,19 +76,19 @@ The Mantle shell adds a "Send test notification" button on the home tile; the SW
 |-------|----------------|
 | **TEST** | Unit: VAPID signing matches a known-good vector; subscription pruning on `410 Gone`. Integration: spin up the stack, fake-subscribe with a captured iOS subscription, assert `pywebpush` returns a 2xx for the test endpoint. |
 | **DEV** | `apps/hub/api/` FastAPI app, `pywebpush` integration, SW push handler in the Mantle shell. Static auth: a single hard-coded session cookie or no auth (LAN-only). Note the auth shortcut in `serial-diary.md` so it doesn't leak into FR-0001. |
-| **VAL** | **Server-first:** From a desktop Chromium-class browser subscribed against the **deployed** hub on Mac mini or Pi, tap "Send test notification" (or equivalent) — push arrives in ≤ 30 seconds in three of three runs; notification click focuses the app. **Side goal (non-blocking):** same on real iPhone PWA — **Follow-up: iPhone** in `40-prototype-report.md`. |
+| **VAL** | **Server-first:** From a desktop Chromium-class browser **or** iPhone PWA subscribed against the **deployed** hub on **Pi**, tap "Send test notification" — push arrives in ≤ 30 seconds. **Mac mini:** later phase. **Side goal (non-blocking):** remaining iPhone Home Screen / relaunch checks — **Follow-up: iPhone** in `40-prototype-report.md`. |
 
 ---
 
 ### T-FR-0002-04 — Server walkthrough + closeout report (iPhone follow-up optional)
 
-**Title:** Run the acceptance demo on Mac mini and Pi 4 (server-first steps); write the closeout report; raise amendments against FR-0001 docs; capture iPhone side goal separately when available
+**Title:** Run the acceptance demo on Pi 4 (server-first steps); write the closeout report; raise amendments against FR-0001 docs; Mac mini later phase
 **Deps:** `T-FR-0002-01`, `T-FR-0002-02`, `T-FR-0002-03`
 **No FR-0001 reuse target** — this ticket produces decisions, not code.
 
 #### Purpose
 
-Run the full FR-0002 **server-first** acceptance (see [`README.md`](README.md) → "Acceptance for FR-0002 close") on a Mac mini and on a Pi 4. Time it. Capture screenshots / logs. **iPhone-only steps** in that checklist are optional for closing this ticket — log them under **Follow-up: iPhone** in `40-prototype-report.md` when run later. Fill in `40-prototype-report.md` and amend FR-0001 docs (`docs/design/mantle-ui.md`, `deployment.md`, `notifications.md`) per the amendment process in `docs/ai-context.md` for any DESIGN-FLAW found.
+Run the full FR-0002 **server-first** acceptance (see [`README.md`](README.md) → "Acceptance for FR-0002 close") on a **Pi 4** per repo-root **`SETUP.md`**. **Mac mini** is a **later phase** — defer to **Environment A** in `40-prototype-report.md`. Time the Pi run; capture screenshots / logs. **iPhone-only steps** beyond TLS/push are optional — log under **Follow-up: iPhone**. Fill in `40-prototype-report.md` and amend FR-0001 docs per `docs/ai-context.md` for any DESIGN-FLAW found.
 
 #### Phases (concise)
 

@@ -33,6 +33,8 @@ from hearth_install.version_manifest import (
 
 from hearth_cli import update_cmd
 from hearth_cli.install_context import ResolvedInstall, resolve_install
+from hearth_cli.pwa_ops import cmd_pwa_build, cmd_pwa_vapid_gen
+from hearth_cli.tls_ops import cmd_ca_export
 
 _DEFAULT_COMPOSE_PROJECT = "hearth"
 _HUB_HEALTH_PATH = "/api/health"
@@ -156,6 +158,16 @@ def build_parser() -> argparse.ArgumentParser:
     logs = subparsers.add_parser("logs", help="Tail or fetch container logs (docker compose logs).")
     logs.add_argument("-f", "--follow", action="store_true", help="Follow log output.")
     logs.add_argument("services", nargs="*", help="Optional service names.")
+
+    subparsers.add_parser(
+        "ca-export",
+        help="Serve the local TLS root CA at :8080/ca.crt for iPhone trust setup (blocks up to 10 min).",
+    )
+
+    pwa = subparsers.add_parser("pwa", help="FR-0002 Mantle PWA prototype helpers.")
+    pwa_sub = pwa.add_subparsers(dest="pwa_command", required=True)
+    pwa_sub.add_parser("build", help="Build apps/hub/web and publish to hearth/compose/static/.")
+    pwa_sub.add_parser("vapid-gen", help="Generate var/hearth/secrets/vapid.{pub,priv} in the deploy checkout.")
     return parser
 
 
@@ -190,6 +202,24 @@ def cmd_doctor(resolved: ResolvedInstall, stdout: TextIO) -> int:
         print(f"compose file: {resolved.compose_file}", file=stdout)
     else:
         print(f"compose file: missing ({resolved.compose_file})", file=stdout)
+        ok = False
+
+    if resolved.compose_env_file.is_file():
+        from hearth_cli.install_context import read_compose_dotenv
+
+        dotenv = read_compose_dotenv(resolved.compose_env_file)
+        repo_root = dotenv.get("HEARTH_REPO_ROOT", "")
+        if repo_root:
+            print(f"HEARTH_REPO_ROOT: {repo_root}", file=stdout)
+        else:
+            print(
+                f"HEARTH_REPO_ROOT: missing in {resolved.compose_env_file} "
+                "(re-run ./install from the deploy checkout)",
+                file=stdout,
+            )
+            ok = False
+    else:
+        print(f"compose .env: missing ({resolved.compose_env_file})", file=stdout)
         ok = False
 
     docker = shutil.which("docker")
@@ -705,6 +735,14 @@ def run(
         return cmd_status(resolved, stdout, stderr, env=env, skip_health=ns.skip_health)
     if ns.command == "logs":
         return cmd_logs(resolved, ns.services, stderr, env=env, follow=ns.follow)
+    if ns.command == "ca-export":
+        return cmd_ca_export(resolved, stdout, stderr, run_compose=_run_compose)
+    if ns.command == "pwa":
+        if ns.pwa_command == "build":
+            return cmd_pwa_build(resolved, stderr)
+        if ns.pwa_command == "vapid-gen":
+            return cmd_pwa_vapid_gen(resolved, stderr)
+        return _unreachable(ns.pwa_command)
     return _unreachable(ns.command)
 
 
