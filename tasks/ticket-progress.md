@@ -48,7 +48,7 @@
 | T-FR-0001-04 | Mantle PWA shell and iframe embed | done | done | done | `FR-0001`. Dynamic nav from registry, PluginFrame, useMantle/useTheme/InstallPrompt in `src/mantle/`. 7 tests pass via Docker. |
 | T-FR-0001-05 | Caddy generation and local TLS | done | done | done | `FR-0001`. Fragment renderer + reload hook. 8 unit tests pass via Docker. Integration test (real Caddy + device) deferred to manual VAL — see serial-diary.md. |
 | T-FR-0001-06 | Spark v1 broker and client libs | — | — | — | `FR-0001` parked. |
-| T-FR-0001-07 | Kindling repo and CLI | — | — | — | `FR-0001` parked. |
+| T-FR-0001-07 | Kindling repo and CLI | done | done | done | `FR-0001`. `kindling/` local dir created; CLI (`new`/`validate`/`install`); 17 new tests; 198 total pass. Separate repo/submodule deferred (DESIGN-GAP, scope-right). |
 | T-FR-0001-08 | groceries reference plugin | — | — | — | `FR-0001` parked. |
 | T-FR-0001-09 | Auth, VAPID, Web Push + ntfy | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-03` output. |
 | T-FR-0001-10 | Pi/Mac mini install.sh + backup | — | — | — | `FR-0001` parked (closeout). |

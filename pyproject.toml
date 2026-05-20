@@ -12,6 +12,7 @@ dependencies = []
 
 [project.scripts]
 hearth = "hearth_cli.cli:main"
+kindling = "kindling_cli.cli:main"
 
 [project.optional-dependencies]
 test = [
@@ -26,10 +27,11 @@ test = [
     "pywebpush",
     "argon2-cffi>=23",
     "itsdangerous>=2",
+    "requests>=2.31",
 ]
 
 [tool.setuptools.packages.find]
-where = ["deploy/hearth-install", "deploy/hearth-cli", "deploy/kindling-contract", "deploy/hearth-plugin-cli"]
+where = ["deploy/hearth-install", "deploy/hearth-cli", "deploy/kindling-contract", "deploy/hearth-plugin-cli", "kindling/cli"]
 
 [tool.setuptools.package-data]
 hearth_install = ["templates/*"]
@@ -44,6 +46,7 @@ pythonpath = [
     "deploy/kindling-contract",
     "deploy/hearth-plugin-cli",
     "apps/hub/api",
+    "kindling/cli",
 ]
 
 [tool.ruff]
@@ -53,6 +56,7 @@ src = [
     "deploy/hearth-cli/hearth_cli",
     "deploy/kindling-contract/hearth_kindling_contract",
     "deploy/hearth-plugin-cli/hearth_plugin_cli",
+    "kindling/cli/kindling_cli",
     "apps/hub/api",
     "tests",
 ]

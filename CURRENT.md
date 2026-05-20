@@ -1,23 +1,15 @@
 # Current branch state
 
-**Branch:** `feat/FR-0001-hearth-platform-T-FR-0001-05-caddy-gen`
-**Status:** T-FR-0001-05 done; PR open → merge into `feat/FR-0001-hearth-platform`
+**Branch:** `feat/FR-0001-hearth-platform`
+**Status:** T05 + T07 merged; revalidating; next wave T08
 
-## What was done (T-FR-0001-05)
+## What was done (this integration)
 
-- Added `apps/hub/api/proxy/caddy.py`: `render_fragment()` pure renderer,
-  `write_fragment()`, `reload_caddy()` (admin API + subprocess fallback),
-  `regenerate_and_reload()` async hook for plugin routes
-- Added `deploy/caddy/Caddyfile.template`: base config with fragment `import`
-- Hooked `regenerate_and_reload` into all four plugin state-changing routes
-  (install / enable / disable / uninstall)
-- 8 new unit tests in `tests/proxy/test_caddy.py`; 1 integration test skipped
-- 189 tests pass, lint clean
+- Merged T-FR-0001-05 (Caddy gen): fragment renderer + reload hook + Caddyfile.template + 8 unit tests
+- Merged T-FR-0001-07 (Kindling): `kindling/` local dir, CLI (`new`/`validate`/`install`), 17 new tests
 
 ## Next step
 
-Merge this PR into `feat/FR-0001-hearth-platform`, then run `/identify-frontier`
-for the next eligible tickets:
-- **T-FR-0001-07** (Kindling repo and CLI)
-- **T-FR-0001-08** (groceries reference plugin — blocked by T07)
-- **T-FR-0001-10** (Pi/Mac install + backup)
+Run full test suite revalidation, then `/identify-frontier` for next wave:
+- **T-FR-0001-08** (groceries reference plugin): unblocked by T07
+- **T-FR-0001-10** (Pi/Mac install + backup): needs T05 + T08 first
