@@ -1,9 +1,14 @@
-"""Plugin registry CRUD routes — T-FR-0001-02/03.
+"""Plugin registry CRUD routes — T-FR-0001-02/03/05.
 
 install: calls Tinder loader when *source* is given; stubs for enable/disable/uninstall
 mutate DB state only (no supervisor calls yet).
 
 MVP policy (plugin-contract.md): kind=widget enable returns 501.
+
+Caddy fragment regeneration (T-FR-0001-05): after every state-changing operation
+(install, enable, disable, uninstall), regenerate_and_reload() is called to write
+a new Caddyfile fragment and signal Caddy to reload.  Errors from the reload are
+logged but do not fail the API response.
 """
 
 from __future__ import annotations
@@ -18,6 +23,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_session
 from app.models import AuditLog, Plugin
 from app.schemas import PluginInstallRequest, PluginInstallResponse, PluginResponse
+from proxy.caddy import regenerate_and_reload
 from tinder.loader import load_tinder
 
 router = APIRouter(prefix="/api/plugins", tags=["plugins"])
@@ -81,6 +87,7 @@ async def install_plugin(
     session.add(AuditLog(action="install", plugin_slug=slug))
     await session.commit()
     await session.refresh(plugin)
+    await regenerate_and_reload(session)
     return PluginInstallResponse(
         slug=plugin.slug,
         name=plugin.name,
@@ -112,6 +119,7 @@ async def enable_plugin(
     session.add(AuditLog(action="enable", plugin_slug=slug))
     await session.commit()
     await session.refresh(plugin)
+    await regenerate_and_reload(session)
     return plugin
 
 
@@ -128,6 +136,7 @@ async def disable_plugin(
     session.add(AuditLog(action="disable", plugin_slug=slug))
     await session.commit()
     await session.refresh(plugin)
+    await regenerate_and_reload(session)
     return plugin
 
 
@@ -144,4 +153,5 @@ async def uninstall_plugin(
     session.add(AuditLog(action="uninstall", plugin_slug=slug))
     await session.commit()
     await session.refresh(plugin)
+    await regenerate_and_reload(session)
     return plugin
