@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | T-FR-0001-05 ‖ T-FR-0001-07 (parallel) |
-| **Active phase** | developing |
+| **Active ticket** | T-FR-0001-08 (next) |
+| **Active phase** | integrating |
 | **Branch / worktree** | `feat/FR-0001-hearth-platform` @ `.worktrees/FR-0001-hearth-platform/feature/` |
-| **Session status** | `developing` |
-| **Next agent should** | T05 subagent: TEST→DEV→VAL in `.worktrees/FR-0001-hearth-platform/T-FR-0001-05-caddy-gen/` on `feat/FR-0001-hearth-platform-T-FR-0001-05-caddy-gen`. T07 subagent: TEST→DEV→VAL in `.worktrees/FR-0001-hearth-platform/T-FR-0001-07-kindling-repo/` on `feat/FR-0001-hearth-platform-T-FR-0001-07-kindling-repo`. Merge both into feat/FR-0001-hearth-platform when done; revalidate; then run /identify-frontier for T08+T10 wave. |
+| **Session status** | `integrating` |
+| **Next agent should** | T05+T07 done and merged (206 tests green). Run `/identify-frontier` for next wave: T-FR-0001-08 (groceries plugin, external `grocery-list` repo) is now unblocked. T-FR-0001-10 (install+backup) still blocked by T08. |
 
 ### Parallel streams
 
@@ -46,7 +46,7 @@
 | T-FR-0001-02 | Hub API skeleton and SQLite registry | done | done | done | `FR-0001`. FastAPI routes, SQLAlchemy models, Alembic migration. 26 tests pass via Docker. Merged to `feat/FR-0001-hearth-platform` via [PR #21](https://github.com/mcelhennyi/hearth/pull/21). |
 | T-FR-0001-03 | Tinder loader and manifest schema | done | done | done | `FR-0001`. Pydantic schema + loader + 5 fixtures + 17 tests. Wired into POST /api/plugins/install. 43 total tests pass via Docker. [PR #23](https://github.com/mcelhennyi/hearth/pull/23). |
 | T-FR-0001-04 | Mantle PWA shell and iframe embed | done | done | done | `FR-0001`. Dynamic nav from registry, `mantle/` components, no hardcoded plugin slugs. 7 tests pass via Docker. Merged to `feat/FR-0001-hearth-platform` via [PR #22](https://github.com/mcelhennyi/hearth/pull/22). |
-| T-FR-0001-05 | Caddy generation and local TLS | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-01` output. |
+| T-FR-0001-05 | Caddy generation and local TLS | done | done | done | `FR-0001`. Fragment renderer + reload hook (Caddy admin API) + Caddyfile.template. 8 unit tests; integration test gated on `HEARTH_INTEGRATION=1`. iPhone walkthrough deferred (manual). [PR #27](https://github.com/mcelhennyi/hearth/pull/27). |
 | T-FR-0001-06 | Spark v1 broker and client libs | done | done | done | `FR-0001`. Broker + Python client + TS stub + 23 tests. 127 total tests pass. [PR #24](https://github.com/mcelhennyi/hearth/pull/24). |
 | T-FR-0001-07 | Kindling repo and CLI | done | done | done | `FR-0001`. `kindling/` local dir created; CLI (`new`/`validate`/`install`); 17 new tests; 198 total pass. Separate repo/submodule deferred (DESIGN-GAP, scope-right). [PR #26](https://github.com/mcelhennyi/hearth/pull/26). |
 | T-FR-0001-08 | groceries reference plugin | — | — | — | `FR-0001` parked. |
