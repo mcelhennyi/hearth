@@ -17,7 +17,7 @@ This is a **direction-of-travel** doc, not a contract. Items here are not author
 - Spark v1 (local Unix-socket RPC + pub/sub).
 - Kindling templates repo + scaffolding CLI.
 - Compose dev loop + Pi/Mac mini install script.
-- One reference plugin (`groceries`).
+- One reference plugin (`groceries`) in a **separate repo** ([`grocery-list`](https://github.com/mcelhennyi/grocery-list)), mounted as `apps/groceries/` submodule—not source in `apps/hub/`.
 
 Acceptance: see `tasks/feature-history/FR-0001-hearth-platform/README.md`.
 

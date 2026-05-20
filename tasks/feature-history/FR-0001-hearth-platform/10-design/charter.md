@@ -32,7 +32,7 @@ Off-the-shelf platforms either (a) demand a SaaS subscription per app, or (b) ar
 
 ## Success looks like
 
-A first-run video, two minutes long: clone a deploy repo on a Mac mini, run `./install.sh`, scan a QR on the dashboard from the iPhone, install the local CA cert (one-time), Add to Home Screen, see four tabs at the bottom (Dashboard, Groceries, Recipes-stub, Settings), add an item to groceries, get a Web Push when an inventory threshold trips. No part of that flow says "open Terminal, edit `nginx.conf`, …".
+A first-run video, two minutes long: clone a deploy repo on a Mac mini, run `./install.sh`, scan a QR on the dashboard from the iPhone, install the local CA cert (one-time), Add to Home Screen, see **Home** plus tabs for **installed** plugins from the registry (e.g. **Groceries** after `grocery-list` is submodule-installed), add an item to groceries, get a Web Push when an inventory threshold trips. No part of that flow says "open Terminal, edit `nginx.conf`, …" and no plugin names are baked into the hub shell source.
 
 ## What we're explicitly comfortable being wrong about
 

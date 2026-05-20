@@ -2,6 +2,30 @@
 
 **Status:** design only. No code yet. Lives at the planned URL `git@github.com:mcelhennyi/kindling.git` and is consumed by Hearth as a submodule under `vendor/kindling/`.
 
+## Bootstrap: skeleton first, then Hearth product surface
+
+Kindling is **not** a greenfield repo. It is created from the same **`.skeleton`** process template Hearth uses, then extended with Hearth-specific directories (Mantle, Spark clients, Tinder schema, plugin templates, CLI).
+
+| Layer | Source | Purpose |
+|-------|--------|---------|
+| **Process** | **`.skeleton/` git submodule** inside Kindling (same revision policy as Hearth) | FR-NNNN workflow, AI rules, ticket layout, `./develop` patterns |
+| **Product** | Kindling-owned dirs (`mantle/`, `spark/`, `tinder/`, `templates/`, `cli/`) | Shared code and scaffolds plugin authors consume |
+
+**Required layout in the Kindling repo:**
+
+```text
+kindling/                    # git@github.com:mcelhennyi/kindling.git
+  .skeleton/                 # submodule → skeleton process repo (must stay present)
+  mantle/
+  spark/
+  tinder/
+  templates/
+  cli/
+  docs/
+```
+
+When Kindling is updated, run the same **`./sync-skeleton`** (or equivalent) workflow as Hearth so process files stay aligned. Hearth pins Kindling at `vendor/kindling/`; individual plugins pin Kindling (or published `@kindling/*` packages) in their own repos.
+
 Kindling does for **Hearth plugin authors** what `.skeleton` does for **process and tooling**: it materializes a working starting point. It is the home for things every Hearth project needs and that we refuse to fork-and-paste:
 
 | Subdirectory | What it ships |
@@ -13,21 +37,35 @@ Kindling does for **Hearth plugin authors** what `.skeleton` does for **process 
 | `tinder/`                  | Tinder schema + validator (Python and TS), so plugins can self-check their manifest in CI. |
 | `cli/`                     | `kindling` CLI: `kindling new <slug>`, `kindling validate`, `kindling install <slug>` (registers a plugin with a running hub via its API), `kindling publish` (push a release tag). |
 | `docs/`                    | Author's-eye docs that mirror the public design surface in Hearth (Spark cookbook, Tinder cheatsheet, Mantle component gallery). |
-| `.skeleton/`               | Same process skeleton as Hearth, so Kindling itself follows the FR-NNNN flow. |
+| `.skeleton/`               | **Git submodule** (required): same process skeleton as Hearth; Kindling follows the FR-NNNN flow and stays syncable via `./sync-skeleton`. |
 
 ## Usage from Hearth
 
 Hearth pulls Kindling in as a submodule at `vendor/kindling/`. The hub web app imports `@kindling/mantle` from the local checkout in dev (via `pnpm` workspace alias) and from a versioned npm-equivalent registry (or a tagged git URL) in CI/production.
 
-Plugins under `apps/<slug>/` are themselves git submodules. A new plugin is created by:
+Plugins under `apps/<slug>/` are **separate git repositories** (submodules in Hearth). Hearth does **not** ship plugin source. A new plugin is created by:
 
 ```bash
-kindling new groceries
-# materializes apps/groceries/ + tinder.toml, registers the plugin with the local hub
+# From a clean directory or the user's projects folder — not inside apps/hub/
+kindling new groceries --remote git@github.com:mcelhennyi/grocery-list.git
+cd grocery-list   # or the chosen directory name
+# … develop, test, push …
+
+# In the Hearth repo (after the remote exists):
+git submodule add https://github.com/mcelhennyi/grocery-list.git apps/groceries
+kindling install groceries   # or hub POST /api/plugins/install
 ./develop up
 ```
 
-`kindling new` does roughly what `init-skeleton` does for the platform: clones the right template, points `.skeleton`-style submodules where they need to go, and stamps the chosen slug.
+`kindling new`:
+
+1. Clones `templates/plugin-python/` (or `plugin-node/`) into a **new repo**.
+2. Runs **`init-skeleton`** (or equivalent) so the plugin repo gets its own **`.skeleton/`** submodule and process tree.
+3. Wires **Kindling** consumption (`@kindling/mantle`, Spark/Tinder libs) per template.
+4. Stamps `tinder.toml` with the chosen slug.
+5. Optionally registers with a running hub via `kindling install`.
+
+The first reference plugin for FR-0001 is **`groceries`**, developed in **[`mcelhennyi/grocery-list`](https://github.com/mcelhennyi/grocery-list)** and mounted at `apps/groceries/` in Hearth only as a submodule (**T-FR-0001-08**).
 
 Until the public Kindling repository exists, Hearth mirrors the plugin template contract in `deploy/kindling-contract/` so FR-0003 can validate operator flows without inventing an external repo. That mirror must produce a plugin root containing:
 
@@ -41,7 +79,14 @@ When Kindling becomes a real submodule, the Hearth mirror should be deleted or c
 
 ## Relationship to `.skeleton`
 
-`.skeleton` is **process** (tickets, FR-NNNN flow, AI rules). Kindling is **product surface** (Mantle, Spark client, Tinder validator, plugin templates). A new plugin repo will have **both**: it `init-skeleton`'s the process tree and consumes Kindling's templates for the actual app code.
+`.skeleton` is **process** (tickets, FR-NNNN flow, AI rules). Kindling is **product surface** (Mantle, Spark client, Tinder validator, plugin templates) **plus** its own `.skeleton/` submodule so Kindling's own FR-NNNN work matches Hearth.
+
+A **new plugin repo** has **both**:
+
+1. **`.skeleton/`** — process (from `kindling new` / `init-skeleton`).
+2. **Kindling packages** — Mantle, Spark, Tinder (from template, not copied from `apps/hub/`).
+
+Hearth has `.skeleton/` + `vendor/kindling/` + `apps/hub/` only. It must not grow plugin app trees except as **submodule pointers** under `apps/<slug>/`.
 
 ## Versioning
 
@@ -59,6 +104,6 @@ When Kindling becomes a real submodule, the Hearth mirror should be deleted or c
 
 1. Hearth ticket **`T-FR-0001-04`** scaffolds the Mantle shell stub *inside* `apps/hub/web/` (no Kindling repo yet) so we have something to iterate on.
 2. Ticket **`T-FR-0001-07`** lifts that shell out into a fresh Kindling repo, sets up the submodule, and `apps/hub/web/` becomes a thin consumer.
-3. Ticket **`T-FR-0001-08`** ships the first plugin (`groceries`) using `kindling new groceries`, exercising the full template path.
+3. Ticket **`T-FR-0001-08`** scaffolds the first plugin in **[`grocery-list`](https://github.com/mcelhennyi/grocery-list)** via `kindling new groceries`, pushes to that remote, and adds `apps/groceries/` as a submodule in Hearth—exercising the full template path without vendoring plugin code into the hub tree.
 
 Until ticket 07 lands, "Kindling" is the directory `apps/hub/web/src/mantle/` and `apps/hub/api/spark/`. The repo split is a deliberate later step so we don't churn the layout twice.

@@ -18,7 +18,7 @@ function setBreakpoint(width: number): void {
 
 describe('Mantle layout breakpoint behavior', () => {
   beforeEach(() => {
-    window.history.replaceState({}, '', '/dashboard')
+    window.history.replaceState({}, '', '/')
   })
 
   it('shows bottom tabs under 768px', () => {

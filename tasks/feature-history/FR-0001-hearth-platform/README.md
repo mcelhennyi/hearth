@@ -12,14 +12,15 @@ Stand up Hearth — a self-hosted hub for vibe-coded daily-life productivity app
 
 ## In scope (MVP)
 
+0. **Plugin-agnostic hub** — no first-party plugin code or hardcoded plugin nav in `apps/hub/`; plugins are external repos + submodules (see [`docs/design/architecture/overview.md`](../../../docs/design/architecture/overview.md#1b-plugin-agnosticism-hub-boundary)).
 1. **Hub app** (Python/FastAPI + React) at `/`: dashboard, plugin registry, settings.
 2. **Tinder** plugin manifest format + on-disk discovery (`/etc/hearth/plugins.d/*.toml` or git submodules under `apps/`).
 3. **nginx reverse proxy** generated from the registry: `/` → hub, `/<slug>/...` → plugin.
 4. **Mantle** — the shared React shell + design-system package (theme, top nav, plugin chrome, auth widget). Lives in **Kindling** repo, consumed by hub and plugins.
 5. **Spark** v1 — synchronous JSON-RPC over Unix domain sockets between plugin processes; plugin capability surface declared in Tinder.
-6. **Kindling** template repo — scaffolds a new plugin (FastAPI backend + React frontend wired into Mantle and Spark), CLI tool `kindling new <slug>`.
+6. **Kindling** template repo — bootstrapped from **`.skeleton`** (Kindling keeps its own `.skeleton/` submodule), then Hearth-specific templates; CLI `kindling new <slug>` creates a **new remote repo** (first: [`grocery-list`](https://github.com/mcelhennyi/grocery-list)).
 7. **Deploy story** — Docker Compose for dev; systemd units + an `install.sh` for Pi/Mac mini bare metal.
-8. **One demo plugin** — `groceries` (chosen because it exercises persistence, Spark capability `produce: groceries.list`, and a basic UI). Lives in its own repo, added as submodule `apps/groceries/`.
+8. **One demo plugin** — `groceries` (chosen because it exercises persistence, Spark `list.*` capability, and a basic Mantle UI). Source of truth in **[`mcelhennyi/grocery-list`](https://github.com/mcelhennyi/grocery-list)**; mounted in Hearth as git submodule **`apps/groceries/`** (Tinder slug and routes stay `groceries` / `/groceries/`). Plugin MVP scope: [`tickets.md` → T-FR-0001-08](tickets.md#t-fr-0001-08--groceries-reference-plugin).
 
 ## Out of scope (this FR)
 
@@ -31,7 +32,7 @@ Stand up Hearth — a self-hosted hub for vibe-coded daily-life productivity app
 ## Acceptance for FR-0001 close
 
 - A fresh Pi/Mac mini can `git clone … && ./install.sh` and reach a working dashboard at `http://hearth.home.arpa/`.
-- Installing the `groceries` plugin (drop-in submodule + `kindling install`) makes it appear in the dashboard nav and reachable at `/groceries/`.
+- Installing the `groceries` plugin (submodule from `grocery-list` + `kindling install` or hub install API) makes it appear in the dashboard nav and reachable at `/groceries/`.
 - A second hypothetical plugin can call `spark.call("groceries", "list.add", {…})` and succeed (validated via a tiny `dev-tools/spark-cli` script).
 - Mantle theme tokens visibly drive both hub and plugin UIs (no per-plugin restyling).
 

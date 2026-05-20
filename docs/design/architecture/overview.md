@@ -4,9 +4,23 @@
 
 ## 1. What Hearth is
 
-A self-hosted hub that runs on a single machine at home (Raspberry Pi 4/5 or Mac mini) and presents a single URL — `https://hearth.home.arpa/` — that fronts a growing set of small "lifestyle" apps. Each app is its own project ("plugin") that opts into Hearth via a manifest, and apps can call each other through a typed RPC layer. The hub itself is intentionally minimal: routing, plugin registry, identity, dashboard, settings.
+A self-hosted hub that runs on a single machine at home (Raspberry Pi 4/5 or Mac mini) and presents a single URL — `https://hearth.home.arpa/` — that fronts a growing set of small "lifestyle" apps. Each app is its own project ("plugin") that opts into Hearth via a manifest (`kind = app` or `kind = widget`; see [`plugin-contract.md`](../plugin-contract.md)), and apps can call each other through a typed RPC layer. The hub itself is intentionally minimal: routing, plugin registry, identity, a **user-composed home dashboard** ([`dashboard.md`](../dashboard.md)), and settings.
 
 The **primary client surface is an iPhone PWA** added to the Home Screen, not a desktop browser. Mantle ships a `manifest.json` and a service worker so the shell launches in `display: standalone` (no Safari chrome) and behaves like a native app. Desktop browsers still work; the layout is responsive (top bar on wide screens, bottom-tab nav on narrow ones).
+
+## 1b. Plugin agnosticism (hub boundary)
+
+The **Hearth repository** ships only the hub (`apps/hub/`), deployment, and platform services. It **must not** contain first-party plugin application code (no plugin backends, plugin SPAs, or hardcoded plugin names in the shell).
+
+| Rule | Detail |
+|------|--------|
+| **No bundled plugins** | Plugin repos are **separate git repositories**, mounted as optional submodules under `apps/<slug>/` or discovered from `var/hearth/plugins.d/`. The hub never vendors plugin source into `apps/hub/`. |
+| **Registry-driven UI** | Mantle navigation, dashboard shortcuts, Caddy fragments, and Spark routing are built from **`GET /api/plugins`** (and Tinder manifests on disk)—not from static lists in React or Python. |
+| **Test fixtures only** | Under `tests/fixtures/plugins/` (e.g. `groceries-stub`) minimal manifests may exist **only** for loader/proxy tests; they are not product UI and are not linked from the shell. |
+| **Reference plugin** | The first real plugin (`groceries`, repo [`grocery-list`](https://github.com/mcelhennyi/grocery-list)) is created with **`kindling new`** from the **Kindling** template repo, developed in that remote, and added to Hearth as a submodule when **T-FR-0001-08** lands—not copied into the hub tree. |
+| **FR-0001 cleanup** | Prototype shells that hardcode tabs or routes (e.g. Groceries / Recipes / Ideas) are **removed** by **T-FR-0001-04** VAL; an empty registry shows hub-only chrome until plugins are installed. |
+
+Kindling itself is bootstrapped from the same **`.skeleton`** process submodule Hearth uses, then layers Hearth-specific templates on top—see [`satellite-repos/kindling.md`](../satellite-repos/kindling.md).
 
 ## 2. Big picture
 
@@ -21,15 +35,15 @@ graph TB
     HUB[Hub API — FastAPI]
     REG[(Plugin Registry — SQLite)]
     BUS[Spark Bus — Unix sockets]
-    P1[Plugin: groceries]
-    P2[Plugin: scheduler]
-    PN[Plugin: idea-catcher / …]
+    P1["Plugin A<br/>(e.g. groceries)"]
+    P2["Plugin B<br/>(e.g. scheduler)"]
+    PN["Plugin N<br/>(any slug)"]
   end
 
   UI -->|HTTPS / HTTP| NGINX
   NGINX -->|/| HUB
-  NGINX -->|/groceries/*| P1
-  NGINX -->|/scheduler/*| P2
+  NGINX -->|/<slug-a>/*| P1
+  NGINX -->|/<slug-b>/*| P2
   NGINX -->|/<slug>/*| PN
 
   HUB --> REG

@@ -16,5 +16,9 @@ Live log. Move resolved entries into `serial-diary.md` once the resolution lands
 | Q10 | First reference plugin: groceries vs idea-catcher | **groceries** — exercises persistence, Spark events, Mantle list primitives best | resolved-for-MVP |
 | Q11 | Where does VAPID keypair live and rotate? | `var/hearth/secrets/vapid.{pub,priv}`; rotation invalidates subscriptions, deferred to Phase 2 | open |
 | Q12 | Plugin process language for `groceries` — Python or Node? | **Python**, to dogfood the default Kindling template | resolved-for-MVP |
+| Q13 | Dashboard user layout in FR-0001 MVP: auto grid only vs full edit mode | **Auto grid** of `app-shortcut` blocks; **edit mode + `PUT /layout` in P2** per `dashboard.md` | resolved-for-MVP |
+| Q14 | Widget plugin enable in MVP | **Install/validate only**; `enable` returns 501 until P3 widget hosting | resolved-for-MVP |
+| Q15 | Demo plugin git remote vs Tinder slug | **Remote:** `github.com/mcelhennyi/grocery-list`; **slug/mount:** `groceries` / `apps/groceries/` | resolved-for-MVP |
+| Q16 | Hub ships plugin code? | **No** — hub/registry/Mantle only; plugins external; Kindling bootstraps from `.skeleton` + owns `.skeleton/` submodule | resolved-for-MVP |
 
 Add new questions as `Qn` in chronological order. Do not renumber.

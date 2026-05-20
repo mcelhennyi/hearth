@@ -2,7 +2,50 @@
 
 **Authority:** This document defines the on-disk contract every Hearth plugin must satisfy. The hub's Tinder loader (`apps/hub/api/tinder/`) implements it. When code disagrees with this doc, fix the code (or amend per [`docs/ai-context.md`](../ai-context.md)).
 
+**Examples:** Manifest samples below use `groceries` / `pantry-glance` as **illustrative slugs only**. The Hearth repo does not ship those plugins; real plugins live in separate repositories (see [`architecture/overview.md`](architecture/overview.md#1b-plugin-agnosticism-hub-boundary)).
+
 A plugin is **discoverable** when a `tinder.toml` file exists at the plugin's root and parses against the schema below. A plugin is **installable** when discovery succeeds and required permissions are acceptable to the user.
+
+## Plugin kind: app vs widget
+
+Every plugin declares a **kind** that determines how Hearth surfaces it. See [`dashboard.md`](dashboard.md) for the home grid and phasing.
+
+| Kind | Default | Full UI at `/<slug>/` | Dashboard grid | `entrypoint.ui` |
+|------|---------|------------------------|----------------|-----------------|
+| **`app`** | yes | **Required** when enabled | Optional `app-shortcut` block | **Required** (`static`, `iframe-spa`, …) |
+| **`widget`** | — | **No** | **Widget** block(s) via hub-rendered snapshot | **Must be absent** |
+
+```toml
+[plugin]
+kind = "app"   # omitted ⇒ "app"
+```
+
+**MVP:** only **`app`** plugins may be **enabled**. The loader accepts `kind = "widget"` at install time; `enable` returns **501** until widget hosting is implemented ([`dashboard.md`](dashboard.md#mvp-policy)).
+
+### Widget-only manifest (future)
+
+```toml
+[plugin]
+slug    = "pantry-glance"
+name    = "Pantry glance"
+kind    = "widget"
+version = "0.1.0"
+hearth_min = "0.1.0"
+
+[entrypoint]
+backend = { kind = "python", module = "pantry_glance.app:create_app", port_env = "HEARTH_PLUGIN_PORT" }
+# no [entrypoint.ui] — widgets do not ship a full SPA
+
+[widget.surfaces.item-count]
+title = "Pantry"
+span_default = { w = 2, h = 1 }   # suggested size when user adds block
+
+[capabilities.widget]
+methods = ["snapshot"]              # hub calls via Spark; exact names in spark-api when scheduled
+events  = ["changed"]
+```
+
+Widget surfaces are named keys under `[widget.surfaces.<id>]`. The dashboard block references `plugin` + `surface`.
 
 ## File: `tinder.toml`
 
@@ -13,6 +56,7 @@ slug         = "groceries"            # kebab-case, ≤ 32 chars, ASCII, unique
 name         = "Groceries"            # human-readable
 version      = "0.1.0"                # semver
 hearth_min   = "0.1.0"                # min hub API version
+kind         = "app"                  # "app" | "widget" — default "app"
 description  = "Pantry, shopping list, store-aware sorting."
 icon         = "icon.svg"             # path relative to plugin root, optional
 
@@ -21,7 +65,7 @@ backend  = { kind = "python", module = "groceries.app:create_app", port_env = "H
 # alternatives:
 #   backend = { kind = "node",   command = ["node", "server.js"], port_env = "HEARTH_PLUGIN_PORT" }
 #   backend = { kind = "binary", command = ["./bin/groceries"],   port_env = "HEARTH_PLUGIN_PORT" }
-ui       = { kind = "static", path = "web/dist" }   # built React bundle
+ui       = { kind = "static", path = "web/dist" }   # required for kind=app; forbidden for kind=widget
 # alternatives:
 #   ui = { kind = "iframe-spa", base = "/" }                 # plugin serves its own SPA
 #   ui = { kind = "module-federation", remote = "/remoteEntry.js" }   # post-MVP
@@ -50,12 +94,20 @@ exclude = ["plugins/groceries/cache/"]
 label = "Groceries"
 icon  = "shopping-cart"        # lucide icon name, falls back to plugin.icon
 order = 30                     # ordering hint in the Mantle nav
+show_in_tab_bar = true         # optional; default true for kind=app
+
+[ui.chrome]                    # optional; app plugins only — extend shell bars (see mantle-ui.md)
+top    = { slots = ["actions"] }    # registers plugin content in named top-bar slots
+bottom = { slots = ["primary"] }
 ```
 
 ## Validation rules
 
 | Rule | Effect on failure |
 |------|--------------------|
+| `plugin.kind` ∈ {`app`, `widget`} | reject install |
+| `kind=app` ⇒ `entrypoint.ui` present and valid | reject install |
+| `kind=widget` ⇒ `entrypoint.ui` absent; at least one `[widget.surfaces.*]` | reject install |
 | `plugin.slug` matches `^[a-z][a-z0-9-]{0,31}$` and is unique | reject install |
 | `plugin.version` is semver | reject install |
 | `entrypoint.backend.kind` ∈ {`python`, `node`, `binary`, `none`} | reject install |

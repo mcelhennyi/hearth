@@ -1,12 +1,9 @@
 import { useState, useSyncExternalStore } from 'react'
-import { NavLink, Navigate, Route, Routes } from 'react-router-dom'
+import { NavLink, Route, Routes } from 'react-router-dom'
 
-const tabs = [
-  { key: 'dashboard', label: 'Dashboard', path: '/dashboard' },
-  { key: 'groceries', label: 'Groceries', path: '/groceries' },
-  { key: 'recipes', label: 'Recipes', path: '/recipes' },
-  { key: 'ideas', label: 'Ideas', path: '/ideas' },
-] as const
+import { usePlugins } from './usePlugins'
+
+const homeTab = { key: 'home', label: 'Home', path: '/' } as const
 
 function useDesktopLayout(): boolean {
   return useSyncExternalStore(
@@ -19,8 +16,9 @@ function useDesktopLayout(): boolean {
   )
 }
 
-function PlaceholderTile() {
+function DashboardView() {
   const [status, setStatus] = useState<string | null>(null)
+  const plugins = usePlugins()
 
   function decodeBase64Url(base64Url: string): ArrayBuffer {
     const padded = `${base64Url}${'='.repeat((4 - (base64Url.length % 4)) % 4)}`
@@ -30,7 +28,6 @@ function PlaceholderTile() {
     for (let i = 0; i < raw.length; i += 1) {
       output[i] = raw.charCodeAt(i)
     }
-    // .slice() yields a Uint8Array backed by a plain ArrayBuffer (TS 6 / PushManager typing).
     return output.slice().buffer
   }
 
@@ -128,10 +125,23 @@ function PlaceholderTile() {
   return (
     <main className="mx-auto flex min-h-[60svh] w-full max-w-3xl items-center px-4 pb-28 pt-8 md:px-8 md:pb-16">
       <section className="w-full rounded-2xl border border-[var(--hearth-surface)] bg-[var(--hearth-surface)] p-6 shadow-sm">
-        <h1 className="text-2xl font-semibold text-[var(--hearth-fg)]">PWA-ready</h1>
+        <h1 className="text-2xl font-semibold text-[var(--hearth-fg)]">Hearth</h1>
         <p className="mt-3 text-[var(--hearth-muted)]">
-          Mantle shell is installed with manifest, service worker, safe-area support, and placeholder routes.
+          Mantle shell — registry-driven navigation. Install plugins via the hub; tabs appear when enabled.
         </p>
+        {plugins.length === 0 ? (
+          <p className="mt-3 text-sm text-[var(--hearth-muted)]">No enabled plugins in the registry yet.</p>
+        ) : (
+          <ul className="mt-3 list-inside list-disc text-sm text-[var(--hearth-muted)]">
+            {plugins.map((plugin) => (
+              <li key={plugin.slug}>
+                <NavLink to={`/${plugin.slug}`} className="underline">
+                  {plugin.name}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        )}
         <button
           type="button"
           onClick={() => {
@@ -147,8 +157,22 @@ function PlaceholderTile() {
   )
 }
 
+function PluginFrame({ slug, name }: { slug: string; name: string }) {
+  return (
+    <main className="mx-auto min-h-[60svh] w-full max-w-6xl px-0 pb-28 pt-0 md:pb-16">
+      <iframe
+        title={name}
+        src={`/${slug}/`}
+        className="h-[70svh] w-full rounded-none border-0 bg-[var(--hearth-bg)] md:rounded-lg md:border md:border-[var(--hearth-surface)]"
+      />
+    </main>
+  )
+}
+
 function App() {
   const isDesktop = useDesktopLayout()
+  const plugins = usePlugins()
+  const navTabs = [homeTab, ...plugins.map((plugin) => ({ key: plugin.slug, label: plugin.name, path: `/${plugin.slug}` }))]
 
   return (
     <div className="min-h-svh bg-[var(--hearth-bg)] font-sans text-[var(--hearth-fg)]">
@@ -160,9 +184,9 @@ function App() {
               <span className="font-semibold">Hearth</span>
             </div>
             <ul className="flex items-center gap-4 text-sm">
-              {tabs.map((tab) => (
+              {navTabs.map((tab) => (
                 <li key={tab.key}>
-                  <NavLink to={tab.path} className="rounded-md px-3 py-2 hover:bg-[var(--hearth-bg)]">
+                  <NavLink to={tab.path} className="rounded-md px-3 py-2 hover:bg-[var(--hearth-bg)]" end={tab.path === '/'}>
                     {tab.label}
                   </NavLink>
                 </li>
@@ -180,11 +204,10 @@ function App() {
       )}
 
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<PlaceholderTile />} />
-        <Route path="/groceries" element={<PlaceholderTile />} />
-        <Route path="/recipes" element={<PlaceholderTile />} />
-        <Route path="/ideas" element={<PlaceholderTile />} />
+        <Route path="/" element={<DashboardView />} />
+        {plugins.map((plugin) => (
+          <Route key={plugin.slug} path={`/${plugin.slug}`} element={<PluginFrame slug={plugin.slug} name={plugin.name} />} />
+        ))}
       </Routes>
 
       {!isDesktop && (
@@ -192,11 +215,15 @@ function App() {
           aria-label="Mantle bottom tabs"
           className="fixed inset-x-0 bottom-0 border-t border-[var(--hearth-surface)] bg-[var(--hearth-surface)] px-2 pb-[calc(0.5rem+var(--hearth-safe-bottom))] pt-2"
         >
-          <ul className="mx-auto grid max-w-md grid-cols-4 gap-1">
-            {tabs.map((tab) => (
+          <ul
+            className="mx-auto grid max-w-md gap-1"
+            style={{ gridTemplateColumns: `repeat(${Math.min(navTabs.length, 4)}, minmax(0, 1fr))` }}
+          >
+            {navTabs.slice(0, 4).map((tab) => (
               <li key={tab.key}>
                 <NavLink
                   to={tab.path}
+                  end={tab.path === '/'}
                   className="block rounded-lg px-3 py-3 text-center text-xs text-[var(--hearth-muted)] hover:bg-[var(--hearth-bg)]"
                 >
                   {tab.label}

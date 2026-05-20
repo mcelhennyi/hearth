@@ -7,7 +7,9 @@ This subdirectory holds **FR-0001-specific** notes that belong to the feature li
 | Doc | Purpose |
 |-----|---------|
 | [`charter.md`](charter.md) | FR-0001 charter expanded — stakeholders, MVP rationale, non-goals reasoning |
-| [`open-questions.md`](open-questions.md) | Live open-question log for this FR (Q1…Q5 from README + new ones as they appear) |
+| [`open-questions.md`](open-questions.md) | Live open-question log for this FR (Q1…Q16 + new ones as they appear) |
+
+**Hub boundary:** Hearth ships no plugin application code; see [`docs/design/architecture/overview.md`](../../../../docs/design/architecture/overview.md#1b-plugin-agnosticism-hub-boundary) and Kindling bootstrap in [`docs/design/satellite-repos/kindling.md`](../../../../docs/design/satellite-repos/kindling.md).
 
 For everything else, follow the pointer:
 
@@ -17,6 +19,7 @@ For everything else, follow the pointer:
 | Plugin contract (Tinder) | [`docs/design/plugin-contract.md`](../../../../docs/design/plugin-contract.md) |
 | Inter-app API (Spark) | [`docs/design/spark-api.md`](../../../../docs/design/spark-api.md) |
 | Mantle PWA shell + theme tokens | [`docs/design/mantle-ui.md`](../../../../docs/design/mantle-ui.md) |
+| Home dashboard (grid, app vs widget plugins) | [`docs/design/dashboard.md`](../../../../docs/design/dashboard.md) |
 | Deployment (Caddy, install, iPhone trust, backup) | [`docs/design/deployment.md`](../../../../docs/design/deployment.md) |
 | Notifications (Web Push + ntfy) | [`docs/design/notifications.md`](../../../../docs/design/notifications.md) |
 | Roadmap | [`docs/design/roadmap.md`](../../../../docs/design/roadmap.md) |

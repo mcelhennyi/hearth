@@ -97,20 +97,22 @@ Build the React shell at `apps/hub/web/`:
 - Top bar (desktop) + bottom-tab nav (mobile) via a media-query-driven layout.
 - Plugin frame as an `iframe` rendering `/<slug>/`; postMessage protocol from `mantle-ui.md`.
 - Hooks: `useMantle`, `useUser`, `useTheme`, `useSpark` (calls into the plugin's own backend, not the broker), `useNotifications`.
-- A static "Dashboard" view fed by `GET /api/plugins`.
+- Dashboard at **`/`** fed by registry + layout API (see `dashboard.md`); **no hardcoded plugin tabs or routes** in `apps/hub/web/`.
+- Plugin frame as `iframe` for each enabled app slug from `GET /api/plugins`.
 - iOS install prompt on first visit.
 
 #### Phases
 
 | Phase | Goal | Exit criteria |
 |-------|------|----------------|
-| **TEST** | Shell tests | Vitest + React Testing Library covers: layout switches at 768px breakpoint; postMessage round-trip with a mock iframe; service worker installs in a `jsdom` smoke. Lighthouse PWA audit ≥ 90 in CI (Playwright + headless Chrome). |
-| **DEV** | Implement | Components live under `apps/hub/web/src/mantle/` (lifted to Kindling in T07). Tailwind + shadcn/ui. |
-| **VAL** | Manual: install on a real iPhone, confirm standalone launch, bottom tabs render, theme toggle pushes. | |
+| **TEST** | Shell tests | Vitest + RTL: layout breakpoint; postMessage mock iframe; SW smoke; **assert no routes named `/groceries`, `/recipes`, or `/ideas` in shell source**; nav renders only Home (+ Settings) when registry mock is empty. Lighthouse PWA audit ≥ 90 in CI (Playwright + headless Chrome). |
+| **DEV** | Implement | Components under `apps/hub/web/src/mantle/` (lifted to Kindling in T07). Remove FR-0002 prototype hardcoded tabs. Tailwind + shadcn/ui. |
+| **VAL** | Manual: iPhone standalone; with **zero** plugins, bottom bar shows Home only; after installing `groceries` submodule, Groceries tab appears from registry. | |
 
 #### Notes
 
 - Theme tokens come from `mantle-ui.md`. Don't reinvent them.
+- **Plugin agnosticism:** `apps/hub/web/src/App.tsx` (and all shell code) must not import or name specific plugins. See `docs/design/architecture/overview.md` §1b.
 - Document any iOS quirks discovered (back-button, status bar) in `serial-diary.md`.
 
 ---
@@ -172,7 +174,7 @@ Implement Spark v1 per `docs/design/spark-api.md`:
 
 #### Purpose
 
-Create a new repository `kindling` (separate from this one) and migrate:
+Create a new repository `kindling` (separate from this one), **initialized from `.skeleton`** with **`.skeleton/` retained as a submodule** inside Kindling, then migrate:
 
 - `apps/hub/web/src/mantle/` → `kindling/mantle/` (published as `@kindling/mantle`).
 - `apps/hub/api/spark/client.py` → `kindling/spark/python/`.
@@ -206,15 +208,39 @@ In Hearth: add `vendor/kindling/` as a submodule; switch `apps/hub/web/` and `ap
 **Title:** First reference plugin (`groceries`) end-to-end
 **Deps:** `T-FR-0001-07`
 
+#### Repository
+
+| Field | Value |
+|-------|--------|
+| **Git remote (canonical source)** | [`https://github.com/mcelhennyi/grocery-list`](https://github.com/mcelhennyi/grocery-list) |
+| **Hearth submodule path** | `apps/groceries/` |
+| **Tinder slug / routes** | `groceries` → `/groceries/` (repo name may differ from slug) |
+
+Implementation is developed and pushed in the **`grocery-list`** repo (`kindling new groceries`, own `.skeleton/` + Kindling deps); Hearth consumes it **only** as a submodule at `apps/groceries/`—no plugin source copied into `apps/hub/`.
+
 #### Purpose
 
-A plugin generated via `kindling new groceries` and added to Hearth as `apps/groceries/` submodule. Demonstrates the platform end-to-end:
+A plugin generated via `kindling new groceries` (or equivalent scaffold), developed in **`grocery-list`**, and added to Hearth as `apps/groceries/`. Demonstrates the platform end-to-end per the **Plugin MVP** table below.
 
-- A FastAPI backend with a `list` capability surface (`add`, `remove`, `items`, events `added`/`removed`).
-- A React UI (Mantle-themed) with one screen: a list with add + check-off interactions.
-- Persistence in `var/hearth/plugins/groceries/db.sqlite`.
-- Calls Spark to publish `groceries.list.added` and subscribes to `pantry.changed` (no-op for now since no pantry plugin exists).
-- Tinder permissions: declare `spark_call` for `hub.notify.send`, `spark_publish` for `groceries.*`.
+#### Plugin MVP (in scope for this ticket)
+
+| Area | MVP behavior |
+|------|----------------|
+| **UI** | One Mantle-themed screen: shopping list — add an item, check off / remove. No custom theme tokens. |
+| **Backend** | FastAPI; `[capabilities.list]` with methods `add`, `remove`, `items` and events `added`, `removed` (see `docs/design/plugin-contract.md`). |
+| **Persistence** | SQLite at `var/hearth/plugins/groceries/db.sqlite` (plugin-owned under `var/hearth/plugins/<slug>/`). |
+| **Spark — publish** | On add/remove, publish `groceries.list.added` / `groceries.list.removed` (or equivalent per manifest). |
+| **Spark — subscribe** | Register handler for `pantry.changed`; **no-op** until a pantry plugin exists (proves subscribe path only). |
+| **Spark — notify** | Permission to `spark_call` `hub.notify.send`; optional demo path when item count crosses a configured low-stock threshold (VAL with **T-FR-0001-09**). |
+| **Tinder** | `kind = "app"`; valid `tinder.toml`; permissions `spark_publish` for `groceries.*`. |
+| **Platform fit** | Install/enable via hub; appears on dashboard; iframe under Mantle at `/groceries/`. |
+
+#### Out of scope (this plugin in FR-0001)
+
+- Pantry inventory, store-aware sorting, multi-list / household sharing, recipes integration.
+- `kind = "widget"` surfaces or dashboard widget blocks.
+- Calling other plugins' HTTP routes (Spark only).
+- Ember, cloud backup, multi-user auth inside the plugin.
 
 #### Phases
 

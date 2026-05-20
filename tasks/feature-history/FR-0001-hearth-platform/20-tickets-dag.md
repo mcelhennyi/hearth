@@ -9,7 +9,7 @@ graph TD
   T05[T-FR-0001-05<br/>Caddy generation &amp; local TLS]
   T06[T-FR-0001-06<br/>Spark v1 broker &amp; client libs]
   T07[T-FR-0001-07<br/>Kindling repo &amp; CLI]
-  T08[T-FR-0001-08<br/>groceries reference plugin]
+  T08[T-FR-0001-08<br/>groceries plugin (grocery-list repo)]
   T09[T-FR-0001-09<br/>Auth, VAPID, Web Push + ntfy]
   T10[T-FR-0001-10<br/>Pi/Mac mini install.sh + backup]
 
