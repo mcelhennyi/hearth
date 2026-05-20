@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | T-FR-0001-01 |
+| **Active ticket** | T-FR-0001-05 |
 | **Active phase** | VAL complete |
-| **Branch / worktree** | `feat/FR-0001-hearth-platform-T-FR-0001-01-repo-scaffold` / `.worktrees/FR-0001-hearth-platform/T-FR-0001-01-repo-scaffold/` |
+| **Branch / worktree** | `feat/FR-0001-hearth-platform-T-FR-0001-05-caddy-gen` / `.worktrees/FR-0001-hearth-platform/T-FR-0001-05-caddy-gen/` |
 | **Session status** | `integrating` |
-| **Next agent should** | Merge T-FR-0001-01 PR into `feat/FR-0001-hearth-platform`; then start T-FR-0001-02 (Hub API skeleton and SQLite registry). |
+| **Next agent should** | Merge T-FR-0001-05 PR into `feat/FR-0001-hearth-platform`; then continue with T-FR-0001-06 (Spark v1 broker) or run `/identify-frontier`. |
 
 ### Parallel streams
 
@@ -46,7 +46,7 @@
 | T-FR-0001-02 | Hub API skeleton and SQLite registry | done | done | done | `FR-0001`. FastAPI routes, SQLAlchemy models, Alembic migration. 26 tests pass via Docker. |
 | T-FR-0001-03 | Tinder loader and manifest schema | — | — | — | `FR-0001` parked. |
 | T-FR-0001-04 | Mantle PWA shell and iframe embed | done | done | done | `FR-0001`. Dynamic nav from registry, PluginFrame, useMantle/useTheme/InstallPrompt in `src/mantle/`. 7 tests pass via Docker. |
-| T-FR-0001-05 | Caddy generation and local TLS | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-01` output. |
+| T-FR-0001-05 | Caddy generation and local TLS | done | done | done | `FR-0001`. Fragment renderer + reload hook. 8 unit tests pass via Docker. Integration test (real Caddy + device) deferred to manual VAL — see serial-diary.md. |
 | T-FR-0001-06 | Spark v1 broker and client libs | — | — | — | `FR-0001` parked. |
 | T-FR-0001-07 | Kindling repo and CLI | — | — | — | `FR-0001` parked. |
 | T-FR-0001-08 | groceries reference plugin | — | — | — | `FR-0001` parked. |
