@@ -11,7 +11,9 @@ from pywebpush import WebPushException
 from app.main import app
 from app.push_service import PushConfig
 
-TEST_PUBLIC_KEY = "BCqV2w2M9mV4MLwZqj1qNn5MJa7AqUQFOUa5SOGQ7ZZWmxuLk0ynrj5MQ8db3TsBvAk4fV1d2QwzRfj4Ynn4s5o"
+TEST_PUBLIC_KEY = (
+    "BCqV2w2M9mV4MLwZqj1qNn5MJa7AqUQFOUa5SOGQ7ZZWmxuLk0ynrj5MQ8db3TsBvAk4fV1d2QwzRfj4Ynn4s5o"  # noqa: E501
+)
 TEST_PRIVATE_KEY = "k0-TevVY2QkS5SIJ5L81LBgUQwQh0GsxM8qX8CbU9v0"
 
 
@@ -27,8 +29,14 @@ def test_push_test_endpoint_sends_to_all_and_prunes_410(monkeypatch: Any) -> Non
         config.subscriptions_path.write_text(
             json.dumps(
                 [
-                    {"endpoint": "https://web.push.apple.com/gone", "keys": {"p256dh": "a", "auth": "b"}},
-                    {"endpoint": "https://web.push.apple.com/live", "keys": {"p256dh": "c", "auth": "d"}},
+                    {
+                        "endpoint": "https://web.push.apple.com/gone",
+                        "keys": {"p256dh": "a", "auth": "b"},
+                    },  # noqa: E501
+                    {
+                        "endpoint": "https://web.push.apple.com/live",
+                        "keys": {"p256dh": "c", "auth": "d"},
+                    },  # noqa: E501
                 ]
             ),
             encoding="utf-8",

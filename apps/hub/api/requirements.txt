@@ -1,5 +1,9 @@
 fastapi
 uvicorn[standard]
 pywebpush
+sqlalchemy[asyncio]
+aiosqlite
+alembic
+pydantic>=2
 pytest
 httpx
