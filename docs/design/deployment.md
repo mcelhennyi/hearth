@@ -141,13 +141,17 @@ flowchart TD
 
 **Updates:** **`hearth --update`** (with optional **`--dry-run`**) runs **`git pull --ff-only`** at the deploy checkout root, refreshes enabled plugin git checkouts per **`hearth/state/plugins.yaml`** (`git pull --ff-only` or **`git checkout <pinned_ref>`** when set), regenerates **`compose/overrides/generated.plugins.yml`**, optionally runs an executable **`hearth/bin/hearth-migrate`** when the hub supplies one, then **`docker compose up -d --pull always`** for the install Compose project. **`VERSION.json` `hearth_ref`** is rewritten when the deploy HEAD changes after the pull.
 
-**DESIGN-GAP — Docker profile (explicit):**
+**Docker profile — open design items:**
 
-- **Published ARM images** — Release hub/plugin images for Pi may need a registry and CI publishing pipeline; **local image build** remains valid until that exists.
-- **Rootless Docker** — Install docs assume a working Docker socket for the operator account; rootless Docker specifics are **unspecified**.
-- **Plugin add by friendly name** — MVP remains **git URL** (and optional local path); central registry / relay naming is **out of scope** until the relay exists (`tasks/feature-history/FR-0003-hearth-pi-docker-cli/10-design-00-skeleton.md`).
+> DESIGN-GAP DG-D1 — **Published ARM images:** release hub/plugin images for Pi may need a registry and CI publishing pipeline; **local image build** remains valid until specified.
 
-**MVP policy (not a gap):** Plugin add and registry edits stay **file-first** on this profile until an explicit hub sync story exists (skeleton “Hub API duplication” — convergence with **`T-FR-0001-02`** is deferred).
+> DESIGN-GAP DG-D2 — **Rootless Docker:** install docs assume a working Docker socket for the operator account; rootless Docker semantics are **unspecified**.
+
+> DESIGN-GAP DG-D3 — **Plugin add by friendly name:** MVP remains **git URL** (and optional local path); central registry / relay naming is **out of scope** until Ember exists (`tasks/feature-history/FR-0003-hearth-pi-docker-cli/10-design-00-skeleton.md`).
+
+> DESIGN-GAP DG-D4 — **Hub registry sync:** this profile is **file-first** (`hearth/state/plugins.yaml`) until hub SQLite registry and Compose generation converge with **`T-FR-0001-02`**; bare-metal `/var/hearth/hearth.db` behavior must not be assumed on Docker installs without an explicit sync design.
+
+**MVP policy (not a gap):** Plugin add and registry edits stay **file-first** on this profile until **DG-D4** is resolved or retired with evidence.
 
 ## systemd units (prod, bare-metal alternative)
 
@@ -252,6 +256,8 @@ Phase 2 (Ember) or a later native backup plugin replaces this with continuous en
 
 ## Resource expectations (MVP)
 
+> <span class="design-doc-growth">GROWTH GR-D1</span> — **Trigger:** sustained hub + enabled-plugin RSS on a Pi 4 (4 GB) host exceeds **~1.5 GB** (headroom below OOM) with **≥ 5** idle plugins, measured over 24h. **Limitation:** v0 sizing targets Pi 4 / Pi 5 table below. **Upgrade:** amend this doc with cgroup/memory limits, plugin caps, or “recommended max plugins” per tier; optional operator warnings in `hearth doctor`. **v0 until triggered:** table budgets are guidance only. **Monitor:** `hearth_process_rss_bytes` sum after hub health poll; threshold 1_500_000_000; checkpoint after plugin enable/disable.
+
 | Box | Hub idle | + 5 plugins idle | Notes |
 |-----|----------|------------------|-------|
 | Pi 4 (4 GB) | ~80 MB RSS | ~250 MB RSS | within budget; Caddy adds ~30 MB |
@@ -264,6 +270,6 @@ No GPU assumed.
 
 - **HTTPS only** via Caddy `tls internal`. Plain HTTP is redirected.
 - **Bind to LAN only by default** — Caddy listens on `0.0.0.0` but the host firewall (ufw on Pi, pf on Mac) is configured to drop WAN. WAN exposure is intentionally Phase-2 (Ember), not via port-forwarding.
-- **Basic auth required** unless `HEARTH_TRUST_LAN=1` (FR-0001 README open question Q4 — default is "auth required").
+- **Basic auth required** unless `HEARTH_TRUST_LAN=1` — default is auth required; exact Caddy/basic-auth vs gateway auth is **unspecified** until **DG-I1** is resolved or **FR-0004** amends identity (**RW-I1**).
 - **Plugin processes** — on **bare metal**, they run as the **`hearth` system user**, not root; on **Docker profile**, they run as the container user mapped by Compose (non-root by policy).
 - **No outbound traffic from plugins** unless `permissions.network` requested in `tinder.toml` and the hub policy allows it. Web Push outbound to `*.push.apple.com` and the Google FCM endpoints is allowed only for the hub.

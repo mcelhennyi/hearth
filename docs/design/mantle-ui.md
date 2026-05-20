@@ -71,7 +71,7 @@ Chrome (top + bottom bars) stays **mounted** across mode changes so navigation d
 |------|----------|
 | **Home (🏠)** | Always present; returns to `/` from any app |
 | **App tabs** | One tab per enabled **`app`** plugin with `ui.nav.show_in_tab_bar` (default true), ordered by `[ui.nav].order` |
-| **More (⋯)** | Overflow sheet when more than **3** app tabs would fit beside Home (4 slots total including Home on mobile) |
+| **More (⋯)** | Overflow sheet when more than **3** app tabs would fit beside Home (4 slots total including Home on mobile) — **REFINEMENT R-U2** (sheet UX deferred; v0 may cap visible tabs at 4) |
 | **Plugin slots** | Optional icons/actions registered by the active app (`[ui.chrome]`) |
 | **Settings** | Global; may live in top bar on desktop instead |
 

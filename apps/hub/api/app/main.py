@@ -1,3 +1,5 @@
+# REWORK-REQUIRED RW-A1 — Hub API is FR-0002 push prototype only; intended: registry, plugins,
+# settings per docs/design and T-FR-0001-02. See tasks/TAG-REGISTRY.md.
 from __future__ import annotations
 
 import os

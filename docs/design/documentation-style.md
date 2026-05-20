@@ -11,7 +11,8 @@ Conventions for **documentation** and **traceability**. **Stack-specific** rules
 
 - Non-trivial units (services, modules, handlers) carry **`@PROJ-<AREA>-<NUMBER>`** in a short comment or docstring **for stacks where inline tags make sense**.
 - Replace **`PROJ`** with your project prefix (set during **`init-project`**).
-- **Areas:** define a small set for your product (examples: `API`, `AUTH`, `DATA`, `UI`, `JOB`).
+- **Areas:** use the area letters in **`tasks/TAG-REGISTRY.md`** (`A` hub API, `U` UI/Mantle, `D` deployment, `S` Spark, `T` Tinder, `N` notifications, `I` identity, `P` proxy). Define new letters in that registry and here before first use.
+- **Prefix for Hearth:** `@HRT-<AREA>-<n>` (e.g. `@HRT-A-1`).
 
 ## Ticket IDs (map to `FR-NNNN`)
 

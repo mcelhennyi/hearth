@@ -15,7 +15,9 @@ Stand up Hearth — a self-hosted hub for vibe-coded daily-life productivity app
 0. **Plugin-agnostic hub** — no first-party plugin code or hardcoded plugin nav in `apps/hub/`; plugins are external repos + submodules (see [`docs/design/architecture/overview.md`](../../../docs/design/architecture/overview.md#1b-plugin-agnosticism-hub-boundary)).
 1. **Hub app** (Python/FastAPI + React) at `/`: dashboard, plugin registry, settings.
 2. **Tinder** plugin manifest format + on-disk discovery (`/etc/hearth/plugins.d/*.toml` or git submodules under `apps/`).
-3. **nginx reverse proxy** generated from the registry: `/` → hub, `/<slug>/...` → plugin.
+3. **Caddy reverse proxy** (nginx documented alternative) generated from the registry: `/` → hub, `/<slug>/...` → plugin.
+
+> REWORK-REQUIRED RW-D1 — Layered design table still links **nginx** deployment wording in `10-design/deployment.md` mirror; **intended state:** Caddy-first everywhere in this feature tree. Retire when `10-design/*` and acceptance bullets match [`docs/design/deployment.md`](../../../docs/design/deployment.md).
 4. **Mantle** — the shared React shell + design-system package (theme, top nav, plugin chrome, auth widget). Lives in **Kindling** repo, consumed by hub and plugins.
 5. **Spark** v1 — synchronous JSON-RPC over Unix domain sockets between plugin processes; plugin capability surface declared in Tinder.
 6. **Kindling** template repo — bootstrapped from **`.skeleton`** (Kindling keeps its own `.skeleton/` submodule), then Hearth-specific templates; CLI `kindling new <slug>` creates a **new remote repo** (first: [`grocery-list`](https://github.com/mcelhennyi/grocery-list)).

@@ -2,6 +2,8 @@
 
 **Status:** authoritative for MVP (FR-0001). Companion phase-2 relay design lives in [`docs/design/satellite-repos/ember.md`](../satellite-repos/ember.md). Process / workflow rules are in [`docs/ai-context.md`](../../ai-context.md), not duplicated here.
 
+> REWORK-REQUIRED RW-P1 — Several diagrams and tables still name **nginx** as the edge proxy; authoritative default is **Caddy 2.x** per [`deployment.md`](../deployment.md). **Intended state:** Caddy in sequence diagrams, component table, and dev/prod topology; nginx only as documented alternative.
+
 ## 1. What Hearth is
 
 A self-hosted hub that runs on a single machine at home (Raspberry Pi 4/5 or Mac mini) and presents a single URL — `https://hearth.home.arpa/` — that fronts a growing set of small "lifestyle" apps. Each app is its own project ("plugin") that opts into Hearth via a manifest (`kind = app` or `kind = widget`; see [`plugin-contract.md`](../plugin-contract.md)), and apps can call each other through a typed RPC layer. The hub itself is intentionally minimal: routing, plugin registry, identity, a **user-composed home dashboard** ([`dashboard.md`](../dashboard.md)), and settings.
@@ -144,9 +146,13 @@ graph LR
 
 ## 8. Identity (MVP)
 
+> REWORK-REQUIRED RW-I1 — This section describes hub-issued password sessions and **nginx** `auth_request`. **Intended state:** centralized auth via built-in **`hearth-users`** plugin, Caddy `auth_request` to hub verify, and `X-Hearth-User-*` trust headers per [`tasks/feature-history/FR-0004-centralized-users-auth/10-design-01-gateway-and-trust.md`](../../tasks/feature-history/FR-0004-centralized-users-auth/10-design-01-gateway-and-trust.md) (promote to `docs/design/` when FR-0004 resumes). Until rework lands, treat FR-0004 feature design as the implementation target for auth work.
+
 - **One local user**, local password (Argon2id), session cookie issued by hub.
 - Plugins do not implement their own login — they trust a signed `X-Hearth-User` header injected by nginx (set from a sub-request to the hub's `/auth/verify`).
 - Phase 2: Ember relay issues device-bound tokens; same header contract on the inside.
+
+> DESIGN-GAP DG-I1 — **`HEARTH_TRUST_LAN=1`** bypass vs required auth on LAN: operator semantics and Caddy config are not fully specified for FR-0001 MVP if FR-0004 is still parked (see open Q4 in `tasks/feature-history/FR-0001-hearth-platform/10-design/open-questions.md`).
 
 ## 9. Persistence
 

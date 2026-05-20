@@ -141,7 +141,7 @@ Hub returns a versioned JSON document per surface:
 }
 ```
 
-Plugins produce this via Spark method `widget.snapshot` (name TBD in [`spark-api.md`](spark-api.md) when widget work is scheduled) or hub-side adapter calling existing capability methods.
+Plugins produce this via Spark method `widget.snapshot` (**DESIGN-GAP DG-S1** — exact method name and capability surface TBD in [`spark-api.md`](spark-api.md) when widget work is scheduled) or hub-side adapter calling existing capability methods.
 
 ### MVP policy
 
@@ -165,7 +165,7 @@ Returning: **Home** control in the bottom bar (or back chevron in the top bar on
 | Phase | Deliverable |
 |-------|-------------|
 | **P1 — FR-0001** | **App** plugins only; default auto grid of `app-shortcut` blocks; layout API optional (read-only default OK for first ship). |
-| **P2** | User **edit mode** + `PUT /api/dashboard/layout`. |
+| **P2** | User **edit mode** + `PUT /api/dashboard/layout` (**REFINEMENT R-U1** — interaction detail deferred; v0 may ship read-only `GET` only). |
 | **P3** | **Widget** hosting: snapshot API, Mantle widget primitives, enable `kind=widget`. |
 | **P4** | Spark-driven live tile refresh on dashboard (see [`roadmap.md`](roadmap.md) “Unified dashboard”). |
 

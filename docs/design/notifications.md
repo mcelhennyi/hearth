@@ -10,6 +10,8 @@ There are two delivery channels, both visible to plugins through one Spark capab
 
 - Standard W3C Web Push, including iOS 16.4+ for PWAs added to the Home Screen.
 - The hub holds the **VAPID keypair** (generated at install, stored in `var/hearth/secrets/vapid.{pub,priv}`).
+
+> DESIGN-GAP DG-N1 — **VAPID rotation:** rotation procedure, subscription invalidation, and operator UX are **unspecified** (open Q11; default MVP is install-time keys only, rotation deferred).
 - The Mantle service worker subscribes via the browser's PushManager and posts the subscription to `POST /api/push/subscribe`. The hub stores it per-device.
 - When a notification needs to fire, the hub signs the request with VAPID and POSTs the encrypted payload to the device's push endpoint (`*.push.apple.com`, `fcm.googleapis.com`, etc.). The push service forwards to the device, the SW receives it and calls `self.registration.showNotification(...)`.
 - **Outbound internet from the hub is required** — the only outbound path Hearth needs in MVP. (Inbound stays LAN-only until Ember.)
@@ -76,6 +78,8 @@ Plugins without this entry cannot send notifications; the broker rejects with `P
 - Default quiet hours: 22:00–07:00 local. Non-urgent notifications queue and re-fire at 07:00 collapsed by `tag`.
 - Per-tag rate limit: at most 1/hour unless `urgent: true`.
 - Both configurable globally in settings; per-plugin overrides are post-MVP.
+
+> <span class="design-doc-growth">GROWTH GR-N1</span> — **Trigger:** more than **20** active Web Push subscriptions per hub, or sustained `notify.send` fan-out **> 100/hour** across all plugins. **Limitation:** v0 hub stores subscriptions in a flat file/SQLite without sharding. **Upgrade:** amend with batching, per-device quotas, and hub-side queue design. **v0 until triggered:** single-user home scale only.
 
 ## Phase-2 hooks
 

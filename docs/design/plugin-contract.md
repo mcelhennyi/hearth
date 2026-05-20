@@ -168,7 +168,7 @@ sequenceDiagram
   Hub->>Loader: validate(tinder.toml)
   alt valid
     Loader-->>Hub: ok, manifest
-    Hub->>FS: write registry row, generate nginx fragment
+    Hub->>FS: write registry row, generate proxy fragment (Caddy; **RW-P1**)
     Hub-->>User: 200, plugin in "Disabled" state
   else invalid
     Loader-->>Hub: errors[]

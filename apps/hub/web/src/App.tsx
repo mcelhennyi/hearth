@@ -1,3 +1,5 @@
+// REWORK-REQUIRED RW-U1 — Dashboard is a plugin list, not home grid (dashboard.md).
+// REWORK-REQUIRED RW-U2 — Settings chrome route missing (mantle-ui.md). T-FR-0001-04.
 import { useState, useSyncExternalStore } from 'react'
 import { NavLink, Route, Routes } from 'react-router-dom'
 

@@ -1,6 +1,8 @@
 # Spark — app-to-app API
 
-**Authority:** This document defines Spark v1, the only sanctioned channel for inter-plugin traffic in Hearth. Plugins **must not** call each other's nginx routes directly.
+**Authority:** This document defines Spark v1, the only sanctioned channel for inter-plugin traffic in Hearth. Plugins **must not** call each other's HTTP proxy routes directly (Caddy/nginx).
+
+> REWORK-REQUIRED RW-P1 — Wording still says “nginx routes”; **intended state:** “reverse-proxy routes” with Caddy as the default edge per [`deployment.md`](deployment.md).
 
 ## Goals
 
@@ -127,6 +129,10 @@ Rotated daily; retained 14 days by default. Configurable in hub settings.
 - `v: 1` envelope is frozen for FR-0001.
 - Adding a new `kind` requires a new `v`. Removing or repurposing fields requires a new major.
 - Method-level evolution is the plugin's responsibility (Tinder declares them).
+
+## Widget plugins (deferred)
+
+> DESIGN-GAP DG-S1 — **Widget snapshot RPC:** dashboard widget hosting needs a stable Spark method name (e.g. `widget.snapshot` vs capability-scoped names). Specify in this doc when **P3** widget work is scheduled; see [`dashboard.md`](dashboard.md#widget-plugins-backend-contract-hosting-deferred).
 
 ## Phase-2 hooks
 
