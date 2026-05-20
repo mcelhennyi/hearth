@@ -2,22 +2,24 @@
 name: develop-frontier
 description: >-
   Identifies the dependency-valid parallel ticket set, launches one subagent per
-  ticket to complete TEST→DEV→VAL in separate worktrees, then runs finish-frontier
-  or finish-feature per workflow. Use when the user says develop the frontier,
+  ticket to complete TEST→DEV→VAL in separate worktrees, merges ticket work into
+  feat/FR-NNNN-slug, then runs finish-feature only when docs/ai-context.md §2d
+  feature-complete gate is met (otherwise finish-frontier per policy).
+  Use when the user says develop the frontier,
   implement the parallel frontier, or full parallel ticket implementation plus
   integration.
 ---
 
 # Develop frontier
 
-End-to-end: **discover** parallel-capable tickets, ensure each owning feature has a feature worktree, then run **one subagent per ticket** (separate child git worktree + feature-prefixed branch), **TEST → DEV → VAL** serially inside each ticket, then **`finish-feature`** (feature integration branch → PR to `main`) **or** **`finish-frontier`** (merge to `main` integration checkout) per **`docs/ai-context.md` §2d**.
+End-to-end: **discover** parallel-capable tickets, ensure each owning feature has a feature worktree, then run **one subagent per ticket** (separate child git worktree + feature-prefixed branch), **TEST → DEV → VAL** serially inside each ticket, then merge ticket work into each **`feat/FR-NNNN-<slug>`**, validate, and push **those feature branches**. Run **`finish-feature`** (feature branch → PR to the default branch) **only** when **`docs/ai-context.md` §2d** **feature-complete gate** is met for that **`FR-NNNN`**; otherwise continue with **`/identify-frontier`** / the next wave. Use **`finish-frontier`** only when merging straight to the default branch per policy.
 
 ## Preconditions
 
 - Load **`docs/ai-context.md`** (worktrees, ticket completion, **§1b subagents ahead of large work**).
 - Integration checkout on **`main`** available for merges.
 - For feature-branch work, each owning feature branch **`feat/FR-NNNN-<slug>`** exists in **`.worktrees/FR-NNNN-<slug>/feature/`** (create it from `main` before launching ticket branches if needed).
-- **Parent session:** stay thin — **one subagent per ticket** (**`T-FR-NNNN-xx`**) implements it; the orchestrator runs **`finish-feature`** or **`finish-frontier`**, per **`docs/ai-context.md` §1b**, **§2**, and **§2d**.
+- **Parent session:** stay thin — **one subagent per ticket** (**`T-FR-NNNN-xx`**) implements it; the orchestrator merges to **`feat/FR-NNNN-<slug>`** and runs **`finish-feature`** (default-branch PR) **only** when **§2d** **feature-complete gate** is met, or runs **`finish-frontier`** when integrating straight to the default branch, per **`docs/ai-context.md` §1b**, **§2**, and **§2d**.
 - **Development commands:** inside each ticket worktree, run build/test/lint/package-manager/dev-server/doc-build commands through Docker / Docker Compose / Dev Container / CI images where possible (for example **`./develop run …`**, `docker compose run …`, or the configured Dev Container). Host-local commands are exceptions and must be noted in the ticket diary or handoff.
 
 ## 0 — Refresh the frontier
@@ -32,13 +34,10 @@ End-to-end: **discover** parallel-capable tickets, ensure each owning feature ha
 
 ## 2 — Launch one subagent per frontier ticket (parallel)
 
-**Model (required):** Each ticket subagent runs on **Composer 2**, not the orchestrator’s model — **`docs/ai-context.md` §1b** (Cursor: **`model: "composer-2-fast"`** on the **Task** tool for every ticket **Task** call).
-
 Each subagent prompt must include:
 
 | Requirement | Detail |
 |-------------|--------|
-| **Model** | **Composer 2** only — **`composer-2-fast`** on **Task** in Cursor; never inherit the parent session model. |
 | **Ticket** | **`T-FR-NNNN-xx`**, title from the owning **`tasks/feature-history/FR-NNNN-<slug>/tickets.md`**. |
 | **Worktree** | Feature branch at **`.worktrees/FR-NNNN-<slug>/feature/`**. Ticket/stage work in **`.worktrees/FR-NNNN-<slug>/T-FR-NNNN-xx-short-name/`**, branch e.g. **`feat/FR-NNNN-<slug>/T-FR-NNNN-xx-short-name`**, created from the feature branch. All phases **only** here. |
 | **Phase order** | **TEST → DEV → VAL** serially for that ticket (per section in that ticket’s **`tickets.md`**). |
@@ -53,8 +52,8 @@ All frontier tickets **VAL** = `done`, branches **pushed**.
 
 ## 4 — Finish integration
 
-- **Feature-branch workflow (preferred for `FR-NNNN` work):** follow **`finish-feature`** — merges ticket/stage branches into **`feat/FR-NNNN-<slug>`**, validates, opens **PR → `main`** for human review. **No** automatic push to **`main`**.
-- **Direct-to-main frontier:** follow **`finish-frontier`** when integrating parallel tickets straight into **`main`** per existing policy.
+- **Feature-branch workflow (preferred for `FR-NNNN` work):** merge completed ticket/stage branches into **`feat/FR-NNNN-<slug>`**, revalidate, push **that feature branch**. Call **`finish-feature`** only when **§2d** **feature-complete gate** is met (then open a PR from **`feat/FR-NNNN-<slug>`** to the default branch). **Do not** open that PR for partial feature delivery. **No** automatic push to the default branch.
+- **Direct-to-main frontier:** follow **`finish-frontier`** when integrating parallel tickets straight into the default branch per existing policy.
 
 Important gate from **`finish-frontier`**: after merge conflict resolution (including `triadDone` union), integration must revalidate all requirements/tests before any push to `main`.
 

@@ -1,5 +1,7 @@
 @docs/ai-context.md
 
+If **`CLAUDE.project.md`** exists at the repository root, load it **after** this file for Claude-only extensions. That file is **not** overwritten by **`./sync-skeleton`**. See **`docs/skeleton-project-overlays.md`**.
+
 ## Claude-specific notes
 
 - Prefer **subagents or delegated tasks** for large exploration or multi-file work; see **`docs/ai-context.md`** §1b.
@@ -12,15 +14,16 @@ Custom slash commands live in **`.claude/commands/`**:
 
 | Command | Role |
 |---------|------|
+| **`/audit-design`** | Pre-ticket readiness audit for a **top-level design doc** path (plain-English report: fix / address / defer before ticketing) — **`.cursor/skills/audit-design/SKILL.md`**. Run before **`/feature-request`** when design already exists. |
 | **`/feature-request`** | **`FR-NNNN`** lifecycle: intake, layered design, **`20-tickets-dag.md`**, canonical **`tickets.md`**, optional frontier; repo-root **`CURRENT.md`** on **`feat/*`**; end turns with **Executive summary** + **next step** + **options** when relevant — see **`.cursor/skills/feature-request/SKILL.md`**. |
-| **`/feature-request-continue`** | Resume an in-progress **`FR-NNNN`** from **`tasks/feature-history/`** (read **`CURRENT.md`** when on **`feat/*`**). |
+| **`/feature-request-continue`** | Resume an in-progress **`FR-NNNN`** from **`tasks/feature-history/`** (read **`CURRENT.md`** when on **`feat/*`**); **`git fetch`** and verify integration PR state before suggesting merge; if merged, apply **Closeout** hygiene (**`90-closeout.md`**, retire **`Parallel streams`** row, **Current focus**). |
 | **`/identify-frontier`** | Parallel-ticket handoff from **`ticket-progress.md`** + **`tasks/feature-history/**/tickets.md`** (+ DAG). Run **after** tickets exist. |
-| **`/develop-frontier`** | One subagent per parallel-capable ticket (**TEST→DEV→VAL** per child worktree under **`.worktrees/FR-NNNN-<slug>/`**); each ticket subagent **Composer 2** only (`composer-2-fast` on Cursor **Task**), not the orchestrator model — **`docs/ai-context.md` §1b**. |
-| **`/finish-feature`** | Merge feature-prefixed ticket/stage branches into **`feat/FR-NNNN-<slug>`**, validate, **PR → `main`**; do not auto-delete remote **`feat/*`**. |
+| **`/develop-frontier`** | One subagent per parallel-capable ticket (**TEST→DEV→VAL** per child worktree under **`.worktrees/FR-NNNN-<slug>/`**); merge to **`feat/…`**; **`finish-feature`** only after **§2d** gate. |
+| **`/finish-feature`** | Merge ticket/stage branches into **`feat/FR-NNNN-<slug>`**, validate; **PR → default branch** only when **`docs/ai-context.md` §2d** feature-complete gate is met; do not auto-delete remote **`feat/*`**. |
 | **`/finish-frontier`** | Merge parallel ticket/stage branches into **`main`** per policy. |
 | **`/commit-with-metrics`** | Commit with optional AI metrics footer — **`.cursor/skills/commit-with-ai-metrics/SKILL.md`**. |
+| **`/add-todo`** | Add a task to **`tasks/todo.md`** under **Active** for lightweight follow-up tracking. |
 | **`/sync-skeleton`** | Update **`.skeleton/`** submodule and **`skeleton.manifest`** root copies; run **`./sync-skeleton`** — **`.cursor/skills/sync-skeleton/SKILL.md`**, **`.skeleton/INIT.MD`**. |
-| **`/plugin-idea`** | Create or update a native plugin idea page under **`docs/design/plugin-ideas/`**; later graduate to **`FR-NNNN`** and mount as **`apps/<slug>/`** submodule — **`.cursor/skills/plugin-idea/SKILL.md`**. |
 
 **“Identify” disambiguation:** spoken **identify (FR)** = register **`FR-NNNN`** + intake; **`/identify-frontier`** = parallel **tickets** only after **`tickets.md`** exists.
 

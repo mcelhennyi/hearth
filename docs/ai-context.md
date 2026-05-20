@@ -1,10 +1,14 @@
 # AI development context
 
-**Single source of truth for AI-assisted development *process***: session flow, worktrees, tickets, collaboration norms, and how spec ↔ code conflicts are handled. **Cursor** (`.cursor/rules/main.mdc`) and **Claude Code** (`CLAUDE.md`) should reference this file.
+**Single source of truth for AI-assisted development *process***: session flow, worktrees, tickets, collaboration norms, and how spec ↔ code conflicts are handled. **Cursor** (`.cursor/rules/main.mdc`) and **Claude Code** (`CLAUDE.md`) should reference this file **and**, when it exists, the optional companion **`docs/ai-context.project.md`** (see **Project-specific overlays** below and **`docs/skeleton-project-overlays.md`**).
 
 **Product and system design** live under **`docs/design/`** (and, if you publish a docs site from this repo, treat that site as the **primary source of truth** for business + system design the same way you would authoritative pages under **`docs/design/`**). This file does not duplicate those specs; it tells agents how to use them.
 
 This document is **stack-agnostic**. Language-specific rules belong in **`.cursor/rules/stack-conventions.mdc`** (or equivalent) once you choose a stack.
+
+## Project-specific overlays
+
+Repositories may ship **`docs/ai-context.project.md`** beside this file. It is **not** copied or modified by **`./sync-skeleton`**; keep long-lived, repo-only process rules there so the base file can track the skeleton template. Naming rules and examples: **`docs/skeleton-project-overlays.md`**.
 
 ---
 
@@ -12,13 +16,14 @@ This document is **stack-agnostic**. Language-specific rules belong in **`.curso
 
 At session start, load in order:
 
-1. **`docs/ai-context.md`** (this file)
-2. **`tasks/ticket-progress.md`** — queue beacon, optional **Parallel streams**, and **TEST / DEV / VAL** rows
-3. **`docs/design/architecture/overview.md`** when it exists and is populated
-4. **`README.md`**
-5. **`tasks/lessons.md`**
+1. **`docs/ai-context.md`** (this file; refreshed from **`.skeleton/`** on **`./sync-skeleton`** when this path is not syncignored)
+2. **`docs/ai-context.project.md`** when the file exists — repo-local extension; **never** written by **`./sync-skeleton`** (see **Project-specific overlays** above)
+3. **`tasks/ticket-progress.md`** — queue beacon, optional **Parallel streams**, and **TEST / DEV / VAL** rows
+4. **`docs/design/architecture/overview.md`** when it exists and is populated
+5. **`README.md`**
+6. **`tasks/lessons.md`**
 
-Skim **`tasks/handoffs/`** and **`tasks/feature-history/REGISTRY.md`** for recent decisions.
+Skim **`tasks/handoffs/`**, **`tasks/feature-history/REGISTRY.md`**, and **`tasks/TAG-REGISTRY.md`** for recent decisions and id allocation state.
 
 ---
 
@@ -51,7 +56,14 @@ Skim **`tasks/handoffs/`** and **`tasks/feature-history/REGISTRY.md`** for recen
 | `DESIGN-GAP` | Spec ambiguous — stop; do not guess |
 | `DESIGN-FLAW` | Wrong testable assumption in design |
 | `CODE-DEFECT` | Design correct; implementation wrong |
+| `REWORK-REQUIRED` | Design/intent is settled and correct, but **shipped code or another doc is knowingly out of sync** with it — a **durable** flag that survives until the rework lands (unlike `CODE-DEFECT`, which you just fix now) |
 | `COMPLETED` | Implementation and design match; all criteria met |
+
+**`REWORK-REQUIRED` vs `CODE-DEFECT`:** `CODE-DEFECT` = code is wrong against a correct design, fix it immediately (transient). `REWORK-REQUIRED` = a deliberate, recorded divergence between settled intent and existing code/docs that is tracked until reworked — it must name the specific file/spec that deviates and the intended end state, and is removed in the same change that lands the rework. Full convention: **`.claude/rules/rework-required.md`** (mirrored **`.cursor/rules/rework-required.mdc`**).
+
+**Numbered tag ids** (`DG-`, `DF-`, `RW-`, `GR-`, `R-`, `DEC-`, `TS-`, traceability `@…`, amendments): **reserve in `tasks/TAG-REGISTRY.md`**, commit, and **push to the default branch before use** — same deconfliction discipline as **`FR-NNNN`** in **`REGISTRY.md`**. See **`.cursor/rules/tag-reservation.mdc`** (mirrored **`.claude/rules/tag-reservation.md`**).
+
+**Evaluable `GROWTH` (`GR-…`):** when the trigger is measurable at runtime, software **shall** monitor and log **`GROWTH_TRIGGERED`** on fire (self-report need to amend design). Monitors must be **compiled out** by default and **runtime-disableable** when compiled in — **`.cursor/rules/growth-monitoring.mdc`** (mirrored **`.claude/rules/growth-monitoring.md`**).
 
 ### Amendment format
 
@@ -108,18 +120,18 @@ Use planning for multi-step or architectural work.
 - **Orchestrator role:** define success criteria, boundaries, and return format; merge **bounded handoffs** (paths, decisions, short markdown) from subagents instead of inlining huge tool dumps in the parent thread.
 - **Examples:** repo-wide search → delegated exploration; parallel implementation tickets (**`T-FR-NNNN-xx`**) → **`develop-frontier`** (one subagent per ticket); large **`FR-NNNN`** design → subagents per subsystem with one **serial diary** owner; **several `FR-NNNN` in design** → one subagent **per feature directory** so each **`serial-diary.md`** stays coherent.
 - **Platform:** In Cursor, use the **Task** tool with an appropriate `subagent_type` where available; in Claude Code, use **subagents** per product docs. If subagents are unavailable, **stop and split** the work into smaller user-visible steps rather than monolithic execution.
-- **Ticket implementation subagents** (each **`T-FR-NNNN-xx`** from **`develop-frontier`** / parallel ticket work): **always use Composer 2** — do **not** inherit or default to the top-level orchestrator session model. In Cursor, set **`model: "composer-2-fast"`** on every **Task** invocation for a ticket stream. In other hosts, choose the **Composer 2** (or equivalent) model for ticket subagents explicitly when the product allows per-subagent model selection; if only one model is available, note the limitation in the handoff rather than silently matching the parent.
 
 ### 2. Subagent strategy
 
 - **Per ticket** (id **`T-FR-NNNN-xx`):** phases **TEST → DEV → VAL** serially inside that ticket’s section in the owning feature’s **`tickets.md`**, **one child worktree** under that feature’s **`.worktrees/FR-NNNN-<slug>/`** folder. Development commands inside that worktree still use Docker / Dev Container / CI images where possible.
 - Do **not** parallelize phases for the **same** ticket across subagents.
-- **Parallel tickets:** use **`identify-frontier`** / **`develop-frontier`**, then **`finish-feature`** (feature integration branch → **PR to `main`**, §2d) **or** **`finish-frontier`** (merge straight to **`main`**) — the parent should **delegate** implementation streams per **§1b** rather than doing every ticket inline.
+- **Parallel tickets:** use **`identify-frontier`** / **`develop-frontier`**, merge ticket/stage work into **`feat/FR-NNNN-<slug>`**, and keep iterating on the feature branch until **§2d** **feature-complete gate** is met; then **`finish-feature`** (**`feat/FR-NNNN-<slug>`** → default branch PR) **or** **`finish-frontier`** (merge straight to the default branch) per policy — the parent should **delegate** implementation streams per **§1b** rather than doing every ticket inline.
 
 ### 2b. Feature request lifecycle (product `FR-NNNN`)
 
+- **Pre-ticket design audit (recommended):** **`/audit-design <top-level-design-doc>`** — **`.cursor/skills/audit-design/SKILL.md`** — plain-English readiness report (gaps, flaws, rework, deferrals) before **`/feature-request`** when design under **`docs/design/`** already exists.
 - **Cursor skill:** `feature-request` — **`.cursor/skills/feature-request/SKILL.md`**
-- **Claude command:** `/feature-request` (and **`/feature-request-continue`** to resume)
+- **Claude command:** `/feature-request` (and **`/feature-request-continue`** to resume). **`/feature-request-continue`** must **`git fetch`** and **verify** an integration PR is still **open** before recommending merge when **`README.md`**, **`90-closeout.md`**, **`handoffs/`**, or **`ticket-progress.md`** still read like a pending PR; if already merged on the remote default branch, apply registry / **`CURRENT.md`** / **`ticket-progress.md`** bookkeeping per that skill (**`90-closeout.md`**, **retire** the feature from **`Parallel streams`**, **Current focus**) so the next step is not stale.
 - **Registry and history:** **`tasks/feature-history/REGISTRY.md`**, one directory **`tasks/feature-history/FR-NNNN-<slug>/`** per feature (intake, layered design, **`20-tickets-dag.md`**, **`serial-diary.md`** / **`parallel/`**, optional **`DIARY.md`**, **`handoffs/`**, **`90-closeout.md`**). **Reservation rule:** once **`FR-NNNN`** and **`next_id`** are updated and the minimal feature stub exists, **commit and push to `main` right away** so other parallel features see the assignment and do not pick the same id.
 - **Composes** with: **`/identify-frontier`**, **`/develop-frontier`**, **`/finish-feature`** (default for product implementation per **§2d**), **`/finish-frontier`** — the feature request flow **produces and lands** tickets with ids **`T-FR-NNNN-xx`**, then those commands run on the ticket graph. It does **not** replace them.
 - **Disambiguation:** *Identify* in the spoken *identify (FR) → develop → finish* product flow = **register `FR-NNNN` and intake**; **`/identify-frontier`** = parallel **tickets** from all **`tasks/feature-history/**/tickets.md`** + **`ticket-progress.md`** and should run **only after** tickets exist.
@@ -128,15 +140,16 @@ Use planning for multi-step or architectural work.
 
 - **Parallel product features are allowed:** Several **`FR-NNNN`** efforts may be in **`design`** or **`in-progress`** at the same time. Each keeps its own directory under **`tasks/feature-history/FR-NNNN-<slug>/`** (and its own **`parallel/`** diaries). **`REGISTRY.md`** is the roster of all features and statuses.
 - **One global dependency graph:** Every implementation ticket (**`T-FR-NNNN-xx`**) is **defined** in a feature’s **`tasks/feature-history/FR-NNNN-<slug>/tickets.md`**; **`docs/design/tickets-initial.md`** holds the **combined DAG** (mermaid) and links. **`identify-frontier`** computes **eligible ∩ incomplete** over the **entire** graph — tickets belonging to **different** features often run in the **same** frontier batch when **Deps** do not block each other.
-- **Orchestration:** **`develop-frontier`** may therefore mix tickets from multiple features in one wave; each ticket still gets **one subagent** and **one child worktree** under its owning feature folder (see **§1b** / **§2**). Close implementation with **`finish-feature`** per **`FR-NNNN`** (ticket/stage branches → **`feat/FR-NNNN-<slug>`** → **PR to `main`**) when using the feature-branch line (**§2d**), **or** **`finish-frontier`** when merging **directly** into **`main`** in dependency-safe order across **all** merged branches.
+- **Orchestration:** **`develop-frontier`** may therefore mix tickets from multiple features in one wave; each ticket still gets **one subagent** and **one child worktree** under its owning feature folder (see **§1b** / **§2**). Merge completed ticket/stage branches into each affected **`feat/FR-NNNN-<slug>`**, validate, and push **that feature branch** while work continues. Use **`finish-feature`** only when **§2d** **feature-complete gate** is satisfied for that **`FR-NNNN`** (then **PR** **`feat/FR-NNNN-<slug>`** → default branch), **or** use **`finish-frontier`** when merging **directly** into the default branch in dependency-safe order across **all** merged branches per team policy.
 - **Shared files (`tasks/ticket-progress.md`, per-feature **`tickets.md`**, `docs/design/tickets-initial.md` DAG, `REGISTRY.md`):** Parallel agents must **avoid clobbering** shared tables: update **only** the **Progress** row for the **ticket id you own**; edit **only** your feature’s **`tickets.md`** for **`###`** sections; for **Current focus** / registry / global mermaid **`triadDone`**, **coordinate** (short handoff in **`tasks/handoffs/`**, or a single integration owner). **`triadDone`** unions on merge follow **Finish-frontier merge notes** at the end of this file.
 - **Hot-file contention:** If two parallel streams must edit the **same** files repeatedly, **serialize** via an explicit **dependency** in the relevant **`tickets.md`** or a small **foundation ticket** that lands first.
 
 ### 2d. Feature integration branch, `finish-feature`, handoffs, diaries, and branch audit
 
 - **Feature integration branch + worktree:** For each **`FR-NNNN`** in implementation, maintain a long-lived git branch **`feat/FR-NNNN-<slug>`** (same **`<slug>`** as the feature-history folder) checked out at **`.worktrees/FR-NNNN-<slug>/feature/`**.
-- **Ticket/stage branches:** Every worked ticket or stage branches from the feature branch and includes both names, e.g. **`feat/FR-NNNN-<slug>/T-FR-NNNN-xx-short-name`** (or **`feat/FR-NNNN-<slug>/stage-short-name`** for non-ticket stages). Its worktree lives under **`.worktrees/FR-NNNN-<slug>/<ticket-or-stage-slug>/`** and merges **into the feature branch first** — not directly to **`main`** — unless an explicit exception is documented for hotfix flows.
-- **`finish-feature`:** Merges ticket/stage branches into **`feat/FR-NNNN-<slug>`**, runs validation there, pushes the feature branch, and opens (or updates) a **pull request to `main`** for **human** review and merge. It does **not** replace **`finish-frontier`** for workflows that still integrate straight to **`main`**.
+- **Ticket/stage branches:** Every worked ticket or stage branches from the feature branch and includes both names, e.g. **`feat/FR-NNNN-<slug>/T-FR-NNNN-xx-short-name`** (or **`feat/FR-NNNN-<slug>/stage-short-name`** for non-ticket stages). Its worktree lives under **`.worktrees/FR-NNNN-<slug>/<ticket-or-stage-slug>/`** and merges **into the feature branch first** — not directly to the **default branch** — unless an explicit exception is documented for hotfix flows.
+- **Feature-complete gate (default-branch PR):** For a given **`FR-NNNN`**, treat **feature implementation** as **complete** when every **`### T-FR-NNNN-xx`** section in **`tasks/feature-history/FR-NNNN-<slug>/tickets.md`** has **TEST**, **DEV**, and **VAL** = **`done`** in **`tasks/ticket-progress.md`**. Until then, keep all product implementation on **`feat/FR-NNNN-<slug>`** — merge ticket/stage branches there, revalidate, push the feature branch, update **`CURRENT.md`** / **`handoffs/`**, and run **`/identify-frontier`** / **`/develop-frontier`** for the next tickets — **do not** open a **pull request from `feat/FR-NNNN-<slug>` to the default branch** for partial delivery. **Documented exceptions** (hotfix, agreed slice in **`handoffs/`** or **`90-closeout.md`**, or explicit team decision) may override this default.
+- **`finish-feature`:** After the **feature-complete gate** is met, merges any remaining ticket/stage branches into **`feat/FR-NNNN-<slug>`**, runs validation there, pushes the feature branch, and opens (or updates) a **pull request to the default branch** for **human** review and merge. If the gate is **not** met, **do not** run this PR step — keep work on **`feat/FR-NNNN-<slug>`** only. It does **not** replace **`finish-frontier`** for workflows that still integrate straight to the default branch.
 - **`CURRENT.md`:** keep the feature integration branch’s file accurate through **`finish-feature`**; the **PR merge to `main`** should drop **`CURRENT.md`** from **`main`** so the default branch stays neutral (**`feature-request`** skill).
 - **Continue / milestone handoffs** for a feature belong **primarily** under **`tasks/feature-history/FR-NNNN-<slug>/handoffs/`** (e.g. `YYYY-MM-DD-continue.md`, `YYYY-MM-DD-milestone.md`). Optionally mirror a one-line pointer in **`tasks/handoffs/`** if the team wants a global inbox — the **authoritative** narrative for “what’s next on this feature” stays next to that feature’s artifacts.
 - **Diaries:** **`serial-diary.md`** is one append-only chain for serial work; parallel agents write only under **`parallel/<stream>.md`**. Periodically (and at closeout), produce **`DIARY.md`** in the same feature folder: **merge** content from **`serial-diary.md`** and **`parallel/*.md`** into **one** file ordered as a **stack** — **newest entries at the top** — each block labeled with **source file**, **date**, and **git ref** (branch or SHA) when known so git history stays traceable. **Do not delete** the underlying **`serial-diary.md`** / **`parallel/`** files when generating **`DIARY.md`**; they remain the raw audit log.
@@ -154,6 +167,7 @@ Do not mark **VAL** `done` without meeting the ticket’s verification criteria.
 
 - Update **`tasks/ticket-progress.md`** Progress rows for the ticket you own — **only your row** when multiple agents run in parallel.
 - When several features are active, keep **`Parallel streams`** (in **`ticket-progress.md`**) accurate, or add a dated line to **`tasks/handoffs/`** naming each stream’s **ticket id**, **`FR-NNNN`**, branch, and **`.worktrees/…`** path.
+- When a feature is **`complete`** in **`REGISTRY.md`**, **remove** that **`FR-NNNN`** from **`Parallel streams`** (do not leave it as active work); write or refresh **`tasks/feature-history/FR-NNNN-<slug>/90-closeout.md`** and align **Current focus** with the next incomplete ticket — same contract as **`feature-request`** skill **Closeout** and **`/feature-request-continue`** post-merge hygiene.
 - When a ticket completes, update the **DAG Overview** **`triadDone`** classes in **`docs/design/tickets-initial.md`** (per **`docs/design/documentation-style.md`** — e.g. `TFR0007_01_TEST` … `triadDone`).
 
 ### 6. Session end
@@ -166,27 +180,28 @@ When **TEST/DEV/VAL** are all **`done`**:
 
 1. **Commit** — Conventional message; optional metrics footer per **`.cursor/skills/commit-with-ai-metrics/SKILL.md`** / **`/commit-with-metrics`**.
 2. **Push** — `git push -u origin HEAD` (or as required).
-3. **Open PR** — Prefer `gh pr create`; if unavailable, note what blocked it. Under the **feature-branch workflow** (**§2d**), each completed ticket/stage opens a PR with **base** **`feat/FR-NNNN-<slug>`** and **head** the feature-prefixed ticket/stage branch; after all tickets land, **`finish-feature`** opens (or updates) the **PR** with **base** **`main`** and **head** **`feat/FR-NNNN-<slug>`** — still **no** automated push to **`main`**. For **direct-to-main** integration, use **base** **`main`** for ticket PRs per team policy.
+3. **Open PR** — Prefer `gh pr create`; if unavailable, note what blocked it. Under the **feature-branch workflow** (**§2d**), each completed ticket/stage merges into **`feat/FR-NNNN-<slug>`**; ticket-level PRs (if any) use **base** **`feat/FR-NNNN-<slug>`** and **head** the feature-prefixed ticket/stage branch. The **`feat/FR-NNNN-<slug>`** → default branch PR is opened **only** when **§2d** **feature-complete gate** is met — **`finish-feature`** then opens (or updates) that **PR**; still **no** automated push to the default branch. For **direct-to-main** integration, use the default branch as **base** for ticket PRs per team policy.
 
 ---
 
 ## Finish-frontier merge notes
 
-**`finish-feature`** uses the same **union** rules for shared tracker files when merging **ticket** branches into **`feat/FR-NNNN-<slug>`**; it does **not** push **`main`** — only a **PR** for human merge (**§2d**).
+**`finish-feature`** uses the same **union** rules for shared tracker files when merging **ticket** branches into **`feat/FR-NNNN-<slug>`**; it opens a PR to the default branch **only after** **§2d** **feature-complete gate** — it **never** pushes the default branch from automation.
 
 When merging multiple ticket/stage branches (via **`finish-frontier`** into **`main`**), resolve **shared** files (e.g. `docs/design/tickets-initial.md` mermaid `triadDone` classes) by **union** of completed tickets.
 
 After merge resolution, run a mandatory full revalidation gate on the **target** branch (**`main`** for **`finish-frontier`**; **`feat/FR-NNNN-<slug>`** when finishing a feature) before pushing **that** branch:
 
-- If all required checks pass: **`finish-frontier`** may push **`main`**; **`finish-feature`** pushes only **`feat/FR-NNNN-<slug>`** and relies on the **PR to `main`** for human merge — never push **`main`** from automation in the feature workflow.
+- If all required checks pass: **`finish-frontier`** may push the default branch; **`finish-feature`** pushes only **`feat/FR-NNNN-<slug>`** and relies on the **PR to the default branch** for human merge (opened only after **§2d** **feature-complete gate**) — never push the default branch from automation in the feature workflow.
 - If any check fails or a requirement is unmet, do **not** push the green integration branch; create/update a blocker as the primary ticket in `tasks/ticket-progress.md`, set `Session status` to `blocked`, and for **`finish-frontier`** push the integration state to `broken-main` until the blocker reaches VAL `done`.
 
 ---
 
 ## Further reading
 
+- **`.skeleton/CHANGELOG.md`** — after **`./sync-skeleton`**, read **After sync: read the changelog** and **`[Unreleased]` → Template** / **Deprecations** for **`Consumer manual:`** / **`[consumer manual]`** follow-ups
+- **`docs/skeleton-project-overlays.md`** — **`*.project.*`** companion files for repo-specific rules next to template-synced paths
 - **`INIT.MD`** — clone, **`init-skeleton`**, **`sync-skeleton`**, **`init-project`**
 - **`sync-skeleton`** skill / **`/sync-skeleton`** — run **`./sync-skeleton`** from the project root (see **`INIT.MD` → *Syncing template updates***)
-- **`plugin-idea`** skill / **`/plugin-idea`** — capture native plugin ideas under **`docs/design/plugin-ideas/`** before they graduate to **`FR-NNNN`** and **`apps/<slug>/`** submodules.
 - **`docs/design/documentation-style.md`** — ticket ids, traceability, writing rules
 - **`.cursor/skills/feature-request/SKILL.md`** — full **`FR-NNNN`** stage contract

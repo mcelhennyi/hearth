@@ -60,6 +60,29 @@ tasks/                # Process state (see docs/ai-context.md)
   - add an explicit **follow-up ticket** on the active **`FR-NNNN`** (or a new **`FR-NNNN`**) titled so `identify-frontier` can schedule CLI parity, and note the gap in the feature diary.
 - **UI follow-up:** Web admin surfaces should wrap the same contracts later; do not treat “UI-only” as done for operations that operators must perform over SSH.
 
+## Explanatory comments (all languages)
+
+- Comment **why**, **invariants**, and **I/O or IPC contracts** (stdout vs stderr, log safety, wire formats, what must not be logged).
+- On **public APIs and process boundaries**, document preconditions, errors, and threading when non-obvious.
+- For **stubs and placeholders**, state that explicitly; use **DESIGN-GAP** or a ticket when design is open.
+- Do **not** add comments that only restate the following line of code; avoid narrating control flow the code already shows.
+
+## GROWTH monitoring (`GR-…`)
+
+When a design **`GROWTH`** tag is objectively evaluable, follow
+**`.cursor/rules/growth-monitoring.mdc`**. Default: **no monitor cost** in
+release builds.
+
+| Layer | Compile out | Runtime off (compiled in) | Runtime on |
+|-------|-------------|---------------------------|------------|
+| **Python** | no monitor module imported in prod image (default) | `HEARTH_GROWTH_MONITOR=0` | `HEARTH_GROWTH_MONITOR=1` |
+| **TypeScript** | `import.meta.env.HEARTH_GROWTH_MONITOR` false at build (default prod) | build flag true + `process.env.HEARTH_GROWTH_MONITOR !== '1'` | `HEARTH_GROWTH_MONITOR=1` |
+| **C++ / CMake** (when used) | `HEARTH_GROWTH_MONITOR=OFF` (default) — empty stubs | `ON` + env `HEARTH_GROWTH_MONITOR=0` | `HEARTH_GROWTH_MONITOR=1` |
+
+Emit **`GROWTH_TRIGGERED`** on stderr (Python services) or structured service logs
+(FastAPI / hub). Never on Spark payloads or plugin HTTP responses unless design
+explicitly requires it.
+
 ## Tie-back to design
 
 - Module-level docstrings reference `docs/design/...` where the behavior is specified.

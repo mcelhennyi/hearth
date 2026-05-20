@@ -7,8 +7,8 @@
 # Path to the Compose file used for doc preview (repo-root relative)
 #DEVELOP_COMPOSE_FILE="compose.yaml"
 
-# MkDocs container (see deploy/compose/docker-compose.yml service `docs`)
+# Service name in that Compose file for the MkDocs / documentation container
 #DEVELOP_DOCS_SERVICE="docs"
 
-# Host port for MkDocs (passed to Compose as HEARTH_DOCS_PORT; default 5081)
-#DEVELOP_DOCS_PORT="5081"
+# Port to mention in help text (must match the published port in compose.yaml)
+#DEVELOP_DOCS_PORT="8000"

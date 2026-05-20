@@ -1,8 +1,8 @@
 ---
 description: >-
   End-to-end feature request: FR-NNNN registry, layered design, tickets + DAG,
-  then optional /identify-frontier, /develop-frontier, /finish-feature (default)
-  or /finish-frontier. Resume with /feature-request-continue.
+  then optional /identify-frontier, /develop-frontier; /finish-feature only after
+  docs/ai-context.md §2d feature-complete gate (or /finish-frontier). Resume with /feature-request-continue.
 ---
 
 # /feature-request
@@ -13,10 +13,14 @@ Follow the Cursor project skill **`.cursor/skills/feature-request/SKILL.md`**.
 
 End each response with **Executive summary**, **Suggested next step**, and **Options** when more than one reasonable path exists — see **User-facing close (required)** and **`reference-templates.md` → User-facing session close** in that skill.
 
+## Prerequisite (recommended)
+
+When a **top-level design doc** under **`docs/design/`** already exists, run **`/audit-design <path>`** first; then **`/feature-request <same path>`** when verdict is **Ready** or accepted **Caution**.
+
 ## What this is
 
 - **Not** a replacement for `identify-frontier` / `develop-frontier` / `finish-feature` / `finish-frontier`.
-- A **product-sized** flow: **intake** → **interface-first design** (skeleton, then depth as needed) → **`20-tickets-dag.md`** (Jira/Asana-friendly markdown, Mermaid DAG) → **prompt** to implement → **`/develop-frontier`** when tickets (**`T-FR-NNNN-xx`**) are in the tracker → **prompt** to **`/finish-feature`** (or **`/finish-frontier`** if integrating straight to **`main`**).
+- A **product-sized** flow: **intake** → **interface-first design** (skeleton, then depth as needed) → **`20-tickets-dag.md`** (Jira/Asana-friendly markdown, Mermaid DAG) → **prompt** to implement → **`/develop-frontier`** when tickets (**`T-FR-NNNN-xx`**) are in the tracker → **prompt** to **`/finish-feature`** when **`docs/ai-context.md` §2d** **feature-complete gate** is met (or **`/finish-frontier`** if integrating straight to the default branch).
 - For **large** features, use **subagents early** per **`docs/ai-context.md` §1b** (e.g. per subsystem design or codebase survey) before consolidating artifacts.
 - **Parallel features:** several **`FR-NNNN`** may be in flight; each has its own **`tasks/feature-history/FR-…/`** directory. **`/develop-frontier`** still batches tickets (**`T-FR-NNNN-xx`**) from the **global** graph — see **`docs/ai-context.md` §2c** and **`tasks/ticket-progress.md` → Parallel streams**.
 - **Human-readable naming:** In prompts, diaries, and handoffs, lead with each ticket’s **title** from **`tickets.md`**; use the **`T-FR-NNNN-xx`** id with a **link** to the canonical **`###`** section for detail (full rule in **`.cursor/skills/feature-request/SKILL.md` → Human-readable names vs ticket ids**).
@@ -25,8 +29,8 @@ End each response with **Executive summary**, **Suggested next step**, and **Opt
 
 1. **Before develop:** land tickets (**`T-FR-NNNN-xx`**) in **`tasks/feature-history/FR-NNNN-<slug>/tickets.md`**, **`tasks/feature-history/TICKET-SOURCES.md`**, **`docs/design/tickets-initial.md`** (DAG index), and **`tasks/ticket-progress.md`** (or a PR-ready “Proposed patch” in `20-tickets-dag.md` if you cannot commit yet).
 2. **Parallel handoff (optional, recommended):** `/identify-frontier`
-3. **Implement:** `/develop-frontier` (feature worktree at **`.worktrees/FR-NNNN-<slug>/feature/`**; ticket/stage child worktrees under the same feature folder; **Composer 2** per ticket subagent — **`docs/ai-context.md` §1b**)
-4. **Integrate:** `/finish-feature` (default; feature branch → **PR to `main`**) or `/finish-frontier` (direct **`main`**)
+3. **Implement:** `/develop-frontier` (feature worktree at **`.worktrees/FR-NNNN-<slug>/feature/`**; ticket/stage child worktrees under the same feature folder)
+4. **Integrate:** `/finish-feature` after **§2d** gate (default branch PR) or `/finish-frontier` (direct default branch)
 
 **Development commands:** during implementation, run build/test/lint/package-manager/doc/dev-server commands inside Docker / Docker Compose / Dev Container / CI images where possible. Use **`./develop run …`**, `docker compose run …`, or the configured Dev Container before host-local commands; document exceptions in feature diaries or handoffs.
 

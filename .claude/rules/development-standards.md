@@ -10,8 +10,11 @@ Use with **`docs/ai-context.md`**. This file mirrors Cursor-facing rules for Cla
 
 ## Comments and documentation
 
-- Prefer short module-level notes that point to **`docs/design/...`** where behavior is specified.
+- Prefer short **file or module** notes that state **I/O contracts** (what goes to logs vs API responses; which stream or channel), **invariants**, and **security/privacy boundaries** (what must never be logged or sent), and that point to **`docs/design/...`** where behavior is specified.
 - Use the traceability prefix defined in **`docs/design/documentation-style.md`** (default pattern **`@PROJ-<AREA>-<NUMBER>`** until customized).
+- **What to comment:** **why** something is done a non-obvious way; **preconditions, errors, and threading** for public APIs or process boundaries; **stubs and temporary** behavior, with **DESIGN-GAP** or a ticket reference when design is incomplete.
+- **What to skip:** comments that only narrate the next line in English; JSDoc that duplicates an obvious function name with no new information.
+- **Claude / Cursor / humans:** the same bar applies — explanatory, not noise.
 
 ## Tie backs to documentation
 
@@ -35,7 +38,7 @@ Use with **`docs/ai-context.md`**. This file mirrors Cursor-facing rules for Cla
 
 - **Ahead of large work:** Prefer delegation before broad exploration or multi-file refactors. Follow **`docs/ai-context.md` §1b**.
 - **Per ticket:** **TEST → DEV → VAL** serially in **one** worktree unless the team directs otherwise.
-- **Parallel tickets:** **`/develop-frontier`** — one subagent per **ticket id**; then **`/finish-feature`** (per **`FR-NNNN`**, **`docs/ai-context.md` §2d**) or **`/finish-frontier`** as the team chose. **Ticket subagents use Composer 2** (`composer-2-fast` on Cursor **Task**), never the orchestrator’s model — **`docs/ai-context.md` §1b**.
+- **Parallel tickets:** **`/develop-frontier`** — one subagent per **ticket id**; then **`/finish-feature`** (per **`FR-NNNN`**, **`docs/ai-context.md` §2d**) or **`/finish-frontier`** as the team chose.
 
 ## Feature request and frontier (compose)
 
@@ -44,21 +47,6 @@ Use with **`docs/ai-context.md`**. This file mirrors Cursor-facing rules for Cla
 - **User-facing close (FR work):** end substantive replies with **Executive summary**, **Suggested next step**, and **Options** when multiple paths apply — **`feature-request`** skill **User-facing close (required)**.
 - **Spoken “identify (FR)”** = registry + intake; **`/identify-frontier`** = parallel **tickets** only **after** canonical **`### T-FR-NNNN-xx`** sections exist.
 - **Registry races:** push **`REGISTRY.md`** + minimal stub to **`main` immediately** after allocating **`FR-NNNN`** (**`docs/ai-context.md` §2b**).
-
-## Hearth CLI parity (production operator surface)
-
-Mirrors **`.cursor/rules/stack-conventions.mdc` → Hearth CLI parity** (same intent; keep both in sync per **`.cursor/rules/cursor-claude-doc-sync.mdc`**).
-
-- **Scope:** The **`hearth`** admin CLI and per-plugin **`plugin`** CLI (see **`FR-0003`**, design contract: [Docker profile (Pi)](../../docs/design/deployment.md#docker-profile-pi) in **`docs/design/deployment.md`**) are the **default operator control plane** for Compose-based installs on Pi-class hosts.
-- **Rule:** When you add or change an **operator-facing** platform capability (stack lifecycle, plugin lifecycle, backup/restore, TLS/CA export, updates, diagnostics), you **must** either:
-  - expose it through **`hearth`** / **`plugin`** in the same change series, **or**
-  - add an explicit **follow-up ticket** on the active **`FR-NNNN`** (or a new **`FR-NNNN`**) titled so `identify-frontier` can schedule CLI parity, and note the gap in the feature diary.
-- **UI follow-up:** Web admin surfaces should wrap the same contracts later; do not treat “UI-only” as done for operations that operators must perform over SSH.
-
-## Native plugin ideas
-
-- **`/plugin-idea`** / **`.cursor/skills/plugin-idea/SKILL.md`** creates docs-first native plugin idea pages under **`docs/design/plugin-ideas/`**.
-- Do not add a plugin submodule unless the user provides a concrete repository URL and explicitly asks for it; otherwise document the intended **`apps/<slug>/`** mount point.
 
 ## Ticket completion
 
