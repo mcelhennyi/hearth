@@ -1,10 +1,6 @@
-import { readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 
-const srcDir = dirname(fileURLToPath(import.meta.url))
-const shellSource = readFileSync(join(srcDir, 'App.tsx'), 'utf8')
+import shellSource from './App.tsx?raw'
 
 describe('Mantle shell plugin agnosticism', () => {
   it('does not hardcode prototype plugin routes', () => {
