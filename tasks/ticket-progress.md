@@ -48,7 +48,7 @@
 | T-FR-0001-04 | Mantle PWA shell and iframe embed | done | done | done | `FR-0001`. Dynamic nav from registry, `mantle/` components, no hardcoded plugin slugs. 7 tests pass via Docker. Merged to `feat/FR-0001-hearth-platform` via [PR #22](https://github.com/mcelhennyi/hearth/pull/22). |
 | T-FR-0001-05 | Caddy generation and local TLS | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-01` output. |
 | T-FR-0001-06 | Spark v1 broker and client libs | done | done | done | `FR-0001`. Broker + Python client + TS stub + 23 tests. 127 total tests pass. [PR #24](https://github.com/mcelhennyi/hearth/pull/24). |
-| T-FR-0001-07 | Kindling repo and CLI | — | — | — | `FR-0001` parked. |
+| T-FR-0001-07 | Kindling repo and CLI | done | done | done | `FR-0001`. `kindling/` local dir created; CLI (`new`/`validate`/`install`); 17 new tests; 198 total pass. Separate repo/submodule deferred (DESIGN-GAP, scope-right). [PR #26](https://github.com/mcelhennyi/hearth/pull/26). |
 | T-FR-0001-08 | groceries reference plugin | — | — | — | `FR-0001` parked. |
 | T-FR-0001-09 | Auth, VAPID, Web Push + ntfy | done | done | done | `FR-0001`. argon2id auth, itsdangerous sessions, lockout, Web Push (VAPID+410 pruning), ntfy. 141 tests pass via Docker. Manual iPhone VAL deferred (needs real device). [PR #25](https://github.com/mcelhennyi/hearth/pull/25). |
 | T-FR-0001-10 | Pi/Mac mini install.sh + backup | — | — | — | `FR-0001` parked (closeout). |
