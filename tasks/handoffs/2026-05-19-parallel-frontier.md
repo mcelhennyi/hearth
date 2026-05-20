@@ -1,6 +1,6 @@
-# Next-step handoff — parallel frontier (2026-05-19)
+# Next-step handoff — parallel frontier (2026-05-19, wave 3)
 
-**Audience:** Next agent or maintainer picking up work from `main`.
+**Audience:** Next agent or maintainer picking up work on `feat/FR-0001-hearth-platform`.
 **Authority:** `tasks/feature-history/**/tickets.md`, `tasks/ticket-progress.md`, `docs/design/tickets-initial.md` (DAG), `docs/ai-context.md`.
 
 ---
@@ -9,86 +9,74 @@
 
 | Field | Value (as of this handoff) |
 |------|----------------------------|
-| **Active ticket** | — (no ticket in-flight) |
+| **Active ticket** | — (T02 + T04 done; next wave ready) |
 | **Active phase** | — |
-| **Branch / worktree** | `main` |
+| **Branch / worktree** | `feat/FR-0001-hearth-platform` |
 | **Session status** | `handoff` |
-| **Next agent should** | Start **T-FR-0001-01** (repo scaffold & dev loop); run `/develop-frontier` |
+| **Next agent should** | Run `/develop-frontier` on T03 ‖ T06 ‖ T09 |
 
 **Triad-complete (summary):**
-T-FR-0000-01 · T-FR-0002-01..04 · T-FR-0003-01..13 · T-FR-0004-01 — all done on `main`.
+T-FR-0000-01 · T-FR-0002-01..04 · T-FR-0003-01..13 · T-FR-0004-01 · **T-FR-0001-01..02 · T-FR-0001-04** — all done.
 
-**Still incomplete (summary):**
-T-FR-0001-01..10 (all `—`) · T-FR-0004-02..10 (parked, waiting on T-FR-0001-04 VAL).
-
----
-
-## Snapshot: what the dependency graph allows in parallel
-
-**Eligibility rule:** Every ticket in **Deps:** has **VAL** = `done` in `tasks/ticket-progress.md`.
-
-With all FR-0002 and FR-0003 tickets VAL-done, **one** ticket is currently eligible:
-
-| Ticket | Title | Deps |
-|--------|-------|------|
-| **T-FR-0001-01** | Repo scaffold and Compose dev loop | `none` |
-
-**One stream** is dependency-valid right now. T-FR-0001-01 is the critical-path gating ticket — until it reaches VAL done, no other FR-0001 ticket can start.
-
-**Next batch (unlocks when T-FR-0001-01 is VAL done):**
-
-| Ticket | Title | Deps |
-|--------|-------|------|
-| T-FR-0001-02 | Hub API skeleton and SQLite registry | T-FR-0001-01 |
-| T-FR-0001-04 | Mantle PWA shell and iframe embed | T-FR-0001-01 |
-
-These two can run **in parallel** once T01 is done.
-
-**Examples of what stays blocked until more VAL-done rows exist:**
-
-- T-FR-0001-05 (Caddy generation) — needs T01 + T03 + T04 all done.
-- T-FR-0001-03 (Tinder loader) — needs T02 done.
-- T-FR-0001-06 (Spark v1 broker) — needs T02 done.
-- T-FR-0001-07 (Kindling repo & CLI) — needs T03 + T04 + T06 done.
-- T-FR-0001-08 (groceries plugin) — needs T07 done.
-- T-FR-0001-09 (Auth, VAPID, Web Push) — needs T02 + T04 done.
-- T-FR-0001-10 (install.sh + backup) — needs T05 + T08 + T09 done.
-- T-FR-0004-02..10 — parked until T-FR-0001-04 VAL done.
-
-Full **Deps:** edges: `tasks/feature-history/FR-0001-hearth-platform/20-tickets-dag.md`; global mermaid in `docs/design/tickets-initial.md`.
+**Still incomplete in FR-0001:**
+T-FR-0001-03, 05, 06, 07, 08, 09, 10 — all parked.
 
 ---
 
-## Process note
+## Eligible ∩ incomplete (this wave)
 
-- **Feature branch:** `feat/FR-0001-hearth-platform` (create on first commit of T01).
-- **Worktree:** `.worktrees/FR-0001-hearth-platform/T-FR-0001-01-repo-scaffold/` on branch `feat/FR-0001-hearth-platform/T-FR-0001-01-repo-scaffold`.
-- **FR-0002 reuse:** T-FR-0001-04 should reuse `apps/hub/web/` from `main` (T-FR-0002-02); T-FR-0001-05 reuses Caddy TLS stack (T-FR-0002-01); T-FR-0001-09 reuses VAPID/Web Push (T-FR-0002-03).
-- **Integration checkout:** `main` (or the feature branch after T01 lands) coordinates merges; individual ticket branches merge into `feat/FR-0001-hearth-platform` per §2d.
+| Ticket | Title | Deps | Branch | Worktree |
+|--------|-------|------|--------|----------|
+| **T-FR-0001-03** | Tinder loader and manifest schema | T02 ✓ | `feat/FR-0001-hearth-platform-T-FR-0001-03-tinder-loader` | `.worktrees/FR-0001-hearth-platform/T-FR-0001-03-tinder-loader/` |
+| **T-FR-0001-06** | Spark v1 broker and client libs | T02 ✓ | `feat/FR-0001-hearth-platform-T-FR-0001-06-spark-broker` | `.worktrees/FR-0001-hearth-platform/T-FR-0001-06-spark-broker/` |
+| **T-FR-0001-09** | Auth, VAPID, Web Push + ntfy | T02 ✓, T04 ✓ | `feat/FR-0001-hearth-platform-T-FR-0001-09-auth-vapid-push` | `.worktrees/FR-0001-hearth-platform/T-FR-0001-09-auth-vapid-push/` |
 
 ---
 
-## Cross-cutting items
+## Blocked (next waves)
 
-- REWORK-REQUIRED **RW-D1** still open: `10-design/deployment.md` links nginx wording; retire when Caddy-first wording is consistent (addressable in T-FR-0001-05 or T-FR-0001-10).
-- FR-0004 unblocks after **T-FR-0001-04 VAL** — set REGISTRY.md row to `in-progress` and queue T-FR-0004-02 at that point.
-- Stack pin: Python 3.12, Node 20 LTS, Caddy 2.8, pnpm workspace (per T-FR-0001-01 notes).
+| Ticket | Blocked on |
+|--------|-----------|
+| T-FR-0001-05 | T03 |
+| T-FR-0001-07 | T03, T06 |
+| T-FR-0001-08 | T07 |
+| T-FR-0001-10 | T05, T08, T09 |
+| T-FR-0004-02..10 | T-FR-0001-04 VAL ✓ — **FR-0004 unblocked!** (set REGISTRY.md to `in-progress` when staffing T-FR-0004-02) |
+
+---
+
+## Process notes (established in previous sessions)
+
+- **Branch naming:** ticket branches use **dashes** throughout — `feat/FR-0001-hearth-platform-T-FR-0001-XX-short-name` (slash after `feat/` is fine; no additional slashes in the ticket segment, which would create ref-path conflicts).
+- **ALL tests via Docker**, never on the host:
+  - Python: `docker compose run --rm hearth-test` (profile `test`; entrypoint calls pytest)
+  - Non-pytest shell in `hearth-test`: `docker compose run --rm --entrypoint sh hearth-test -c "..."`
+  - JS: `docker compose run --rm --profile tooling web`; pnpm not pre-installed → run `npm install -g pnpm@9` first
+- **Feature integration branch:** `feat/FR-0001-hearth-platform` at `.worktrees/FR-0001-hearth-platform/feature/`.
+- Each ticket PR bases on `feat/FR-0001-hearth-platform`; the feature → `main` PR opens only after the §2d gate (all 10 tickets done).
+
+---
+
+## Cross-cutting notes
+
+- **T-FR-0001-09** should reuse the existing `apps/hub/api/app/push_service.py` and `push_store.py` already on the feature branch (ported from FR-0002).
+- **T-FR-0001-03** spec lives in `docs/design/plugin-contract.md` — read before writing Pydantic tinder.toml models; escalate `DESIGN-FLAW` if spec and needed code diverge.
+- **T-FR-0001-06** introduces a Unix-socket broker at `var/hearth/run/spark.sock`; see `docs/design/spark-api.md`. No file-contention with T03 or T09.
+- **FR-0004** is now unblocked (T-FR-0001-04 VAL is done) — when staffing T-FR-0004-02, update `REGISTRY.md` FR-0004 row from `parked` to `in-progress` and push immediately per §2b deconfliction rule.
 
 ---
 
 ## Concrete next steps
 
-1. **Run `/develop-frontier`** — T-FR-0001-01 is the sole eligible ticket; one subagent, one child worktree.
-2. After T01 VAL done: re-run `/identify-frontier` to confirm T02 ‖ T04 are the next wave.
-3. Run `/develop-frontier` on T02 ‖ T04 in parallel.
-4. Continue down the DAG per `20-tickets-dag.md` frontier batches.
+1. **Run `/develop-frontier`** — T03 ‖ T06 ‖ T09 in parallel, one subagent each.
+2. After all three reach VAL done: re-run `/identify-frontier` to confirm T05, T07 become the next wave.
+3. Optionally staff T-FR-0004-02 in parallel once FR-0004 `in-progress` is confirmed.
 
 ---
 
 ## Related files
 
 - [`tasks/feature-history/FR-0001-hearth-platform/tickets.md`](../feature-history/FR-0001-hearth-platform/tickets.md)
-- [`tasks/feature-history/FR-0001-hearth-platform/20-tickets-dag.md`](../feature-history/FR-0001-hearth-platform/20-tickets-dag.md)
 - [`tasks/ticket-progress.md`](../ticket-progress.md)
 - [`docs/design/tickets-initial.md`](../../docs/design/tickets-initial.md)
 - [`tasks/feature-history/REGISTRY.md`](../feature-history/REGISTRY.md)

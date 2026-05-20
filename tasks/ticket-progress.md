@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | **T-FR-0001-02** ‖ **T-FR-0001-04** (parallel) |
-| **Active phase** | TEST → DEV → VAL |
-| **Branch / worktree** | `feat/FR-0001-hearth-platform-T-FR-0001-02-hub-api-skeleton` / `.worktrees/FR-0001-hearth-platform/T-FR-0001-02-hub-api-skeleton/`<br>`feat/FR-0001-hearth-platform-T-FR-0001-04-mantle-pwa-shell` / `.worktrees/FR-0001-hearth-platform/T-FR-0001-04-mantle-pwa-shell/` |
+| **Active ticket** | T-FR-0001-03 ‖ T-FR-0001-06 ‖ T-FR-0001-09 (parallel) |
+| **Active phase** | developing |
+| **Branch / worktree** | `feat/FR-0001-hearth-platform` |
 | **Session status** | `developing` |
-| **Next agent should** | T-FR-0001-02 and T-FR-0001-04 are running in parallel. Merge both PRs into `feat/FR-0001-hearth-platform`, then identify next wave (T03 ‖ T06 unlock after T02; T09 unlocks after T02+T04; T05 unlocks after T03+T04). |
+| **Next agent should** | Complete TEST→DEV→VAL for T03, T06, T09 in their child worktrees; merge each into `feat/FR-0001-hearth-platform`; then run `/identify-frontier` for the T05/T07 wave. |
 
 ### Parallel streams
 
@@ -16,8 +16,7 @@
 
 | Stream label | Ticket(s) | `FR-NNNN` | Branch / worktree | Owner / note |
 |----------------|------------|-----------|-------------------|--------------|
-| Hub API skeleton | T-FR-0001-02 | FR-0001 | `feat/FR-0001-hearth-platform-T-FR-0001-02-hub-api-skeleton` / `.worktrees/…/T-FR-0001-02-hub-api-skeleton/` | subagent |
-| Mantle PWA shell | T-FR-0001-04 | FR-0001 | `feat/FR-0001-hearth-platform-T-FR-0001-04-mantle-pwa-shell` / `.worktrees/…/T-FR-0001-04-mantle-pwa-shell/` | subagent |
+| — | — | — | — | No active parallel streams |
 
 ---
 
@@ -44,9 +43,9 @@
 | T-FR-0003-12 | Smoke tests + ARM CI for install path | done | done | done | `FR-0003` **done** on `main`. |
 | T-FR-0003-13 | Project rules: Hearth CLI parity (Cursor + Claude) | done | done | done | `FR-0003` **done** on `main`. |
 | T-FR-0001-01 | Repo scaffold and Compose dev loop | done | done | done | `FR-0001`. Smoke test passes: HTTP 200 + "Hearth" body. `.dockerignore`, pnpm workspace, static placeholder. Host-only VAL (Docker-in-Docker not available in hearth-test). Merged to `feat/FR-0001-hearth-platform` via [PR #20](https://github.com/mcelhennyi/hearth/pull/20). |
-| T-FR-0001-02 | Hub API skeleton and SQLite registry | wip | — | — | `FR-0001` **in-progress** — worktree `.worktrees/FR-0001-hearth-platform/T-FR-0001-02-hub-api-skeleton/`. |
+| T-FR-0001-02 | Hub API skeleton and SQLite registry | done | done | done | `FR-0001`. FastAPI routes, SQLAlchemy models, Alembic migration. 26 tests pass via Docker. Merged to `feat/FR-0001-hearth-platform` via [PR #21](https://github.com/mcelhennyi/hearth/pull/21). |
 | T-FR-0001-03 | Tinder loader and manifest schema | — | — | — | `FR-0001` parked. |
-| T-FR-0001-04 | Mantle PWA shell and iframe embed | wip | — | — | `FR-0001` **in-progress** — worktree `.worktrees/FR-0001-hearth-platform/T-FR-0001-04-mantle-pwa-shell/`. Reuses `T-FR-0002-02` output. |
+| T-FR-0001-04 | Mantle PWA shell and iframe embed | done | done | done | `FR-0001`. Dynamic nav from registry, `mantle/` components, no hardcoded plugin slugs. 7 tests pass via Docker. Merged to `feat/FR-0001-hearth-platform` via [PR #22](https://github.com/mcelhennyi/hearth/pull/22). |
 | T-FR-0001-05 | Caddy generation and local TLS | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-01` output. |
 | T-FR-0001-06 | Spark v1 broker and client libs | — | — | — | `FR-0001` parked. |
 | T-FR-0001-07 | Kindling repo and CLI | — | — | — | `FR-0001` parked. |
