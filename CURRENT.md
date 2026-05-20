@@ -1,15 +1,21 @@
 # Current branch state
 
-**Branch:** `feat/FR-0001-hearth-platform`
-**Status:** T05 + T07 merged; revalidating; next wave T08
+**Branch:** `feat/FR-0001-hearth-platform/T-FR-0001-08-groceries-plugin`
+**Status:** T08 DEV complete; VAL deferred to manual (iPhone PWA); PR to feat branch pending
 
-## What was done (this integration)
+## What was done (T-FR-0001-08)
 
-- Merged T-FR-0001-05 (Caddy gen): fragment renderer + reload hook + Caddyfile.template + 8 unit tests
-- Merged T-FR-0001-07 (Kindling): `kindling/` local dir, CLI (`new`/`validate`/`install`), 17 new tests
+- Scaffolded `grocery-list` repo with FastAPI backend, SQLite persistence, Spark publish, vanilla JS UI
+- `tinder.toml` with kind=app, capabilities.list, spark permissions
+- Pushed grocery-list to `git@github.com:mcelhennyi/grocery-list.git`
+- Added as git submodule at `apps/groceries/`
+- 4 unit-level install tests in `tests/integration/test_groceries_install.py`
+- `tests/integration/conftest.py` with TestClient fixture
+- `integration` mark registered in `pyproject.toml`
+- 210 tests pass via Docker
 
 ## Next step
 
-Run full test suite revalidation, then `/identify-frontier` for next wave:
-- **T-FR-0001-08** (groceries reference plugin): unblocked by T07
-- **T-FR-0001-10** (Pi/Mac install + backup): needs T05 + T08 first
+- Merge T08 branch into `feat/FR-0001-hearth-platform`
+- Run `/identify-frontier` → T-FR-0001-10 (Pi/Mac mini install + backup) becomes eligible
+- Manual VAL for T08: iPhone PWA walkthrough (install groceries, add item, check mobile feel)

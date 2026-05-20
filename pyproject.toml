@@ -40,6 +40,9 @@ hearth_kindling_contract = ["templates/plugin-python/*", "templates/plugin-pytho
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+markers = [
+    "integration: requires HEARTH_INTEGRATION=1 and a running Compose stack",
+]
 pythonpath = [
     "deploy/hearth-install",
     "deploy/hearth-cli",
