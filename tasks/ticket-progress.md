@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | T-FR-0001-05 (next wave) |
-| **Active phase** | integrating |
+| **Active ticket** | T-FR-0001-05 ‖ T-FR-0001-07 (parallel) |
+| **Active phase** | developing |
 | **Branch / worktree** | `feat/FR-0001-hearth-platform` @ `.worktrees/FR-0001-hearth-platform/feature/` |
-| **Session status** | `integrating` |
-| **Next agent should** | Merge PRs #23 (T03), #24 (T06), #25 (T09) into `feat/FR-0001-hearth-platform`; revalidate feature branch via Docker; update `triadDone` in `docs/design/tickets-initial.md` for T03/T06/T09; run `/identify-frontier` for next wave (T05 eligible after T03, T07 eligible after T03+T06). |
+| **Session status** | `developing` |
+| **Next agent should** | T05 subagent: TEST→DEV→VAL in `.worktrees/FR-0001-hearth-platform/T-FR-0001-05-caddy-gen/` on `feat/FR-0001-hearth-platform-T-FR-0001-05-caddy-gen`. T07 subagent: TEST→DEV→VAL in `.worktrees/FR-0001-hearth-platform/T-FR-0001-07-kindling-repo/` on `feat/FR-0001-hearth-platform-T-FR-0001-07-kindling-repo`. Merge both into feat/FR-0001-hearth-platform when done; revalidate; then run /identify-frontier for T08+T10 wave. |
 
 ### Parallel streams
 
