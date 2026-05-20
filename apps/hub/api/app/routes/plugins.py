@@ -1,7 +1,7 @@
-"""Plugin registry CRUD routes — T-FR-0001-02.
+"""Plugin registry CRUD routes — T-FR-0001-02/03.
 
-Stubs: install/enable/disable/uninstall mutate DB state only; no supervisor
-calls yet (those land in T-FR-0001-03 Tinder loader).
+install: calls Tinder loader when *source* is given; stubs for enable/disable/uninstall
+mutate DB state only (no supervisor calls yet).
 
 MVP policy (plugin-contract.md): kind=widget enable returns 501.
 """
@@ -9,6 +9,7 @@ MVP policy (plugin-contract.md): kind=widget enable returns 501.
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
@@ -16,7 +17,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_session
 from app.models import AuditLog, Plugin
-from app.schemas import PluginInstallRequest, PluginResponse
+from app.schemas import PluginInstallRequest, PluginInstallResponse, PluginResponse
+from tinder.loader import load_tinder
 
 router = APIRouter(prefix="/api/plugins", tags=["plugins"])
 
@@ -27,28 +29,67 @@ async def list_plugins(session: AsyncSession = Depends(get_session)) -> list[Plu
     return list(result.scalars().all())
 
 
-@router.post("/install", response_model=PluginResponse)
+@router.post("/install", response_model=PluginInstallResponse)
 async def install_plugin(
     body: PluginInstallRequest,
     session: AsyncSession = Depends(get_session),
-) -> Plugin:
-    existing = await session.get(Plugin, body.slug)
+) -> PluginInstallResponse:
+    validation_errors: list[str] = []
+    slug = body.slug
+    name = body.name
+    version = body.version
+    kind = body.kind
+
+    if body.source is not None:
+        manifest, errors = load_tinder(Path(body.source))
+        if errors:
+            # Per plugin-contract.md: tinder.toml invalid → install disabled, surface errors
+            validation_errors = errors
+            if manifest is None:
+                # No manifest at all — still need slug/name/version from body or return 422
+                if not body.slug or not body.name or not body.version:
+                    raise HTTPException(
+                        status_code=422,
+                        detail={"validation_errors": errors, "message": "tinder.toml invalid"},
+                    )
+        else:
+            assert manifest is not None
+            slug = manifest.plugin.slug
+            name = manifest.plugin.name
+            version = manifest.plugin.version
+            kind = manifest.plugin.kind  # type: ignore[assignment]
+
+    if not slug or not name or not version:
+        raise HTTPException(
+            status_code=422,
+            detail="slug, name, and version are required when source is not provided",
+        )
+
+    existing = await session.get(Plugin, slug)
     if existing is not None:
-        raise HTTPException(status_code=409, detail=f"Plugin '{body.slug}' is already installed.")
+        raise HTTPException(status_code=409, detail=f"Plugin '{slug}' is already installed.")
 
     plugin = Plugin(
-        slug=body.slug,
-        name=body.name,
-        version=body.version,
-        kind=body.kind,
+        slug=slug,
+        name=name,
+        version=version,
+        kind=kind,
         state="disabled",
         installed_at=datetime.now(UTC),
     )
     session.add(plugin)
-    session.add(AuditLog(action="install", plugin_slug=body.slug))
+    session.add(AuditLog(action="install", plugin_slug=slug))
     await session.commit()
     await session.refresh(plugin)
-    return plugin
+    return PluginInstallResponse(
+        slug=plugin.slug,
+        name=plugin.name,
+        version=plugin.version,
+        kind=plugin.kind,
+        state=plugin.state,
+        installed_at=plugin.installed_at,
+        validation_errors=validation_errors,
+    )
 
 
 @router.post("/{slug}/enable", response_model=PluginResponse)
