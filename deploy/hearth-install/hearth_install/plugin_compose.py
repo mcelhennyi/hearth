@@ -143,6 +143,7 @@ def _compose_service(hearth: Path, record: PluginRecord) -> dict[str, Any]:
     env = {
         **record.env,
         "HEARTH_HOME": "/hearth",
+        "HEARTH_VAR_DIR": "/var/hearth",
         "HEARTH_PLUGIN_PORT": str(record.port),
         "HEARTH_PLUGIN_SLUG": record.slug,
     }
