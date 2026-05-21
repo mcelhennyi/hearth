@@ -1,8 +1,8 @@
 # FR-0001 closeout — Hearth platform MVP
 
-**PR pending:** [#30](https://github.com/mcelhennyi/hearth/pull/30) — `feat/FR-0001-hearth-platform` → `main` (refresh merge line after merge)
+**Merged:** 2026-05-21 — [**PR #30**](https://github.com/mcelhennyi/hearth/pull/30) → **`main`** @ `0811ed2`
 
-**Feature-complete gate:** met 2026-05-20; **`/finish-feature`** refreshed 2026-05-21 @ `e1daf2e` (+ test fix).
+**Feature-complete gate:** met 2026-05-20; post-merge closeout 2026-05-21.
 
 ## Executive summary
 
@@ -49,23 +49,23 @@ FR-0001 delivers the self-hosted Hearth hub: FastAPI registry, Mantle PWA shell,
 | Manual iPhone VAL (cert trust, PWA, push, groceries tab) | `serial-diary.md`; not blocking gate |
 | Hub registry sync with `plugins.yaml` (Docker profile) | DESIGN-GAP DG-D4 in `docs/design/deployment.md` |
 | `hearth --plugin --add` → hub `POST /api/plugins/install` | Operator uses file registry today |
-| FR-0004 centralized auth | parked until PR #30 merged |
+| FR-0004 centralized auth | unblocked — resume when staffed |
 
 ## Suggested next step
 
-Human: **merge [PR #30](https://github.com/mcelhennyi/hearth/pull/30)**. On `main`: delete repo-root `CURRENT.md`, run Pi groceries smoke (`SETUP.md` + `hearth pwa build`), then resume **FR-0004** or **FR-0005**.
+On **Pi**: `git pull` on `main`, `hearth pwa build`, `hearth restart caddy`, clear PWA cache; confirm Groceries tab. Then staff **FR-0004** (`in-progress` in `REGISTRY.md`) or **FR-0005** design tickets.
 
 ## Options
 
 | Option | When |
 |--------|------|
-| Merge PR #30 | Ready — branch MERGEABLE; includes Pi groceries proxy + SW fix |
-| Request changes on PR | If review finds gaps before merge |
-| Pi VAL session | After merge; document in `40-prototype-report` or FR-0001 diary |
-| Start FR-0005 remote-build | If Mac-build → Pi publish is higher priority than FR-0004 |
+| Pi groceries + iPhone VAL | Operator smoke on merged `main` |
+| Resume FR-0004 | Centralized auth — gate cleared |
+| Start FR-0005 | Remote-build / `hearth pwa publish` |
 
 ## Audit
 
-- **Feature branch:** `feat/FR-0001-hearth-platform` @ `e1daf2e` (retained on remote)
-- **Handoff:** [`handoffs/2026-05-21-finish-feature.md`](handoffs/2026-05-21-finish-feature.md)
-- **Post-closeout commits (Pi groceries):** `555a4b4`…`e1daf2e` — auth deps, embed mode, `plugin_paths`, `Caddyfile.plugins`, groceries Dockerfile/admin, Workbox allowlist
+- **Merge commit:** `0811ed27304dc76b9e4a98bf8ed8b568dcdf7196`
+- **Feature branch:** `feat/FR-0001-hearth-platform` (retained on remote — audit trail)
+- **Handoffs:** [`handoffs/2026-05-21-finish-feature.md`](handoffs/2026-05-21-finish-feature.md), [`handoffs/2026-05-21-merged-to-main.md`](handoffs/2026-05-21-merged-to-main.md)
+- **Repo-root `CURRENT.md`:** removed on `main` at post-merge closeout (feature-branch artifact)

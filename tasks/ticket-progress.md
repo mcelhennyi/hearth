@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | — (FR-0001 feature-complete; PR #30 open) |
-| **Active phase** | complete |
-| **Branch / worktree** | `feat/FR-0001-hearth-platform` @ `.worktrees/FR-0001-hearth-platform/feature/` |
+| **Active ticket** | — (pick next FR) |
+| **Active phase** | — |
+| **Branch / worktree** | `main` @ `0811ed2` |
 | **Session status** | `complete` |
-| **Next agent should** | Human: merge [PR #30](https://github.com/mcelhennyi/hearth/pull/30) (`feat/FR-0001-hearth-platform` @ `e1daf2e`, 238 tests green). After merge: delete `CURRENT.md` on `main`, Pi `git pull` + `hearth pwa build` for groceries iframe fix. Then FR-0004 or FR-0005. |
+| **Next agent should** | **FR-0001 merged** ([#30](https://github.com/mcelhennyi/hearth/pull/30) → `main` @ `0811ed2`). Pi: `git pull`, `hearth pwa build`, groceries smoke. Next feature: **FR-0004** (resume auth) or **FR-0005** (remote-build) — see [`REGISTRY.md`](feature-history/REGISTRY.md). |
 
 ### Parallel streams
 
@@ -68,6 +68,6 @@
 ## How to choose next work
 
 1. **FR-0003** is **closed** on **`main`** — see [`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md).
-2. **FR-0001** is **feature-complete** on **`feat/FR-0001-hearth-platform`** — merge [PR #30](https://github.com/mcelhennyi/hearth/pull/30), then see [`90-closeout.md`](feature-history/FR-0001-hearth-platform/90-closeout.md).
-3. **FR-0004** is **`parked`** — after PR #30 merges, set FR-0004 to `in-progress` in `REGISTRY.md` and resume with **`T-FR-0004-02`**. See [`FR-0004-centralized-users-auth/README.md`](feature-history/FR-0004-centralized-users-auth/README.md).
+2. **FR-0001** is **done** on **`main`** — merged [PR #30](https://github.com/mcelhennyi/hearth/pull/30) @ `0811ed2`; [`90-closeout.md`](feature-history/FR-0001-hearth-platform/90-closeout.md).
+3. **FR-0004** is **`parked`** — unblocked; set `in-progress` in `REGISTRY.md` when staffing **`T-FR-0004-02`**. **FR-0005** is **`design`**. See [`REGISTRY.md`](feature-history/REGISTRY.md).
 4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
