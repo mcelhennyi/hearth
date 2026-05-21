@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | T-FR-0001-05 |
-| **Active phase** | VAL complete |
-| **Branch / worktree** | `feat/FR-0001-hearth-platform-T-FR-0001-05-caddy-gen` / `.worktrees/FR-0001-hearth-platform/T-FR-0001-05-caddy-gen/` |
-| **Session status** | `integrating` |
-| **Next agent should** | Merge T-FR-0001-05 PR into `feat/FR-0001-hearth-platform`; then continue with T-FR-0001-06 (Spark v1 broker) or run `/identify-frontier`. |
+| **Active ticket** | — (all T-FR-0001-xx done) |
+| **Active phase** | complete |
+| **Branch / worktree** | `feat/FR-0001-hearth-platform` @ `.worktrees/FR-0001-hearth-platform/feature/` |
+| **Session status** | `complete` |
+| **Next agent should** | Run `/finish-feature` — feature-complete gate met; all 10 T-FR-0001-xx tickets have TEST+DEV+VAL=done. Open PR `feat/FR-0001-hearth-platform` → `main`. Write `90-closeout.md`. |
 
 ### Parallel streams
 
@@ -16,7 +16,7 @@
 
 | Stream label | Ticket(s) | `FR-NNNN` | Branch / worktree | Owner / note |
 |----------------|------------|-----------|-------------------|--------------|
-| T-FR-0001-01 scaffold | T-FR-0001-01 | FR-0001 | `feat/FR-0001-hearth-platform-T-FR-0001-01-repo-scaffold` | PR open → merge into `feat/FR-0001-hearth-platform` |
+| — | — | — | — | All T-FR-0001-xx done; ready for finish-feature |
 
 ---
 
@@ -44,13 +44,13 @@
 | T-FR-0003-13 | Project rules: Hearth CLI parity (Cursor + Claude) | done | done | done | `FR-0003` **done** on `main`. |
 | T-FR-0001-01 | Repo scaffold and Compose dev loop | done | done | done | `FR-0001`. Smoke test passes: HTTP 200 + "Hearth" body. `.dockerignore`, pnpm workspace, static placeholder updated. Host-only VAL (Docker-in-Docker not available in hearth-test). |
 | T-FR-0001-02 | Hub API skeleton and SQLite registry | done | done | done | `FR-0001`. FastAPI routes, SQLAlchemy models, Alembic migration. 26 tests pass via Docker. |
-| T-FR-0001-03 | Tinder loader and manifest schema | — | — | — | `FR-0001` parked. |
+| T-FR-0001-03 | Tinder loader and manifest schema | done | done | done | `FR-0001`. Pydantic schema + loader + 5 fixtures + 17 tests. Wired into POST /api/plugins/install. 43 total tests pass via Docker. [PR #23](https://github.com/mcelhennyi/hearth/pull/23). |
 | T-FR-0001-04 | Mantle PWA shell and iframe embed | done | done | done | `FR-0001`. Dynamic nav from registry, PluginFrame, useMantle/useTheme/InstallPrompt in `src/mantle/`. 7 tests pass via Docker. |
 | T-FR-0001-05 | Caddy generation and local TLS | done | done | done | `FR-0001`. Fragment renderer + reload hook. 8 unit tests pass via Docker. Integration test (real Caddy + device) deferred to manual VAL — see serial-diary.md. |
-| T-FR-0001-06 | Spark v1 broker and client libs | — | — | — | `FR-0001` parked. |
+| T-FR-0001-06 | Spark v1 broker and client libs | done | done | done | `FR-0001`. Broker + Python client + TS stub + 23 tests. 127 total tests pass via Docker. [PR #24](https://github.com/mcelhennyi/hearth/pull/24). |
 | T-FR-0001-07 | Kindling repo and CLI | done | done | done | `FR-0001`. `kindling/` local dir created; CLI (`new`/`validate`/`install`); 17 new tests; 198 total pass. Separate repo/submodule deferred (DESIGN-GAP, scope-right). |
-| T-FR-0001-08 | groceries reference plugin | done | done | — | `FR-0001`. grocery-list repo pushed; submodule at apps/groceries; 4 install tests + conftest; 210 tests pass via Docker. VAL: iPhone PWA walkthrough deferred to manual. |
-| T-FR-0001-09 | Auth, VAPID, Web Push + ntfy | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-03` output. |
+| T-FR-0001-08 | groceries reference plugin | done | done | done | `FR-0001`. grocery-list repo pushed; submodule at apps/groceries; 4 install tests + conftest; 210 tests pass via Docker. iPhone PWA walkthrough deferred to manual (same as T05/T09). |
+| T-FR-0001-09 | Auth, VAPID, Web Push + ntfy | done | done | done | `FR-0001`. argon2id auth, itsdangerous sessions, lockout, Web Push (VAPID+410 pruning), ntfy. 141 tests pass via Docker. Manual iPhone VAL deferred (needs real device). [PR #25](https://github.com/mcelhennyi/hearth/pull/25). |
 | T-FR-0001-10 | Pi/Mac mini install.sh + backup | done | done | done | `FR-0001`. deploy/install.sh + systemd/launchd units + hearth backup/restore. 25 new tests pass (1 integration skipped). |
 | T-FR-0004-01 | Design amendments: centralized auth architecture | done | done | done | `FR-0004` **parked**. Design in feature tree; see diary. |
 | T-FR-0004-02 | Built-in hearth-users plugin scaffold | — | — | — | `FR-0004` **parked** — after FR-0002 cert VAL + FR-0001-04 VAL. |

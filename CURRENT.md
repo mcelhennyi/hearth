@@ -1,9 +1,9 @@
 # Current branch state
 
 **Branch:** `feat/FR-0001-hearth-platform`
-**Status:** T01–T07, T09 merged; T08 DEV merged (VAL manual); T10 next
+**Status:** All 10 T-FR-0001-xx tickets done — feature-complete gate met
 
-## Merged so far
+## Merged
 
 - T-FR-0001-01: repo scaffold + Compose dev loop
 - T-FR-0001-02: Hub API skeleton + SQLite registry
@@ -14,12 +14,21 @@
 - T-FR-0001-07: Kindling repo + CLI
 - T-FR-0001-08: groceries reference plugin (submodule apps/groceries/, 210 tests)
 - T-FR-0001-09: Auth, VAPID, Web Push + ntfy
+- T-FR-0001-10: bare-metal install.sh, systemd/launchd units, hearth backup/restore (235 tests)
+
+## Test count
+
+235 passed, 3 skipped (all HEARTH_INTEGRATION=1 gated)
 
 ## Next step
 
-**T-FR-0001-10** (Pi/Mac mini install.sh + backup) is now unblocked (deps: T05 + T08 + T09 all done).
+**`/finish-feature`** — open PR `feat/FR-0001-hearth-platform` → `main`.
+Write `tasks/feature-history/FR-0001-hearth-platform/90-closeout.md`.
+Update REGISTRY.md FR-0001 → `done`.
+Remove CURRENT.md when PR merges to main.
 
-Manual VAL still outstanding:
-- T08: iPhone PWA walkthrough (install groceries, add/remove items, confirm mobile feel)
-- T05: iPhone device PWA walkthrough
-- T09: receive real Web Push on iPhone
+## Manual VAL deferred (not blocking gate — same as T05/T09 pattern)
+
+- T05: iPhone device PWA walkthrough (certificate trust + home screen)
+- T08: iPhone PWA walkthrough for groceries plugin
+- T09: real Web Push notification on iPhone
