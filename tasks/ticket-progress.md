@@ -51,7 +51,7 @@
 | T-FR-0001-07 | Kindling repo and CLI | done | done | done | `FR-0001`. `kindling/` local dir created; CLI (`new`/`validate`/`install`); 17 new tests; 198 total pass. Separate repo/submodule deferred (DESIGN-GAP, scope-right). |
 | T-FR-0001-08 | groceries reference plugin | done | done | — | `FR-0001`. grocery-list repo pushed; submodule at apps/groceries; 4 install tests + conftest; 210 tests pass via Docker. VAL: iPhone PWA walkthrough deferred to manual. |
 | T-FR-0001-09 | Auth, VAPID, Web Push + ntfy | — | — | — | `FR-0001` parked. Will reuse `T-FR-0002-03` output. |
-| T-FR-0001-10 | Pi/Mac mini install.sh + backup | — | — | — | `FR-0001` parked (closeout). |
+| T-FR-0001-10 | Pi/Mac mini install.sh + backup | done | done | done | `FR-0001`. deploy/install.sh + systemd/launchd units + hearth backup/restore. 25 new tests pass (1 integration skipped). |
 | T-FR-0004-01 | Design amendments: centralized auth architecture | done | done | done | `FR-0004` **parked**. Design in feature tree; see diary. |
 | T-FR-0004-02 | Built-in hearth-users plugin scaffold | — | — | — | `FR-0004` **parked** — after FR-0002 cert VAL + FR-0001-04 VAL. |
 | T-FR-0004-03 | Users plugin: password, session, verify API | — | — | — | `FR-0004` **parked**. |

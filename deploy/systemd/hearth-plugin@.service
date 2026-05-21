@@ -1,0 +1,23 @@
+[Unit]
+Description=Hearth Plugin %i
+Documentation=https://github.com/mcelhennyi/hearth
+After=hearth-hub.service
+BindsTo=hearth-hub.service
+
+[Service]
+Type=simple
+User=hearth
+Group=hearth
+WorkingDirectory=/opt/hearth/apps/%i
+ExecStart=/opt/hearth/venv/bin/python -m uvicorn %i.app:create_app --factory --host 127.0.0.1 --port 0
+Restart=on-failure
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hearth-plugin-%i
+Environment=HEARTH_VAR_DIR=/var/hearth
+Environment=HEARTH_PLUGIN_SLUG=%i
+EnvironmentFile=-/etc/hearth/%i.env
+
+[Install]
+WantedBy=hearth-hub.service
