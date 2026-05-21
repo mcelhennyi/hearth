@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | T-FR-0001-08 |
-| **Active phase** | developing |
-| **Branch / worktree** | `feat/FR-0001-hearth-platform-T-FR-0001-08-groceries-plugin` @ `.worktrees/FR-0001-hearth-platform/T-FR-0001-08-groceries-plugin/` |
-| **Session status** | `developing` |
-| **Next agent should** | Complete TEST→DEV→VAL for T08 in its worktree. External plugin lives in `grocery-list` repo (empty, needs scaffold + implementation). Hearth consumes it as submodule at `apps/groceries/`. Merge into `feat/FR-0001-hearth-platform` when done. |
+| **Active ticket** | — (FR-0001 feature-complete; PR #30 open) |
+| **Active phase** | complete |
+| **Branch / worktree** | `feat/FR-0001-hearth-platform` @ `.worktrees/FR-0001-hearth-platform/feature/` |
+| **Session status** | `complete` |
+| **Next agent should** | Human: review and merge [PR #30](https://github.com/mcelhennyi/hearth/pull/30). After merge: remove `CURRENT.md` from `main`, advance FR-0004 to `in-progress`. Manual VAL sessions deferred: T05/T08/T09 iPhone walkthrough on real Pi + device. |
 
 ### Parallel streams
 
@@ -49,9 +49,9 @@
 | T-FR-0001-05 | Caddy generation and local TLS | done | done | done | `FR-0001`. Fragment renderer + reload hook (Caddy admin API) + Caddyfile.template. 8 unit tests; integration test gated on `HEARTH_INTEGRATION=1`. iPhone walkthrough deferred (manual). [PR #27](https://github.com/mcelhennyi/hearth/pull/27). |
 | T-FR-0001-06 | Spark v1 broker and client libs | done | done | done | `FR-0001`. Broker + Python client + TS stub + 23 tests. 127 total tests pass. [PR #24](https://github.com/mcelhennyi/hearth/pull/24). |
 | T-FR-0001-07 | Kindling repo and CLI | done | done | done | `FR-0001`. `kindling/` local dir created; CLI (`new`/`validate`/`install`); 17 new tests; 198 total pass. Separate repo/submodule deferred (DESIGN-GAP, scope-right). [PR #26](https://github.com/mcelhennyi/hearth/pull/26). |
-| T-FR-0001-08 | groceries reference plugin | — | — | — | `FR-0001` parked. |
+| T-FR-0001-08 | groceries reference plugin | done | done | done | `FR-0001`. grocery-list repo pushed; submodule at apps/groceries; 210 tests pass via Docker. iPhone walkthrough deferred (same as T05/T09). |
 | T-FR-0001-09 | Auth, VAPID, Web Push + ntfy | done | done | done | `FR-0001`. argon2id auth, itsdangerous sessions, lockout, Web Push (VAPID+410 pruning), ntfy. 141 tests pass via Docker. Manual iPhone VAL deferred (needs real device). [PR #25](https://github.com/mcelhennyi/hearth/pull/25). |
-| T-FR-0001-10 | Pi/Mac mini install.sh + backup | — | — | — | `FR-0001` parked (closeout). |
+| T-FR-0001-10 | Pi/Mac mini install.sh + backup | done | done | done | `FR-0001`. deploy/install.sh + systemd/launchd units + hearth backup/restore. 235 tests pass via Docker. [PR #30](https://github.com/mcelhennyi/hearth/pull/30). |
 | T-FR-0004-01 | Design amendments: centralized auth architecture | done | done | done | `FR-0004` **parked**. Design in feature tree; see diary. |
 | T-FR-0004-02 | Built-in hearth-users plugin scaffold | — | — | — | `FR-0004` **parked** — after FR-0002 cert VAL + FR-0001-04 VAL. |
 | T-FR-0004-03 | Users plugin: password, session, verify API | — | — | — | `FR-0004` **parked**. |
