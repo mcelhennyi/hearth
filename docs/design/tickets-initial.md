@@ -20,7 +20,8 @@
 | FR-0001 | `tasks/feature-history/FR-0001-hearth-platform/tickets.md` *(parked pending FR-0002)* |
 | FR-0002 | `tasks/feature-history/FR-0002-iphone-pwa-prototype/tickets.md` |
 | FR-0003 | `tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md` |
-| FR-0004 | `tasks/feature-history/FR-0004-centralized-users-auth/tickets.md` *(parked: FR-0002 cert VAL + FR-0001-04 UI VAL)* |
+| FR-0004 | `tasks/feature-history/FR-0004-centralized-users-auth/tickets.md` *(parked)* |
+| FR-0005 | `tasks/feature-history/FR-0005-remote-build-pi-deploy/tickets.md` *(design: Mac build → Pi `192.168.1.62`)* |
 
 ---
 
@@ -112,6 +113,17 @@ graph LR
   TFR0003_08_VAL --> TFR0003_12_TEST
   TFR0003_09_VAL --> TFR0003_12_TEST
   TFR0003_11_VAL --> TFR0003_12_TEST
+
+  %% FR-0005 — remote build Mac → Pi deploy
+  TFR0005_01_TEST --> TFR0005_01_DEV --> TFR0005_01_VAL
+  TFR0005_02_TEST --> TFR0005_02_DEV --> TFR0005_02_VAL
+  TFR0005_03_TEST --> TFR0005_03_DEV --> TFR0005_03_VAL
+  TFR0005_04_TEST --> TFR0005_04_DEV --> TFR0005_04_VAL
+  TFR0005_05_TEST --> TFR0005_05_DEV --> TFR0005_05_VAL
+  TFR0005_01_VAL --> TFR0005_02_TEST
+  TFR0005_01_VAL --> TFR0005_03_TEST
+  TFR0005_02_VAL --> TFR0005_04_TEST
+  TFR0005_02_VAL --> TFR0005_05_TEST
 
   class TFR0000_01_TEST,TFR0000_01_DEV,TFR0000_01_VAL triadDone
   class TFR0002_01_TEST,TFR0002_01_DEV,TFR0002_01_VAL triadDone

@@ -62,6 +62,11 @@
 | T-FR-0004-08 | Mantle shell: login via hearth-users and useUser contract | — | — | — | `FR-0004` **parked**. |
 | T-FR-0004-09 | External auth provider stub and operator settings UI | — | — | — | `FR-0004` **parked**. |
 | T-FR-0004-10 | E2E: plugin trusts gateway identity | — | — | — | `FR-0004` **parked** (capstone). |
+| T-FR-0005-01 | Remote-build profile in deployment.md | — | — | — | `FR-0005` **design**. |
+| T-FR-0005-02 | `hearth pwa publish` (rsync static to Pi) | — | — | — | `FR-0005` **design**; Pi **`192.168.1.62`**. Deps: T-FR-0005-01. |
+| T-FR-0005-03 | Hub image build and publish (arm64 bundle) | — | — | — | `FR-0005` **design** P1. Deps: T-FR-0005-01. |
+| T-FR-0005-04 | SETUP.md Mac-build / Pi-runtime operator guide | — | — | — | `FR-0005` **design**. Deps: T-FR-0005-02. |
+| T-FR-0005-05 | Publish smoke test and doctor hints | — | — | — | `FR-0005` **design**. Deps: T-FR-0005-02. |
 
 ---
 
@@ -69,5 +74,5 @@
 
 1. **FR-0003** is **closed** on **`main`** — see [`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md).
 2. **FR-0001** is **done** on **`main`** — merged [PR #30](https://github.com/mcelhennyi/hearth/pull/30) @ `0811ed2`; [`90-closeout.md`](feature-history/FR-0001-hearth-platform/90-closeout.md).
-3. **FR-0004** is **`parked`** — unblocked; set `in-progress` in `REGISTRY.md` when staffing **`T-FR-0004-02`**. **FR-0005** is **`design`**. See [`REGISTRY.md`](feature-history/REGISTRY.md).
+3. **FR-0004** is **`parked`** — unblocked; set `in-progress` in `REGISTRY.md` when staffing **`T-FR-0004-02`**. **FR-0005** is **`design`** — start with [**Remote-build profile**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd) ([`T-FR-0005-01`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd)), then [**`hearth pwa publish`**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi) ([`T-FR-0005-02`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi)); home Pi **`192.168.1.62`**. See [`REGISTRY.md`](feature-history/REGISTRY.md).
 4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
