@@ -67,6 +67,21 @@
 | T-FR-0005-03 | Hub image build and publish (arm64 bundle) | — | — | — | `FR-0005` **design** P1. Deps: T-FR-0005-01. |
 | T-FR-0005-04 | SETUP.md Mac-build / Pi-runtime operator guide | — | — | — | `FR-0005` **design**. Deps: T-FR-0005-02. |
 | T-FR-0005-05 | Publish smoke test and doctor hints | — | — | — | `FR-0005` **design**. Deps: T-FR-0005-02. |
+| T-FR-0006-01 | System tiles & strips API | — | — | — | `FR-0006` **design**. DF-U1, DF-U2. Deps: none. |
+| T-FR-0006-02 | Dashboard layout API | — | — | — | `FR-0006` **design**. Part of RW-U1. Deps: none. |
+| T-FR-0006-03 | Mantle postMessage bridge | — | — | — | `FR-0006` **design**. DG-U6/U7/U9 shell-side. Deps: none. |
+| T-FR-0006-04 | User preferences API + Settings modal | — | — | — | `FR-0006` **design**. DG-U8, RW-U2. Deps: T-FR-0006-01, T-FR-0006-03. |
+| T-FR-0006-05 | Plugin frame state UI | — | — | — | `FR-0006` **design**. DG-U7. Deps: T-FR-0006-03. |
+| T-FR-0006-06 | Chrome slot DOM + rendering | — | — | — | `FR-0006` **design**. DG-U6 shell-side. Deps: T-FR-0006-03. |
+| T-FR-0006-07 | Dashboard grid + block primitives | — | — | — | `FR-0006` **design**. Core RW-U1. Deps: T-FR-0006-02. |
+| T-FR-0006-08 | Empty state | — | — | — | `FR-0006` **design**. DG-U4. Deps: T-FR-0006-07. |
+| T-FR-0006-09 | Edit mode | — | — | — | `FR-0006` **design**. DG-U2, DG-U3, RW-U4. Deps: T-FR-0006-07, T-FR-0006-02. |
+| T-FR-0006-10 | @kindling/mantle package scaffold | — | — | — | `FR-0006` **design**. Deps: none. |
+| T-FR-0006-11 | @kindling/mantle base components | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10. |
+| T-FR-0006-12 | @kindling/mantle hooks | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10, T-FR-0006-03. |
+| T-FR-0006-13 | @kindling/mantle overlays | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10, T-FR-0006-12. |
+| T-FR-0006-14 | @kindling/mantle vanilla bridge | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10, T-FR-0006-03. |
+| T-FR-0006-15 | @kindling/mantle publish | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10..14. |
 
 ---
 
