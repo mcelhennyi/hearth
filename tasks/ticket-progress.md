@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | — (pick next FR) |
-| **Active phase** | — |
-| **Branch / worktree** | `main` @ `0811ed2` |
-| **Session status** | `complete` |
-| **Next agent should** | **FR-0006 design is complete and paused before implementation** — see [`FR-0006-design-language/handoffs/2026-05-21-pause-before-develop.md`](feature-history/FR-0006-design-language/handoffs/2026-05-21-pause-before-develop.md). On `/feature-request-continue`, execute its Resume contract (creates `feat/FR-0006-design-language` worktree; launches `/develop-frontier` for W0 = `T-FR-0006-01/02/03/10` here + `T-FR-0001-01` in kindling + `T-FR-0002-01` in grocery-list; 6 parallel subagents total). |
+| **Active ticket** | T-FR-0006-01 (W0 batch leader) |
+| **Active phase** | TEST/DEV/VAL in flight per-ticket |
+| **Branch / worktree** | `feat/FR-0006-design-language` @ `.worktrees/FR-0006-design-language/feature/`; ticket worktrees under `.worktrees/FR-0006-design-language/T-FR-0006-{01,02,03,10}-*` |
+| **Session status** | `developing` |
+| **Next agent should** | Follow each ticket subagent's `parallel/T-FR-0006-XX-*.md` diary; when all four W0 tickets are VAL-done, merge each ticket branch into `feat/FR-0006-design-language` and re-run `/identify-frontier` for W1 (T-FR-0006-04/05/06/07/11/12/14). |
 
 ### Parallel streams
 
@@ -16,7 +16,10 @@
 
 | Stream label | Ticket(s) | `FR-NNNN` | Branch / worktree | Owner / note |
 |----------------|------------|-----------|-------------------|--------------|
-| design-language (paused before develop) | T-FR-0006-01..15 (design) | FR-0006 | `main` (no feature worktree yet) | Resume contract: [`handoffs/2026-05-21-pause-before-develop.md`](feature-history/FR-0006-design-language/handoffs/2026-05-21-pause-before-develop.md) |
+| W0/hearth-systems | T-FR-0006-01 | FR-0006 | `feat/FR-0006-design-language-T-FR-0006-01-system-tiles` @ `.worktrees/FR-0006-design-language/T-FR-0006-01-system-tiles/` | parallel subagent |
+| W0/hearth-dashboard-layout | T-FR-0006-02 | FR-0006 | `feat/FR-0006-design-language-T-FR-0006-02-dashboard-layout` @ `.worktrees/FR-0006-design-language/T-FR-0006-02-dashboard-layout/` | parallel subagent |
+| W0/hearth-postmessage | T-FR-0006-03 | FR-0006 | `feat/FR-0006-design-language-T-FR-0006-03-postmessage-bridge` @ `.worktrees/FR-0006-design-language/T-FR-0006-03-postmessage-bridge/` | parallel subagent |
+| W0/hearth-mantle-pkg | T-FR-0006-10 | FR-0006 | `feat/FR-0006-design-language-T-FR-0006-10-mantle-package` @ `.worktrees/FR-0006-design-language/T-FR-0006-10-mantle-package/` | parallel subagent |
 
 ---
 
