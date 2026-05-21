@@ -12,7 +12,8 @@
 | FR-0003 | `FR-0003-hearth-pi-docker-cli/` | `done` | **`T-FR-0003-01`** … **`T-FR-0003-13`** in [`FR-0003-hearth-pi-docker-cli/tickets.md`](FR-0003-hearth-pi-docker-cli/tickets.md) | **Merged to `main`** via [**PR #13**](https://github.com/mcelhennyi/hearth/pull/13) (2026-05-18). Docker Compose Pi install, `./install`, `hearth` + per-plugin `plugin` CLI. Closeout: [`FR-0003-hearth-pi-docker-cli/90-closeout.md`](FR-0003-hearth-pi-docker-cli/90-closeout.md). Operator guide: **`SETUP.md`**. |
 | FR-0004 | `FR-0004-centralized-users-auth/` | `parked` | **`T-FR-0004-01`** … **`T-FR-0004-10`** in [`FR-0004-centralized-users-auth/tickets.md`](FR-0004-centralized-users-auth/tickets.md) | Built-in **`hearth-users`** + gateway auth. **Parked** — **FR-0001 merged** (2026-05-21); resume when staffed (`T-FR-0004-01` design done in feature tree). |
 | FR-0005 | `FR-0005-remote-build-pi-deploy/` | `design` | **`T-FR-0005-01`** … **`T-FR-0005-05`** in [`FR-0005-remote-build-pi-deploy/tickets.md`](FR-0005-remote-build-pi-deploy/tickets.md) | Mac builds Mantle PWA (optional hub image); **`hearth pwa publish`** rsync to Pi **`192.168.1.62`**; Pi skips on-device `npm`/vite for routine UI updates. |
+| FR-0006 | `FR-0006-design-language/` | `design` | TBD — see [`FR-0006-design-language/tickets.md`](FR-0006-design-language/tickets.md) once authored | Cross-repo design-language unification: dashboard grid implementation, mantle chrome-slots + Settings modal + postMessage handlers, ship **`@kindling/mantle`** shared package, design-doc amendments for 26 audited gaps. Partners: **kindling FR-0001** (plugin-ui-system + template overhaul), **grocery-list FR-0002** (mantle-ui consumption). |
 
-**next_id:** `6`
+**next_id:** `7`
 
 **Allocating a new `FR-NNNN`:** Create directory **`tasks/feature-history/FR-NNNN-<slug>/`**, add a row to the table, set **`next_id`** to **NNNN+1**, and add the ticket file path to **`TICKET-SOURCES.md`**.

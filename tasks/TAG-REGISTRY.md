@@ -34,8 +34,19 @@ Define new letters in this table and in **`docs/design/documentation-style.md`**
 | DG-I1 | I | allocated | 2026-05-19 | MVP LAN trust bypass (`HEARTH_TRUST_LAN`) vs required auth before FR-0004 | `docs/design/deployment.md`, open Q4 |
 | DG-N1 | N | allocated | 2026-05-19 | VAPID keypair rotation and subscription invalidation | `docs/design/notifications.md`, open Q11 |
 | DG-S1 | S | allocated | 2026-05-19 | Widget plugin `widget.snapshot` Spark method naming | `docs/design/spark-api.md`, `dashboard.md` |
+| DG-U2 | U | allocated | 2026-05-21 | Dashboard edit-mode UX: entry trigger, long-press duration, exit, per viewport | `docs/design/dashboard.md` |
+| DG-U3 | U | allocated | 2026-05-21 | Dashboard collision visual & save-blocking in edit mode | `docs/design/dashboard.md` |
+| DG-U4 | U | allocated | 2026-05-21 | Dashboard empty-state (first-run, no plugins/blocks) | `docs/design/dashboard.md` |
+| DG-U5 | U | allocated | 2026-05-21 | Dashboard responsive grid metrics (gap/padding/radius per viewport) | `docs/design/dashboard.md` |
+| DG-U6 | U | allocated | 2026-05-21 | Mantle chrome-slot contract (semantics, indexing, overflow, max per zone) | `docs/design/mantle-ui.md`, `docs/design/plugin-contract.md` |
+| DG-U7 | U | allocated | 2026-05-21 | Plugin iframe loading / error / crash / offline state UI | `docs/design/mantle-ui.md` |
+| DG-U8 | U | allocated | 2026-05-21 | Settings modal UX + dynamic theming persistence (user setting vs OS) | `docs/design/mantle-ui.md` |
+| DG-U9 | U | allocated | 2026-05-21 | `hearth.title` scope (browser tab vs top-bar h1) | `docs/design/mantle-ui.md` |
+| DG-U10 | U | allocated | 2026-05-21 | Widget content overflow rules per layout tier (deferred to P3 widget host) | `docs/design/dashboard.md` |
+| DG-U11 | U | allocated | 2026-05-21 | Overlay primitives: toast/haptic placement + duration + styles | `docs/design/mantle-ui.md` |
+| DG-T1 | T | allocated | 2026-05-21 | In-frame sticky plugin tab bar contract (allowed shape, headers) | `docs/design/plugin-contract.md` |
 
-**Next free:** DG-D5, DG-I2, DG-N2, DG-S2, DG-A1, …
+**Next free:** DG-D5, DG-I2, DG-N2, DG-S2, DG-A1, DG-U12, DG-T2 …
 
 ---
 
@@ -45,7 +56,9 @@ Define new letters in this table and in **`docs/design/documentation-style.md`**
 
 | Id | Status | Date | Intent | Owning doc(s) |
 |----|--------|------|--------|----------------|
-| *(none)* | — | — | — | — |
+| DF-U1 | allocated | 2026-05-21 | Dashboard `system` block type is underspecified (when shown, configurable, MVP status) | `docs/design/dashboard.md` |
+| DF-U2 | allocated | 2026-05-21 | Dashboard `strip` block type appears in mocks but is not in the block-types table | `docs/design/dashboard.md`, `docs/design/mockups/` |
+| DF-U3 | allocated | 2026-05-21 | Desktop mantle `.dock-layer` decision: keep (promote to spec) or drop (remove from mocks) | `docs/design/mantle-ui.md`, `docs/design/mockups/` |
 
 ---
 
@@ -59,6 +72,8 @@ Define new letters in this table and in **`docs/design/documentation-style.md`**
 | RW-U2 | U | allocated | 2026-05-19 | Shell chrome missing Settings route/surface | `apps/hub/web/src/App.tsx` |
 | RW-A1 | A | allocated | 2026-05-19 | Hub API lacks registry/plugins routes (FR-0002 prototype) | `apps/hub/api/app/main.py` |
 | RW-I1 | I | allocated | 2026-05-19 | Identity §8 describes hub password + nginx; FR-0004 gateway design is target | `docs/design/architecture/overview.md` §8 |
+| RW-U3 | U | allocated | 2026-05-21 | dashboard.md does not cross-reference mantle-ui.md bottom-bar launcher ownership and sourcing | `docs/design/dashboard.md` |
+| RW-U4 | U | allocated | 2026-05-21 | Edit-mode jiggle/badge visual treatment exists in mocks only; promote required visuals to dashboard.md or relabel mocks as reference-impl | `docs/design/dashboard.md`, `docs/design/mockups/` |
 
 ---
 
@@ -107,6 +122,8 @@ Canonical list: **`tasks/feature-history/REGISTRY.md`**. Summary only:
 | FR-0002 | done | iphone-pwa-prototype |
 | FR-0003 | done | hearth-pi-docker-cli |
 | FR-0004 | parked | centralized-users-auth |
+| FR-0005 | design | remote-build-pi-deploy |
+| FR-0006 | design | design-language |
 
 ---
 
