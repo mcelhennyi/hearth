@@ -31,7 +31,7 @@ from hearth_install.version_manifest import (
     read_version_manifest,
 )
 
-from hearth_cli import update_cmd
+from hearth_cli import backup_cmd, update_cmd
 from hearth_cli.install_context import ResolvedInstall, resolve_install
 from hearth_cli.pwa_ops import cmd_pwa_build, cmd_pwa_vapid_gen
 from hearth_cli.tls_ops import cmd_ca_export
@@ -168,6 +168,32 @@ def build_parser() -> argparse.ArgumentParser:
     pwa_sub = pwa.add_subparsers(dest="pwa_command", required=True)
     pwa_sub.add_parser("build", help="Build apps/hub/web and publish to hearth/compose/static/.")
     pwa_sub.add_parser("vapid-gen", help="Generate var/hearth/secrets/vapid.{pub,priv} in the deploy checkout.")
+
+    backup = subparsers.add_parser("backup", help="Create a backup archive of /var/hearth data.")
+    backup.add_argument(
+        "--output",
+        metavar="PATH",
+        required=True,
+        help="Destination .tar.gz file.",
+    )
+    backup.add_argument(
+        "--var-dir",
+        metavar="PATH",
+        help="var/hearth directory (default: HEARTH_VAR_DIR env or /var/hearth).",
+    )
+
+    restore = subparsers.add_parser("restore", help="Restore a hearth backup archive.")
+    restore.add_argument(
+        "archive",
+        metavar="PATH",
+        help="Path to the .tar.gz backup archive.",
+    )
+    restore.add_argument(
+        "--var-dir",
+        metavar="PATH",
+        help="var/hearth directory (default: HEARTH_VAR_DIR env or /var/hearth).",
+    )
+
     return parser
 
 
@@ -743,7 +769,34 @@ def run(
         if ns.pwa_command == "vapid-gen":
             return cmd_pwa_vapid_gen(resolved, stderr)
         return _unreachable(ns.pwa_command)
+    if ns.command == "backup":
+        var_dir = _resolve_var_dir(ns.var_dir, env=env)
+        return backup_cmd.cmd_backup(
+            var_dir,
+            Path(ns.output),
+            stdout=stdout,
+            stderr=stderr,
+        )
+    if ns.command == "restore":
+        var_dir = _resolve_var_dir(ns.var_dir, env=env)
+        return backup_cmd.cmd_restore(
+            var_dir,
+            Path(ns.archive),
+            stdout=stdout,
+            stderr=stderr,
+        )
     return _unreachable(ns.command)
+
+
+def _resolve_var_dir(
+    flag_value: str | None,
+    *,
+    env: dict[str, str] | None = None,
+) -> Path:
+    """Resolve /var/hearth from --var-dir flag, HEARTH_VAR_DIR env, or default."""
+    src = env if env is not None else os.environ
+    raw = flag_value or src.get("HEARTH_VAR_DIR") or "/var/hearth"
+    return Path(raw).expanduser().resolve()
 
 
 def _unreachable(command: str) -> NoReturn:
