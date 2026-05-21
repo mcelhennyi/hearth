@@ -13,6 +13,7 @@ services:
       - ${HEARTH_REPO_ROOT}:/workspace
     environment:
       - PYTHONUNBUFFERED=1
+      - HEARTH_REPO_ROOT=${HEARTH_REPO_ROOT}
 
   caddy:
     image: caddy:2.8-alpine

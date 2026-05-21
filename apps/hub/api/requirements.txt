@@ -5,5 +5,7 @@ sqlalchemy[asyncio]
 aiosqlite
 alembic
 pydantic>=2
+argon2-cffi>=23
+itsdangerous>=2
 pytest
 httpx

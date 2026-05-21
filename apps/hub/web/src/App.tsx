@@ -3,7 +3,9 @@
 import { useState, useSyncExternalStore } from 'react'
 import { NavLink, Route, Routes } from 'react-router-dom'
 
+import { isMantleEmbedMode } from './mantle/embedMode'
 import { InstallPrompt, PluginFrame } from './mantle'
+import { MantleEmbedApp } from './MantleEmbedApp'
 import { usePlugins } from './usePlugins'
 
 const homeTab = { key: 'home', label: 'Home', path: '/' } as const
@@ -163,6 +165,10 @@ function DashboardView() {
 // PluginFrame is imported from ./mantle/PluginFrame — see src/mantle/.
 
 function App() {
+  if (isMantleEmbedMode()) {
+    return <MantleEmbedApp />
+  }
+
   const isDesktop = useDesktopLayout()
   const plugins = usePlugins()
   const navTabs = [homeTab, ...plugins.map((plugin) => ({ key: plugin.slug, label: plugin.name, path: `/${plugin.slug}` }))]

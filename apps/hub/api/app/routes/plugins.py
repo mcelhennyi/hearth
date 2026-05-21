@@ -17,6 +17,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException
+
+from app.plugin_paths import resolve_plugin_source_path
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -47,7 +49,7 @@ async def install_plugin(
     kind = body.kind
 
     if body.source is not None:
-        manifest, errors = load_tinder(Path(body.source))
+        manifest, errors = load_tinder(resolve_plugin_source_path(body.source))
         if errors:
             # Per plugin-contract.md: tinder.toml invalid → install disabled, surface errors
             validation_errors = errors

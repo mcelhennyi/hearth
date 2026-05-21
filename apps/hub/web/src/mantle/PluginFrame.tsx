@@ -27,7 +27,7 @@ export function PluginFrame({ slug, name, active }: PluginFrameProps) {
     >
       <iframe
         title={name}
-        src={`/${slug}/`}
+        src={`/${slug}/?embed=1`}
         // sandbox allows scripts and same-origin so the plugin can call its own API;
         // forms are allowed for plugin UI; popups are blocked to keep nav in shell.
         sandbox="allow-scripts allow-same-origin allow-forms"

@@ -21,6 +21,19 @@
 
 235 tests pass via Docker; 3 skipped (HEARTH_INTEGRATION=1 gated).
 
+## Pi Docker upgrade — operator notes
+
+After upgrading an existing FR-0002/FR-0003 Docker install to FR-0001:
+
+1. **DB migrations** — once per machine:  
+   `hearth compose -- exec -w /app -e HEARTH_DB_URL=sqlite+aiosqlite:////workspace/var/hearth/hearth.db hub python -m alembic upgrade head`
+2. **Hub image** — rebuild after pulling (`argon2-cffi`, `itsdangerous` in `apps/hub/api/requirements.txt`).
+3. **Plugin install `source` paths** — the hub reads paths **inside the container**. The repo is mounted at **`/workspace`**. Use either:
+   - **Container path:** `{"source":"/workspace/apps/groceries"}` (always works), or
+   - **Host checkout path:** `{"source":"/home/pi/hearth/apps/groceries"}` when `HEARTH_REPO_ROOT` is passed into the hub service (install template does this); the hub rewrites host → `/workspace` automatically.
+
+Do **not** confuse SSH paths (`~/hearth/...`) with in-container paths unless `HEARTH_REPO_ROOT` matches your checkout.
+
 ## Manual VAL deferred (not blocking gate)
 
 Same pattern as FR-0002 closeout — manual iPhone walkthrough steps deferred for a real-device session:

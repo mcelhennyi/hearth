@@ -1,3 +1,5 @@
+export { isMantleEmbedMode } from './embedMode'
+export { PluginEmbedSurface } from './PluginEmbedSurface'
 export { PluginFrame } from './PluginFrame'
 export type { PluginFrameProps } from './PluginFrame'
 export { InstallPrompt } from './InstallPrompt'
