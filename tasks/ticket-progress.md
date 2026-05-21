@@ -8,7 +8,7 @@
 | **Active phase** | — |
 | **Branch / worktree** | `main` @ `0811ed2` |
 | **Session status** | `complete` |
-| **Next agent should** | **FR-0001 merged** ([#30](https://github.com/mcelhennyi/hearth/pull/30) → `main` @ `0811ed2`). Pi: `git pull`, `hearth pwa build`, groceries smoke. Next feature: **FR-0004** (resume auth) or **FR-0005** (remote-build) — see [`REGISTRY.md`](feature-history/REGISTRY.md). |
+| **Next agent should** | **FR-0006 design is complete and paused before implementation** — see [`FR-0006-design-language/handoffs/2026-05-21-pause-before-develop.md`](feature-history/FR-0006-design-language/handoffs/2026-05-21-pause-before-develop.md). On `/feature-request-continue`, execute its Resume contract (creates `feat/FR-0006-design-language` worktree; launches `/develop-frontier` for W0 = `T-FR-0006-01/02/03/10` here + `T-FR-0001-01` in kindling + `T-FR-0002-01` in grocery-list; 6 parallel subagents total). |
 
 ### Parallel streams
 
@@ -16,7 +16,7 @@
 
 | Stream label | Ticket(s) | `FR-NNNN` | Branch / worktree | Owner / note |
 |----------------|------------|-----------|-------------------|--------------|
-| — | — | — | — | No active parallel streams |
+| design-language (paused before develop) | T-FR-0006-01..15 (design) | FR-0006 | `main` (no feature worktree yet) | Resume contract: [`handoffs/2026-05-21-pause-before-develop.md`](feature-history/FR-0006-design-language/handoffs/2026-05-21-pause-before-develop.md) |
 
 ---
 
