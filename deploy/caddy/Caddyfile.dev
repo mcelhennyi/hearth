@@ -3,6 +3,7 @@ hearth.home.arpa {
   handle /api/* {
     reverse_proxy hub:8200
   }
+  import Caddyfile.plugins
   handle {
     root * /srv
     # SPA: /dashboard etc. are client routes — serve index.html when no static file exists.

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 from urllib.parse import urlparse
 
 from py_vapid import Vapid01
@@ -52,7 +53,9 @@ def _webpush_error_detail(exc: WebPushException) -> str:
     body = ""
     if response is not None:
         try:
-            body = (getattr(response, "text", None) or getattr(response, "content", b"") or b"")[:200]
+            body = (getattr(response, "text", None) or getattr(response, "content", b"") or b"")[
+                :200
+            ]
             if isinstance(body, bytes):
                 body = body.decode("utf-8", errors="replace")
         except Exception:  # pragma: no cover - defensive
@@ -72,9 +75,9 @@ def send_test_notification(
 ) -> tuple[int, list[dict[str, Any]], str | None]:
     """Send a test push to each subscription.
 
-    Returns ``(sent_count, remaining_subscriptions, last_error)``. Expired endpoints
-  (HTTP 410) are dropped from ``remaining``. Other delivery errors are recorded in
-    ``last_error`` but do not abort the batch (avoids opaque HTTP 500 on the button).
+      Returns ``(sent_count, remaining_subscriptions, last_error)``. Expired endpoints
+    (HTTP 410) are dropped from ``remaining``. Other delivery errors are recorded in
+      ``last_error`` but do not abort the batch (avoids opaque HTTP 500 on the button).
     """
     sender_fn = sender or webpush
     _, private_key = load_vapid_keys(config)

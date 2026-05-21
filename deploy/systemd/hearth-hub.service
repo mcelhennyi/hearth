@@ -1,0 +1,22 @@
+[Unit]
+Description=Hearth Hub
+Documentation=https://github.com/mcelhennyi/hearth
+After=network-online.target caddy.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=hearth
+Group=hearth
+WorkingDirectory=/opt/hearth
+ExecStart=/opt/hearth/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8200
+Restart=on-failure
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hearth-hub
+Environment=HEARTH_VAR_DIR=/var/hearth
+EnvironmentFile=-/etc/hearth/hearth.env
+
+[Install]
+WantedBy=multi-user.target

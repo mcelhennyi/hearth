@@ -13,6 +13,7 @@ services:
       - ${HEARTH_REPO_ROOT}:/workspace
     environment:
       - PYTHONUNBUFFERED=1
+      - HEARTH_REPO_ROOT=${HEARTH_REPO_ROOT}
 
   caddy:
     image: caddy:2.8-alpine
@@ -22,6 +23,7 @@ services:
       - "443:443"
     volumes:
       - ./caddy/Caddyfile.dev:/etc/caddy/Caddyfile:ro
+      - ./caddy/Caddyfile.plugins:/etc/caddy/Caddyfile.plugins:ro
       - ./static:/srv:ro
       - caddy_data:/data
       - caddy_config:/config

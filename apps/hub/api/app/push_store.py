@@ -22,7 +22,9 @@ def save_subscriptions(path: Path, subscriptions: list[dict[str, Any]]) -> None:
         f.write("\n")
 
 
-def upsert_subscription(existing: list[dict[str, Any]], candidate: dict[str, Any]) -> list[dict[str, Any]]:
+def upsert_subscription(
+    existing: list[dict[str, Any]], candidate: dict[str, Any]
+) -> list[dict[str, Any]]:
     endpoint = candidate.get("endpoint")
     if not isinstance(endpoint, str) or not endpoint:
         raise ValueError("subscription endpoint is required")

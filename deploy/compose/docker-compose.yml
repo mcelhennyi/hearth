@@ -23,6 +23,7 @@ services:
       - ../../:/workspace
     environment:
       - PYTHONUNBUFFERED=1
+      - HEARTH_REPO_ROOT=${HEARTH_REPO_ROOT:-}
 
   docs:
     profiles: ["docs"]

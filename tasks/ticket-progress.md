@@ -8,7 +8,7 @@
 | **Active phase** | complete |
 | **Branch / worktree** | `feat/FR-0001-hearth-platform` @ `.worktrees/FR-0001-hearth-platform/feature/` |
 | **Session status** | `complete` |
-| **Next agent should** | Human: review and merge [PR #30](https://github.com/mcelhennyi/hearth/pull/30). After merge: remove `CURRENT.md` from `main`, advance FR-0004 to `in-progress`. Manual VAL sessions deferred: T05/T08/T09 iPhone walkthrough on real Pi + device. |
+| **Next agent should** | Human: merge [PR #30](https://github.com/mcelhennyi/hearth/pull/30) (`feat/FR-0001-hearth-platform` @ `e1daf2e`, 238 tests green). After merge: delete `CURRENT.md` on `main`, Pi `git pull` + `hearth pwa build` for groceries iframe fix. Then FR-0004 or FR-0005. |
 
 ### Parallel streams
 
@@ -49,7 +49,7 @@
 | T-FR-0001-05 | Caddy generation and local TLS | done | done | done | `FR-0001`. Fragment renderer + reload hook (Caddy admin API) + Caddyfile.template. 8 unit tests; integration test gated on `HEARTH_INTEGRATION=1`. iPhone walkthrough deferred (manual). [PR #27](https://github.com/mcelhennyi/hearth/pull/27). |
 | T-FR-0001-06 | Spark v1 broker and client libs | done | done | done | `FR-0001`. Broker + Python client + TS stub + 23 tests. 127 total tests pass. [PR #24](https://github.com/mcelhennyi/hearth/pull/24). |
 | T-FR-0001-07 | Kindling repo and CLI | done | done | done | `FR-0001`. `kindling/` local dir created; CLI (`new`/`validate`/`install`); 17 new tests; 198 total pass. Separate repo/submodule deferred (DESIGN-GAP, scope-right). [PR #26](https://github.com/mcelhennyi/hearth/pull/26). |
-| T-FR-0001-08 | groceries reference plugin | done | done | done | `FR-0001`. grocery-list repo pushed; submodule at apps/groceries; 210 tests pass via Docker. iPhone walkthrough deferred (same as T05/T09). |
+| T-FR-0001-08 | groceries reference plugin | done | done | done | `FR-0001`. grocery-list repo pushed; submodule at apps/groceries; 4 install tests + conftest; 210 tests pass via Docker. iPhone walkthrough deferred (same as T05/T09). |
 | T-FR-0001-09 | Auth, VAPID, Web Push + ntfy | done | done | done | `FR-0001`. argon2id auth, itsdangerous sessions, lockout, Web Push (VAPID+410 pruning), ntfy. 141 tests pass via Docker. Manual iPhone VAL deferred (needs real device). [PR #25](https://github.com/mcelhennyi/hearth/pull/25). |
 | T-FR-0001-10 | Pi/Mac mini install.sh + backup | done | done | done | `FR-0001`. deploy/install.sh + systemd/launchd units + hearth backup/restore. 235 tests pass via Docker. [PR #30](https://github.com/mcelhennyi/hearth/pull/30). |
 | T-FR-0004-01 | Design amendments: centralized auth architecture | done | done | done | `FR-0004` **parked**. Design in feature tree; see diary. |
@@ -68,7 +68,6 @@
 ## How to choose next work
 
 1. **FR-0003** is **closed** on **`main`** — see [`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md).
-2. **FR-0004** is **`parked`** — do not staff **`T-FR-0004-02`…`10`** until FR-0001 Mantle shell VAL (**`T-FR-0001-04`**) is done. See [`FR-0004-centralized-users-auth/README.md`](feature-history/FR-0004-centralized-users-auth/README.md).
-3. **FR-0001** is `in-progress` on `feat/FR-0001-hearth-platform`. T-FR-0001-02 ‖ T-FR-0001-04 are the active parallel wave.
-4. After **`T-FR-0001-04` VAL**: set FR-0004 to `in-progress` in `REGISTRY.md` and resume with **`T-FR-0004-02`**.
-5. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
+2. **FR-0001** is **feature-complete** on **`feat/FR-0001-hearth-platform`** — merge [PR #30](https://github.com/mcelhennyi/hearth/pull/30), then see [`90-closeout.md`](feature-history/FR-0001-hearth-platform/90-closeout.md).
+3. **FR-0004** is **`parked`** — after PR #30 merges, set FR-0004 to `in-progress` in `REGISTRY.md` and resume with **`T-FR-0004-02`**. See [`FR-0004-centralized-users-auth/README.md`](feature-history/FR-0004-centralized-users-auth/README.md).
+4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.

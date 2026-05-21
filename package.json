@@ -1,0 +1,16 @@
+{
+  "name": "hearth",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Hearth home platform — pnpm workspace root",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "build": "pnpm --filter web run build",
+    "test": "pnpm --filter web run test",
+    "lint": "pnpm --filter web run lint"
+  }
+}

@@ -3,6 +3,9 @@
 import { useState, useSyncExternalStore } from 'react'
 import { NavLink, Route, Routes } from 'react-router-dom'
 
+import { isMantleEmbedMode } from './mantle/embedMode'
+import { InstallPrompt, PluginFrame } from './mantle'
+import { MantleEmbedApp } from './MantleEmbedApp'
 import { usePlugins } from './usePlugins'
 
 const homeTab = { key: 'home', label: 'Home', path: '/' } as const
@@ -159,19 +162,13 @@ function DashboardView() {
   )
 }
 
-function PluginFrame({ slug, name }: { slug: string; name: string }) {
-  return (
-    <main className="mx-auto min-h-[60svh] w-full max-w-6xl px-0 pb-28 pt-0 md:pb-16">
-      <iframe
-        title={name}
-        src={`/${slug}/`}
-        className="h-[70svh] w-full rounded-none border-0 bg-[var(--hearth-bg)] md:rounded-lg md:border md:border-[var(--hearth-surface)]"
-      />
-    </main>
-  )
-}
+// PluginFrame is imported from ./mantle/PluginFrame — see src/mantle/.
 
 function App() {
+  if (isMantleEmbedMode()) {
+    return <MantleEmbedApp />
+  }
+
   const isDesktop = useDesktopLayout()
   const plugins = usePlugins()
   const navTabs = [homeTab, ...plugins.map((plugin) => ({ key: plugin.slug, label: plugin.name, path: `/${plugin.slug}` }))]
@@ -208,9 +205,11 @@ function App() {
       <Routes>
         <Route path="/" element={<DashboardView />} />
         {plugins.map((plugin) => (
-          <Route key={plugin.slug} path={`/${plugin.slug}`} element={<PluginFrame slug={plugin.slug} name={plugin.name} />} />
+          <Route key={plugin.slug} path={`/${plugin.slug}`} element={<PluginFrame slug={plugin.slug} name={plugin.name} active={true} />} />
         ))}
       </Routes>
+
+      <InstallPrompt />
 
       {!isDesktop && (
         <nav

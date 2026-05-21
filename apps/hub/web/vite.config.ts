@@ -31,7 +31,11 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,webp,ico}'],
+        // Only hub shell routes use the SPA fallback. Plugin iframes load /<slug>/… from
+        // the network (Caddy → plugin container); a broad fallback served Mantle index.html
+        // inside the iframe and showed PluginEmbedSurface instead of the plugin UI.
         navigateFallback: '/index.html',
+        navigateFallbackAllowlist: [/^\/$/, /^\/dashboard(?:\/|$)/, /^\/settings(?:\/|$)/],
         navigateFallbackDenylist: [/^\/api\//],
       },
       devOptions: {

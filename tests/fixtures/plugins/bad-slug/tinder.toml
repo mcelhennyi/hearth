@@ -1,0 +1,10 @@
+[plugin]
+slug       = "Bad Slug With Spaces"
+name       = "Bad slug"
+version    = "0.1.0"
+hearth_min = "0.1.0"
+kind       = "app"
+
+[entrypoint]
+backend = { kind = "python", module = "bad.app:create_app", port_env = "HEARTH_PLUGIN_PORT" }
+ui      = { kind = "static", path = "web/dist" }
