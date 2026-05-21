@@ -1,6 +1,6 @@
 # Mantle — shared PWA shell
 
-**Authority:** This document defines the shared React shell every Hearth UI lives inside, and the design tokens / primitives plugins consume from the **Kindling** templates package. The **home dashboard** grid (app vs widget plugins, layout persistence) is in [`dashboard.md`](dashboard.md).
+**Authority:** This document defines the shared React shell every Hearth UI lives inside — **behavior, chrome zones, and contracts** (logical). **Layout and visual design language** (proportions, spacing, color as rendered, responsive chrome) are authoritative in **[`mockups/`](mockups/README.md)** (static HTML/CSS). The **home dashboard** grid (block types, persistence, widget model) is in [`dashboard.md`](dashboard.md).
 
 The primary client is an **iPhone PWA** added to the Home Screen. Mantle is therefore a Progressive Web App by default: it ships a manifest, a service worker, an offline-aware app shell, and a layout that adapts between bottom-tab nav (mobile/standalone) and top-bar nav (desktop browser).
 
@@ -29,53 +29,51 @@ iPhone Safari requires **HTTPS** for service workers and Web Push. Hearth's reve
 
 | Mode | Route | Main content |
 |------|-------|----------------|
-| **Dashboard** | `/` | User-editable **grid** of blocks ([`dashboard.md`](dashboard.md)) — shortcuts, widgets (later), system tiles |
+| **Dashboard** | `/` | User-editable **grid** of blocks ([`dashboard.md`](dashboard.md)) — per-plugin **app icons** and/or **widgets**, system tiles |
 | **App** | `/<slug>/…` | Plugin UI in the **plugin frame** (iframe for MVP) |
 
 Chrome (top + bottom bars) stays **mounted** across mode changes so navigation does not flash or reset safe-area layout.
 
-## Layout
+## Layout and visual mocks
 
-### Desktop / wide (`min-width: 768px`)
+Do **not** use ASCII layout diagrams in this doc for spatial reference. Open the linked HTML mocks in a browser — see **[`mockups/README.md`](mockups/README.md)** for the full index.
 
-```
-+---------------------------------------------------------------+
-|  TOP BAR (fixed zones — see Chrome contract)                  |
-|  [🏠] [title / context] .............. [plugin slots] [user] |
-+---------------------------------------------------------------+
-|  Main frame: dashboard grid  OR  plugin iframe                |
-+---------------------------------------------------------------+
-|  BOTTOM BAR (fixed zones)                                     |
-|  [🏠 Home] [nav tabs / plugin slots] .............. [settings]|
-+---------------------------------------------------------------+
-```
+| Viewport | Shell mode | Canonical mock |
+|----------|------------|----------------|
+| iPhone | Dashboard `/` | [`mockups/dashboard-iphone.html`](mockups/dashboard-iphone.html) |
+| Desktop (≥768px) | Dashboard `/` | [`mockups/dashboard-desktop.html`](mockups/dashboard-desktop.html) |
+| iPhone | App `/<slug>/` (shell only) | [`mockups/mantle-iphone-bare.html`](mockups/mantle-iphone-bare.html) |
+| Desktop | App `/<slug>/` (shell only) | [`mockups/mantle-desktop-bare.html`](mockups/mantle-desktop-bare.html) |
+| iPhone | App + example plugin UI | [`mockups/mantle-iphone-groceries.html`](mockups/mantle-iphone-groceries.html) (reference plugin) |
+| Desktop | App + example plugin UI | [`mockups/mantle-desktop-groceries.html`](mockups/mantle-desktop-groceries.html) (reference plugin) |
 
-### Mobile / installed PWA (`max-width: 767px`)
+Shared Mantle mock stylesheet: [`mockups/mantle-mock.css`](mockups/mantle-mock.css).
 
-```
-+--------------------------------------+
-|  TOP BAR                             |
-|  [🏠]  Title                 [user]  |
-+--------------------------------------+
-|  Main frame (grid or plugin iframe)  |
-|                                      |
-+--------------------------------------+
-|  BOTTOM BAR                          |
-|  [🏠] [app tabs…] [⋯]    [slots]     |
-+--------------------------------------+
-```
+### Chrome regions (logical)
+
+| Region | Dashboard | App `/<slug>/` |
+|--------|-----------|----------------|
+| **Top bar** | Flame (inactive), title “Hearth”, user; **Settings** text control on desktop (opens modal — see desktop dashboard mock) | Leading **Home** control, plugin title (`hearth.title`), optional **`[ui.chrome].top`** slots, user |
+| **Main frame** | Dashboard grid ([`dashboard.md`](dashboard.md)) — no iframe | Plugin **iframe** (MVP) |
+| **Bottom bar** | Fixed to viewport bottom (not a floating dock). **Home** pinned left; **app launcher** scrolls horizontally in the center; **Settings** pinned right | Same fixed bar. **Home** pinned left; **center is plugin bottom chrome slots only** — **no other app tabs**; **Settings** pinned right |
+
+Breakpoint: **768px** — below = mobile/PWA chrome; at/above = desktop chrome (top bar includes text Settings on dashboard; bottom bar uses horizontal app pills on desktop per mocks).
 
 ### Bottom bar — nav policy
 
+| Zone | Dashboard (`/`) | App (`/<slug>/`) |
+|------|-----------------|------------------|
+| **Left (pinned)** | **Home** — active | **Home** — returns to `/` |
+| **Center** | **App launcher** — one control per enabled **`app`** plugin with `ui.nav.show_in_tab_bar` (default true), ordered by `[ui.nav].order`; horizontally scrollable when overflow | **Plugin bottom slots** only — content from `[ui.chrome].bottom` via `hearth.chrome.mount` |
+| **Right (pinned)** | **Settings** | **Settings** |
+
 | Item | Behavior |
 |------|----------|
-| **Home (🏠)** | Always present; returns to `/` from any app |
-| **App tabs** | One tab per enabled **`app`** plugin with `ui.nav.show_in_tab_bar` (default true), ordered by `[ui.nav].order` |
-| **More (⋯)** | Overflow sheet when more than **3** app tabs would fit beside Home (4 slots total including Home on mobile) — **REFINEMENT R-U2** (sheet UX deferred; v0 may cap visible tabs at 4) |
-| **Plugin slots** | Optional icons/actions registered by the active app (`[ui.chrome]`) |
-| **Settings** | Global; may live in top bar on desktop instead |
+| **Settings (desktop)** | **Top bar** and **bottom bar** both expose Settings; either opens the same **floating modal** over the shell (see [`mockups/dashboard-desktop.html`](mockups/dashboard-desktop.html)). |
+| **Settings (mobile)** | **Icon-only** control in the pinned right zone (see [`mockups/dashboard-iphone.html`](mockups/dashboard-iphone.html)). |
+| **REFINEMENT R-U2** | When many app plugins are enabled, v0 uses a **scrollable** center strip with edge fade (mocks), not a separate overflow sheet. |
 
-Long-press on a tab is reserved for plugin actions in a future iteration.
+Long-press on a launcher tab is reserved for plugin actions in a future iteration.
 
 ## Chrome contract
 
@@ -94,9 +92,9 @@ The shell owns a **fixed skeleton** on every screen. Plugins supply **slot conte
 
 | Zone | Owner | Dashboard | App |
 |------|-------|-----------|-----|
-| **Nav** | Shell | Home active + app tabs | Home inactive + app tabs (current slug highlighted) |
-| **Plugin slots** | Plugin (optional) | Empty | e.g. primary action, filter toggle |
-| **Settings** | Shell | Visible (icon) | Visible |
+| **Launcher / slots** | Shell (dashboard) / Plugin (app) | Home active + scrollable **app launcher** | Home inactive; center = **`[ui.chrome].bottom` only** (no cross-app tabs) |
+| **Top chrome slots** | Plugin (optional) | Empty | `[ui.chrome].top` — e.g. actions, add |
+| **Settings** | Shell | Visible (icon or text per viewport) | Visible |
 
 Visual rules: same height, background (`--hearth-surface`), border, and typography in both modes so switching dashboard ↔ app feels like one operating system, not a browser with a random header per site.
 
@@ -215,3 +213,9 @@ Underneath: Tailwind for layout, shadcn/ui as the primitive base, lucide-react f
 ## Install prompt
 
 On the dashboard, when the user agent matches iOS Safari (and the app isn't already installed), Mantle shows a one-time tip pointing at Share → Add to Home Screen with a small animation. Dismissed permanently after first install or explicit dismiss.
+
+## Related docs
+
+- [`mockups/README.md`](mockups/README.md) — HTML/CSS visual mocks index (canonical layout reference).
+- [`dashboard.md`](dashboard.md) — home grid, block types, layout persistence.
+- [`plugin-contract.md`](plugin-contract.md) — `[ui.chrome]`, `[ui.nav]`, plugin kinds.

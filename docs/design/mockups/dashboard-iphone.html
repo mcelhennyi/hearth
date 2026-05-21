@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0f1115" />
+  <title>Hearth — Dashboard mock (iPhone grid)</title>
+  <style>
+    /* Design tokens — docs/design/mantle-ui.md */
+    :root {
+      --hearth-bg: #0f1115;
+      --hearth-surface: #161a22;
+      --hearth-surface-elevated: #1c212c;
+      --hearth-fg: #e6e6e6;
+      --hearth-muted: #9aa3b2;
+      --hearth-accent: #ff6a3d;
+      --hearth-accent-fg: #0f1115;
+      --hearth-radius-sm: 4px;
+      --hearth-radius-md: 8px;
+      --hearth-radius-lg: 16px;
+      --hearth-radius-icon: 22%;
+      --hearth-grid-gap: 8px;
+      --hearth-font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, system-ui, sans-serif;
+      --hearth-safe-top: env(safe-area-inset-top, 0px);
+      --hearth-safe-bottom: env(safe-area-inset-bottom, 0px);
+      --hearth-bar-h: 52px;
+      --hearth-columns: 4;
+      --icon-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    }
+
+    [data-theme="light"] {
+      --hearth-bg: #fafafa;
+      --hearth-surface: #ffffff;
+      --hearth-surface-elevated: #f3f4f6;
+      --hearth-fg: #111111;
+      --hearth-muted: #6b7280;
+      --icon-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--hearth-font-sans);
+      background: #050608;
+      color: var(--hearth-fg);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      gap: 16px;
+    }
+
+    .mock-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      max-width: 420px;
+      font-size: 13px;
+      color: #9aa3b2;
+    }
+
+    .mock-controls button {
+      font: inherit;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #2a3140;
+      background: #161a22;
+      color: #e6e6e6;
+      cursor: pointer;
+    }
+
+    .mock-controls button[aria-pressed="true"] {
+      background: var(--hearth-accent);
+      color: var(--hearth-accent-fg);
+      border-color: var(--hearth-accent);
+    }
+
+    /* iPhone frame for desktop preview */
+    .device {
+      width: min(390px, 100vw - 32px);
+      height: min(844px, 92dvh);
+      background: var(--hearth-bg);
+      border-radius: 44px;
+      box-shadow:
+        0 0 0 10px #1a1d24,
+        0 24px 80px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .status-bar {
+      height: calc(12px + var(--hearth-safe-top));
+      padding-top: var(--hearth-safe-top);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding-left: 28px;
+      padding-right: 28px;
+      padding-bottom: 4px;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+    }
+
+    .status-bar .time { margin-left: 2px; }
+    .status-icons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    /* Shell chrome — mantle-ui.md */
+    .top-bar {
+      height: var(--hearth-bar-h);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 10px;
+      background: var(--hearth-bg);
+      border-bottom: 1px solid color-mix(in srgb, var(--hearth-muted) 18%, transparent);
+      flex-shrink: 0;
+    }
+
+    .flame {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .top-bar h1 {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      flex: 1;
+    }
+
+    .user-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff6a3d, #b83a14);
+      border: none;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Dashboard grid — dashboard.md */
+    .main-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 12px 16px 8px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(var(--hearth-columns), 1fr);
+      grid-auto-rows: var(--cell-size, 84px);
+      gap: var(--hearth-grid-gap);
+    }
+
+    .block {
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      border-radius: var(--hearth-radius-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.15s ease;
+    }
+
+    .block:active:not(.is-edit) {
+      transform: scale(0.96);
+    }
+
+    /* App shortcut — iOS icon tile */
+    .block--app-shortcut {
+      align-items: center;
+      justify-content: flex-start;
+      gap: 6px;
+      padding: 4px 2px 0;
+      background: transparent;
+      border: none;
+    }
+
+    .app-icon {
+      width: 100%;
+      aspect-ratio: 1;
+      max-width: 72px;
+      border-radius: var(--hearth-radius-icon);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: var(--icon-shadow);
+      flex-shrink: 0;
+    }
+
+    .app-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-align: center;
+      line-height: 1.2;
+      color: var(--hearth-fg);
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+      padding: 0 2px;
+    }
+
+    /* Widget block — content must fit primitive cell height (no clip) */
+    .block--widget {
+      background: var(--hearth-surface);
+      border: 1px solid color-mix(in srgb, var(--hearth-muted) 12%, transparent);
+      padding: 10px 12px;
+      overflow: hidden;
+    }
+
+    .widget-inner {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      gap: 4px;
+    }
+
+    .widget-title {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--hearth-muted);
+      line-height: 1.2;
+      flex-shrink: 0;
+    }
+
+    .widget-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-shrink: 0;
+      min-width: 0;
+    }
+
+    .widget-body {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      min-height: 0;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .widget-metric {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--hearth-fg);
+      flex-shrink: 0;
+    }
+
+    .widget-sub {
+      font-size: 11px;
+      line-height: 1.25;
+      color: var(--hearth-muted);
+      min-width: 0;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    .widget-action {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--hearth-accent);
+      line-height: 1.2;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    /* h = 1 row: title + action on one line; metric + subtitle below */
+    .block--widget[data-span-h="1"] .widget-inner {
+      gap: 2px;
+    }
+
+    .block--widget[data-span-h="1"] .widget-metric {
+      font-size: 22px;
+    }
+
+    /* h ≥ 2 rows: vertical stack; list metric grows; footer pins meta + action */
+    .block--widget[data-span-h="2"] .widget-inner,
+    .block--widget[data-span-h="3"] .widget-inner,
+    .block--widget[data-span-h="4"] .widget-inner {
+      gap: 6px;
+    }
+
+    .block--widget[data-span-h="2"] .widget-metric--list,
+    .block--widget[data-span-h="3"] .widget-metric--list,
+    .block--widget[data-span-h="4"] .widget-metric--list {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.35;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
+    }
+
+    .widget-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-shrink: 0;
+      margin-top: auto;
+      min-width: 0;
+    }
+
+    .widget-footer .widget-sub {
+      -webkit-line-clamp: 1;
+      flex: 1;
+    }
+
+    .block--widget.is-placeholder {
+      background: color-mix(in srgb, var(--hearth-surface) 80%, var(--hearth-muted));
+      border-style: dashed;
+    }
+
+    .block--widget.is-placeholder .widget-metric {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--hearth-muted);
+    }
+
+    .block--widget.is-placeholder .widget-sub {
+      -webkit-line-clamp: 2;
+    }
+
+    /* System tile */
+    .block--system {
+      background: linear-gradient(145deg, color-mix(in srgb, var(--hearth-accent) 22%, var(--hearth-surface)), var(--hearth-surface));
+      border: 1px solid color-mix(in srgb, var(--hearth-accent) 35%, transparent);
+      padding: 10px;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .system-icon { font-size: 22px; }
+    .system-label {
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    /* Full-width strip */
+    .block--strip {
+      background: var(--hearth-surface-elevated);
+      border: 1px solid color-mix(in srgb, var(--hearth-muted) 15%, transparent);
+      padding: 14px 16px;
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .strip-text { flex: 1; }
+    .strip-text strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+    .strip-text span {
+      font-size: 12px;
+      color: var(--hearth-muted);
+    }
+
+    .strip-dismiss {
+      font-size: 12px;
+      color: var(--hearth-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    /* Edit mode — dashboard.md */
+    .device.is-edit .block--app-shortcut {
+      animation: jiggle 0.28s ease-in-out infinite alternate;
+    }
+
+    .device.is-edit .block:nth-child(3n) { animation-delay: 0.05s; }
+    .device.is-edit .block:nth-child(3n+1) { animation-delay: 0.12s; }
+
+    @keyframes jiggle {
+      from { transform: rotate(-1.2deg); }
+      to { transform: rotate(1.2deg); }
+    }
+
+    .edit-badge {
+      display: none;
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #3a3f4b;
+      color: #fff;
+      font-size: 16px;
+      line-height: 20px;
+      text-align: center;
+      border: 2px solid var(--hearth-bg);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .device.is-edit .edit-badge { display: block; }
+
+    .edit-bar {
+      display: none;
+      padding: 8px 16px 4px;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .device.is-edit .edit-bar { display: flex; }
+
+    .edit-bar button {
+      font: inherit;
+      font-weight: 600;
+      color: var(--hearth-accent);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px 0;
+    }
+
+    .edit-hint {
+      color: var(--hearth-muted);
+      font-size: 13px;
+    }
+
+    /* Bottom bar — Home + Settings pinned; plugin quick-access scrolls */
+    .bottom-bar {
+      min-height: calc(var(--hearth-bar-h) + var(--hearth-safe-bottom));
+      padding-bottom: var(--hearth-safe-bottom);
+      display: flex;
+      align-items: stretch;
+      background: color-mix(in srgb, var(--hearth-bg) 92%, black);
+      border-top: 1px solid color-mix(in srgb, var(--hearth-muted) 18%, transparent);
+      flex-shrink: 0;
+    }
+
+    .nav-pinned {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      padding: 0 6px;
+      background: color-mix(in srgb, var(--hearth-bg) 92%, black);
+      z-index: 2;
+    }
+
+    .nav-pinned--start {
+      padding-left: 10px;
+      box-shadow: 8px 0 12px -4px color-mix(in srgb, var(--hearth-bg) 85%, transparent);
+    }
+
+    .nav-pinned--end {
+      padding-right: 10px;
+      box-shadow: -8px 0 12px -4px color-mix(in srgb, var(--hearth-bg) 85%, transparent);
+    }
+
+    .nav-quick-access {
+      flex: 1;
+      min-width: 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-quick-access::before,
+    .nav-quick-access::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 12px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .nav-quick-access::before {
+      left: 0;
+      background: linear-gradient(90deg, color-mix(in srgb, var(--hearth-bg) 92%, black), transparent);
+    }
+
+    .nav-quick-access::after {
+      right: 0;
+      background: linear-gradient(270deg, color-mix(in srgb, var(--hearth-bg) 92%, black), transparent);
+    }
+
+    .nav-scroll {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+      padding: 0 8px;
+      width: 100%;
+      height: 100%;
+    }
+
+    .nav-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-tab {
+      flex: 0 0 auto;
+      width: 64px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 6px 4px 4px;
+      background: none;
+      border: none;
+      color: var(--hearth-muted);
+      font-size: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: var(--hearth-radius-md);
+      scroll-snap-align: start;
+    }
+
+    .nav-tab .tab-icon {
+      font-size: 22px;
+      line-height: 1;
+      opacity: 0.85;
+    }
+
+    .nav-tab.is-active {
+      color: var(--hearth-accent);
+    }
+
+    .nav-tab.is-active .tab-icon { opacity: 1; }
+
+    .nav-tab--home {
+      width: 56px;
+    }
+
+    .nav-tab--settings {
+      width: 48px;
+    }
+
+    .nav-tab--settings .tab-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .home-indicator {
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 134px;
+      height: 5px;
+      background: color-mix(in srgb, var(--hearth-fg) 35%, transparent);
+      border-radius: 99px;
+      pointer-events: none;
+      margin-bottom: var(--hearth-safe-bottom);
+    }
+
+    .spec-note {
+      max-width: 420px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #6b7280;
+      text-align: center;
+    }
+
+    .spec-note a { color: var(--hearth-accent); }
+
+    @media (max-width: 420px) {
+      body { padding: 0; }
+      .device {
+        width: 100vw;
+        height: 100dvh;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      .mock-controls { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="mock-controls" role="toolbar" aria-label="Mock controls">
+    <button type="button" id="btn-edit" aria-pressed="false">Edit mode</button>
+    <button type="button" id="btn-theme" aria-pressed="false">Light theme</button>
+    <a href="dashboard-desktop.html">Desktop mock →</a>
+    <a href="mantle-iphone-groceries.html">Mantle + Groceries</a>
+  </div>
+
+  <div class="device" id="device" data-theme="dark">
+    <div class="status-bar" aria-hidden="true">
+      <span class="time">9:41</span>
+      <span class="status-icons" aria-hidden="true">▮▮▮▮  WiFi  🔋</span>
+    </div>
+
+    <header class="top-bar">
+      <svg class="flame" viewBox="0 0 256 256" aria-hidden="true">
+        <defs>
+          <linearGradient id="ember" x1="78" y1="56" x2="178" y2="212" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#FFB84D"/>
+            <stop offset="0.54" stop-color="#F97316"/>
+            <stop offset="1" stop-color="#B83A14"/>
+          </linearGradient>
+        </defs>
+        <path fill="#241A15" d="M41 220V95C41 50.8 80 16 128 16s87 34.8 87 79v125h-38V96c0-27.4-21.9-48-49-48S79 68.6 79 96v124H41Z"/>
+        <path fill="url(#ember)" d="M129 216c-34.2 0-58-21.8-58-53.1 0-20.6 11.1-37.1 27.3-52.7 13.2-12.7 22.5-27 28.8-45.9 22.3 19.7 34.3 40.1 34.3 58.6 8.9-7 14.7-17.1 17-29.5 19.2 17.4 28.6 38.1 28.6 62.8 0 36.1-30.8 59.8-78 59.8Z"/>
+      </svg>
+      <h1 id="screen-title">Hearth</h1>
+      <button type="button" class="user-btn" aria-label="Account">IM</button>
+    </header>
+
+    <div class="edit-bar">
+      <button type="button" id="btn-done">Done</button>
+      <span class="edit-hint">Drag to move · handles to resize</span>
+      <button type="button" disabled style="opacity:0.4">+</button>
+    </div>
+
+    <main class="main-scroll">
+      <!--
+        Layout from docs/design/dashboard.md (4 columns, primitive cells).
+        grid-column: x+1 / span w; grid-row: y+1 / span h
+      -->
+      <div class="dashboard-grid" id="grid" role="list" aria-label="Home dashboard">
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 1 / span 1; grid-row: 1 / span 1"
+          data-type="app-shortcut" data-plugin="groceries" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #34d399, #059669)">🛒</div>
+          <span class="app-label">Groceries</span>
+        </article>
+
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 2 / span 1; grid-row: 1 / span 1"
+          data-type="app-shortcut" data-plugin="recipes" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #fbbf24, #d97706)">📖</div>
+          <span class="app-label">Recipes</span>
+        </article>
+
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 3 / span 1; grid-row: 1 / span 1"
+          data-type="app-shortcut" data-plugin="ideas" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #a78bfa, #7c3aed)">💡</div>
+          <span class="app-label">Ideas</span>
+        </article>
+
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 4 / span 1; grid-row: 1 / span 1"
+          data-type="app-shortcut" data-plugin="scheduler" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #60a5fa, #2563eb)">📅</div>
+          <span class="app-label">Scheduler</span>
+        </article>
+
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 1 / span 1; grid-row: 2 / span 1"
+          data-type="app-shortcut" data-plugin="chores" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #2dd4bf, #0d9488)">🧹</div>
+          <span class="app-label">Chores</span>
+        </article>
+
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 2 / span 1; grid-row: 2 / span 1"
+          data-type="app-shortcut" data-plugin="photos" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #f472b6, #db2777)">📷</div>
+          <span class="app-label">Photos</span>
+        </article>
+
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 3 / span 1; grid-row: 2 / span 1"
+          data-type="app-shortcut" data-plugin="notes" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #fde047, #ca8a04)">📝</div>
+          <span class="app-label">Notes</span>
+        </article>
+
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 4 / span 1; grid-row: 2 / span 1"
+          data-type="app-shortcut" data-plugin="budget" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #4ade80, #16a34a)">💰</div>
+          <span class="app-label">Budget</span>
+        </article>
+
+        <article class="block block--widget" role="listitem"
+          style="grid-column: 1 / span 2; grid-row: 3 / span 1"
+          data-type="widget" data-plugin="pantry" data-surface="item-count" data-span-h="1" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="widget-inner">
+            <div class="widget-header">
+              <span class="widget-title">Pantry</span>
+              <span class="widget-action">Open Groceries →</span>
+            </div>
+            <div class="widget-body">
+              <span class="widget-metric">12</span>
+              <span class="widget-sub">items low on stock</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="block block--widget" role="listitem"
+          style="grid-column: 3 / span 2; grid-row: 3 / span 2"
+          data-type="widget" data-plugin="scheduler" data-surface="today" data-span-h="2" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="widget-inner">
+            <span class="widget-title">Today</span>
+            <p class="widget-metric widget-metric--list">
+              School pickup 3:15<br />
+              Trash night
+            </p>
+            <div class="widget-footer">
+              <span class="widget-sub">2 events</span>
+              <span class="widget-action">Open Scheduler →</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="block block--system" role="listitem"
+          style="grid-column: 3 / span 1; grid-row: 5 / span 1"
+          data-type="system" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <span class="system-icon">🔒</span>
+          <span class="system-label">Trust local CA</span>
+        </article>
+
+        <article class="block block--system" role="listitem"
+          style="grid-column: 4 / span 1; grid-row: 5 / span 1"
+          data-type="system" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <span class="system-icon">✓</span>
+          <span class="system-label">Hub healthy</span>
+        </article>
+
+        <article class="block block--widget is-placeholder" role="listitem"
+          style="grid-column: 1 / span 2; grid-row: 4 / span 1"
+          data-type="widget" data-plugin="weather" data-span-h="1" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="widget-inner">
+            <span class="widget-title">Widget</span>
+            <div class="widget-body">
+              <span class="widget-metric">Coming soon</span>
+              <span class="widget-sub">MVP placeholder per dashboard.md</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="block block--strip" role="listitem"
+          style="grid-column: 1 / span 4; grid-row: 6 / span 1"
+          data-type="system" tabindex="0">
+          <span style="font-size:28px" aria-hidden="true">📲</span>
+          <div class="strip-text">
+            <strong>Add to Home Screen</strong>
+            <span>Share → Add for the full PWA experience</span>
+          </div>
+          <button type="button" class="strip-dismiss" aria-label="Dismiss">×</button>
+        </article>
+      </div>
+    </main>
+
+    <nav class="bottom-bar" aria-label="Main navigation">
+      <div class="nav-pinned nav-pinned--start">
+        <button type="button" class="nav-tab nav-tab--home is-active" id="nav-home" data-route="/">
+          <span class="tab-icon" aria-hidden="true">🏠</span>
+          Home
+        </button>
+      </div>
+      <div class="nav-quick-access" aria-label="Quick access to apps">
+        <div class="nav-scroll" id="nav-scroll" role="tablist">
+          <button type="button" class="nav-tab" role="tab" data-route="/groceries/">
+            <span class="tab-icon" aria-hidden="true">🛒</span>
+            Groceries
+          </button>
+          <button type="button" class="nav-tab" role="tab" data-route="/recipes/">
+            <span class="tab-icon" aria-hidden="true">📖</span>
+            Recipes
+          </button>
+          <button type="button" class="nav-tab" role="tab" data-route="/ideas/">
+            <span class="tab-icon" aria-hidden="true">💡</span>
+            Ideas
+          </button>
+          <button type="button" class="nav-tab" role="tab" data-route="/scheduler/">
+            <span class="tab-icon" aria-hidden="true">📅</span>
+            Schedule
+          </button>
+          <button type="button" class="nav-tab" role="tab" data-route="/chores/">
+            <span class="tab-icon" aria-hidden="true">🧹</span>
+            Chores
+          </button>
+          <button type="button" class="nav-tab" role="tab" data-route="/photos/">
+            <span class="tab-icon" aria-hidden="true">📷</span>
+            Photos
+          </button>
+          <button type="button" class="nav-tab" role="tab" data-route="/notes/">
+            <span class="tab-icon" aria-hidden="true">📝</span>
+            Notes
+          </button>
+          <button type="button" class="nav-tab" role="tab" data-route="/budget/">
+            <span class="tab-icon" aria-hidden="true">💰</span>
+            Budget
+          </button>
+        </div>
+      </div>
+      <div class="nav-pinned nav-pinned--end">
+        <button type="button" class="nav-tab nav-tab--settings" aria-label="Settings">
+          <span class="tab-icon" aria-hidden="true">⚙️</span>
+          <span class="tab-label">Settings</span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="home-indicator" aria-hidden="true"></div>
+  </div>
+
+  <p class="spec-note">
+    Mock aligned with
+    <a href="../dashboard.md">dashboard.md</a> (4-column primitive grid, block spans)
+    and <a href="../mantle-ui.md">mantle-ui.md</a> (PWA chrome, tokens, bottom nav).
+    Companion: <a href="dashboard-desktop.html">desktop mock</a>.
+    Open in a browser; use controls to toggle edit mode and light theme.
+  </p>
+
+  <script>
+    const device = document.getElementById("device");
+    const btnEdit = document.getElementById("btn-edit");
+    const btnDone = document.getElementById("btn-done");
+    const btnTheme = document.getElementById("btn-theme");
+    const title = document.getElementById("screen-title");
+    const grid = document.getElementById("grid");
+
+    function setEdit(on) {
+      device.classList.toggle("is-edit", on);
+      btnEdit.setAttribute("aria-pressed", String(on));
+      title.textContent = on ? "Edit Home" : "Hearth";
+    }
+
+    btnEdit.addEventListener("click", () => setEdit(!device.classList.contains("is-edit")));
+    btnDone.addEventListener("click", () => setEdit(false));
+
+    grid.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      setEdit(true);
+    });
+
+    let longPressTimer;
+    grid.addEventListener("touchstart", (e) => {
+      if (e.target.closest(".block")) return;
+      longPressTimer = setTimeout(() => setEdit(true), 500);
+    }, { passive: true });
+    grid.addEventListener("touchend", () => clearTimeout(longPressTimer));
+    grid.addEventListener("touchmove", () => clearTimeout(longPressTimer));
+
+    btnTheme.addEventListener("click", () => {
+      const light = device.getAttribute("data-theme") === "light";
+      device.setAttribute("data-theme", light ? "dark" : "light");
+      document.documentElement.style.colorScheme = light ? "dark" : "light";
+      btnTheme.setAttribute("aria-pressed", String(!light));
+      btnTheme.textContent = light ? "Light theme" : "Dark theme";
+      document.querySelector('meta[name="theme-color"]').content = light ? "#0f1115" : "#fafafa";
+    });
+
+    const navHome = document.getElementById("nav-home");
+    const navScroll = document.getElementById("nav-scroll");
+
+    function setNavActive(tab) {
+      navHome.classList.remove("is-active");
+      navScroll.querySelectorAll(".nav-tab").forEach((t) => t.classList.remove("is-active"));
+      tab.classList.add("is-active");
+    }
+
+    navHome.addEventListener("click", () => {
+      setNavActive(navHome);
+      title.textContent = device.classList.contains("is-edit") ? "Edit Home" : "Hearth";
+    });
+
+    navScroll.querySelectorAll(".nav-tab[data-route]").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        setNavActive(tab);
+        title.textContent = tab.textContent.trim();
+        tab.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      });
+    });
+
+    document.querySelectorAll(".block--app-shortcut").forEach((block) => {
+      block.addEventListener("click", () => {
+        if (device.classList.contains("is-edit")) return;
+        const plugin = block.dataset.plugin;
+        alert(`Navigate to /${plugin}/ (app frame + iframe in MVP)`);
+      });
+    });
+
+    function sizeGridCells() {
+      const cols = 4;
+      const gap = parseFloat(getComputedStyle(grid).gap) || 8;
+      const w = grid.clientWidth;
+      const cell = (w - (cols - 1) * gap) / cols;
+      grid.style.setProperty("--cell-size", `${cell}px`);
+    }
+
+    sizeGridCells();
+    window.addEventListener("resize", sizeGridCells);
+  </script>
+</body>
+</html>

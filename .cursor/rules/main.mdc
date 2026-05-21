@@ -7,6 +7,8 @@ All **process** standards for this project live in **`docs/ai-context.md`**. Loa
 
 **Documentation as source of truth:** **`docs/design/`** (and published docs site, if any) specifies product and system behavior; **`docs/ai-context.md`** specifies AI dev process. Details: **`.cursor/rules/docs-authority-and-escalation.mdc`**.
 
+**UI design mocks:** user-visible UI design create/update → **HTML mocks** in **`docs/design/mockups/`** before implementation — **`.cursor/rules/ui-design-mockups.mdc`**.
+
 **Tag reservation:** numbered ids (`DG-`, `RW-`, `GR-`, `FR-`, …) — **`tasks/TAG-REGISTRY.md`** + **`REGISTRY.md`**; **commit and push before use** — **`.cursor/rules/tag-reservation.mdc`**.
 
 **Covers:** session bootstrap, **git worktrees** under `.worktrees/FR-NNNN-<slug>/` (feature worktree plus feature-prefixed ticket/stage branch worktrees), **`tasks/ticket-progress.md`** beacon, per-feature **`tasks/feature-history/FR-NNNN-<slug>/tickets.md`**, global DAG index **`docs/design/tickets-initial.md`**, documentation authority and escalation tags, **subagents ahead of large work**, ticket phases (**TEST / DEV / VAL**), and git hygiene (commit, push, PR) per team policy.

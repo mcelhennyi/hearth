@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f1115" />
+  <title>Hearth Mantle — Desktop + Groceries</title>
+  <link rel="stylesheet" href="mantle-mock.css" />
+</head>
+<body>
+  <p class="mock-banner"><strong>Mantle · Desktop · Groceries</strong> — Plugin UI + top/bottom <code>ui.chrome</code> slots; no cross-app nav in app mode.</p>
+
+  <div class="mock-controls">
+    <button type="button" id="btn-theme" aria-pressed="false">Light theme</button>
+    <a href="mantle-desktop-bare.html">← Bare frame</a>
+    <a href="dashboard-desktop.html">Dashboard</a>
+  </div>
+
+  <div class="shell shell--desktop shell--app-mode has-chrome-slots" id="shell" data-theme="dark">
+    <div class="titlebar" aria-hidden="true">
+      <div class="traffic">
+        <span class="close"></span><span class="min"></span><span class="max"></span>
+      </div>
+      <span class="titlebar-url">https://hearth.home.arpa/groceries/</span>
+    </div>
+
+    <header class="top-bar">
+      <button type="button" class="home-back" aria-label="Home" onclick="location.href='dashboard-desktop.html'">‹</button>
+      <h1>Groceries</h1>
+      <span class="top-bar-spacer"></span>
+      <div class="chrome-slot chrome-slot--top" aria-label="Plugin actions">
+        <button type="button" class="chrome-btn" title="Share list" aria-label="Share">↗</button>
+        <button type="button" class="chrome-btn" title="Filter" aria-label="Filter">⎘</button>
+        <button type="button" class="chrome-btn chrome-btn--accent" title="Add item" aria-label="Add item">+</button>
+      </div>
+      <button type="button" class="top-btn" aria-haspopup="dialog">⚙️ Settings</button>
+      <button type="button" class="user-btn" aria-label="Account">IM</button>
+    </header>
+
+    <main class="plugin-frame" aria-label="Plugin iframe — Groceries">
+      <div class="groceries-app groceries-app--wide">
+        <div class="groceries-toolbar" role="tablist">
+          <button type="button" class="groceries-tab is-active" role="tab">Shopping list</button>
+          <button type="button" class="groceries-tab" role="tab">Pantry</button>
+        </div>
+        <div class="groceries-body">
+          <div class="groceries-main">
+            <div class="groceries-summary">
+              <span><strong>12</strong> items</span>
+              <span><strong>3</strong> to buy</span>
+              <span>Last sync <strong>2m ago</strong></span>
+            </div>
+            <ul class="groceries-list" style="max-width:640px;margin:0 auto">
+              <li class="groceries-item">
+                <input type="checkbox" id="d1" />
+                <label for="d1">Milk</label>
+                <span class="qty">1 gal</span>
+              </li>
+              <li class="groceries-item">
+                <input type="checkbox" id="d2" />
+                <label for="d2">Eggs</label>
+                <span class="qty">12 ct</span>
+              </li>
+              <li class="groceries-item is-done">
+                <input type="checkbox" id="d3" checked />
+                <label for="d3">Coffee beans</label>
+                <span class="qty">1 bag</span>
+              </li>
+              <li class="groceries-item">
+                <input type="checkbox" id="d4" />
+                <label for="d4">Sourdough bread</label>
+              </li>
+              <li class="groceries-item">
+                <input type="checkbox" id="d5" />
+                <label for="d5">Greek yogurt</label>
+                <span class="qty">2</span>
+              </li>
+              <li class="groceries-item">
+                <input type="checkbox" id="d6" />
+                <label for="d6">Chicken thighs</label>
+                <span class="qty">2 lb</span>
+              </li>
+              <li class="groceries-item is-done">
+                <input type="checkbox" id="d7" checked />
+                <label for="d7">Bananas</label>
+              </li>
+              <li class="groceries-item is-done">
+                <input type="checkbox" id="d8" checked />
+                <label for="d8">Olive oil</label>
+              </li>
+            </ul>
+            <form class="groceries-add" style="max-width:640px;margin:12px auto 0" onsubmit="return false">
+              <input type="text" placeholder="Add to list…" aria-label="New item" />
+              <button type="submit">Add</button>
+            </form>
+          </div>
+          <aside class="groceries-sidebar">
+            <h3>Pantry glance</h3>
+            <div class="pantry-pill"><span>Milk</span><span style="color:var(--hearth-accent)">Low</span></div>
+            <div class="pantry-pill"><span>Eggs</span><span>6</span></div>
+            <div class="pantry-pill"><span>Coffee</span><span>OK</span></div>
+            <div class="pantry-pill"><span>Bread</span><span>—</span></div>
+            <p style="margin-top:16px;font-size:12px;color:var(--hearth-muted);line-height:1.4">
+              Widget data could surface on the home dashboard; this sidebar is mock-only layout on wide screens.
+            </p>
+          </aside>
+        </div>
+      </div>
+    </main>
+
+    <nav class="bottom-bar bottom-bar--app" aria-label="Shell navigation">
+      <div class="nav-pinned nav-pinned--start">
+        <a class="shell-home-link" href="dashboard-desktop.html">🏠 Home</a>
+      </div>
+      <div class="plugin-bottom-slots" aria-label="Plugin bottom chrome slots" data-slot="bottom">
+        <button type="button" class="chrome-btn" title="Share list" aria-label="Share list">↗</button>
+        <button type="button" class="chrome-btn" title="Sort" aria-label="Sort">↕</button>
+        <button type="button" class="chrome-btn" title="Clear checked" aria-label="Clear checked">⌫</button>
+        <button type="button" class="chrome-btn chrome-btn--accent chrome-btn--label" title="Add item" aria-label="Add item">+ Add</button>
+      </div>
+      <div class="nav-pinned nav-pinned--end">
+        <button type="button" class="bottom-settings" aria-haspopup="dialog">⚙️ Settings</button>
+      </div>
+    </nav>
+  </div>
+
+  <p class="spec-note">
+    App mode: no dock / cross-app tabs — plugin owns center bottom slots per <code>[ui.chrome].bottom</code>.
+    <a href="mantle-iphone-groceries.html">iPhone variant</a>
+  </p>
+
+  <script>
+    document.getElementById("btn-theme").addEventListener("click", (e) => {
+      const shell = document.getElementById("shell");
+      const light = shell.getAttribute("data-theme") === "light";
+      shell.setAttribute("data-theme", light ? "dark" : "light");
+      e.target.setAttribute("aria-pressed", String(!light));
+      e.target.textContent = light ? "Light theme" : "Dark theme";
+    });
+    document.querySelectorAll(".groceries-item input").forEach((cb) => {
+      cb.addEventListener("change", () => {
+        cb.closest(".groceries-item").classList.toggle("is-done", cb.checked);
+      });
+    });
+  </script>
+</body>
+</html>

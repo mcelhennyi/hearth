@@ -87,8 +87,9 @@ For each **major component** named in the top-level doc (store, engine, UI shell
 | **Testing** | How would VAL prove compliance (integration points, golden data, diagnostics)? |
 | **Dependencies** | Ordering between subsystems obvious for a ticket DAG? |
 | **Traceability** | **`@LZ-…`** or equivalent links present where the project requires them? |
+| **UI look and feel** (visible UI only) | Linked **HTML mocks** under **`docs/design/mockups/`** that match the spec, or documented waiver? |
 
-Mark each component: **Ready**, **Needs design work**, or **Unknown**.
+Mark each component: **Ready**, **Needs design work**, or **Unknown**. For **UI shell / screens**, missing mocks when layout is specified → **Needs design work** (often **Blocked** for ticketing).
 
 ### 5. Code and doc reality (optional but recommended)
 
@@ -97,6 +98,7 @@ If implementation already exists for this design area:
 - Skim **`apps/`**, **`native/`**, or paths cited in the design.
 - Note **mismatches** (design says X, code does Y). Classify as **`REWORK-REQUIRED`** candidate (design is target) vs **`CODE-DEFECT`** (only if design is clearly correct and code is simply wrong — rare in pre-ticket audit).
 - Do **not** treat mock/stub UI as “done” unless the design says v0 includes mocks.
+- **HTML design mocks** in **`docs/design/mockups/`** are the visual acceptance reference for UI work — see **`.cursor/rules/ui-design-mockups.mdc`**. Implementation-only UI without linked mocks is not ticket-ready.
 
 ### 6. Verdict
 

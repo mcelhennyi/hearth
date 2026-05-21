@@ -1,24 +1,42 @@
 # Dashboard — home grid and plugin surfaces
 
-**Authority:** This document defines the Hearth **home dashboard** at `/`, how **app** and **widget** plugins participate, and how layout is stored. Shell chrome (top/bottom bars) is specified in [`mantle-ui.md`](mantle-ui.md). Manifest fields live in [`plugin-contract.md`](plugin-contract.md).
+**Authority:** This document defines the Hearth **home dashboard** at `/` — **behavior, block types, layout model, and persistence** (logical). **Grid appearance** (tile sizes, spacing, widget chrome on screen) is authoritative in **[`mockups/dashboard-iphone.html`](mockups/dashboard-iphone.html)** and **[`mockups/dashboard-desktop.html`](mockups/dashboard-desktop.html)** — see **[`mockups/README.md`](mockups/README.md)**. Shell chrome is specified in [`mantle-ui.md`](mantle-ui.md). Manifest fields live in [`plugin-contract.md`](plugin-contract.md).
 
 The primary client is an **iPhone PWA**; the dashboard grid is designed to feel like the iOS Home Screen: fixed columns, tappable blocks of multiple primitive sizes, and an edit mode to rearrange.
 
 ## Goals
 
 1. **One home surface** — `/` is a user-composed grid, not a static plugin list.
-2. **Two plugin surfaces** — **app** plugins (full UI at `/<slug>/`) and **widget** plugins (compact data/actions rendered **inside** the grid by Hearth).
+2. **Per-plugin home contributions** — an enabled plugin may surface on the dashboard as an **app icon** (tap opens its full UI at `/<slug>/`), as one or more **widgets** (compact data/actions in a grid block), or **both**. The user chooses which blocks appear via layout (edit mode); nothing forces every contribution to be on the grid at once.
 3. **App plugins first** — registry, proxy, Mantle iframe embed, and grid **shortcuts** ship before widget hosting is enabled end-to-end.
 4. **Consistent chrome** — top and bottom bars stay visually and structurally the same in the dashboard and inside apps; plugins may **extend** bars, not replace them.
+
+## What plugins can put on the home grid
+
+| Contribution | Block type | Tap behavior | Who declares it |
+|--------------|------------|--------------|-----------------|
+| **App icon** | `app-shortcut` (`1×1` by default) | Opens `/<slug>/` in the plugin frame | Every enabled **`app`** plugin (icon/label from `[ui.nav]` / `plugin.icon`) |
+| **Widget** | `widget` (span per surface) | In-block actions; optional “Open app” navigates to `/<slug>/` | **`app`** plugins with `[widget.surfaces.*]`, or **`widget`**-only plugins |
+
+An **`app`** plugin with a full UI may ship **zero, one, or many** widget surfaces in addition to its icon — e.g. Groceries with a `1×1` shortcut plus a `2×1` “items low on stock” tile. A **`widget`**-only plugin contributes widgets **without** a full SPA or app icon (see [`plugin-contract.md`](plugin-contract.md#plugin-kind-app-vs-widget)).
 
 ## Plugin kinds (summary)
 
 | Kind | User experience | Backend | UI delivery | MVP |
 |------|-----------------|---------|-------------|-----|
-| **`app`** | Opens a full plugin experience in the shell frame (`/<slug>/…`) | Normal plugin process + proxied UI | `entrypoint.ui` (`static`, `iframe-spa`, later `module-federation`) | **Supported** |
-| **`widget`** | Renders inside a dashboard block (counts, lists, one-tap actions) | Plugin process; **no** full SPA required | Hub-fetched **widget snapshot** + Mantle **widget primitives** (no iframe) | **Declared in Tinder; hosting deferred** |
+| **`app`** | Full UI at `/<slug>/…`; optional **app icon** and/or **widget** blocks on `/` | Plugin process + proxied UI | `entrypoint.ui` (`static`, `iframe-spa`, later `module-federation`) | **Supported** (icon/shortcut); widgets **deferred** |
+| **`widget`** | Widget block(s) only — no full app view | Plugin process; **no** `entrypoint.ui` | Hub-fetched **widget snapshot** + Mantle **widget primitives** (no iframe) | **Declared in Tinder; hosting deferred** |
 
 Details and manifest keys: [`plugin-contract.md` → Plugin kind](plugin-contract.md#plugin-kind-app-vs-widget).
+
+## Visual mocks
+
+| Viewport | File | Notes |
+|----------|------|-------|
+| iPhone (4 columns) | [`mockups/dashboard-iphone.html`](mockups/dashboard-iphone.html) | App shortcuts, widgets, system tiles, PWA install strip; bottom bar per [`mantle-ui.md`](mantle-ui.md) |
+| Desktop (8 columns) | [`mockups/dashboard-desktop.html`](mockups/dashboard-desktop.html) | Wider grid; **fixed bottom bar** (aligned with Mantle app mocks, not a floating dock); settings modal |
+
+Example **app** chrome with a filled plugin iframe: [`mockups/mantle-iphone-groceries.html`](mockups/mantle-iphone-groceries.html), [`mockups/mantle-desktop-groceries.html`](mockups/mantle-desktop-groceries.html). Bare shell at `/<slug>/`: [`mockups/mantle-iphone-bare.html`](mockups/mantle-iphone-bare.html), [`mockups/mantle-desktop-bare.html`](mockups/mantle-desktop-bare.html).
 
 ## Dashboard grid
 
@@ -46,6 +64,17 @@ Examples on mobile (4 columns): `1×1` shortcut, `2×1` wide widget, `2×2` medi
 
 Blocks **do not overlap**. The layout engine packs blocks in row-major order with user-defined positions stored explicitly (see persistence); on conflict, edit mode highlights the collision.
 
+### Widget block chrome (visual)
+
+Widget tiles are **fixed to their grid rectangle** (square primitive cells × `w` × `h`); content **must not clip** outside the rounded block. Mocks encode two layout tiers by block height (`data-span-h` on widget blocks):
+
+| Block height `h` | Layout | Typical content |
+|------------------|--------|-----------------|
+| **`h = 1`** | **Compact** — title and primary action on one header row; metric and subtitle share the remaining row (subtitle may wrap up to two lines with ellipsis) | Metric snapshots (e.g. Pantry `2×1`) |
+| **`h ≥ 2`** | **Tall** — title, growing body (list/metric with line clamp), footer row with meta + action | Event lists (e.g. Scheduler Today `2×2`) |
+
+Mantle widget primitives must respect the same bounds when rendering hub snapshots. Reference: [`mockups/dashboard-iphone.html`](mockups/dashboard-iphone.html), [`mockups/dashboard-desktop.html`](mockups/dashboard-desktop.html).
+
 ### Block types
 
 | `type` | Purpose | MVP |
@@ -58,8 +87,9 @@ Blocks **do not overlap**. The layout engine packs blocks in row-major order wit
 
 When no saved layout exists, the hub generates:
 
-1. One `app-shortcut` block per enabled **app** plugin (`1×1`), ordered by `[ui.nav].order` then name.
-2. Optional fixed **system** blocks at the end of the first row (e.g. “Add this device”) — product decision per [`deployment.md`](deployment.md).
+1. One `app-shortcut` block per enabled **app** plugin (`1×1`), ordered by `[ui.nav].order` then name — the default **app icon** for each app.
+2. **No** automatic `widget` blocks in MVP (even when the manifest declares `[widget.surfaces.*]`); the user adds widgets from the edit-mode picker once hosting ships. Auto-placement from `span_default` is a deferred product detail.
+3. Optional fixed **system** blocks at the end of the first row (e.g. “Add this device”) — product decision per [`deployment.md`](deployment.md).
 
 ### Edit mode
 
@@ -151,14 +181,14 @@ Plugins produce this via Spark method `widget.snapshot` (**DESIGN-GAP DG-S1** �
 
 ## Navigation model (dashboard vs app)
 
-| Route | Shell mode | Top / bottom bar |
-|-------|------------|------------------|
-| `/` | **Dashboard** — grid, no iframe | Full chrome; bottom bar includes **Home** (active) + app shortcuts per nav policy |
-| `/<slug>/…` | **App** — plugin iframe fills frame | **Same** chrome skeleton; plugin may extend slots (below) |
+| Route | Shell mode | Chrome (see mocks) |
+|-------|------------|-------------------|
+| `/` | **Dashboard** — grid, no iframe | [`dashboard-iphone.html`](mockups/dashboard-iphone.html) / [`dashboard-desktop.html`](mockups/dashboard-desktop.html) — **Home** active; scrollable **app launcher** in bottom bar center |
+| `/<slug>/…` | **App** — plugin iframe fills frame | [`mantle-*-bare.html`](mockups/README.md) or filled example — **Home** + **plugin bottom slots** + **Settings**; **no other app tabs** in bottom bar |
 
-Switching from dashboard → app: user taps `app-shortcut` or nav tab; shell navigates to `/<slug>/` and keeps bars mounted (no full-page flash).
+Switching from dashboard → app: user taps `app-shortcut` or an app launcher control; shell navigates to `/<slug>/` and keeps bars mounted (no full-page flash).
 
-Returning: **Home** control in the bottom bar (or back chevron in the top bar on desktop) always returns to `/`.
+Returning: **Home** in the bottom bar (or leading control in the top bar on app routes) always returns to `/`.
 
 ## Phasing
 
@@ -171,6 +201,7 @@ Returning: **Home** control in the bottom bar (or back chevron in the top bar on
 
 ## Related docs
 
+- [`mockups/README.md`](mockups/README.md) — HTML/CSS visual source of truth index.
 - [`mantle-ui.md`](mantle-ui.md) — chrome zones, plugin slot extensions, nav policy.
 - [`plugin-contract.md`](plugin-contract.md) — `plugin.kind`, `[widget.*]`, `[ui.chrome]`.
 - [`architecture/overview.md`](architecture/overview.md) — hub aggregates dashboard data; Spark fan-out for tile refresh (P4).

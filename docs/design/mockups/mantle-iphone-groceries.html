@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1115" />
+  <title>Hearth Mantle — iPhone + Groceries</title>
+  <link rel="stylesheet" href="mantle-mock.css" />
+</head>
+<body>
+  <p class="mock-banner"><strong>Mantle · iPhone · Groceries</strong> — Shell chrome + example plugin UI (simulated iframe) with <code>hearth.chrome.mount</code> slots.</p>
+
+  <div class="mock-controls">
+    <button type="button" id="btn-theme" aria-pressed="false">Light theme</button>
+    <a href="mantle-iphone-bare.html">← Bare frame</a>
+    <a href="dashboard-iphone.html">Dashboard</a>
+  </div>
+
+  <div class="shell shell--iphone shell--app-mode has-chrome-slots" id="shell" data-theme="dark">
+    <div class="status-bar" aria-hidden="true">
+      <span>9:41</span>
+      <span>▮▮▮▮ WiFi 🔋</span>
+    </div>
+
+    <header class="top-bar">
+      <button type="button" class="home-back" aria-label="Home" onclick="location.href='dashboard-iphone.html'">‹</button>
+      <h1>Groceries</h1>
+      <span class="top-bar-spacer"></span>
+      <div class="chrome-slot chrome-slot--top" aria-label="Plugin actions">
+        <button type="button" class="chrome-btn" title="Filter list" aria-label="Filter">⎘</button>
+        <button type="button" class="chrome-btn chrome-btn--accent" title="Add item" aria-label="Add item">+</button>
+      </div>
+      <button type="button" class="user-btn" aria-label="Account">IM</button>
+    </header>
+
+    <main class="plugin-frame" aria-label="Plugin iframe — Groceries">
+      <div class="groceries-app">
+        <div class="groceries-toolbar" role="tablist">
+          <button type="button" class="groceries-tab is-active" role="tab" aria-selected="true">Shopping list</button>
+          <button type="button" class="groceries-tab" role="tab">Pantry</button>
+        </div>
+        <div class="groceries-summary">
+          <span><strong>12</strong> items</span>
+          <span><strong>3</strong> to buy</span>
+        </div>
+        <ul class="groceries-list">
+          <li class="groceries-item">
+            <input type="checkbox" id="g1" />
+            <label for="g1">Milk</label>
+            <span class="qty">1 gal</span>
+          </li>
+          <li class="groceries-item">
+            <input type="checkbox" id="g2" />
+            <label for="g2">Eggs</label>
+            <span class="qty">12 ct</span>
+          </li>
+          <li class="groceries-item is-done">
+            <input type="checkbox" id="g3" checked />
+            <label for="g3">Coffee beans</label>
+            <span class="qty">1 bag</span>
+          </li>
+          <li class="groceries-item">
+            <input type="checkbox" id="g4" />
+            <label for="g4">Sourdough bread</label>
+          </li>
+          <li class="groceries-item">
+            <input type="checkbox" id="g5" />
+            <label for="g5">Greek yogurt</label>
+            <span class="qty">2</span>
+          </li>
+          <li class="groceries-item is-done">
+            <input type="checkbox" id="g6" checked />
+            <label for="g6">Bananas</label>
+          </li>
+        </ul>
+        <form class="groceries-add" onsubmit="return false">
+          <input type="text" placeholder="Add to list…" aria-label="New item" />
+          <button type="submit">Add</button>
+        </form>
+      </div>
+    </main>
+
+    <nav class="bottom-bar bottom-bar--app" aria-label="Shell navigation">
+      <div class="nav-pinned nav-pinned--start">
+        <a class="nav-tab" href="dashboard-iphone.html" style="text-decoration:none">
+          <span class="tab-icon" aria-hidden="true">🏠</span>
+          Home
+        </a>
+      </div>
+      <div class="plugin-bottom-slots" aria-label="Plugin bottom chrome slots" data-slot="bottom">
+        <button type="button" class="chrome-btn" title="Sort list" aria-label="Sort">↕</button>
+        <button type="button" class="chrome-btn" title="Clear checked" aria-label="Clear checked">⌫</button>
+        <button type="button" class="chrome-btn chrome-btn--accent chrome-btn--label" title="Add item" aria-label="Add item">+ Add</button>
+      </div>
+      <div class="nav-pinned nav-pinned--end">
+        <button type="button" class="nav-tab nav-tab--settings" aria-label="Settings">
+          <span class="tab-icon" aria-hidden="true">⚙️</span>
+          <span class="tab-label">Settings</span>
+        </button>
+      </div>
+    </nav>
+    <div class="home-indicator" aria-hidden="true"></div>
+  </div>
+
+  <p class="spec-note">
+    App mode: bottom bar shows <strong>Home</strong> + plugin <code>bottom</code> slots + <strong>Settings</strong> only (no other app tabs).
+    See <code>[ui.chrome].bottom</code> in plugin-contract.md.
+  </p>
+
+  <script>
+    document.getElementById("btn-theme").addEventListener("click", (e) => {
+      const shell = document.getElementById("shell");
+      const light = shell.getAttribute("data-theme") === "light";
+      shell.setAttribute("data-theme", light ? "dark" : "light");
+      e.target.setAttribute("aria-pressed", String(!light));
+      e.target.textContent = light ? "Light theme" : "Dark theme";
+    });
+    document.querySelectorAll(".groceries-item input").forEach((cb) => {
+      cb.addEventListener("change", () => {
+        cb.closest(".groceries-item").classList.toggle("is-done", cb.checked);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -8,6 +8,8 @@ Mirrors **`.cursor/rules/docs-authority-and-escalation.mdc`**. Keep both files a
 
 When **code and design disagree**, **fix the code**, not the design doc. If the design is wrong, follow the amendment process in **`docs/ai-context.md`** — do not patch specs silently.
 
+**UI look and feel:** For **user-visible** UI design create/update requests, **static HTML mocks** in **`docs/design/mockups/`** (linked from the design doc) are required **before** UI implementation — **`.claude/rules/ui-design-mockups.md`**.
+
 ## Escalation tags
 
 | Tag | When to use | What to do |

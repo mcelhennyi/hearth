@@ -15,6 +15,8 @@ If you believe a design doc is wrong, **do not edit it silently**. Follow the **
 
 **Key discipline:** Never “just make it work” in code without spec backing. If the design does not support the interface you need, that is a **`DESIGN-GAP`**.
 
+**UI look and feel:** For **user-visible** UI design create/update requests, **static HTML mocks** in **`docs/design/mockups/`** (linked from the design doc) are required **before** UI implementation — see **`.cursor/rules/ui-design-mockups.mdc`**.
+
 ### Escalation tags
 
 | Tag | When to use | What to do |

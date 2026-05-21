@@ -8,12 +8,14 @@ A plugin is **discoverable** when a `tinder.toml` file exists at the plugin's ro
 
 ## Plugin kind: app vs widget
 
-Every plugin declares a **kind** that determines how Hearth surfaces it. See [`dashboard.md`](dashboard.md) for the home grid and phasing.
+Every plugin declares a **kind** that determines whether it ships a full UI. **Home grid contributions** (app icon and/or widgets) are declared separately — see [`dashboard.md`](dashboard.md#what-plugins-can-put-on-the-home-grid).
 
-| Kind | Default | Full UI at `/<slug>/` | Dashboard grid | `entrypoint.ui` |
-|------|---------|------------------------|----------------|-----------------|
-| **`app`** | yes | **Required** when enabled | Optional `app-shortcut` block | **Required** (`static`, `iframe-spa`, …) |
-| **`widget`** | — | **No** | **Widget** block(s) via hub-rendered snapshot | **Must be absent** |
+| Kind | Default | Full UI at `/<slug>/` | Home grid | `entrypoint.ui` |
+|------|---------|------------------------|-----------|-----------------|
+| **`app`** | yes | **Required** when enabled | **App icon** (`app-shortcut`) by default; **optional** `[widget.surfaces.*]` for widget blocks | **Required** (`static`, `iframe-spa`, …) |
+| **`widget`** | — | **No** | **Widget** block(s) only (no app icon) | **Must be absent** |
+
+An **`app`** may contribute **both** an icon and widgets, **only** an icon, or (unusual) only widgets if the user removes the shortcut in edit mode — the manifest still requires `entrypoint.ui` for `kind=app`.
 
 ```toml
 [plugin]
@@ -99,6 +101,15 @@ show_in_tab_bar = true         # optional; default true for kind=app
 [ui.chrome]                    # optional; app plugins only — extend shell bars (see mantle-ui.md)
 top    = { slots = ["actions"] }    # registers plugin content in named top-bar slots
 bottom = { slots = ["primary"] }
+
+# optional; app plugins — dashboard widget surfaces (same schema as kind=widget)
+[widget.surfaces.pantry-glance]
+title = "Pantry"
+span_default = { w = 2, h = 1 }
+
+[capabilities.widget]
+methods = ["snapshot"]
+events  = ["changed"]
 ```
 
 ## Validation rules
@@ -108,6 +119,8 @@ bottom = { slots = ["primary"] }
 | `plugin.kind` ∈ {`app`, `widget`} | reject install |
 | `kind=app` ⇒ `entrypoint.ui` present and valid | reject install |
 | `kind=widget` ⇒ `entrypoint.ui` absent; at least one `[widget.surfaces.*]` | reject install |
+| `[widget.surfaces.*]` on `kind=app` ⇒ optional; each surface validates like widget-only | reject install on invalid surface |
+| `[widget.surfaces.*]` on `kind=widget` ⇒ required (at least one) | reject install |
 | `plugin.slug` matches `^[a-z][a-z0-9-]{0,31}$` and is unique | reject install |
 | `plugin.version` is semver | reject install |
 | `entrypoint.backend.kind` ∈ {`python`, `node`, `binary`, `none`} | reject install |

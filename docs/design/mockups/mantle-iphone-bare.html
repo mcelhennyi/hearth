@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0f1115" />
+  <title>Hearth Mantle — iPhone bare (app frame)</title>
+  <link rel="stylesheet" href="mantle-mock.css" />
+</head>
+<body>
+  <p class="mock-banner"><strong>Mantle · iPhone · bare</strong> — App mode at <code>/&lt;slug&gt;/</code>: shell chrome only, empty plugin iframe (no plugin UI mounted).</p>
+
+  <div class="mock-controls">
+    <button type="button" id="btn-theme" aria-pressed="false">Light theme</button>
+    <a href="dashboard-iphone.html">Dashboard mock</a>
+  </div>
+
+  <div class="shell shell--iphone shell--app-mode" id="shell" data-theme="dark">
+    <div class="status-bar" aria-hidden="true">
+      <span>9:41</span>
+      <span>▮▮▮▮ WiFi 🔋</span>
+    </div>
+
+    <header class="top-bar">
+      <button type="button" class="home-back" aria-label="Home" title="Back to dashboard" onclick="location.href='dashboard-iphone.html'">‹</button>
+      <h1 id="screen-title">Plugin</h1>
+      <span class="top-bar-spacer"></span>
+      <div class="chrome-slot chrome-slot--top" aria-label="Plugin actions"></div>
+      <button type="button" class="user-btn" aria-label="Account">IM</button>
+    </header>
+
+    <main class="plugin-frame plugin-frame--bare" aria-label="Plugin iframe">
+      <div class="frame-placeholder">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Plugin UI loads here</p>
+        <code>/&lt;slug&gt;/</code>
+        <span class="hint">Mantle embeds an iframe at this route; the enabled app plugin mounts its SPA inside this frame.</span>
+      </div>
+    </main>
+
+    <nav class="bottom-bar bottom-bar--app" aria-label="Shell navigation">
+      <div class="nav-pinned nav-pinned--start">
+        <a class="nav-tab" href="dashboard-iphone.html" style="text-decoration:none">
+          <span class="tab-icon" aria-hidden="true">🏠</span>
+          Home
+        </a>
+      </div>
+      <div class="plugin-bottom-slots is-empty" aria-label="Plugin bottom chrome slots" data-slot="bottom">
+        <span class="plugin-slots-hint">Plugin mounts actions via <code style="font-size:10px">hearth.chrome.mount</code></span>
+      </div>
+      <div class="nav-pinned nav-pinned--end">
+        <button type="button" class="nav-tab nav-tab--settings" aria-label="Settings">
+          <span class="tab-icon" aria-hidden="true">⚙️</span>
+          <span class="tab-label">Settings</span>
+        </button>
+      </div>
+    </nav>
+    <div class="home-indicator" aria-hidden="true"></div>
+  </div>
+
+  <p class="spec-note">
+    Bare app-frame mock per <a href="../mantle-ui.md">mantle-ui.md</a> — any enabled <code>app</code> plugin uses this shell at <code>/&lt;slug&gt;/</code>.
+  </p>
+
+  <script>
+    document.getElementById("btn-theme").addEventListener("click", (e) => {
+      const shell = document.getElementById("shell");
+      const light = shell.getAttribute("data-theme") === "light";
+      shell.setAttribute("data-theme", light ? "dark" : "light");
+      e.target.setAttribute("aria-pressed", String(!light));
+      e.target.textContent = light ? "Light theme" : "Dark theme";
+    });
+  </script>
+</body>
+</html>

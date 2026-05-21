@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f1115" />
+  <title>Hearth Mantle — Desktop bare (app frame)</title>
+  <link rel="stylesheet" href="mantle-mock.css" />
+</head>
+<body>
+  <p class="mock-banner"><strong>Mantle · Desktop · bare</strong> — App mode at <code>/&lt;slug&gt;/</code>: shell chrome only, empty plugin iframe (no plugin UI mounted).</p>
+
+  <div class="mock-controls">
+    <button type="button" id="btn-theme" aria-pressed="false">Light theme</button>
+    <a href="dashboard-desktop.html">Dashboard mock</a>
+  </div>
+
+  <div class="shell shell--desktop shell--app-mode" id="shell" data-theme="dark">
+    <div class="titlebar" aria-hidden="true">
+      <div class="traffic">
+        <span class="close"></span><span class="min"></span><span class="max"></span>
+      </div>
+      <span class="titlebar-url">https://hearth.home.arpa/&lt;slug&gt;/</span>
+    </div>
+
+    <header class="top-bar">
+      <button type="button" class="home-back" aria-label="Home" onclick="location.href='dashboard-desktop.html'">‹</button>
+      <h1 id="screen-title">Plugin</h1>
+      <span class="top-bar-spacer"></span>
+      <div class="chrome-slot chrome-slot--top" aria-label="Plugin actions"></div>
+      <button type="button" class="top-btn" aria-haspopup="dialog">⚙️ Settings</button>
+      <button type="button" class="user-btn" aria-label="Account">IM</button>
+    </header>
+
+    <main class="plugin-frame plugin-frame--bare" aria-label="Plugin iframe">
+      <div class="frame-placeholder">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Plugin UI loads here</p>
+        <code>/&lt;slug&gt;/</code>
+        <span class="hint">Shell chrome stays mounted; only the iframe document changes per enabled app plugin.</span>
+      </div>
+    </main>
+
+    <nav class="bottom-bar bottom-bar--app" aria-label="Shell navigation">
+      <div class="nav-pinned nav-pinned--start">
+        <a class="shell-home-link" href="dashboard-desktop.html">🏠 Home</a>
+      </div>
+      <div class="plugin-bottom-slots is-empty" aria-label="Plugin bottom chrome slots" data-slot="bottom">
+        <span class="plugin-slots-hint">Plugin bottom slots — mounted at runtime</span>
+      </div>
+      <div class="nav-pinned nav-pinned--end">
+        <button type="button" class="bottom-settings" aria-haspopup="dialog">⚙️ Settings</button>
+      </div>
+    </nav>
+  </div>
+
+  <p class="spec-note">
+    Bare app-frame mock per <a href="../mantle-ui.md">mantle-ui.md</a> — any enabled <code>app</code> plugin uses this shell at <code>/&lt;slug&gt;/</code>.
+  </p>
+
+  <script>
+    document.getElementById("btn-theme").addEventListener("click", (e) => {
+      const shell = document.getElementById("shell");
+      const light = shell.getAttribute("data-theme") === "light";
+      shell.setAttribute("data-theme", light ? "dark" : "light");
+      e.target.setAttribute("aria-pressed", String(!light));
+      e.target.textContent = light ? "Light theme" : "Dark theme";
+    });
+  </script>
+</body>
+</html>

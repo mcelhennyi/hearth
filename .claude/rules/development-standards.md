@@ -19,6 +19,7 @@ Use with **`docs/ai-context.md`**. This file mirrors Cursor-facing rules for Cla
 ## Tie backs to documentation
 
 - Escalation tags (**DESIGN-GAP**, **DESIGN-FLAW**, **CODE-DEFECT**) follow **`docs/ai-context.md`**.
+- **UI design mocks:** when asked to create or update **user-visible** UI design, produce **HTML mocks** under **`docs/design/mockups/`** and link them from **`docs/design/`** **before** implementation — **`.claude/rules/ui-design-mockups.md`** (mirrors **`.cursor/rules/ui-design-mockups.mdc`**).
 
 ## Testing environment
 

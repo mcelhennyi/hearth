@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f1115" />
+  <title>Hearth — Dashboard mock (desktop)</title>
+  <style>
+    /* Tokens — docs/design/mantle-ui.md; grid — docs/design/dashboard.md (8 cols desktop) */
+    :root {
+      --hearth-bg: #0f1115;
+      --hearth-surface: #161a22;
+      --hearth-surface-elevated: #1c212c;
+      --hearth-fg: #e6e6e6;
+      --hearth-muted: #9aa3b2;
+      --hearth-accent: #ff6a3d;
+      --hearth-accent-fg: #0f1115;
+      --hearth-radius-sm: 4px;
+      --hearth-radius-md: 8px;
+      --hearth-radius-lg: 16px;
+      --hearth-radius-icon: 22%;
+      --hearth-grid-gap: 10px;
+      --hearth-font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, system-ui, sans-serif;
+      --hearth-bar-h: 56px;
+      --hearth-columns: 8;
+      --icon-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      --hearth-bottom-bar-h: 56px;
+    }
+
+    [data-theme="light"] {
+      --hearth-bg: #f0f1f4;
+      --hearth-surface: #ffffff;
+      --hearth-surface-elevated: #ffffff;
+      --hearth-fg: #111111;
+      --hearth-muted: #6b7280;
+      --icon-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--hearth-font-sans);
+      background: #050608;
+      color: var(--hearth-fg);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 24px 32px;
+      gap: 14px;
+    }
+
+    .mock-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: #9aa3b2;
+    }
+
+    .mock-controls button {
+      font: inherit;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #2a3140;
+      background: #161a22;
+      color: #e6e6e6;
+      cursor: pointer;
+    }
+
+    .mock-controls button[aria-pressed="true"] {
+      background: var(--hearth-accent);
+      color: var(--hearth-accent-fg);
+      border-color: var(--hearth-accent);
+    }
+
+    .mock-controls a {
+      color: var(--hearth-accent);
+      font-size: 13px;
+    }
+
+    /* Desktop browser window */
+    .desktop-window {
+      width: min(1280px, 96vw);
+      height: min(800px, 88dvh);
+      background: var(--hearth-bg);
+      border-radius: 12px;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 24px 64px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .titlebar {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 8px;
+      background: color-mix(in srgb, var(--hearth-bg) 88%, black);
+      border-bottom: 1px solid color-mix(in srgb, var(--hearth-muted) 14%, transparent);
+      flex-shrink: 0;
+    }
+
+    .traffic {
+      display: flex;
+      gap: 7px;
+    }
+
+    .traffic span {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .traffic .close { background: #ff5f57; }
+    .traffic .min { background: #febc2e; }
+    .traffic .max { background: #28c840; }
+
+    .titlebar-url {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      color: var(--hearth-muted);
+      font-weight: 500;
+    }
+
+    /* Top bar — mantle-ui desktop */
+    .top-bar {
+      height: var(--hearth-bar-h);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 12px;
+      background: var(--hearth-bg);
+      border-bottom: 1px solid color-mix(in srgb, var(--hearth-muted) 18%, transparent);
+      flex-shrink: 0;
+    }
+
+    .top-bar .flame { width: 24px; height: 24px; flex-shrink: 0; }
+
+    .top-bar h1 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .top-bar-spacer { flex: 1; }
+
+    .top-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: var(--hearth-radius-md);
+      border: none;
+      background: transparent;
+      color: var(--hearth-muted);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .top-btn:hover {
+      background: color-mix(in srgb, var(--hearth-muted) 12%, transparent);
+      color: var(--hearth-fg);
+    }
+
+    .user-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff6a3d, #b83a14);
+      border: none;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .edit-bar {
+      display: none;
+      padding: 8px 20px;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .desktop-window.is-edit .edit-bar { display: flex; }
+
+    .edit-bar button {
+      font: inherit;
+      font-weight: 600;
+      color: var(--hearth-accent);
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .edit-hint { color: var(--hearth-muted); font-size: 13px; }
+
+    .main-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 20px 28px 12px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(var(--hearth-columns), 1fr);
+      grid-auto-rows: var(--cell-size, 96px);
+      gap: var(--hearth-grid-gap);
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .block {
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      border-radius: var(--hearth-radius-lg);
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.12s ease;
+    }
+
+    .block--app-shortcut {
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      padding: 6px 4px 0;
+      background: transparent;
+    }
+
+    .block--app-shortcut .app-icon {
+      width: 100%;
+      aspect-ratio: 1;
+      max-width: 88px;
+      border-radius: var(--hearth-radius-icon);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      box-shadow: var(--icon-shadow);
+    }
+
+    .app-label {
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+      color: var(--hearth-fg);
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+    }
+
+    .block--widget {
+      background: var(--hearth-surface);
+      border: 1px solid color-mix(in srgb, var(--hearth-muted) 12%, transparent);
+      padding: 12px 16px;
+      overflow: hidden;
+    }
+
+    .widget-inner {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      gap: 6px;
+    }
+
+    .widget-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--hearth-muted);
+      line-height: 1.2;
+      flex-shrink: 0;
+    }
+
+    .widget-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-shrink: 0;
+      min-width: 0;
+    }
+
+    .widget-body {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      min-height: 0;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .widget-metric {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .widget-sub {
+      font-size: 13px;
+      line-height: 1.3;
+      color: var(--hearth-muted);
+      min-width: 0;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    .widget-action {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--hearth-accent);
+      line-height: 1.2;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .block--widget[data-span-h="1"] .widget-inner {
+      gap: 4px;
+    }
+
+    .block--widget[data-span-h="1"] .widget-metric {
+      font-size: 26px;
+    }
+
+    .block--widget[data-span-h="2"] .widget-metric--list,
+    .block--widget[data-span-h="3"] .widget-metric--list,
+    .block--widget[data-span-h="4"] .widget-metric--list {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.4;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 5;
+    }
+
+    .widget-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-shrink: 0;
+      margin-top: auto;
+      min-width: 0;
+    }
+
+    .widget-footer .widget-sub {
+      -webkit-line-clamp: 1;
+      flex: 1;
+    }
+
+    .block--widget.is-placeholder {
+      border-style: dashed;
+      background: color-mix(in srgb, var(--hearth-surface) 75%, var(--hearth-muted));
+    }
+
+    .block--widget.is-placeholder .widget-metric {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--hearth-muted);
+    }
+
+    .block--widget.is-placeholder .widget-sub {
+      -webkit-line-clamp: 2;
+    }
+
+    .block--system {
+      background: linear-gradient(145deg, color-mix(in srgb, var(--hearth-accent) 18%, var(--hearth-surface)), var(--hearth-surface));
+      border: 1px solid color-mix(in srgb, var(--hearth-accent) 30%, transparent);
+      padding: 14px;
+      justify-content: center;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .system-icon { font-size: 26px; }
+    .system-label { font-size: 12px; font-weight: 600; text-align: center; }
+
+    .block--strip {
+      background: var(--hearth-surface-elevated);
+      border: 1px solid color-mix(in srgb, var(--hearth-muted) 15%, transparent);
+      padding: 16px 20px;
+      flex-direction: row;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .strip-text { flex: 1; }
+    .strip-text strong { display: block; font-size: 15px; margin-bottom: 2px; }
+    .strip-text span { font-size: 13px; color: var(--hearth-muted); }
+
+    .desktop-window.is-edit .block--app-shortcut {
+      animation: jiggle 0.28s ease-in-out infinite alternate;
+    }
+
+    @keyframes jiggle {
+      from { transform: rotate(-0.8deg); }
+      to { transform: rotate(0.8deg); }
+    }
+
+    .edit-badge {
+      display: none;
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #3a3f4b;
+      color: #fff;
+      font-size: 16px;
+      line-height: 20px;
+      text-align: center;
+      border: 2px solid var(--hearth-bg);
+      z-index: 2;
+    }
+
+    .desktop-window.is-edit .edit-badge { display: block; }
+
+    /* Fixed bottom bar — matches Mantle app shell (mantle-desktop-*.html) */
+    .bottom-bar {
+      min-height: var(--hearth-bottom-bar-h);
+      display: flex;
+      align-items: stretch;
+      flex-shrink: 0;
+      background: color-mix(in srgb, var(--hearth-bg) 96%, black);
+      border-top: 1px solid color-mix(in srgb, var(--hearth-muted) 18%, transparent);
+    }
+
+    .nav-pinned {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      background: color-mix(in srgb, var(--hearth-bg) 96%, black);
+      z-index: 2;
+    }
+
+    .nav-pinned--start {
+      padding-left: 16px;
+      box-shadow: 10px 0 14px -6px color-mix(in srgb, var(--hearth-bg) 90%, transparent);
+    }
+
+    .nav-pinned--end {
+      padding-right: 16px;
+      box-shadow: -10px 0 14px -6px color-mix(in srgb, var(--hearth-bg) 90%, transparent);
+    }
+
+    .nav-quick-access {
+      flex: 1;
+      min-width: 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-quick-access::before,
+    .nav-quick-access::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 16px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .nav-quick-access::before {
+      left: 0;
+      background: linear-gradient(90deg, color-mix(in srgb, var(--hearth-bg) 96%, black), transparent);
+    }
+
+    .nav-quick-access::after {
+      right: 0;
+      background: linear-gradient(270deg, color-mix(in srgb, var(--hearth-bg) 96%, black), transparent);
+    }
+
+    .nav-scroll {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 0 12px;
+      width: 100%;
+      height: 100%;
+    }
+
+    .nav-scroll::-webkit-scrollbar { display: none; }
+
+    .nav-tab {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      background: none;
+      border: none;
+      border-radius: var(--hearth-radius-md);
+      color: var(--hearth-muted);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .nav-tab:hover {
+      background: color-mix(in srgb, var(--hearth-muted) 12%, transparent);
+      color: var(--hearth-fg);
+    }
+
+    .nav-tab .tab-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: var(--icon-shadow);
+      flex-shrink: 0;
+    }
+
+    .nav-tab.is-active {
+      color: var(--hearth-accent);
+      background: color-mix(in srgb, var(--hearth-accent) 12%, transparent);
+    }
+
+    .nav-tab--home .tab-icon {
+      background: linear-gradient(145deg, #3b2a22, #241a15);
+      font-size: 0;
+    }
+
+    .nav-tab--home .tab-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .bottom-settings {
+      font: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 12px;
+      border: none;
+      border-radius: var(--hearth-radius-md);
+      background: transparent;
+      color: var(--hearth-muted);
+      cursor: pointer;
+    }
+
+    .bottom-settings:hover {
+      background: color-mix(in srgb, var(--hearth-muted) 12%, transparent);
+      color: var(--hearth-fg);
+    }
+
+    .spec-note {
+      max-width: 720px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #6b7280;
+      text-align: center;
+    }
+
+    .spec-note a { color: var(--hearth-accent); }
+
+    /* Settings modal */
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-backdrop.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-panel {
+      width: min(440px, 100%);
+      max-height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: var(--hearth-surface);
+      border: 1px solid color-mix(in srgb, var(--hearth-muted) 18%, transparent);
+      border-radius: var(--hearth-radius-lg);
+      box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      transform: scale(0.94) translateY(12px);
+      transition: transform 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+
+    .modal-backdrop.is-open .modal-panel {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-bottom: 1px solid color-mix(in srgb, var(--hearth-muted) 14%, transparent);
+      flex-shrink: 0;
+    }
+
+    .modal-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--hearth-muted) 14%, transparent);
+      color: var(--hearth-muted);
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: color-mix(in srgb, var(--hearth-muted) 22%, transparent);
+      color: var(--hearth-fg);
+    }
+
+    .modal-body {
+      overflow-y: auto;
+      padding: 8px 0 16px;
+    }
+
+    .settings-section {
+      padding: 12px 20px 4px;
+    }
+
+    .settings-section h3 {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--hearth-muted);
+      margin-bottom: 8px;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid color-mix(in srgb, var(--hearth-muted) 10%, transparent);
+      font-size: 14px;
+    }
+
+    .settings-row:last-child { border-bottom: none; }
+
+    .settings-row-label span {
+      display: block;
+      font-size: 12px;
+      color: var(--hearth-muted);
+      margin-top: 2px;
+      font-weight: 400;
+    }
+
+    .settings-select,
+    .settings-input {
+      font: inherit;
+      font-size: 14px;
+      padding: 8px 10px;
+      border-radius: var(--hearth-radius-md);
+      border: 1px solid color-mix(in srgb, var(--hearth-muted) 22%, transparent);
+      background: var(--hearth-bg);
+      color: var(--hearth-fg);
+      min-width: 140px;
+    }
+
+    .settings-switch {
+      position: relative;
+      width: 44px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .settings-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .settings-switch span {
+      position: absolute;
+      inset: 0;
+      background: color-mix(in srgb, var(--hearth-muted) 35%, transparent);
+      border-radius: 99px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .settings-switch span::after {
+      content: "";
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      left: 2px;
+      top: 2px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.15s;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    }
+
+    .settings-switch input:checked + span {
+      background: var(--hearth-accent);
+    }
+
+    .settings-switch input:checked + span::after {
+      transform: translateX(18px);
+    }
+
+    @media (max-width: 767px) {
+      body::before {
+        content: "This mock is for desktop (≥768px). Open dashboard-iphone.html on narrow screens.";
+        display: block;
+        max-width: 400px;
+        text-align: center;
+        color: #9aa3b2;
+        font-size: 13px;
+        margin-bottom: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="mock-controls" role="toolbar" aria-label="Mock controls">
+    <button type="button" id="btn-edit" aria-pressed="false">Edit mode</button>
+    <button type="button" id="btn-theme" aria-pressed="false">Light theme</button>
+    <a href="dashboard-iphone.html">iPhone mock →</a>
+    <a href="mantle-desktop-groceries.html">Mantle + Groceries</a>
+  </div>
+
+  <div class="desktop-window" id="window" data-theme="dark">
+    <div class="titlebar" aria-hidden="true">
+      <div class="traffic">
+        <span class="close"></span>
+        <span class="min"></span>
+        <span class="max"></span>
+      </div>
+      <span class="titlebar-url">https://hearth.home.arpa/</span>
+    </div>
+
+    <header class="top-bar">
+      <svg class="flame" viewBox="0 0 256 256" aria-hidden="true">
+        <defs>
+          <linearGradient id="ember" x1="78" y1="56" x2="178" y2="212" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#FFB84D"/>
+            <stop offset="0.54" stop-color="#F97316"/>
+            <stop offset="1" stop-color="#B83A14"/>
+          </linearGradient>
+        </defs>
+        <path fill="#241A15" d="M41 220V95C41 50.8 80 16 128 16s87 34.8 87 79v125h-38V96c0-27.4-21.9-48-49-48S79 68.6 79 96v124H41Z"/>
+        <path fill="url(#ember)" d="M129 216c-34.2 0-58-21.8-58-53.1 0-20.6 11.1-37.1 27.3-52.7 13.2-12.7 22.5-27 28.8-45.9 22.3 19.7 34.3 40.1 34.3 58.6 8.9-7 14.7-17.1 17-29.5 19.2 17.4 28.6 38.1 28.6 62.8 0 36.1-30.8 59.8-78 59.8Z"/>
+      </svg>
+      <h1 id="screen-title">Hearth</h1>
+      <span class="top-bar-spacer"></span>
+      <button type="button" class="top-btn" id="btn-settings-top" aria-haspopup="dialog">⚙️ Settings</button>
+      <button type="button" class="user-btn" aria-label="Account">IM</button>
+    </header>
+
+    <div class="edit-bar">
+      <button type="button" id="btn-done">Done</button>
+      <span class="edit-hint">Drag to move · handles to resize</span>
+      <button type="button" disabled style="opacity:0.4">+ Add block</button>
+    </div>
+
+    <main class="main-scroll">
+      <!-- 8-column grid — docs/design/dashboard.md desktop -->
+      <div class="dashboard-grid" id="grid" role="list" aria-label="Home dashboard">
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 1 / span 1; grid-row: 1 / span 1"
+          data-plugin="groceries" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #34d399, #059669)">🛒</div>
+          <span class="app-label">Groceries</span>
+        </article>
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 2 / span 1; grid-row: 1 / span 1"
+          data-plugin="recipes" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #fbbf24, #d97706)">📖</div>
+          <span class="app-label">Recipes</span>
+        </article>
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 3 / span 1; grid-row: 1 / span 1"
+          data-plugin="ideas" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #a78bfa, #7c3aed)">💡</div>
+          <span class="app-label">Ideas</span>
+        </article>
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 4 / span 1; grid-row: 1 / span 1"
+          data-plugin="scheduler" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #60a5fa, #2563eb)">📅</div>
+          <span class="app-label">Scheduler</span>
+        </article>
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 5 / span 1; grid-row: 1 / span 1"
+          data-plugin="chores" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #2dd4bf, #0d9488)">🧹</div>
+          <span class="app-label">Chores</span>
+        </article>
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 6 / span 1; grid-row: 1 / span 1"
+          data-plugin="photos" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #f472b6, #db2777)">📷</div>
+          <span class="app-label">Photos</span>
+        </article>
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 7 / span 1; grid-row: 1 / span 1"
+          data-plugin="notes" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #fde047, #ca8a04)">📝</div>
+          <span class="app-label">Notes</span>
+        </article>
+        <article class="block block--app-shortcut" role="listitem"
+          style="grid-column: 8 / span 1; grid-row: 1 / span 1"
+          data-plugin="budget" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="app-icon" style="background: linear-gradient(145deg, #4ade80, #16a34a)">💰</div>
+          <span class="app-label">Budget</span>
+        </article>
+
+        <article class="block block--widget" role="listitem"
+          style="grid-column: 1 / span 3; grid-row: 2 / span 1"
+          data-plugin="pantry" data-span-h="1" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="widget-inner">
+            <div class="widget-header">
+              <span class="widget-title">Pantry</span>
+              <span class="widget-action">Open Groceries →</span>
+            </div>
+            <div class="widget-body">
+              <span class="widget-metric">12</span>
+              <span class="widget-sub">items low on stock</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="block block--widget" role="listitem"
+          style="grid-column: 4 / span 4; grid-row: 2 / span 2"
+          data-plugin="scheduler" data-span-h="2" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="widget-inner">
+            <span class="widget-title">Today</span>
+            <p class="widget-metric widget-metric--list">
+              School pickup 3:15 · Trash night · Grocery run
+            </p>
+            <div class="widget-footer">
+              <span class="widget-sub">3 events</span>
+              <span class="widget-action">Open Scheduler →</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="block block--widget is-placeholder" role="listitem"
+          style="grid-column: 1 / span 3; grid-row: 3 / span 1"
+          data-plugin="weather" data-span-h="1" tabindex="0">
+          <span class="edit-badge" aria-hidden="true">×</span>
+          <div class="widget-inner">
+            <span class="widget-title">Widget</span>
+            <div class="widget-body">
+              <span class="widget-metric">Coming soon</span>
+              <span class="widget-sub">Widget hosting deferred (MVP)</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="block block--system" role="listitem"
+          style="grid-column: 6 / span 1; grid-row: 4 / span 1" tabindex="0">
+          <span class="system-icon">🔒</span>
+          <span class="system-label">Trust local CA</span>
+        </article>
+        <article class="block block--system" role="listitem"
+          style="grid-column: 7 / span 1; grid-row: 4 / span 1" tabindex="0">
+          <span class="system-icon">✓</span>
+          <span class="system-label">Hub healthy</span>
+        </article>
+        <article class="block block--system" role="listitem"
+          style="grid-column: 8 / span 1; grid-row: 4 / span 1" tabindex="0">
+          <span class="system-icon">⚡</span>
+          <span class="system-label">Pi online</span>
+        </article>
+
+        <article class="block block--strip" role="listitem"
+          style="grid-column: 1 / span 8; grid-row: 5 / span 1" tabindex="0">
+          <span style="font-size:32px" aria-hidden="true">🖥️</span>
+          <div class="strip-text">
+            <strong>Desktop shell</strong>
+            <span>Fixed bottom bar (Mantle shell) · 8-column dashboard grid · scrollable app launcher</span>
+          </div>
+        </article>
+      </div>
+    </main>
+
+    <nav class="bottom-bar" aria-label="Main navigation">
+      <div class="nav-pinned nav-pinned--start">
+        <button type="button" class="nav-tab nav-tab--home is-active" id="nav-home" data-route="/" data-label="Hearth">
+          <span class="tab-icon">
+            <svg viewBox="0 0 256 256" aria-hidden="true">
+              <defs>
+                <linearGradient id="ember-nav" x1="78" y1="56" x2="178" y2="212" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#FFB84D"/>
+                  <stop offset="0.54" stop-color="#F97316"/>
+                  <stop offset="1" stop-color="#B83A14"/>
+                </linearGradient>
+              </defs>
+              <path fill="url(#ember-nav)" d="M129 216c-34.2 0-58-21.8-58-53.1 0-20.6 11.1-37.1 27.3-52.7 13.2-12.7 22.5-27 28.8-45.9 22.3 19.7 34.3 40.1 34.3 58.6 8.9-7 14.7-17.1 17-29.5 19.2 17.4 28.6 38.1 28.6 62.8 0 36.1-30.8 59.8-78 59.8Z"/>
+            </svg>
+          </span>
+          Home
+        </button>
+      </div>
+      <div class="nav-quick-access" aria-label="Quick access to apps">
+        <div class="nav-scroll" id="nav-scroll" role="tablist">
+          <a class="nav-tab" role="tab" href="mantle-desktop-groceries.html" data-route="/groceries/" data-label="Groceries">
+            <span class="tab-icon" style="background: linear-gradient(145deg, #34d399, #059669)">🛒</span>
+            Groceries
+          </a>
+          <button type="button" class="nav-tab" role="tab" data-route="/recipes/" data-label="Recipes">
+            <span class="tab-icon" style="background: linear-gradient(145deg, #fbbf24, #d97706)">📖</span>
+            Recipes
+          </button>
+          <button type="button" class="nav-tab" role="tab" data-route="/ideas/" data-label="Ideas">
+            <span class="tab-icon" style="background: linear-gradient(145deg, #a78bfa, #7c3aed)">💡</span>
+            Ideas
+          </button>
+          <button type="button" class="nav-tab" role="tab" data-route="/scheduler/" data-label="Scheduler">
+            <span class="tab-icon" style="background: linear-gradient(145deg, #60a5fa, #2563eb)">📅</span>
+            Scheduler
+          </button>
+          <button type="button" class="nav-tab" role="tab" data-route="/chores/" data-label="Chores">
+            <span class="tab-icon" style="background: linear-gradient(145deg, #2dd4bf, #0d9488)">🧹</span>
+            Chores
+          </button>
+          <button type="button" class="nav-tab" role="tab" data-route="/photos/" data-label="Photos">
+            <span class="tab-icon" style="background: linear-gradient(145deg, #f472b6, #db2777)">📷</span>
+            Photos
+          </button>
+          <button type="button" class="nav-tab" role="tab" data-route="/notes/" data-label="Notes">
+            <span class="tab-icon" style="background: linear-gradient(145deg, #fde047, #ca8a04)">📝</span>
+            Notes
+          </button>
+          <button type="button" class="nav-tab" role="tab" data-route="/budget/" data-label="Budget">
+            <span class="tab-icon" style="background: linear-gradient(145deg, #4ade80, #16a34a)">💰</span>
+            Budget
+          </button>
+        </div>
+      </div>
+      <div class="nav-pinned nav-pinned--end">
+        <button type="button" class="bottom-settings" id="btn-settings-bottom" aria-haspopup="dialog">⚙️ Settings</button>
+      </div>
+    </nav>
+
+    <div class="modal-backdrop" id="settings-modal" aria-hidden="true">
+      <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title" tabindex="-1">
+        <header class="modal-header">
+          <h2 id="settings-title">Settings</h2>
+          <button type="button" class="modal-close" id="settings-close" aria-label="Close settings">×</button>
+        </header>
+        <div class="modal-body">
+          <section class="settings-section">
+            <h3>Appearance</h3>
+            <div class="settings-row">
+              <div class="settings-row-label">
+                Theme
+                <span>Light, dark, or match system</span>
+              </div>
+              <select class="settings-select" id="settings-theme" aria-label="Theme">
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+                <option value="system">System</option>
+              </select>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row-label">
+                Accent color
+                <span>Shell and chrome highlight</span>
+              </div>
+              <select class="settings-select" aria-label="Accent color" disabled>
+                <option>Ember orange</option>
+              </select>
+            </div>
+          </section>
+          <section class="settings-section">
+            <h3>Hub</h3>
+            <div class="settings-row">
+              <div class="settings-row-label">
+                Hub URL
+                <span>Local entrypoint</span>
+              </div>
+              <input class="settings-input" type="text" value="hearth.home.arpa" readonly aria-readonly="true" />
+            </div>
+            <div class="settings-row">
+              <div class="settings-row-label">
+                Web Push
+                <span>Notifications from plugins</span>
+              </div>
+              <label class="settings-switch">
+                <input type="checkbox" checked />
+                <span></span>
+              </label>
+            </div>
+          </section>
+          <section class="settings-section">
+            <h3>Plugins</h3>
+            <div class="settings-row">
+              <div class="settings-row-label">
+                Installed
+                <span>8 apps enabled</span>
+              </div>
+              <button type="button" class="top-btn" style="padding:6px 12px;font-size:13px">Manage…</button>
+            </div>
+          </section>
+          <section class="settings-section">
+            <h3>Account</h3>
+            <div class="settings-row">
+              <div class="settings-row-label">Signed in as</div>
+              <span style="font-weight:500">Ian</span>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="spec-note">
+    Desktop mock: <a href="../dashboard.md">dashboard.md</a> (8 columns ≥768px),
+    <a href="../mantle-ui.md">mantle-ui.md</a> (top bar + wide layout).
+    Companion: <a href="dashboard-iphone.html">iPhone mock</a>.
+  </p>
+
+  <script>
+    const win = document.getElementById("window");
+    const btnEdit = document.getElementById("btn-edit");
+    const btnDone = document.getElementById("btn-done");
+    const btnTheme = document.getElementById("btn-theme");
+    const title = document.getElementById("screen-title");
+    const grid = document.getElementById("grid");
+    const navHome = document.getElementById("nav-home");
+    const navScroll = document.getElementById("nav-scroll");
+    const settingsModal = document.getElementById("settings-modal");
+    const settingsPanel = settingsModal.querySelector(".modal-panel");
+    const settingsClose = document.getElementById("settings-close");
+    const settingsTheme = document.getElementById("settings-theme");
+    const btnSettingsTop = document.getElementById("btn-settings-top");
+    const btnSettingsBottom = document.getElementById("btn-settings-bottom");
+
+    function openSettings() {
+      settingsModal.classList.add("is-open");
+      settingsModal.setAttribute("aria-hidden", "false");
+      const isLight = win.getAttribute("data-theme") === "light";
+      settingsTheme.value = isLight ? "light" : "dark";
+      settingsPanel.focus();
+      win.style.overflow = "hidden";
+    }
+
+    function closeSettings() {
+      settingsModal.classList.remove("is-open");
+      settingsModal.setAttribute("aria-hidden", "true");
+      win.style.overflow = "";
+    }
+
+    btnSettingsTop.addEventListener("click", openSettings);
+    btnSettingsBottom.addEventListener("click", openSettings);
+    settingsClose.addEventListener("click", closeSettings);
+    settingsModal.addEventListener("click", (e) => {
+      if (e.target === settingsModal) closeSettings();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && settingsModal.classList.contains("is-open")) closeSettings();
+    });
+
+    settingsTheme.addEventListener("change", () => {
+      const v = settingsTheme.value;
+      if (v === "system") {
+        const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+        win.setAttribute("data-theme", prefersLight ? "light" : "dark");
+      } else {
+        win.setAttribute("data-theme", v);
+      }
+      const light = win.getAttribute("data-theme") === "light";
+      document.documentElement.style.colorScheme = light ? "light" : "dark";
+      btnTheme.setAttribute("aria-pressed", String(light));
+      btnTheme.textContent = light ? "Dark theme" : "Light theme";
+      document.querySelector('meta[name="theme-color"]').content = light ? "#f0f1f4" : "#0f1115";
+    });
+
+    function setEdit(on) {
+      win.classList.toggle("is-edit", on);
+      btnEdit.setAttribute("aria-pressed", String(on));
+      title.textContent = on ? "Edit Home" : "Hearth";
+    }
+
+    btnEdit.addEventListener("click", () => setEdit(!win.classList.contains("is-edit")));
+    btnDone.addEventListener("click", () => setEdit(false));
+    grid.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      setEdit(true);
+    });
+
+    btnTheme.addEventListener("click", () => {
+      const light = win.getAttribute("data-theme") === "light";
+      win.setAttribute("data-theme", light ? "dark" : "light");
+      document.documentElement.style.colorScheme = light ? "dark" : "light";
+      btnTheme.setAttribute("aria-pressed", String(!light));
+      btnTheme.textContent = light ? "Light theme" : "Dark theme";
+      document.querySelector('meta[name="theme-color"]').content = light ? "#0f1115" : "#f0f1f4";
+      if (settingsTheme) settingsTheme.value = light ? "dark" : "light";
+    });
+
+    function setNavActive(item) {
+      navHome.classList.remove("is-active");
+      navScroll.querySelectorAll(".nav-tab").forEach((el) => el.classList.remove("is-active"));
+      item.classList.add("is-active");
+    }
+
+    navHome.addEventListener("click", () => {
+      setNavActive(navHome);
+      title.textContent = win.classList.contains("is-edit") ? "Edit Home" : "Hearth";
+    });
+
+    navScroll.querySelectorAll(".nav-tab[data-route]").forEach((item) => {
+      item.addEventListener("click", (e) => {
+        if (item.tagName === "A") return;
+        e.preventDefault();
+        setNavActive(item);
+        title.textContent = item.dataset.label;
+      });
+    });
+
+    document.querySelectorAll(".block--app-shortcut").forEach((block) => {
+      block.addEventListener("click", () => {
+        if (win.classList.contains("is-edit")) return;
+        const plugin = block.dataset.plugin;
+        const match = navScroll.querySelector(`.nav-tab[data-route="/${plugin}/"]`);
+        if (match) {
+          setNavActive(match);
+          title.textContent = match.dataset.label;
+        }
+        if (plugin === "groceries") {
+          window.location.href = "mantle-desktop-groceries.html";
+          return;
+        }
+        alert(`Navigate to /${plugin}/ (plugin iframe)`);
+      });
+    });
+
+    function sizeGridCells() {
+      const cols = 8;
+      const gap = parseFloat(getComputedStyle(grid).gap) || 10;
+      const w = grid.clientWidth;
+      const cell = (w - (cols - 1) * gap) / cols;
+      grid.style.setProperty("--cell-size", `${cell}px`);
+    }
+
+    sizeGridCells();
+    window.addEventListener("resize", sizeGridCells);
+  </script>
+</body>
+</html>

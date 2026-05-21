@@ -192,6 +192,7 @@ When **`README.md`**, **`90-closeout.md`**, newest **`handoffs/*.md`**, or **`ta
    - large feature: sequence diagrams, data lifecycle, idempotency, error taxonomy, SLO/throughput.
 3. Each stage ends with a **plain-English summary** in **`serial-diary.md`** (or the relevant **`parallel/…`** file).
 4. If the stage touched **`docs/`**, use **`./develop up`** or **`./develop local`** to preview where **`./develop`** is available; note any build warnings in the diary.
+5. **User-visible UI:** before treating a design stage as done for screens, flows, or shell layout, add or update **static HTML mocks** under **`docs/design/mockups/`** and link them from the authoritative **`docs/design/…`** doc. Mocks are the visual source of truth until amended — **`.cursor/rules/ui-design-mockups.mdc`**. Do not author UI-leaning **`T-FR-NNNN-xx`** DEV tickets without mocks (unless the user documented an explicit waiver in intake/diary).
 
 Tag unknowns with **`DESIGN-GAP`** per **`docs/ai-context.md`**.
 
