@@ -9,6 +9,18 @@
 
 When markdown and a mock disagree on **appearance**, **amend the mock or the design doc** per [`../../ai-context.md`](../../ai-context.md); when they disagree on **behavior**, fix the spec or the implementation — not the other way around.
 
+### Reference-implementation vs spec (`RW-U4` 2026-05-21)
+
+The mocks promote certain visual details to **required** spec status; others are **reference implementation only** and may be revised without an amendment. Authority order:
+
+1. **Required** — sections in [`../dashboard.md`](../dashboard.md) and [`../mantle-ui.md`](../mantle-ui.md) that name a value (token, span, button label, animation duration, behavior table). Mocks must match these; if they drift, fix the mock.
+2. **Reference impl** — everything else in the mocks: illustrative copy, illustrative icon choices, exact pixel positions of decorative elements, animation curves not named in spec. Implementations may deviate to satisfy framework constraints, accessibility, or platform conventions, as long as the **required** items stay correct.
+
+Non-normative visual details flagged for removal or promotion in FR-0006:
+
+- `.dock-layer` on desktop bare and groceries mocks → **drop** (see [`../mantle-ui.md` § Desktop nav surface](../mantle-ui.md#desktop-nav-surface--no-floating-dock-df-u3-closed-2026-05-21)).
+- Edit-mode jiggle animation and `×` remove badge → **promoted to required** (see [`../dashboard.md` § Edit mode](../dashboard.md#edit-mode-dg-u2--dg-u3--rw-u4-closed-2026-05-21)).
+
 ## Shared assets
 
 | File | Role |

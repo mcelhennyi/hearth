@@ -67,6 +67,15 @@ Breakpoint: **768px** — below = mobile/PWA chrome; at/above = desktop chrome (
 | **Center** | **App launcher** — one control per enabled **`app`** plugin with `ui.nav.show_in_tab_bar` (default true), ordered by `[ui.nav].order`; horizontally scrollable when overflow | **Plugin bottom slots** only — content from `[ui.chrome].bottom` via `hearth.chrome.mount` |
 | **Right (pinned)** | **Settings** | **Settings** |
 
+#### Desktop vs mobile bottom-bar styling (normative)
+
+| Aspect | Mobile (<768 px) | Desktop (≥768 px) |
+|--------|------------------|-------------------|
+| Home left control | **Tab button** (`.nav-tab`) with icon + label; active state highlights `--hearth-accent` | **Plain link** (`.shell-home-link`) with text "Home"; underline-on-hover |
+| Launcher items | **Icon tabs** with truncated label below | **Pill chips** (icon + label inline) |
+| Settings right control | **Icon-only** button (gear) | **Icon + text** "Settings" button |
+| Plugin bottom slots (app mode) | Right-aligned flex group of icon buttons | Same buttons + visible text labels |
+
 | Item | Behavior |
 |------|----------|
 | **Settings (desktop)** | **Top bar** and **bottom bar** both expose Settings; either opens the same **floating modal** over the shell (see [`mockups/dashboard-desktop.html`](mockups/dashboard-desktop.html)). |
@@ -98,7 +107,7 @@ The shell owns a **fixed skeleton** on every screen. Plugins supply **slot conte
 
 Visual rules: same height, background (`--hearth-surface`), border, and typography in both modes so switching dashboard ↔ app feels like one operating system, not a browser with a random header per site.
 
-### Declaring chrome slots (app plugins)
+### Declaring chrome slots (app plugins) (`DG-U6` closed 2026-05-21)
 
 In `tinder.toml`:
 
@@ -108,13 +117,50 @@ top    = { slots = ["actions"] }
 bottom = { slots = ["primary"] }
 ```
 
-At runtime the plugin iframe registers React subtrees (or simple button descriptors) into named slots via postMessage:
+At runtime the plugin iframe registers slot content via postMessage:
 
 | Direction | Message | Purpose |
 |-----------|---------|---------|
-| plugin → shell | `{type:"hearth.chrome.mount", slot, surface, payload}` | Register slot UI (icon buttons, menus) |
+| plugin → shell | `{type:"hearth.chrome.mount", slot, surface, payload}` | Register slot UI |
 | plugin → shell | `{type:"hearth.chrome.unmount", slot, surface}` | Remove slot UI |
 | shell → plugin | `{type:"hearth.chrome.resize", slot, rect}` | Optional layout hint |
+
+**Payload shape (v0).** Plugins may register two shapes only; arbitrary React subtrees are deferred behind module-federation (post-MVP).
+
+```ts
+type ChromeButton = {
+  kind: "button";
+  id: string;                   // stable id within slot+surface; used for unmount
+  label: string;                // accessible name (also used in overflow menu)
+  icon?: string;                // lucide icon name (preferred) or data: URL <= 4 KB
+  variant?: "default" | "accent";  // accent = primary action color
+  busy?: boolean;               // shows a small spinner overlay
+  disabled?: boolean;
+};
+
+type ChromeMenu = {
+  kind: "menu";
+  id: string;
+  label: string;
+  icon?: string;
+  items: Array<{ id: string; label: string; icon?: string; disabled?: boolean }>;
+};
+```
+
+The plugin sends `payload: ChromeButton | ChromeMenu`. When the user activates a slot item the shell echoes back `{type:"hearth.chrome.invoke", slot, surface, id, itemId?}` so the plugin can act.
+
+**Indexing and ordering.** Within a slot, items render in **first-mount-first** order. A plugin may mount the same `id` again with new fields to update it (same id is a replace, not a duplicate). Unmount uses `(slot, surface, id)` triple.
+
+**Max visible per slot.**
+
+| Slot | Visible cap | Overflow |
+|------|-------------|----------|
+| `top` | **3** items per plugin | Items 4+ collapse into a single `⋯` menu using the items' `label`s. |
+| `bottom` | **4** items per plugin | Items 5+ collapse into a single `⋯` menu. |
+
+Items always reflow before the shell's pinned Home / user / Settings controls. **No** plugin may push more than 8 items to a single slot in total; excess registrations are rejected (shell sends `{type:"hearth.chrome.error", slot, surface, reason:"limit"}`).
+
+**Lifecycle.** All slot registrations are cleared automatically when the plugin iframe unloads or the user navigates away from `/<slug>/` (the shell sends `hearth.chrome.unmount` implicitly for every mounted id on route change).
 
 **Widget** plugins do not use chrome slots (they render only inside dashboard blocks).
 
@@ -138,6 +184,47 @@ In-frame navigation (tabs, sidebars, toolbars **below** the title area) remains 
 
 **Module Federation** (one bundle, zero-cost nav) is the upgrade path post-MVP. The PWA shell is designed so the swap is internal — plugin authors do not change their UI code.
 
+### Plugin frame states (`DG-U7` closed 2026-05-21)
+
+The plugin frame is never empty. It always renders one of five states:
+
+| State | Trigger | Shell UI |
+|-------|---------|----------|
+| **Mounted** | iframe `load` event fired and the plugin has sent at least one of `hearth.title` or `hearth.ready` within **5 s** | Plugin renders normally; loading scrim removed. |
+| **Loading** | Frame just navigated; no `load` event yet, or no plugin ack within 5 s | Centered shell spinner (`--hearth-accent`) over the plugin background; shell renders plugin title from registry while waiting. |
+| **Slow** | After **5 s** still no `load` | Spinner persists; subtle subtitle "Still loading {plugin}…". After **15 s** offers a **Reload** action. |
+| **Error** | iframe fires `error`, or the proxy returns 4xx/5xx, or the frame violates sandbox | Centered "{plugin} failed to load" card with **Reload** and **Open Settings** actions; cause shown in collapsible details (HTTP status, last log line). |
+| **Offline** | Browser `navigator.onLine === false` when entering the plugin route, or the SW returned a cached fallback | Centered "You're offline" card with the last-cached plugin title; **Try again** button. |
+
+State transitions are reported to the plugin (when reachable) via `{type:"hearth.online", online}`; the shell also pushes `{type:"hearth.frame.state", state}` so the plugin can self-suppress overlays when the shell is showing one.
+
+### Settings modal (`DG-U8` closed 2026-05-21)
+
+Settings is a **floating modal** over the shell, not a separate route. Both the desktop top-bar text button and the desktop+mobile bottom-bar Settings icon open the same modal.
+
+| Aspect | Specification |
+|--------|---------------|
+| Trigger | Top-bar **Settings** (text, desktop dashboard only) **or** bottom-bar Settings (icon, all viewports, both modes). |
+| Container | Modal centered on desktop (max-width **640px**, max-height **80vh`); full-screen sheet on mobile (slides up from bottom; close handle at top). |
+| Surface | `--hearth-surface`; backdrop `color-mix(in srgb, var(--hearth-bg) 70%, transparent)`. |
+| Close | Escape, backdrop tap, system back gesture (mobile), explicit Done button. |
+| Tabs (v0) | **Theme**, **Plugins**, **System tiles**, **Diagnostics**, **Sign out**. |
+| Theme tab | Light / Dark / **System** radio group. Selection persists via `localStorage` key `hearth.theme.preference` and is mirrored to a server-side user preference (`PUT /api/user/preferences`). On change the shell updates the `theme-color` meta tag and broadcasts `hearth.theme` to every mounted plugin iframe. |
+| Plugins tab | List of enabled/disabled `app` and `widget` plugins; toggles call `POST /api/plugins/<slug>/{enable,disable}`. |
+| System tiles tab | Show / hide the dashboard's `system` block tiles (see [`dashboard.md`](dashboard.md#system-block--content-and-configuration-df-u1-closed-2026-05-21)). |
+| Diagnostics tab | Hub health, CA trust status, hub uptime; links to the FR-0003 `hearth doctor` output where available. |
+| Sign out | Calls `POST /api/auth/logout` and reloads the shell. |
+
+**Reduced-motion:** The desktop modal fades in (160 ms) instead of scaling; the mobile sheet snaps without spring animation.
+
+### Theme persistence
+
+The user's theme preference (`hearth.theme.preference` in `localStorage`) is the **source of truth at boot**; it is reconciled with the server preference (`GET /api/user/preferences`) after first paint to avoid theme flash. When `preference = "system"`, the shell tracks `prefers-color-scheme` live and re-broadcasts `hearth.theme` on change.
+
+### Desktop nav surface — no floating dock (`DF-U3` closed 2026-05-21)
+
+The desktop shell **does not** render a macOS-style floating dock. The bottom bar fixed to the viewport is the only navigation surface in both modes. Any `.dock-layer` content visible in earlier mock revisions is **non-normative** and to be removed from `mockups/mantle-desktop-*.html`. See [`mockups/README.md`](mockups/README.md).
+
 ### postMessage protocol (shell ↔ plugin iframe)
 
 | Direction | Message | Purpose |
@@ -145,10 +232,10 @@ In-frame navigation (tabs, sidebars, toolbars **below** the title area) remains 
 | shell → plugin | `{type:"hearth.theme", tokens}` | push theme on change |
 | shell → plugin | `{type:"hearth.user", user}` | push user info |
 | shell → plugin | `{type:"hearth.online", online}` | network state |
-| plugin → shell | `{type:"hearth.title", title}` | suggested page title for the tab |
-| plugin → shell | `{type:"hearth.toast", level, message}` | show a global toast |
+| plugin → shell | `{type:"hearth.title", title}` | **`DG-U9` closed:** updates **both** the browser tab title (`document.title = "{title} — Hearth"`) **and** the shell top-bar title in App mode. Dashboard ignores plugin-set titles. |
+| plugin → shell | `{type:"hearth.toast", level, message}` | **`DG-U11`** — show a global toast (placement, duration, styles deferred to first overlay implementation; until then the shell silently accepts and console-logs) |
 | plugin → shell | `{type:"hearth.nav", path}` | request shell-level nav |
-| plugin → shell | `{type:"hearth.haptic", style}` | request a tap-haptic (iOS PWA only) |
+| plugin → shell | `{type:"hearth.haptic", style}` | **`DG-U11`** — request a tap-haptic (iOS PWA only; supported styles `selection` / `impact` / `notification`; non-iOS callers no-op) |
 | plugin → shell | `{type:"hearth.notify", payload}` | request a push (delegated to hub; see `notifications.md`) |
 | plugin → shell | `{type:"hearth.chrome.mount", …}` / `hearth.chrome.unmount` | slot UI in top/bottom bars (see Chrome contract) |
 

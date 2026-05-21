@@ -48,8 +48,14 @@ The grid is measured in **primitive cells** — the smallest square unit on the 
 |----------|-------------------|------------------|
 | Column count | **4** fixed | **8** fixed (wider canvas; same primitive size) |
 | Row height | Equal to column width (square cells) | Same |
-| Gap | Token `--hearth-grid-gap` (default 8px) | Same |
-| Safe area | Respect `--hearth-safe-top/bottom`; grid scrolls vertically | Same |
+| Gap (`--hearth-grid-gap`) | **8px** | **10px** |
+| Outer padding (around the grid; `--hearth-grid-pad`) | **12px** horizontal, `--hearth-safe-top`/`--hearth-safe-bottom` vertical | **16px** all sides |
+| Block radius (`--hearth-radius-md`) | **8px** | **8px** |
+| Block hairline border | `1px solid color-mix(in srgb, var(--hearth-fg) 8%, transparent)` | Same |
+| Safe area | Respect `--hearth-safe-top/bottom`; grid scrolls vertically with `-webkit-overflow-scrolling: touch` | Same |
+| Bottom scroll inset | `calc(--hearth-safe-bottom + bottom-bar height)` so the last row clears the fixed bar | Same |
+
+> **DG-U5 closed (2026-05-21):** these metrics are normative and override the mock CSS if they drift. The mock CSS at `mockups/mantle-mock.css` is updated in lockstep.
 
 ### Block spans
 
@@ -66,7 +72,7 @@ Blocks **do not overlap**. The layout engine packs blocks in row-major order wit
 
 ### Widget block chrome (visual)
 
-Widget tiles are **fixed to their grid rectangle** (square primitive cells × `w` × `h`); content **must not clip** outside the rounded block. Mocks encode two layout tiers by block height (`data-span-h` on widget blocks):
+Widget tiles are **fixed to their grid rectangle** (square primitive cells × `w` × `h`); content **must not clip** outside the rounded block. **`DG-U10`** — exact overflow rules per tier (clamp character counts, internal scroll allowed?) remain deferred until widget hosting (P3) ships; until then, snapshots **must** fit without scroll, with text truncated via `-webkit-line-clamp`. Mocks encode two layout tiers by block height (`data-span-h` on widget blocks):
 
 | Block height `h` | Layout | Typical content |
 |------------------|--------|-----------------|
@@ -81,7 +87,33 @@ Mantle widget primitives must respect the same bounds when rendering hub snapsho
 |--------|---------|-----|
 | `app-shortcut` | Icon + label; tap opens `/<slug>/` in the plugin frame | **Yes** — default block for each enabled **app** plugin |
 | `widget` | Hosts a widget plugin surface (`surface` id) | **Schema only** — renders placeholder until widget hosting ships |
-| `system` | Hub-owned tiles (CA install, health, issues) | **Optional** — may be fixed blocks or a separate “Setup” sheet |
+| `system` | Hub-owned status tiles (CA trust, hub healthy, Pi online) sourced from `GET /api/system/tiles` | **Yes (v0)** — fixed `1×1` blocks seeded in the default layout; user-removable in edit mode, restorable from Settings → System tiles (see **`DF-U1`** resolution below) |
+| `strip` | Full-width (span `w=columns`, `h=1`) banner for hub-owned promotional or onboarding notices (e.g. "Install Hearth as a PWA") | **Yes (v0)** — at most one strip per dashboard; dismissible; sourced from `GET /api/system/strips` (see **`DF-U2`** resolution below) |
+
+### `system` block — content and configuration (`DF-U1` closed 2026-05-21)
+
+Hub-owned `system` tiles render via the same primitive as plugin shortcuts, but their content is fetched from `GET /api/system/tiles`. v0 tiles:
+
+| Tile id | Title | Body | Action |
+|---------|-------|------|--------|
+| `ca-trust` | Trust local CA | "Install the Hearth root certificate to remove the iOS warning." | Opens Settings → Trust CA |
+| `hub-healthy` | Hub healthy | Compact status badge sourced from `GET /api/health` | Tap → `/settings#diagnostics` |
+| `pi-online` | Hub online | Reachability and last-seen for the deployed hub (Pi or Mac) | Tap → `/settings#diagnostics` |
+
+- Tiles are **opt-out** per user (removable in edit mode). Settings → *System tiles* re-adds dismissed tiles.
+- Tiles appearing in the default layout are placed **after** `app-shortcut` blocks of the first row, then wrap normally.
+- A tile may self-suppress when its precondition is satisfied (e.g. `ca-trust` hides once trust is confirmed).
+
+### `strip` block — content and configuration (`DF-U2` closed 2026-05-21)
+
+`strip` blocks are full-width onboarding banners owned by the hub. They span `w = columns` (4 on mobile, 8 on desktop) at `h = 1`. Sourced from `GET /api/system/strips`:
+
+| Strip id | When shown | Action |
+|----------|------------|--------|
+| `pwa-install` | iOS Safari and not yet installed | Opens iOS install hint sheet |
+| `mac-shell` | Desktop browser, no install hint | Hides itself when dismissed |
+
+Strips render **above** the grid (between top bar and the first row) and are dismissible. At most one strip is visible at a time (hub returns the highest-priority active strip).
 
 ### Default layout (before user customization)
 
@@ -89,14 +121,65 @@ When no saved layout exists, the hub generates:
 
 1. One `app-shortcut` block per enabled **app** plugin (`1×1`), ordered by `[ui.nav].order` then name — the default **app icon** for each app.
 2. **No** automatic `widget` blocks in MVP (even when the manifest declares `[widget.surfaces.*]`); the user adds widgets from the edit-mode picker once hosting ships. Auto-placement from `span_default` is a deferred product detail.
-3. Optional fixed **system** blocks at the end of the first row (e.g. “Add this device”) — product decision per [`deployment.md`](deployment.md).
+3. **`system`** blocks from `GET /api/system/tiles` appended after app shortcuts on the first row (wrap as needed); each tile self-suppresses when its precondition is satisfied.
+4. **`strip`** block (at most one) rendered **above** the grid when `GET /api/system/strips` returns an active strip for the current platform.
 
-### Edit mode
+### Empty state (`DG-U4` closed 2026-05-21)
 
-- Enter: long-press on empty grid area, or an “Edit” control on the dashboard (exact control is implementation detail).
-- Behaviors: drag to reposition, drag handles to resize within allowed spans, remove block, add block from a picker (enabled apps + available widget surfaces).
-- Exit: Done — persists layout via API (below).
-- **App plugins** that are enabled but not placed on the grid still appear in the shell **plugin nav** (see [`mantle-ui.md`](mantle-ui.md)); the grid is not the only launch path.
+When no enabled **app** plugins exist **and** the hub returns zero `system` tiles, the grid renders a centered empty state:
+
+- Hearth flame icon at 64×64 (`--hearth-accent`).
+- Headline: "Your dashboard is empty."
+- Body: "Enable plugins in Settings to populate your home grid."
+- Primary button: **Open Settings** → opens Settings modal at the *Plugins* tab.
+
+The empty state never co-exists with a populated grid; the moment the first enabled plugin or system tile arrives, the default layout takes over.
+
+### Edit mode (`DG-U2` + `DG-U3` + `RW-U4` closed 2026-05-21)
+
+#### Entry
+
+| Viewport | Entry trigger |
+|----------|---------------|
+| **Mobile** | **Long-press 600 ms** on any block, on empty grid area, or on the grid background. Long-press uses the system haptic (`hearth.haptic` `style:"impact"`). |
+| **Desktop** | **Edit** text button in the top bar (right of "Hearth" title; visible only on dashboard). Long-press is also accepted. |
+
+#### Visual treatment (required, normative; promotes mock visuals to spec)
+
+While edit mode is active:
+
+- All blocks animate with a subtle **jiggle** (≈ ±0.8° rotation, 0.4 s period, randomised phase) so the surface feels mutable.
+- Each block shows a circular **× remove badge** at its top-left corner (`top: -6px; left: 50% - 12px`, 24×24, `--hearth-accent` background, `--hearth-accent-fg` foreground).
+- **Drag handles** appear at the bottom-right of resizable blocks (`widget` only in v0; shortcuts are fixed `1×1`).
+- The strip block in edit mode shows a single full-width × badge (right-aligned).
+
+Prefers-reduced-motion: jiggle is replaced with a 2 px dashed outline around each block.
+
+#### Behaviors
+
+| Gesture | Effect |
+|---------|--------|
+| Tap × badge | Remove the block (system tiles flip to "hidden by user" — restored from Settings). |
+| Drag block | Reposition. Targets snap to the grid; original position holds a faint outline until the drag ends. |
+| Drag handle (widget) | Resize within allowed span (`w` 1–4 mobile / 1–8 desktop; `h` 1–4). |
+| **+** button in top bar | Open picker (enabled apps not on grid, available widget surfaces, hidden system tiles). |
+
+#### Collisions (`DG-U3`)
+
+- When a drag-end position overlaps another block, both blocks render with a **2 px solid `--hearth-error` outline** (token added below) and the drop is rejected — the dragged block snaps back to its prior position. No partial overlap is ever persisted.
+- A persistent banner ("Two blocks are overlapping; resolve before saving.") appears in the top bar, and **Done** is disabled while any pair of blocks reports a collision after move/resize.
+- New token: `--hearth-error` (default `#e53935` light / `#ff6b6b` dark).
+
+#### Exit
+
+- **Done** button (top bar) — persists via `PUT /api/dashboard/layout`; returns to view mode.
+- **Cancel** button or Escape — discards changes; returns to view mode.
+- Native back gesture / Browser back — treated as Cancel (with confirm if changes pending).
+
+#### Notes
+
+- **App plugins** enabled but not placed on the grid still appear in the shell **plugin nav** (see [`mantle-ui.md`](mantle-ui.md)); the grid is not the only launch path.
+- Mocks at `mockups/dashboard-iphone.html` and `mockups/dashboard-desktop.html` are now the **reference implementation** for visual details specified above; if the mocks drift from this section, this section wins. See [`mockups/README.md`](mockups/README.md).
 
 ### Layout persistence
 
@@ -189,6 +272,10 @@ Plugins produce this via Spark method `widget.snapshot` (**DESIGN-GAP DG-S1** �
 Switching from dashboard → app: user taps `app-shortcut` or an app launcher control; shell navigates to `/<slug>/` and keeps bars mounted (no full-page flash).
 
 Returning: **Home** in the bottom bar (or leading control in the top bar on app routes) always returns to `/`.
+
+### Bottom-bar app launcher — ownership (`RW-U3` closed 2026-05-21)
+
+The bottom-bar **app launcher** that sits between Home and Settings on the dashboard is owned by **Mantle**, not by this doc. Its sourcing (`GET /api/plugins` filtered to enabled `app` plugins with `show_in_tab_bar = true`), ordering (`[ui.nav].order` then name), overflow (scrollable horizontal strip with edge fade per `R-U2`), and visual styling are specified in [`mantle-ui.md` → Bottom bar — nav policy](mantle-ui.md#bottom-bar--nav-policy). Dashboard tiles and the launcher render the **same** enabled-plugin set; the user's saved layout decides which apps appear as **grid shortcuts**, but every enabled `app` plugin with `show_in_tab_bar = true` always appears in the **launcher** regardless of layout.
 
 ## Phasing
 

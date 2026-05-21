@@ -49,6 +49,26 @@ events  = ["changed"]
 
 Widget surfaces are named keys under `[widget.surfaces.<id>]`. The dashboard block references `plugin` + `surface`.
 
+## In-frame plugin chrome (`DG-T1` closed 2026-05-21)
+
+`app` plugins **must not** duplicate the shell's top/bottom bars ([`mantle-ui.md` → What plugins must not do](mantle-ui.md#what-plugins-must-not-do)), but the plugin **may** render its **own** chrome **below the shell title** and **inside the iframe** to organise its content.
+
+Allowed in-frame chrome includes:
+
+| Shape | When it is allowed |
+|-------|--------------------|
+| **Sticky tab bar** at the **top** of the iframe (e.g. *Shopping list* / *Pantry* in the reference groceries plugin) | Always — uses `position: sticky; top: 0` inside the iframe; never claims `position: fixed` to the viewport. |
+| **Sidebars** (≥768 px) | Always — sidebar is part of the plugin's own layout and may pin or scroll independently. |
+| **Inline toolbars** (search, filter rows under the plugin title) | Always — stays within the iframe's normal flow. |
+| **Floating overlays** (toasts, dialogs that escape the iframe bounds) | Only via the shell's `hearth.toast` / `<Sheet>` / `<Dialog>` primitives from `@kindling/mantle`, which route through `postMessage` so overlays are not clipped to the iframe. |
+
+Forbidden:
+
+- A second **top-fixed** title bar that visually rivals the shell's top bar (i.e. a full-width band with title + actions hugging the iframe's top edge in a style indistinguishable from the shell). In-frame tab strips and toolbars are fine because their **shape** (compact tabs / chip rows) is distinct from a shell-style title bar.
+- Any iframe-side bottom bar that pins to the iframe's bottom edge; that space is owned by the shell's bottom bar via `[ui.chrome].bottom` slots.
+
+Examples in the reference plugin: see `mockups/mantle-iphone-groceries.html` and `mockups/mantle-desktop-groceries.html` (the *Shopping list / Pantry* sticky tab strip and the desktop *Pantry glance* sidebar).
+
 ## File: `tinder.toml`
 
 ```toml
