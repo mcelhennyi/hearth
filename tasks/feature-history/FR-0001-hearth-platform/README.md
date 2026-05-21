@@ -1,6 +1,6 @@
 # FR-0001 — Hearth platform (MVP)
 
-**Status:** `design` (eligible to resume implementation on **`main`**)
+**Status:** `done` — [**PR #30**](https://github.com/mcelhennyi/hearth/pull/30) open for merge; closeout: [`90-closeout.md`](90-closeout.md)
 **Owner:** project lead (Ian)
 **Allocated:** 2026-04-27
 

@@ -61,6 +61,7 @@ services:
       HEARTH_HOME: /hearth
       HEARTH_PLUGIN_PORT: "8301"
       HEARTH_PLUGIN_SLUG: groceries
+      HEARTH_VAR_DIR: /var/hearth
     volumes:
       - ../plugins/groceries:/app:ro
       - ../var/plugins/groceries:/var/hearth/plugins/groceries
@@ -79,6 +80,7 @@ services:
       HEARTH_HOME: /hearth
       HEARTH_PLUGIN_PORT: "8302"
       HEARTH_PLUGIN_SLUG: recipes
+      HEARTH_VAR_DIR: /var/hearth
     volumes:
       - ../plugins/recipes:/app:ro
       - ../var/plugins/recipes:/var/hearth/plugins/recipes

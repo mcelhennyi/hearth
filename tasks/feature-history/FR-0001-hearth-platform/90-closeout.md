@@ -1,58 +1,71 @@
-# FR-0001 closeout
+# FR-0001 closeout — Hearth platform MVP
 
-**Closed:** 2026-05-20
-**PR:** [#30](https://github.com/mcelhennyi/hearth/pull/30) — `feat/FR-0001-hearth-platform` → `main`
-**Status:** feature-complete gate met; PR open for human review and merge
+**PR pending:** [#30](https://github.com/mcelhennyi/hearth/pull/30) — `feat/FR-0001-hearth-platform` → `main` (refresh merge line after merge)
 
-## All 10 tickets done
+**Feature-complete gate:** met 2026-05-20; **`/finish-feature`** refreshed 2026-05-21 @ `e1daf2e` (+ test fix).
 
-| Ticket | Title | TEST | DEV | VAL |
-|--------|-------|------|-----|-----|
-| T-FR-0001-01 | Repo scaffold and Compose dev loop | done | done | done |
-| T-FR-0001-02 | Hub API skeleton and SQLite registry | done | done | done |
-| T-FR-0001-03 | Tinder loader and manifest schema | done | done | done |
-| T-FR-0001-04 | Mantle PWA shell and iframe embed | done | done | done |
-| T-FR-0001-05 | Caddy generation and local TLS | done | done | done |
-| T-FR-0001-06 | Spark v1 broker and client libs | done | done | done |
-| T-FR-0001-07 | Kindling repo and CLI | done | done | done |
-| T-FR-0001-08 | groceries reference plugin | done | done | done |
-| T-FR-0001-09 | Auth, VAPID, Web Push + ntfy | done | done | done |
-| T-FR-0001-10 | Pi/Mac mini install.sh + backup | done | done | done |
+## Executive summary
 
-235 tests pass via Docker; 3 skipped (HEARTH_INTEGRATION=1 gated).
+FR-0001 delivers the self-hosted Hearth hub: FastAPI registry, Mantle PWA shell, Caddy proxy generation, Spark v1, Kindling scaffolding, groceries reference plugin, bare-metal `install.sh`, and Pi Docker operator path (FR-0003 on `main`). Post-closeout commits on the feature branch wire **Docker-profile groceries end-to-end** (plugin Dockerfile, generated `Caddyfile.plugins`, PWA service-worker allowlist so plugin iframes reach Caddy).
 
-## Pi Docker upgrade — operator notes
+## Delivered surfaces
 
-After upgrading an existing FR-0002/FR-0003 Docker install to FR-0001:
+| Surface | Location |
+|---------|----------|
+| Hub API + registry | `apps/hub/api/` |
+| Mantle PWA shell | `apps/hub/web/` |
+| Caddy fragments (bare-metal) | `apps/hub/api` caddy generator |
+| Docker profile Caddy + compose | `deploy/caddy/`, `deploy/hearth-install/hearth_install/plugin_compose.py` |
+| Spark broker + clients | `spark/` |
+| Kindling (in-repo) | `kindling/` |
+| Groceries plugin | `apps/groceries/` → `mcelhennyi/grocery-list` |
+| Bare-metal install | `deploy/install.sh`, `deploy/systemd/`, `deploy/launchd/` |
+| Pi `./install` + `hearth` CLI | `deploy/hearth-install/`, `SETUP.md` |
 
-1. **DB migrations** — once per machine:  
-   `hearth compose -- exec -w /app -e HEARTH_DB_URL=sqlite+aiosqlite:////workspace/var/hearth/hearth.db hub python -m alembic upgrade head`
-2. **Hub image** — rebuild after pulling (`argon2-cffi`, `itsdangerous` in `apps/hub/api/requirements.txt`).
-3. **Plugin install `source` paths** — the hub reads paths **inside the container**. The repo is mounted at **`/workspace`**. Use either:
-   - **Container path:** `{"source":"/workspace/apps/groceries"}` (always works), or
-   - **Host checkout path:** `{"source":"/home/pi/hearth/apps/groceries"}` when `HEARTH_REPO_ROOT` is passed into the hub service (install template does this); the hub rewrites host → `/workspace` automatically.
+## Tickets
 
-Do **not** confuse SSH paths (`~/hearth/...`) with in-container paths unless `HEARTH_REPO_ROOT` matches your checkout.
+| Ticket | Summary | TEST / DEV / VAL |
+|--------|---------|------------------|
+| T-FR-0001-01 | Repo scaffold and Compose dev loop | done / done / done |
+| T-FR-0001-02 | Hub API skeleton and SQLite registry | done / done / done |
+| T-FR-0001-03 | Tinder loader and manifest schema | done / done / done |
+| T-FR-0001-04 | Mantle PWA shell and iframe embed | done / done / done |
+| T-FR-0001-05 | Caddy generation and local TLS | done / done / done |
+| T-FR-0001-06 | Spark v1 broker and client libs | done / done / done |
+| T-FR-0001-07 | Kindling repo and CLI | done / done / done |
+| T-FR-0001-08 | groceries reference plugin | done / done / done |
+| T-FR-0001-09 | Auth, VAPID, Web Push + ntfy | done / done / done |
+| T-FR-0001-10 | Pi/Mac mini install.sh + backup | done / done / done |
 
-## Manual VAL deferred (not blocking gate)
+## Validation
 
-Same pattern as FR-0002 closeout — manual iPhone walkthrough steps deferred for a real-device session:
-- T05/T08/T09: iPhone certificate trust + PWA install + Web Push receive
+- `./develop test` on `feat/FR-0001-hearth-platform` @ finish-feature refresh — **238 passed**, 3 skipped (`HEARTH_INTEGRATION=1` gated).
+- Pi Docker (operator): `hearth --plugin --add`, `Caddyfile.plugins`, groceries container + `curl https://hearth.home.arpa/groceries/` — validated in session; requires `hearth pwa build` + SW cache clear on iPhone after merge.
 
-These are validation steps that require a physical Pi + iPhone; they are documented in `serial-diary.md` and can be picked up as a follow-up session.
+## Deferred / follow-up
 
-## What shipped
+| Item | Tracking |
+|------|----------|
+| Manual iPhone VAL (cert trust, PWA, push, groceries tab) | `serial-diary.md`; not blocking gate |
+| Hub registry sync with `plugins.yaml` (Docker profile) | DESIGN-GAP DG-D4 in `docs/design/deployment.md` |
+| `hearth --plugin --add` → hub `POST /api/plugins/install` | Operator uses file registry today |
+| FR-0004 centralized auth | parked until PR #30 merged |
 
-- **Hub API** — FastAPI, SQLite registry, Tinder manifest loader, plugin install/enable/disable, argon2id auth
-- **Mantle PWA** — dynamic nav, iframe embed, install prompt, Web Push subscription, dark/light theme
-- **Caddy** — fragment renderer + reload hook; generated per-plugin reverse proxy blocks
-- **Spark v1** — Unix-socket JSON-RPC broker; Python + TS client libs
-- **Kindling** — plugin template layer; `mcelhennyi/kindling` repo (skeleton consumer); `kindling new <slug>` scaffold
-- **Groceries reference plugin** — `mcelhennyi/grocery-list` submodule at `apps/groceries/`
-- **Bare-metal deploy** — `deploy/install.sh`, `deploy/systemd/`, `deploy/launchd/`, `hearth backup/restore`
+## Suggested next step
 
-## On merge to main
+Human: **merge [PR #30](https://github.com/mcelhennyi/hearth/pull/30)**. On `main`: delete repo-root `CURRENT.md`, run Pi groceries smoke (`SETUP.md` + `hearth pwa build`), then resume **FR-0004** or **FR-0005**.
 
-- Remove `CURRENT.md` from main (or it will be absent as the feature branch file is not in main baseline)
-- Update `tasks/feature-history/REGISTRY.md` FR-0001 → `done`
-- Update `tasks/ticket-progress.md` Current focus on main
+## Options
+
+| Option | When |
+|--------|------|
+| Merge PR #30 | Ready — branch MERGEABLE; includes Pi groceries proxy + SW fix |
+| Request changes on PR | If review finds gaps before merge |
+| Pi VAL session | After merge; document in `40-prototype-report` or FR-0001 diary |
+| Start FR-0005 remote-build | If Mac-build → Pi publish is higher priority than FR-0004 |
+
+## Audit
+
+- **Feature branch:** `feat/FR-0001-hearth-platform` @ `e1daf2e` (retained on remote)
+- **Handoff:** [`handoffs/2026-05-21-finish-feature.md`](handoffs/2026-05-21-finish-feature.md)
+- **Post-closeout commits (Pi groceries):** `555a4b4`…`e1daf2e` — auth deps, embed mode, `plugin_paths`, `Caddyfile.plugins`, groceries Dockerfile/admin, Workbox allowlist

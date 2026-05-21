@@ -8,7 +8,7 @@
 | **Active phase** | complete |
 | **Branch / worktree** | `feat/FR-0001-hearth-platform` @ `.worktrees/FR-0001-hearth-platform/feature/` |
 | **Session status** | `complete` |
-| **Next agent should** | Human: review and merge [PR #30](https://github.com/mcelhennyi/hearth/pull/30). After merge: remove `CURRENT.md` from `main`, advance FR-0004 to `in-progress`. Manual VAL sessions deferred: T05/T08/T09 iPhone walkthrough on real Pi + device. |
+| **Next agent should** | Human: merge [PR #30](https://github.com/mcelhennyi/hearth/pull/30) (`feat/FR-0001-hearth-platform` @ `e1daf2e`, 238 tests green). After merge: delete `CURRENT.md` on `main`, Pi `git pull` + `hearth pwa build` for groceries iframe fix. Then FR-0004 or FR-0005. |
 
 ### Parallel streams
 
