@@ -12,7 +12,7 @@ description: >-
 
 # Develop frontier
 
-End-to-end: **discover** parallel-capable tickets, ensure each owning feature has a feature worktree, then run **one subagent per ticket** (separate child git worktree + feature-prefixed branch), **TEST → DEV → VAL** serially inside each ticket, then merge ticket work into each **`feat/FR-NNNN-<slug>`**, validate, and push **those feature branches**. Run **`finish-feature`** (feature branch → PR to the default branch) **only** when **`docs/ai-context.md` §2d** **feature-complete gate** is met for that **`FR-NNNN`**; otherwise continue with **`/identify-frontier`** / the next wave. Use **`finish-frontier`** only when merging straight to the default branch per policy.
+End-to-end: **discover** parallel-capable tickets, ensure each owning feature has a feature worktree, then run **one subagent per ticket** (separate child git worktree + feature-prefixed branch), **TEST → DEV → VAL** serially inside each ticket, then merge ticket work into each **`feat/FR-NNNN-<slug>`**, validate, and push **those feature branches**. Run **`finish-feature`** (feature branch → PR to the default branch + **mandatory closeout**) **only** when **`docs/ai-context.md` §2d** **feature-complete gate** is met for that **`FR-NNNN`**; otherwise continue with **`/identify-frontier`** / the next wave. Use **`finish-frontier`** only when merging straight to the default branch per policy.
 
 ## Preconditions
 
@@ -52,7 +52,7 @@ All frontier tickets **VAL** = `done`, branches **pushed**.
 
 ## 4 — Finish integration
 
-- **Feature-branch workflow (preferred for `FR-NNNN` work):** merge completed ticket/stage branches into **`feat/FR-NNNN-<slug>`**, revalidate, push **that feature branch**. Call **`finish-feature`** only when **§2d** **feature-complete gate** is met (then open a PR from **`feat/FR-NNNN-<slug>`** to the default branch). **Do not** open that PR for partial feature delivery. **No** automatic push to the default branch.
+- **Feature-branch workflow (preferred for `FR-NNNN` work):** merge completed ticket/stage branches into **`feat/FR-NNNN-<slug>`**, revalidate, push **that feature branch**. Call **`finish-feature`** only when **§2d** **feature-complete gate** is met (then open a PR from **`feat/FR-NNNN-<slug>`** to the default branch and run **closeout** per **`finish-feature`** skill §5). **Do not** open that PR for partial feature delivery. **No** automatic push to the default branch.
 - **Direct-to-main frontier:** follow **`finish-frontier`** when integrating parallel tickets straight into the default branch per existing policy.
 
 Important gate from **`finish-frontier`**: after merge conflict resolution (including `triadDone` union), integration must revalidate all requirements/tests before any push to `main`.

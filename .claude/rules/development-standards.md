@@ -38,7 +38,7 @@ Use with **`docs/ai-context.md`**. This file mirrors Cursor-facing rules for Cla
 
 - **Ahead of large work:** Prefer delegation before broad exploration or multi-file refactors. Follow **`docs/ai-context.md` §1b**.
 - **Per ticket:** **TEST → DEV → VAL** serially in **one** worktree unless the team directs otherwise.
-- **Parallel tickets:** **`/develop-frontier`** — one subagent per **ticket id**; then **`/finish-feature`** (per **`FR-NNNN`**, **`docs/ai-context.md` §2d**) or **`/finish-frontier`** as the team chose.
+- **Parallel tickets:** **`/develop-frontier`** — one subagent per **ticket id**; then **`/finish-feature`** (per **`FR-NNNN`**, **`docs/ai-context.md` §2d**; **mandatory closeout** when gate passes) or **`/finish-frontier`** as the team chose.
 
 ## Feature request and frontier (compose)
 

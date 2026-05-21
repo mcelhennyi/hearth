@@ -102,4 +102,4 @@ Run the full FR-0002 **server-first** acceptance (see [`README.md`](README.md) â
 
 ## FR-0002 closeout
 
-When `T-FR-0002-04` VAL is `done`, run `/finish-feature` so the prototype branch lands as a PR to `main`. Update `REGISTRY.md` to set FR-0002 status `done` and FR-0001 status back to `design` (or `in-progress` if implementation is starting immediately).
+**Done** â€” [`90-closeout.md`](90-closeout.md), merged via [**PR #3**](https://github.com/mcelhennyi/hearth/pull/3). FR-0001 remains **`design`** / active on **`T-FR-0001-01`**.
