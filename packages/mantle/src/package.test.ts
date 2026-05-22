@@ -44,10 +44,16 @@ describe("@kindling/mantle package scaffold", () => {
     expect(css).toContain("--hearth-safe-top:");
   });
 
-  it("main entry re-exports contract types", async () => {
+  it("main entry re-exports React components", async () => {
     const mainUrl = pathToFileURL(resolveExportTarget(".")).href;
-    const mod = await import(mainUrl);
-    expect(mod).toBeDefined();
+    const mod = (await import(mainUrl)) as {
+      Page: unknown;
+      Button: unknown;
+      Switch: unknown;
+    };
+    expect(mod.Page).toBeDefined();
+    expect(mod.Button).toBeDefined();
+    expect(mod.Switch).toBeDefined();
   });
 
   it("types entry exports ChromeButton shape", async () => {

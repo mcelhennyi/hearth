@@ -2,7 +2,7 @@
 
 Mantle UI primitives, hooks, design tokens, and a vanilla (non-React) bridge for plugins running inside the Hearth shell.
 
-> Scaffold only. Components, hooks, overlays, and vanilla implementations land in tickets T-FR-0006-11 through T-FR-0006-14 of FR-0006. This package is published from the [hearth repo](https://github.com/mcelhennyi/hearth).
+> **v0.1.0:** tokens + base React components (T-FR-0006-10/11). Hooks, overlays, and vanilla bridge land in T-FR-0006-12 through T-FR-0006-14. Published from the [hearth repo](https://github.com/mcelhennyi/hearth).
 
 ## Quickstart
 
@@ -11,11 +11,12 @@ pnpm add @kindling/mantle
 ```
 
 ```ts
-// Tokens as CSS (import once in your plugin entry):
-import "@kindling/mantle/styles.css"; // or "@kindling/mantle/tokens"
+// Tokens + component styles (import once in your plugin entry):
+import "@kindling/mantle/styles.css";
+import "@kindling/mantle/components.css";
 
-// React surface (post T-FR-0006-11/12):
-import { /* Page, Button, useTheme, ... */ } from "@kindling/mantle";
+// React components (T-FR-0006-11); hooks post T-FR-0006-12:
+import { Page, PageHeader, Card, Button, Input, Switch } from "@kindling/mantle";
 
 // Non-React bridge (post T-FR-0006-14):
 import { /* mountChrome, onTheme, ... */ } from "@kindling/mantle/vanilla";

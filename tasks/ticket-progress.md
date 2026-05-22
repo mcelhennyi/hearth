@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | T-FR-0006-01 (W0 batch leader) |
-| **Active phase** | TEST/DEV/VAL in flight per-ticket |
-| **Branch / worktree** | `feat/FR-0006-design-language` @ `.worktrees/FR-0006-design-language/feature/`; ticket worktrees under `.worktrees/FR-0006-design-language/T-FR-0006-{01,02,03,10}-*` |
+| **Active ticket** | T-FR-0006-11 (VAL done — push/PR) |
+| **Active phase** | VAL `done` |
+| **Branch / worktree** | `feat/FR-0006-design-language-T-FR-0006-11-mantle-components` @ `.worktrees/FR-0006-design-language/T-FR-0006-11-mantle-components/` |
 | **Session status** | `developing` |
-| **Next agent should** | Merge W0 PRs #31–#34 into `feat/FR-0006-design-language`, revalidate in `.worktrees/FR-0006-design-language/feature/`, then `/identify-frontier` for W1 (T-FR-0006-04/05/06/07/11/12/14). |
+| **Next agent should** | Merge PR into `feat/FR-0006-design-language`; continue W1 parallel tickets (04/05/06/07/12/14). |
 
 ### Parallel streams
 
@@ -80,7 +80,7 @@
 | T-FR-0006-08 | Empty state | — | — | — | `FR-0006` **design**. DG-U4. Deps: T-FR-0006-07. |
 | T-FR-0006-09 | Edit mode | — | — | — | `FR-0006` **design**. DG-U2, DG-U3, RW-U4. Deps: T-FR-0006-07, T-FR-0006-02. |
 | T-FR-0006-10 | @kindling/mantle package scaffold | done | done | done | `FR-0006`. `packages/mantle/`; [PR #34](https://github.com/mcelhennyi/hearth/pull/34). |
-| T-FR-0006-11 | @kindling/mantle base components | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10. |
+| T-FR-0006-11 | @kindling/mantle base components | done | done | done | `FR-0006`. Page…Switch + axe tests; Docker `pnpm --filter @kindling/mantle test` (14 pass). |
 | T-FR-0006-12 | @kindling/mantle hooks | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10, T-FR-0006-03. |
 | T-FR-0006-13 | @kindling/mantle overlays | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10, T-FR-0006-12. |
 | T-FR-0006-14 | @kindling/mantle vanilla bridge | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10, T-FR-0006-03. |
