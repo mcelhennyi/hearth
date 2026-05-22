@@ -7,7 +7,10 @@ import { isMantleEmbedMode } from './mantle/embedMode'
 import { InstallPrompt, PluginFrame } from './mantle'
 import { MantleEmbedApp } from './MantleEmbedApp'
 import { usePlugins } from './usePlugins'
+import { SettingsModal, SettingsTrigger } from './shell/SettingsModal'
+import { SettingsProvider } from './shell/SettingsContext'
 import { usePostMessageBridge } from './shell/usePostMessageBridge'
+import { ThemeProvider } from './theme/ThemeProvider'
 
 const homeTab = { key: 'home', label: 'Home', path: '/' } as const
 
@@ -188,7 +191,9 @@ function App() {
   }, [bridge])
 
   return (
-    <div className="min-h-svh bg-[var(--hearth-bg)] font-sans text-[var(--hearth-fg)]">
+    <SettingsProvider>
+      <ThemeProvider bridge={bridge}>
+        <div className="min-h-svh bg-[var(--hearth-bg)] font-sans text-[var(--hearth-fg)]">
       {isDesktop ? (
         <header aria-label="Mantle top bar" className="border-b border-[var(--hearth-surface)] bg-[var(--hearth-surface)]">
           <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
@@ -204,6 +209,12 @@ function App() {
                   </NavLink>
                 </li>
               ))}
+              <li>
+                <SettingsTrigger
+                  variant="desktop-top"
+                  className="rounded-md px-3 py-2 text-[var(--hearth-muted)] hover:bg-[var(--hearth-bg)]"
+                />
+              </li>
             </ul>
           </nav>
         </header>
@@ -232,7 +243,7 @@ function App() {
         >
           <ul
             className="mx-auto grid max-w-md gap-1"
-            style={{ gridTemplateColumns: `repeat(${Math.min(navTabs.length, 4)}, minmax(0, 1fr))` }}
+            style={{ gridTemplateColumns: `repeat(${Math.min(navTabs.length + 1, 5)}, minmax(0, 1fr))` }}
           >
             {navTabs.slice(0, 4).map((tab) => (
               <li key={tab.key}>
@@ -245,10 +256,32 @@ function App() {
                 </NavLink>
               </li>
             ))}
+            <li className="flex justify-center">
+              <SettingsTrigger
+                variant="mobile-icon"
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-lg hover:bg-[var(--hearth-bg)]"
+                aria-label="Settings"
+              />
+            </li>
           </ul>
         </nav>
       )}
-    </div>
+
+      {isDesktop && (
+        <div className="fixed inset-x-0 bottom-0 border-t border-[var(--hearth-surface)] bg-[var(--hearth-surface)] px-6 py-2">
+          <div className="mx-auto flex max-w-6xl items-center justify-end">
+            <SettingsTrigger
+              variant="desktop-bottom"
+              className="rounded-md px-3 py-2 text-sm text-[var(--hearth-muted)] hover:bg-[var(--hearth-bg)]"
+            />
+          </div>
+        </div>
+      )}
+
+      <SettingsModal isDesktop={isDesktop} />
+        </div>
+      </ThemeProvider>
+    </SettingsProvider>
   )
 }
 

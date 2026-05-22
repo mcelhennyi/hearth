@@ -76,7 +76,8 @@ describe('Mantle registry-driven navigation', () => {
     // "Home" tab is always present
     expect(bottomNav).toHaveTextContent('Home')
     // No plugin-specific label — nothing injected from registry
-    expect(bottomNav.querySelectorAll('li')).toHaveLength(1)
+    // Home + pinned Settings control (mantle-ui.md § Bottom bar).
+    expect(bottomNav.querySelectorAll('li')).toHaveLength(2)
   })
 
   it('registry with one plugin: plugin tab appears in nav', async () => {
@@ -92,7 +93,8 @@ describe('Mantle registry-driven navigation', () => {
 
     const bottomNav = screen.getByLabelText('Mantle bottom tabs')
     expect(bottomNav).toHaveTextContent('Test Plugin')
-    expect(bottomNav.querySelectorAll('li')).toHaveLength(2)
+    // Home + plugin + Settings.
+    expect(bottomNav.querySelectorAll('li')).toHaveLength(3)
   })
 })
 
