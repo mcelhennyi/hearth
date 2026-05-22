@@ -2,7 +2,7 @@
 
 Mantle UI primitives, hooks, design tokens, and a vanilla (non-React) bridge for plugins running inside the Hearth shell.
 
-> Scaffold only. Components, hooks, overlays, and vanilla implementations land in tickets T-FR-0006-11 through T-FR-0006-14 of FR-0006. This package is published from the [hearth repo](https://github.com/mcelhennyi/hearth).
+> Components, hooks, and overlays land in T-FR-0006-11..13; the **vanilla bridge** (T-FR-0006-14) is implemented. Published from the [hearth repo](https://github.com/mcelhennyi/hearth).
 
 ## Quickstart
 
@@ -17,9 +17,30 @@ import "@kindling/mantle/styles.css"; // or "@kindling/mantle/tokens"
 // React surface (post T-FR-0006-11/12):
 import { /* Page, Button, useTheme, ... */ } from "@kindling/mantle";
 
-// Non-React bridge (post T-FR-0006-14):
-import { /* mountChrome, onTheme, ... */ } from "@kindling/mantle/vanilla";
+// Non-React bridge:
+import { mantle } from "@kindling/mantle/vanilla";
 
+mantle.theme.subscribe((tokens) => {
+  console.log("theme", tokens.mode);
+});
+
+const unmount = mantle.chrome.mount({
+  slot: "top",
+  surface: "app",
+  payload: { kind: "button", id: "add", label: "Add" },
+});
+// later: unmount();
+```
+
+```html
+<!-- Script-tag plugins (no bundler): -->
+<script src="/node_modules/@kindling/mantle/dist/vanilla/mantle.iife.js"></script>
+<script>
+  mantle.theme.subscribe(() => {});
+</script>
+```
+
+```ts
 // Pure types (no runtime):
 import type { ChromeButton, FrameState, ThemeTokens } from "@kindling/mantle/types";
 ```
@@ -41,7 +62,7 @@ import type { ChromeButton, FrameState, ThemeTokens } from "@kindling/mantle/typ
 ## Build
 
 ```bash
-pnpm --filter @kindling/mantle build       # ESM + CJS + .d.ts via tsup
+pnpm --filter @kindling/mantle build       # ESM + CJS + .d.ts + vanilla IIFE via tsup
 pnpm --filter @kindling/mantle typecheck   # tsc --noEmit
 ```
 

@@ -1,18 +1,21 @@
-# CURRENT — feat/FR-0006-design-language
+# CURRENT — feat/FR-0006-design-language-T-FR-0006-14-mantle-vanilla
 
-**Branch:** `feat/FR-0006-design-language`  
-**Worktree:** `.worktrees/FR-0006-design-language/feature/`  
-**Feature:** FR-0006 design-language
+**Branch:** `feat/FR-0006-design-language-T-FR-0006-14-mantle-vanilla`  
+**Worktree:** `.worktrees/FR-0006-design-language/T-FR-0006-14-mantle-vanilla/`  
+**Feature:** FR-0006 design-language  
+**Ticket:** T-FR-0006-14 — @kindling/mantle vanilla bridge
 
-## W0 complete (merged)
+## Status
 
-| Ticket | Title |
-|--------|-------|
-| T-FR-0006-01 | System tiles & strips API |
-| T-FR-0006-02 | Dashboard layout API |
-| T-FR-0006-03 | Mantle postMessage bridge |
-| T-FR-0006-10 | @kindling/mantle package scaffold |
+TEST / DEV / VAL **done** (2026-05-21). See
+[`tasks/feature-history/FR-0006-design-language/parallel/T-FR-0006-14-mantle-vanilla.md`](tasks/feature-history/FR-0006-design-language/parallel/T-FR-0006-14-mantle-vanilla.md).
+
+## Delivered
+
+- `mantle.theme.subscribe` — `hearth.theme` listener, `:root` CSS vars, origin guard.
+- `mantle.chrome.mount` — mount/unmount postMessage round-trip to shell.
+- IIFE build: `@kindling/mantle/vanilla/mantle.iife` → `dist/vanilla/mantle.iife.js`.
 
 ## Next step
 
-Revalidate (`./develop test`, `./develop web npm run test`); push feature branch; run `/identify-frontier` for W1 (04, 05, 06, 07, 11, 12, 14).
+Open PR into `feat/FR-0006-design-language`; after merge, `/identify-frontier` for remaining W1 tickets.
