@@ -4,17 +4,17 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | — |
-| **Active phase** | — |
-| **Branch / worktree** | `feat/FR-0006-design-language` @ `.worktrees/FR-0006-design-language/feature/` (`df20872`) |
-| **Session status** | `handoff` |
-| **Next agent should** | Merge hearth [PR #46](https://github.com/mcelhennyi/hearth/pull/46) to **`main`**. Kindling FR-0001 done — submodule `kindling` @ `f64b6a1`. |
+| **Active ticket** | grocery-list `T-FR-0001-01` → `T-FR-0001-04` (serialized) |
+| **Active phase** | TEST → DEV → VAL |
+| **Branch / worktree** | hearth `feat/FR-0006-design-language` @ `.worktrees/FR-0006-design-language/feature/`; grocery `feat/FR-0001-mvp-reference-plugin` @ `plugins/third-party/grocery-list/` |
+| **Session status** | `developing` |
+| **Next agent should** | Grocery FR-0001 done @ `b4cc00b` on `feat/FR-0006-design-language`. Merge hearth FR-0006 PR to `main`; then staff grocery **FR-0002** Mantle UI. Run `plugins/third-party/grocery-list/tests/smoke/e2e-hearth.sh` when hub is up. |
 
 ### Parallel streams
 
-**FR-0006** feature-complete — [PR #46](https://github.com/mcelhennyi/hearth/pull/46) to **`main`** pending. [`90-closeout.md`](feature-history/FR-0006-design-language/90-closeout.md).
+**FR-0006** feature-complete — PR to **`main`** pending. [`90-closeout.md`](feature-history/FR-0006-design-language/90-closeout.md).
 
-**Kindling FR-0001** — merged [kindling PR #1](https://github.com/mcelhennyi/kindling/pull/1) @ `f64b6a1`; hearth submodule @ `df20872`.
+**Kindling FR-0001** — merged [kindling PR #1](https://github.com/mcelhennyi/kindling/pull/1) @ `f64b6a1`; hearth submodule bumped on `feat/FR-0006-design-language` @ `df20872`.
 
 ---
 
@@ -68,18 +68,18 @@
 | T-FR-0006-01 | System tiles & strips API | done | done | done | `FR-0006`. DF-U1, DF-U2. 16 pytest; [PR #31](https://github.com/mcelhennyi/hearth/pull/31) → `feat/FR-0006-design-language`. |
 | T-FR-0006-02 | Dashboard layout API | done | done | done | `FR-0006`. GET/PUT layout; 10 pytest; [PR #32](https://github.com/mcelhennyi/hearth/pull/32). |
 | T-FR-0006-03 | Mantle postMessage bridge | done | done | done | `FR-0006`. Shell bridge; 24 Vitest; [PR #33](https://github.com/mcelhennyi/hearth/pull/33). |
-| T-FR-0006-04 | User preferences API + Settings modal | done | done | done | `FR-0006`. GET/PUT `/api/user/preferences`; SettingsModal + ThemeProvider; [PR #40](https://github.com/mcelhennyi/hearth/pull/40). |
-| T-FR-0006-05 | Plugin frame state UI | done | done | done | `FR-0006`. Frame state + overlays; 38 Vitest; [PR #39](https://github.com/mcelhennyi/hearth/pull/39). |
+| T-FR-0006-04 | User preferences API + Settings modal | done | done | done | `FR-0006`. [PR #40](https://github.com/mcelhennyi/hearth/pull/40); merged to feature @ `8598fd5`. |
+| T-FR-0006-05 | Plugin frame state UI | done | done | done | `FR-0006`. [PR #39](https://github.com/mcelhennyi/hearth/pull/39). |
 | T-FR-0006-06 | Chrome slot DOM + rendering | done | done | done | `FR-0006`. [PR #37](https://github.com/mcelhennyi/hearth/pull/37). |
-| T-FR-0006-07 | Dashboard grid + block primitives | done | done | done | `FR-0006`. Grid + blocks; 30 Vitest; PR → `feat/FR-0006-design-language`. |
-| T-FR-0006-08 | Empty state | done | done | done | `FR-0006`. [PR #42](https://github.com/mcelhennyi/hearth/pull/42); merged to feature. |
-| T-FR-0006-09 | Edit mode | done | done | done | `FR-0006`. [PR #44](https://github.com/mcelhennyi/hearth/pull/44); merged to feature. |
+| T-FR-0006-07 | Dashboard grid + block primitives | done | done | done | `FR-0006`. Grid + blocks; merged to feature @ `8598fd5`. |
+| T-FR-0006-08 | Empty state | done | done | done | `FR-0006`. [PR #42](https://github.com/mcelhennyi/hearth/pull/42); merged @ `f861c57`. |
+| T-FR-0006-09 | Edit mode | done | done | done | `FR-0006`. [PR #44](https://github.com/mcelhennyi/hearth/pull/44); merged @ `f861c57`. |
 | T-FR-0006-10 | @kindling/mantle package scaffold | done | done | done | `FR-0006`. `packages/mantle/`; [PR #34](https://github.com/mcelhennyi/hearth/pull/34). |
 | T-FR-0006-11 | @kindling/mantle base components | done | done | done | `FR-0006`. [PR #41](https://github.com/mcelhennyi/hearth/pull/41). |
 | T-FR-0006-12 | @kindling/mantle hooks | done | done | done | `FR-0006`. [PR #35](https://github.com/mcelhennyi/hearth/pull/35). |
-| T-FR-0006-13 | @kindling/mantle overlays | done | done | done | `FR-0006` **W2**. Sheet/Dialog/Toast + postMessage; mantle Vitest 36. PR → `feat/FR-0006-design-language`. |
+| T-FR-0006-13 | @kindling/mantle overlays | done | done | done | `FR-0006`. [PR #43](https://github.com/mcelhennyi/hearth/pull/43); merged @ `f861c57`. |
 | T-FR-0006-14 | @kindling/mantle vanilla bridge | done | done | done | `FR-0006`. [PR #36](https://github.com/mcelhennyi/hearth/pull/36). |
-| T-FR-0006-15 | @kindling/mantle publish | done | done | done | `FR-0006`. CI dry-run + tag publish workflow; CHANGELOG v0.1.0; PR → `feat/FR-0006-design-language`. **`NPM_TOKEN`** required for first npm publish. |
+| T-FR-0006-15 | @kindling/mantle publish | done | done | done | `FR-0006`. [PR #45](https://github.com/mcelhennyi/hearth/pull/45); merged @ `110dd0a`. **`NPM_TOKEN`** for first publish. |
 
 ---
 
