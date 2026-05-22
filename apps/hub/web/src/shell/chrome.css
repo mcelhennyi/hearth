@@ -1,0 +1,177 @@
+/* Mantle chrome slots — aligned with docs/design/mockups/mantle-mock.css */
+
+.shell.has-chrome-slots .chrome-slot--top {
+  display: flex;
+}
+
+.chrome-slot--top {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.chrome-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--hearth-radius-md);
+  background: color-mix(in srgb, var(--hearth-muted) 14%, transparent);
+  color: var(--hearth-fg);
+  font-size: 18px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.chrome-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.chrome-btn--accent {
+  background: var(--hearth-accent);
+  color: var(--hearth-accent-fg);
+}
+
+.chrome-btn--label {
+  width: auto;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 6px;
+}
+
+.chrome-btn__text {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.chrome-btn__busy {
+  position: absolute;
+  inset: 4px;
+  border: 2px solid color-mix(in srgb, currentColor 30%, transparent);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: chrome-spin 0.9s linear infinite;
+}
+
+@keyframes chrome-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.chrome-menu {
+  position: relative;
+}
+
+.chrome-menu__list {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  z-index: 20;
+  min-width: 160px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border-radius: var(--hearth-radius-md);
+  background: var(--hearth-surface);
+  border: 1px solid color-mix(in srgb, var(--hearth-muted) 22%, transparent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.shell--app-mode .bottom-bar .chrome-menu__list {
+  bottom: auto;
+  top: calc(100% + 6px);
+}
+
+.chrome-menu__item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border: none;
+  border-radius: var(--hearth-radius-sm);
+  background: transparent;
+  color: var(--hearth-fg);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.chrome-menu__item:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--hearth-muted) 12%, transparent);
+}
+
+.chrome-menu__item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.bottom-bar--app .plugin-bottom-slots {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 4px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.bottom-bar--app .plugin-bottom-slots::-webkit-scrollbar {
+  display: none;
+}
+
+.bottom-bar {
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+}
+
+.nav-pinned {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.nav-pinned--start {
+  padding-left: 4px;
+}
+
+.nav-pinned--end {
+  padding-right: 4px;
+}
+
+.home-back {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--hearth-radius-md);
+  background: transparent;
+  color: var(--hearth-accent);
+  font-size: 22px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.top-bar-spacer {
+  flex: 1;
+  min-width: 8px;
+}
+
+.shell--app-mode .top-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
