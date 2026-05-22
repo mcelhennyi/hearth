@@ -1,0 +1,105 @@
+import { useCallback, useEffect, useState } from 'react'
+
+import { readLayoutCache, writeLayoutCache } from './layoutCache'
+import type { DashboardLayout, PluginRegistryEntry, SystemStrip, SystemTile } from './types'
+
+export type DashboardDataState = {
+  layout: DashboardLayout | null
+  tiles: SystemTile[]
+  strip: SystemStrip | null
+  plugins: PluginRegistryEntry[]
+  loading: boolean
+  offline: boolean
+  error: string | null
+  refresh: () => void
+}
+
+const EMPTY_LAYOUT: DashboardLayout = { version: 1, columns: 4, blocks: [] }
+
+async function fetchJson<T>(url: string): Promise<T | null> {
+  const response = await fetch(url)
+  if (!response.ok) {
+    return null
+  }
+  return (await response.json()) as T
+}
+
+export function useDashboardData(): DashboardDataState {
+  const [layout, setLayout] = useState<DashboardLayout | null>(null)
+  const [tiles, setTiles] = useState<SystemTile[]>([])
+  const [strip, setStrip] = useState<SystemStrip | null>(null)
+  const [plugins, setPlugins] = useState<PluginRegistryEntry[]>([])
+  const [loading, setLoading] = useState(true)
+  const [offline, setOffline] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [tick, setTick] = useState(0)
+
+  const refresh = useCallback(() => setTick((n) => n + 1), [])
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function load(): Promise<void> {
+      setLoading(true)
+      setError(null)
+      setOffline(false)
+
+      try {
+        const [layoutRes, tilesRes, stripRes, pluginsRes] = await Promise.all([
+          fetchJson<DashboardLayout>('/api/dashboard/layout'),
+          fetchJson<{ tiles: SystemTile[] }>('/api/system/tiles'),
+          fetchJson<{ strip: SystemStrip | null }>('/api/system/strips'),
+          fetchJson<PluginRegistryEntry[] | { plugins?: PluginRegistryEntry[] }>('/api/plugins'),
+        ])
+
+        if (cancelled) {
+          return
+        }
+
+        if (layoutRes) {
+          setLayout(layoutRes)
+          await writeLayoutCache(layoutRes)
+        } else {
+          const cached = await readLayoutCache()
+          if (cached) {
+            setLayout(cached)
+            setOffline(true)
+          } else {
+            setLayout(EMPTY_LAYOUT)
+          }
+        }
+
+        setTiles(tilesRes?.tiles?.filter((t) => !t.hidden_by_user && !t.suppressed) ?? [])
+        setStrip(stripRes?.strip && !stripRes.strip.dismissed ? stripRes.strip : null)
+
+        const pluginRows = Array.isArray(pluginsRes)
+          ? pluginsRes
+          : (pluginsRes?.plugins ?? [])
+        setPlugins(pluginRows.filter((p) => p.state === 'enabled' && p.kind === 'app'))
+      } catch {
+        if (cancelled) {
+          return
+        }
+        const cached = await readLayoutCache()
+        if (cached) {
+          setLayout(cached)
+          setOffline(true)
+        } else {
+          setLayout(EMPTY_LAYOUT)
+          setError('Could not load dashboard.')
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      }
+    }
+
+    void load()
+    return () => {
+      cancelled = true
+    }
+  }, [tick])
+
+  return { layout, tiles, strip, plugins, loading, offline, error, refresh }
+}
