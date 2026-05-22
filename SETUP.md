@@ -280,6 +280,7 @@ Record results in
 | Logs | `hearth logs` or `hearth logs -f caddy` |
 | Re-export CA | `hearth ca-export` |
 | Rebuild UI after git pull | `hearth pwa build` then `hearth restart caddy` |
+| Rebuild plugin UI (e.g. groceries) | `hearth plugin build <slug>` then `hearth restart <slug>` (or `hearth compose -- up -d --build <slug>`) |
 | Plugin registry | `hearth --plugin list` |
 | Doctor | `hearth doctor` |
 
