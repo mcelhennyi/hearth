@@ -6,6 +6,7 @@ Routes:
   /api/settings        — hub settings (routes/settings.py)
   /api/auth/*          — single-user auth (routes/auth.py)
   /api/push/*          — web push subscribe/unsubscribe/test (routes/push.py)
+  /api/system/*        — system tiles & strips (routes/system.py)
 
 DB: async SQLite at HEARTH_VAR_DIR/hearth.db via db.py + Alembic migrations.
 """
@@ -23,6 +24,7 @@ from .routes.health import router as health_router
 from .routes.plugins import router as plugins_router
 from .routes.push import router as push_router
 from .routes.settings import router as settings_router
+from .routes.system import router as system_router
 
 DEFAULT_VAR_DIR = Path(os.getenv("HEARTH_VAR_DIR", "/workspace/var/hearth"))
 _default_subs = str(DEFAULT_VAR_DIR / "push-subscriptions.json")
@@ -44,3 +46,4 @@ app.include_router(plugins_router)
 app.include_router(settings_router)
 app.include_router(auth_router)
 app.include_router(push_router)
+app.include_router(system_router)
