@@ -15,7 +15,12 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   splitting: false,
-  treeshake: true,
+  // Keep re-exported React components in the bundle (treeshake drops unused re-exports).
+  treeshake: false,
   target: "es2022",
+  platform: "browser",
   external: ["react", "react-dom"],
+  esbuildOptions(options) {
+    options.jsx = "automatic";
+  },
 });

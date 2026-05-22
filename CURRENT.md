@@ -1,18 +1,29 @@
-# CURRENT — feat/FR-0006-design-language
+# CURRENT — T-FR-0006-11 mantle base components
 
-**Branch:** `feat/FR-0006-design-language`  
-**Worktree:** `.worktrees/FR-0006-design-language/feature/`  
-**Feature:** FR-0006 design-language
+**Branch:** `feat/FR-0006-design-language-T-FR-0006-11-mantle-components`  
+**Worktree:** `.worktrees/FR-0006-design-language/T-FR-0006-11-mantle-components/`  
+**Ticket:** T-FR-0006-11 — @kindling/mantle base components
 
-## W0 complete (merged)
+## Phase status
 
-| Ticket | Title |
-|--------|-------|
-| T-FR-0006-01 | System tiles & strips API |
-| T-FR-0006-02 | Dashboard layout API |
-| T-FR-0006-03 | Mantle postMessage bridge |
-| T-FR-0006-10 | @kindling/mantle package scaffold |
+| Phase | Status |
+|-------|--------|
+| TEST | done |
+| DEV | done |
+| VAL | done |
 
-## Next step
+## Delivered
 
-Revalidate (`./develop test`, `./develop web npm run test`); push feature branch; run `/identify-frontier` for W1 (04, 05, 06, 07, 11, 12, 14).
+- `packages/mantle/src/components/*` — Page, PageHeader, Card, Section, List, EmptyState, Button, IconButton, Input, TextArea, Select, Switch
+- `packages/mantle/src/components.css` — token-driven styles, 44px touch targets, focus rings
+- Vitest + Testing Library + vitest-axe (14 tests, all pass in Docker)
+
+## VAL
+
+```bash
+./develop web sh -c "cd /workspace && corepack enable && corepack prepare pnpm@9.15.0 --activate && pnpm --filter @kindling/mantle test"
+```
+
+## Next
+
+Open PR → `feat/FR-0006-design-language`; merge; continue W1 (12 hooks, 14 vanilla, shell tickets).
