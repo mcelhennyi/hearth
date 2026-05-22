@@ -1,18 +1,20 @@
-# CURRENT — feat/FR-0006-design-language
+# CURRENT — feat/FR-0006-design-language-T-FR-0006-05-plugin-frame-state
 
-**Branch:** `feat/FR-0006-design-language`  
-**Worktree:** `.worktrees/FR-0006-design-language/feature/`  
-**Feature:** FR-0006 design-language
+**Branch:** `feat/FR-0006-design-language-T-FR-0006-05-plugin-frame-state`  
+**Worktree:** `.worktrees/FR-0006-design-language/T-FR-0006-05-plugin-frame-state/`  
+**Ticket:** T-FR-0006-05 Plugin frame state UI
 
-## W0 complete (merged)
+## Status
 
-| Ticket | Title |
-|--------|-------|
-| T-FR-0006-01 | System tiles & strips API |
-| T-FR-0006-02 | Dashboard layout API |
-| T-FR-0006-03 | Mantle postMessage bridge |
-| T-FR-0006-10 | @kindling/mantle package scaffold |
+TEST / DEV / VAL **done**. 38 Vitest pass (`./develop web npm run test`).
 
-## Next step
+## Shipped
 
-Revalidate (`./develop test`, `./develop web npm run test`); push feature branch; run `/identify-frontier` for W1 (04, 05, 06, 07, 11, 12, 14).
+- `apps/hub/web/src/shell/usePluginFrameState.ts` — loading / slow (5s, Reload at 15s) / mounted / error / offline
+- `apps/hub/web/src/shell/PluginFrameStates.tsx` — scrim overlays with safe-area padding
+- Bridge `subscribe(..., { frame })` for per-iframe ack filtering
+- `PluginFrame` wires hook + pushes `hearth.frame.state`
+
+## Next
+
+Merge PR into `feat/FR-0006-design-language`; continue W1 parallel tickets (04, 06, 07, …).
