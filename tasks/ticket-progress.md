@@ -83,7 +83,7 @@
 | T-FR-0006-11 | @kindling/mantle base components | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10. |
 | T-FR-0006-12 | @kindling/mantle hooks | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10, T-FR-0006-03. |
 | T-FR-0006-13 | @kindling/mantle overlays | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10, T-FR-0006-12. |
-| T-FR-0006-14 | @kindling/mantle vanilla bridge | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10, T-FR-0006-03. |
+| T-FR-0006-14 | @kindling/mantle vanilla bridge | done | done | done | `FR-0006`. `mantle.theme`/`mantle.chrome`; 13 Vitest (jsdom); IIFE `dist/vanilla/mantle.iife.js`. |
 | T-FR-0006-15 | @kindling/mantle publish | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10..14. |
 
 ---

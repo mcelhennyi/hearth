@@ -50,6 +50,23 @@ describe("@kindling/mantle package scaffold", () => {
     expect(mod).toBeDefined();
   });
 
+  it("vanilla IIFE bundle exists after build", () => {
+    const iife = join(pkgRoot, "dist/vanilla/mantle.iife.js");
+    expect(existsSync(iife), iife).toBe(true);
+    const source = readFileSync(iife, "utf8");
+    expect(source).toContain("mantle");
+    expect(source).toContain("subscribe");
+  });
+
+  it("vanilla entry exports mantle.theme and mantle.chrome", async () => {
+    const vanillaUrl = pathToFileURL(resolveExportTarget("./vanilla")).href;
+    const mod = (await import(vanillaUrl)) as {
+      mantle: { theme: { subscribe: unknown }; chrome: { mount: unknown } };
+    };
+    expect(typeof mod.mantle.theme.subscribe).toBe("function");
+    expect(typeof mod.mantle.chrome.mount).toBe("function");
+  });
+
   it("types entry exports ChromeButton shape", async () => {
     const typesUrl = pathToFileURL(resolveExportTarget("./types")).href;
     const mod = (await import(typesUrl)) as {
