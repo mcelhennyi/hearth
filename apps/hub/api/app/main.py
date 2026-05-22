@@ -7,6 +7,7 @@ Routes:
   /api/auth/*          — single-user auth (routes/auth.py)
   /api/push/*          — web push subscribe/unsubscribe/test (routes/push.py)
   /api/system/*        — system tiles & strips (routes/system.py)
+  /api/dashboard/layout — per-user dashboard grid (routes/dashboard.py)
 
 DB: async SQLite at HEARTH_VAR_DIR/hearth.db via db.py + Alembic migrations.
 """
@@ -20,6 +21,7 @@ from fastapi import FastAPI
 
 from .push_service import PushConfig
 from .routes.auth import router as auth_router
+from .routes.dashboard import router as dashboard_router
 from .routes.health import router as health_router
 from .routes.plugins import router as plugins_router
 from .routes.push import router as push_router
@@ -47,3 +49,4 @@ app.include_router(settings_router)
 app.include_router(auth_router)
 app.include_router(push_router)
 app.include_router(system_router)
+app.include_router(dashboard_router)
