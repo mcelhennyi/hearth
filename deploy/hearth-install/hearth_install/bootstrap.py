@@ -13,6 +13,7 @@ from typing import Callable, TextIO
 
 from hearth_install.layout import ensure_hearth_layout
 from hearth_install.plugin_compose import generate_plugin_compose
+from hearth_install.plugin_trees import sync_enabled_plugins_from_repo
 
 _DOCKER_HINT_PI = """\
 Docker Engine is required for the non-dry-run bootstrap.
@@ -65,6 +66,7 @@ def plan_bootstrap(
         f"write {hearth / 'compose' / '.env'} with HEARTH_REPO_ROOT={paths.repo_root}",
         f"copy Caddy configs to {hearth / 'compose' / 'caddy'}",
         f"ensure static publish dir at {hearth / 'compose' / 'static'}",
+        f"sync enabled plugins from repo into {hearth / 'plugins'} (symlink when stubs)",
         f"generate {hearth / 'compose' / 'overrides' / 'generated.plugins.yml'}",
         f"symlink {hearth / 'bin' / 'hearth'} -> {paths.repo_root / 'bin' / 'hearth'}",
     ]
@@ -275,6 +277,7 @@ def run_bootstrap(
     materialize_compose_template(hearth, dry_run=False)
     write_compose_env_file(hearth, repo_root, dry_run=False)
     materialize_compose_assets(repo_root, hearth, dry_run=False)
+    sync_enabled_plugins_from_repo(hearth, repo_root)
     generate_plugin_compose(hearth)
     launcher = repo_root / "bin" / "hearth"
     if not launcher.is_file():

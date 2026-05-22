@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 from typing import TextIO
 
+from hearth_install.plugin_trees import sync_plugin_install_tree
 from hearth_install.tinder_manifest import TinderManifestError, load_tinder_manifest
 
 from hearth_cli.install_context import ResolvedInstall, resolve_deploy_repo_root
@@ -157,8 +158,21 @@ def publish_plugin_dist_to_install(
     )
 
 
+def lockfile_usable(lock_path: Path) -> bool:
+    """True when ``package-lock.json`` is present and valid enough for ``npm ci``."""
+    if not lock_path.is_file():
+        return False
+    try:
+        text = lock_path.read_text(encoding="utf-8").strip()
+    except OSError:
+        return False
+    if not text or text == "{}":
+        return False
+    return '"lockfileVersion"' in text or '"packages"' in text
+
+
 def npm_install_and_build_script(web_dir: Path) -> str:
-    install = "npm ci" if (web_dir / "package-lock.json").is_file() else "npm install"
+    install = "npm ci" if lockfile_usable(web_dir / "package-lock.json") else "npm install"
     return f"{install} && npm run build"
 
 
@@ -225,6 +239,9 @@ def cmd_plugin_build(
         repo_root = resolve_deploy_repo_root(resolved, env=env)
     except ValueError:
         repo_root = None
+
+    if repo_root is not None:
+        sync_plugin_install_tree(hearth, repo_root, slug)
 
     try:
         plugin_root = resolve_plugin_root_for_build(hearth, slug, repo_root=repo_root)

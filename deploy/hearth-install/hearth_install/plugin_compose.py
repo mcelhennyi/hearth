@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Any
 
 _SLUG_RE = re.compile(r"^[a-z][a-z0-9-]{0,31}$")
+# Paths in generated.plugins.yml are relative to hearth/compose/overrides/
+_OVERRIDE_TO_HEARTH = "../.."
 _DEFAULT_REGISTRY = """\
 # Hearth Docker profile plugin registry (schema v1).
 # T-FR-0003-05 keeps this file first-class until hub registry sync exists.
@@ -177,8 +179,8 @@ def _compose_service(hearth: Path, record: PluginRecord) -> dict[str, Any]:
             "expose": [str(record.port)],
             "environment": dict(sorted(env.items())),
             "volumes": [
-                f"../plugins/{record.slug}:/app:ro",
-                f"../var/plugins/{record.slug}:/var/hearth/plugins/{record.slug}",
+                f"{_OVERRIDE_TO_HEARTH}/plugins/{record.slug}:/app:ro",
+                f"{_OVERRIDE_TO_HEARTH}/var/plugins/{record.slug}:/var/hearth/plugins/{record.slug}",
             ],
         },
     )
@@ -190,7 +192,7 @@ def _compose_path_from_hearth(path: str) -> str:
     if clean.startswith("../") or clean.startswith("/"):
         msg = f"compose paths must stay under hearth/: {path}"
         raise PluginRegistryError(msg)
-    return f"../{clean}"
+    return f"{_OVERRIDE_TO_HEARTH}/{clean}"
 
 
 def _render_compose(services: list[dict[str, Any]]) -> str:

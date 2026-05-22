@@ -112,7 +112,10 @@ def test_resolve_plugin_web_dir_requires_package_json(tmp_path: Path) -> None:
 def test_docker_web_build_command_uses_ci_when_lockfile_present(tmp_path: Path) -> None:
     web = tmp_path / "web"
     web.mkdir()
-    (web / "package-lock.json").write_text("{}\n", encoding="utf-8")
+    (web / "package-lock.json").write_text(
+        '{"name":"x","lockfileVersion":3,"packages":{}}\n',
+        encoding="utf-8",
+    )
     cmd = docker_web_build_command(web, image="node:20-alpine")
     assert "node:20-alpine" in cmd
     assert "npm ci" in cmd[-1]
@@ -213,4 +216,5 @@ def test_plugin_build_publishes_dist_when_using_repo_checkout(
 
     assert code == 0
     assert (stub / "web" / "dist" / "index.html").is_file()
-    assert "published UI" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert "built fixture-one UI" in out
