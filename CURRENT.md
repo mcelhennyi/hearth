@@ -1,18 +1,23 @@
-# CURRENT — feat/FR-0006-design-language
+# CURRENT — T-FR-0006-06 chrome slots
 
-**Branch:** `feat/FR-0006-design-language`  
-**Worktree:** `.worktrees/FR-0006-design-language/feature/`  
-**Feature:** FR-0006 design-language
+**Branch:** `feat/FR-0006-design-language-T-FR-0006-06-chrome-slots`  
+**Ticket:** T-FR-0006-06 · **FR-0006** design-language  
+**PR base:** `feat/FR-0006-design-language`
 
-## W0 complete (merged)
+## Status
 
-| Ticket | Title |
-|--------|-------|
-| T-FR-0006-01 | System tiles & strips API |
-| T-FR-0006-02 | Dashboard layout API |
-| T-FR-0006-03 | Mantle postMessage bridge |
-| T-FR-0006-10 | @kindling/mantle package scaffold |
+TEST / DEV / VAL **done** on this branch. Ready to merge into `feat/FR-0006-design-language`.
 
-## Next step
+## Delivered
 
-Revalidate (`./develop test`, `./develop web npm run test`); push feature branch; run `/identify-frontier` for W1 (04, 05, 06, 07, 11, 12, 14).
+- `apps/hub/web/src/shell/useChromeSlotRegistry.ts` — mount/update/unmount via bridge; ≤8 cap; route-change clear
+- `apps/hub/web/src/shell/ChromeSlot.tsx` — ChromeButton/ChromeMenu + overflow (top=3, bottom=4)
+- `apps/hub/web/src/shell/chrome.css` — mock-aligned slot layout
+- `App.tsx` — `.chrome-slot--top`, `.plugin-bottom-slots`, `.has-chrome-slots`, app-mode chrome bars
+- `PluginFrame.tsx` — `data-plugin-slug` for invoke/error targeting
+- Vitest: 11 new tests (registry, ChromeSlot, App route-change); **35** total web tests pass (host `npm run test`)
+
+## Next
+
+- Merge ticket branch → `feat/FR-0006-design-language`
+- W1 peers: T-FR-0006-05 frame state, T-FR-0006-07 dashboard grid

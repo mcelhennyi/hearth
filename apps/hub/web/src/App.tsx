@@ -1,12 +1,14 @@
 // REWORK-REQUIRED RW-U1 — Dashboard is a plugin list, not home grid (dashboard.md).
 // REWORK-REQUIRED RW-U2 — Settings chrome route missing (mantle-ui.md). T-FR-0001-04.
-import { useEffect, useState, useSyncExternalStore } from 'react'
-import { NavLink, Route, Routes } from 'react-router-dom'
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
+import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 
 import { isMantleEmbedMode } from './mantle/embedMode'
 import { InstallPrompt, PluginFrame } from './mantle'
 import { MantleEmbedApp } from './MantleEmbedApp'
 import { usePlugins } from './usePlugins'
+import { ChromeSlot } from './shell/ChromeSlot'
+import { useChromeSlotRegistry } from './shell/useChromeSlotRegistry'
 import { usePostMessageBridge } from './shell/usePostMessageBridge'
 
 const homeTab = { key: 'home', label: 'Home', path: '/' } as const
@@ -165,31 +167,82 @@ function DashboardView() {
 
 // PluginFrame is imported from ./mantle/PluginFrame — see src/mantle/.
 
+function activePluginSlug(pathname: string, pluginSlugs: string[]): string | null {
+  const match = pathname.match(/^\/([^/]+)/)
+  if (!match) return null
+  const slug = match[1]
+  return pluginSlugs.includes(slug) ? slug : null
+}
+
 function App() {
   if (isMantleEmbedMode()) {
     return <MantleEmbedApp />
   }
 
+  const location = useLocation()
   const isDesktop = useDesktopLayout()
   const plugins = usePlugins()
+  const pluginSlugs = useMemo(() => plugins.map((p) => p.slug), [plugins])
+  const activeSlug = activePluginSlug(location.pathname, pluginSlugs)
+  const activePlugin = activeSlug ? plugins.find((p) => p.slug === activeSlug) : undefined
+  const isAppMode = activeSlug !== null
   const navTabs = [homeTab, ...plugins.map((plugin) => ({ key: plugin.slug, label: plugin.name, path: `/${plugin.slug}` }))]
 
-  // Mantle postMessage bridge (T-FR-0006-03 — see shell/usePostMessageBridge.ts).
-  // Single owner of the plugin iframe channel. Other shell pieces (frame state UI,
-  // chrome slots, theme provider) will subscribe here in follow-up tickets.
   const bridge = usePostMessageBridge()
+  const chrome = useChromeSlotRegistry(bridge, activeSlug)
+  const [pluginTitle, setPluginTitle] = useState<string | null>(null)
+
   useEffect(() => {
-    // hearth.title — set the browser tab title per mantle-ui.md §"postMessage protocol"
-    // (DG-U9 closed). The shell top-bar title sync is handled in T-FR-0006-05/06.
+    setPluginTitle(null)
+  }, [activeSlug])
+
+  useEffect(() => {
     const unsub = bridge.subscribe('hearth.title', (msg) => {
       document.title = `${msg.title} — Hearth`
+      if (activeSlug) setPluginTitle(msg.title)
     })
     return unsub
-  }, [bridge])
+  }, [bridge, activeSlug])
+
+  const shellClass = [
+    'shell',
+    'min-h-svh',
+    'bg-[var(--hearth-bg)]',
+    'font-sans',
+    'text-[var(--hearth-fg)]',
+    chrome.hasChromeSlots ? 'has-chrome-slots' : '',
+    isAppMode ? 'shell--app-mode' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
-    <div className="min-h-svh bg-[var(--hearth-bg)] font-sans text-[var(--hearth-fg)]">
-      {isDesktop ? (
+    <div className={shellClass}>
+      {isDesktop && isAppMode ? (
+        <header
+          aria-label="Mantle top bar"
+          className="top-bar border-b border-[var(--hearth-surface)] bg-[var(--hearth-surface)]"
+        >
+          <nav className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-6">
+            <NavLink to="/" className="home-back" aria-label="Home">
+              ‹
+            </NavLink>
+            <h1 className="min-w-0 truncate text-lg font-semibold">
+              {pluginTitle ?? activePlugin?.name ?? activeSlug}
+            </h1>
+            <span className="top-bar-spacer" />
+            <ChromeSlot
+              slot="top"
+              items={chrome.topItems}
+              isDesktop
+              onInvoke={(id, itemId) => chrome.invoke('top', id, itemId)}
+            />
+            <button type="button" className="text-sm text-[var(--hearth-muted)]" aria-label="Account">
+              User
+            </button>
+          </nav>
+        </header>
+      ) : isDesktop ? (
         <header aria-label="Mantle top bar" className="border-b border-[var(--hearth-surface)] bg-[var(--hearth-surface)]">
           <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
             <div className="flex items-center gap-3">
@@ -206,6 +259,27 @@ function App() {
               ))}
             </ul>
           </nav>
+        </header>
+      ) : isAppMode ? (
+        <header
+          aria-label="Mantle top bar"
+          className="top-bar border-b border-[var(--hearth-surface)] bg-[var(--hearth-bg)] px-4 pb-3 pt-[calc(0.75rem+var(--hearth-safe-top))]"
+        >
+          <NavLink to="/" className="home-back" aria-label="Home">
+            ‹
+          </NavLink>
+          <h1 className="min-w-0 flex-1 truncate text-lg font-semibold">
+            {pluginTitle ?? activePlugin?.name ?? activeSlug}
+          </h1>
+          <ChromeSlot
+            slot="top"
+            items={chrome.topItems}
+            isDesktop={false}
+            onInvoke={(id, itemId) => chrome.invoke('top', id, itemId)}
+          />
+          <button type="button" className="text-sm text-[var(--hearth-muted)]" aria-label="Account">
+            User
+          </button>
         </header>
       ) : (
         <header className="border-b border-[var(--hearth-surface)] bg-[var(--hearth-bg)] px-4 pb-3 pt-[calc(0.75rem+var(--hearth-safe-top))]">
@@ -225,7 +299,33 @@ function App() {
 
       <InstallPrompt />
 
-      {!isDesktop && (
+      {!isDesktop && isAppMode ? (
+        <nav
+          aria-label="Shell navigation"
+          className="bottom-bar bottom-bar--app fixed inset-x-0 bottom-0 border-t border-[var(--hearth-surface)] bg-[var(--hearth-surface)] pb-[calc(0.5rem+var(--hearth-safe-bottom))] pt-2"
+        >
+          <div className="nav-pinned nav-pinned--start">
+            <NavLink to="/" className="block rounded-lg px-3 py-3 text-center text-xs text-[var(--hearth-muted)] hover:bg-[var(--hearth-bg)]">
+              Home
+            </NavLink>
+          </div>
+          <ChromeSlot
+            slot="bottom"
+            items={chrome.bottomItems}
+            isDesktop={false}
+            onInvoke={(id, itemId) => chrome.invoke('bottom', id, itemId)}
+          />
+          <div className="nav-pinned nav-pinned--end">
+            <button
+              type="button"
+              className="rounded-lg px-3 py-3 text-xs text-[var(--hearth-muted)]"
+              aria-label="Settings"
+            >
+              ⚙
+            </button>
+          </div>
+        </nav>
+      ) : !isDesktop ? (
         <nav
           aria-label="Mantle bottom tabs"
           className="fixed inset-x-0 bottom-0 border-t border-[var(--hearth-surface)] bg-[var(--hearth-surface)] px-2 pb-[calc(0.5rem+var(--hearth-safe-bottom))] pt-2"
@@ -247,7 +347,7 @@ function App() {
             ))}
           </ul>
         </nav>
-      )}
+      ) : null}
     </div>
   )
 }
