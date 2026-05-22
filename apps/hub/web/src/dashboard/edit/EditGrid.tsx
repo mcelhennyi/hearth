@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+} from 'react'
 
 import { AppShortcut } from '../blocks/AppShortcut'
 import { Strip } from '../blocks/Strip'
@@ -6,7 +13,10 @@ import { SystemBlock } from '../blocks/System'
 import { Widget } from '../blocks/Widget'
 import type { DashboardLayout, PluginRegistryEntry, SystemStrip, SystemTile } from '../types'
 import { systemTileIdFromBlock } from '../types'
+import { findCollidingBlockIds } from './collisions'
 import { useEditMode } from './EditModeContext'
+import { getGridMetrics, pointerToCell } from './gridMetrics'
+import { moveBlockInLayout } from './layoutDraft'
 
 export type EditGridProps = {
   viewLayout: DashboardLayout
@@ -25,26 +35,10 @@ function blockStyle(x: number, y: number, w: number, h: number): CSSProperties {
   }
 }
 
-function pointerToCell(
-  clientX: number,
-  clientY: number,
-  gridRect: DOMRect,
-  columns: number,
-  blockW: number,
-  blockH: number,
-): { x: number; y: number } {
-  const cellWidth = gridRect.width / columns
-  const cellHeight = cellWidth
-  const relX = clientX - gridRect.left
-  const relY = clientY - gridRect.top
-  const x = Math.floor(relX / cellWidth)
-  const y = Math.floor(relY / cellHeight)
-  const maxX = Math.max(0, columns - blockW)
-  const maxY = Math.max(0, 64 - blockH)
-  return {
-    x: Math.min(Math.max(0, x), maxX),
-    y: Math.min(Math.max(0, y), maxY),
-  }
+type DragVisual = {
+  blockId: string
+  dx: number
+  dy: number
 }
 
 export function EditGrid({
@@ -60,19 +54,39 @@ export function EditGrid({
   const gridRef = useRef<HTMLDivElement>(null)
   const dragBlockId = useRef<string | null>(null)
   const dragOrigin = useRef<{ x: number; y: number } | null>(null)
+  const dragGrabOffset = useRef<{ x: number; y: number } | null>(null)
+  const dragStartClient = useRef<{ x: number; y: number } | null>(null)
+  const [dragVisual, setDragVisual] = useState<DragVisual | null>(null)
 
   const layout = edit.active && edit.draftLayout ? edit.draftLayout : viewLayout
   const pluginNames = new Map(plugins.map((p) => [p.slug, p.name]))
   const tilesById = new Map(tiles.map((t) => [t.id, t]))
+
+  const endDrag = useCallback(() => {
+    dragBlockId.current = null
+    dragOrigin.current = null
+    dragGrabOffset.current = null
+    dragStartClient.current = null
+    setDragVisual(null)
+  }, [])
 
   useEffect(() => {
     edit.bindGridLongPress(edit.active ? null : gridRef.current)
     return () => edit.bindGridLongPress(null)
   }, [edit.active, edit.bindGridLongPress])
 
+  useEffect(() => {
+    if (!edit.active) {
+      endDrag()
+    }
+  }, [edit.active, endDrag])
+
   const onBlockPointerDown = useCallback(
-    (blockId: string, event: ReactPointerEvent) => {
+    (blockId: string, event: ReactPointerEvent<HTMLDivElement>) => {
       if (!edit.active) {
+        return
+      }
+      if ((event.target as HTMLElement).closest('.dashboard-edit-remove')) {
         return
       }
       event.preventDefault()
@@ -81,53 +95,89 @@ export function EditGrid({
       if (!block || !gridRef.current) {
         return
       }
+      const wrapRect = event.currentTarget.getBoundingClientRect()
       dragBlockId.current = blockId
       dragOrigin.current = { x: block.x, y: block.y }
-      ;(event.target as HTMLElement).setPointerCapture(event.pointerId)
+      dragGrabOffset.current = {
+        x: event.clientX - wrapRect.left,
+        y: event.clientY - wrapRect.top,
+      }
+      dragStartClient.current = { x: event.clientX, y: event.clientY }
+      setDragVisual({ blockId, dx: 0, dy: 0 })
+      event.currentTarget.setPointerCapture(event.pointerId)
     },
     [edit.active, layout.blocks],
   )
 
-  const onBlockPointerMove = useCallback(
-    (event: ReactPointerEvent) => {
-      if (!edit.active || !dragBlockId.current || !gridRef.current) {
-        return
-      }
-      const block = layout.blocks.find((b) => b.id === dragBlockId.current)
-      if (!block) {
-        return
-      }
-      const rect = gridRef.current.getBoundingClientRect()
-      if (rect.width <= 0) {
-        return
-      }
-      const cell = pointerToCell(event.clientX, event.clientY, rect, columns, block.w, block.h)
-      edit.moveBlock(block.id, cell.x, cell.y)
-    },
-    [columns, edit, layout.blocks],
-  )
+  const onBlockPointerMove = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!dragBlockId.current || !dragStartClient.current) {
+      return
+    }
+    event.preventDefault()
+    const start = dragStartClient.current
+    setDragVisual({
+      blockId: dragBlockId.current,
+      dx: event.clientX - start.x,
+      dy: event.clientY - start.y,
+    })
+  }, [])
 
   const onBlockPointerUp = useCallback(
-    (blockId: string, event: ReactPointerEvent) => {
+    (blockId: string, event: ReactPointerEvent<HTMLDivElement>) => {
       if (!edit.active) {
         return
       }
       if (dragBlockId.current === blockId) {
         const block = layout.blocks.find((b) => b.id === blockId)
         const origin = dragOrigin.current
-        if (block && origin && edit.collidingIds.has(blockId)) {
-          edit.moveBlock(blockId, origin.x, origin.y)
+        const grab = dragGrabOffset.current
+        const grid = gridRef.current
+        if (block && origin && grab && grid) {
+          const metrics = getGridMetrics(grid, columns)
+          if (metrics) {
+            const cell = pointerToCell(
+              event.clientX - grab.x,
+              event.clientY - grab.y,
+              metrics,
+              block.w,
+              block.h,
+            )
+            const preview = moveBlockInLayout(layout, blockId, cell.x, cell.y, columns)
+            const colliding = findCollidingBlockIds(preview.blocks)
+            if (colliding.has(blockId)) {
+              edit.moveBlock(blockId, origin.x, origin.y)
+            } else {
+              edit.moveBlock(blockId, cell.x, cell.y)
+            }
+          }
         }
-        dragBlockId.current = null
-        dragOrigin.current = null
+        endDrag()
       }
       try {
-        ;(event.target as HTMLElement).releasePointerCapture(event.pointerId)
+        event.currentTarget.releasePointerCapture(event.pointerId)
       } catch {
         /* capture may already be released */
       }
     },
-    [edit, layout.blocks],
+    [columns, edit, endDrag, layout],
+  )
+
+  const onBlockPointerCancel = useCallback(
+    (blockId: string, event: ReactPointerEvent<HTMLDivElement>) => {
+      if (dragBlockId.current === blockId) {
+        const origin = dragOrigin.current
+        if (origin) {
+          edit.moveBlock(blockId, origin.x, origin.y)
+        }
+        endDrag()
+      }
+      try {
+        event.currentTarget.releasePointerCapture(event.pointerId)
+      } catch {
+        /* capture may already be released */
+      }
+    },
+    [edit, endDrag],
   )
 
   return (
@@ -182,13 +232,22 @@ export function EditGrid({
           </div>
         ) : null}
         {layout.blocks.map((block) => {
-          const style = blockStyle(block.x, block.y, block.w, block.h)
+          const isDragging = dragVisual?.blockId === block.id
+          const style: CSSProperties = {
+            ...blockStyle(block.x, block.y, block.w, block.h),
+            ...(isDragging && dragVisual
+              ? {
+                  transform: `translate(${dragVisual.dx}px, ${dragVisual.dy}px)`,
+                  zIndex: 20,
+                }
+              : {}),
+          }
           const colliding = edit.collidingIds.has(block.id)
           const wrapClass = [
             'dashboard-block-wrap',
             edit.active ? 'dashboard-block-wrap--edit' : '',
             edit.active && colliding ? 'dashboard-block-wrap--collision' : '',
-            edit.active && dragBlockId.current === block.id ? 'dashboard-block-wrap--dragging' : '',
+            edit.active && isDragging ? 'dashboard-block-wrap--dragging' : '',
           ]
             .filter(Boolean)
             .join(' ')
@@ -213,6 +272,7 @@ export function EditGrid({
               onPointerDown={(e) => onBlockPointerDown(block.id, e)}
               onPointerMove={onBlockPointerMove}
               onPointerUp={(e) => onBlockPointerUp(block.id, e)}
+              onPointerCancel={(e) => onBlockPointerCancel(block.id, e)}
             >
               {edit.active ? (
                 <>

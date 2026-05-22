@@ -55,7 +55,11 @@
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(var(--hearth-columns), minmax(0, 1fr));
-  grid-auto-rows: minmax(72px, auto);
+  /* Square primitive cells: row height matches column width (docs/design/dashboard.md) */
+  --hearth-cell-size: calc(
+    (100% - (var(--hearth-columns) - 1) * var(--hearth-grid-gap)) / var(--hearth-columns)
+  );
+  grid-auto-rows: var(--hearth-cell-size);
   gap: var(--hearth-grid-gap);
   width: 100%;
   max-width: 960px;

@@ -80,7 +80,26 @@
 }
 
 .dashboard-block-wrap--dragging {
-  opacity: 0.85;
+  opacity: 0.92;
+  animation: none;
+  cursor: grabbing;
+  touch-action: none;
+}
+
+/* Edit mode: movement only — no text selection or callouts while rearranging */
+.dashboard-scroll[data-edit-active='true'] {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.dashboard-scroll[data-edit-active='true'] * {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.dashboard-grid--edit .dashboard-block-wrap--edit {
+  touch-action: none;
 }
 
 .dashboard-edit-remove {
