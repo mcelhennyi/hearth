@@ -77,7 +77,7 @@ W1 merged into `feat/FR-0006-design-language` (PRs [#35](https://github.com/mcel
 | T-FR-0006-12 | @kindling/mantle hooks | done | done | done | `FR-0006`. [PR #35](https://github.com/mcelhennyi/hearth/pull/35). |
 | T-FR-0006-13 | @kindling/mantle overlays | done | done | done | `FR-0006` **W2**. Sheet/Dialog/Toast + postMessage; mantle Vitest 36. PR → `feat/FR-0006-design-language`. |
 | T-FR-0006-14 | @kindling/mantle vanilla bridge | done | done | done | `FR-0006`. [PR #36](https://github.com/mcelhennyi/hearth/pull/36). |
-| T-FR-0006-15 | @kindling/mantle publish | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10..14. |
+| T-FR-0006-15 | @kindling/mantle publish | done | done | done | `FR-0006`. CI dry-run + tag publish workflow; CHANGELOG v0.1.0; PR → `feat/FR-0006-design-language`. **`NPM_TOKEN`** required for first npm publish. |
 
 ---
 

@@ -13,6 +13,7 @@
     "src/tokens.css",
     "src/components.css",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE"
   ],
   "main": "./dist/index.cjs",
@@ -44,6 +45,8 @@
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "test": "pnpm run typecheck && pnpm run build && vitest run",
+    "publish:dry-run": "pnpm run build && npm publish --dry-run --access=public --ignore-scripts",
+    "prepublishOnly": "pnpm run build",
     "clean": "rm -rf dist"
   },
   "peerDependencies": {

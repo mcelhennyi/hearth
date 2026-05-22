@@ -1,0 +1,50 @@
+# @kindling/mantle — build, test, and npm publish dry-run (T-FR-0006-15 TEST/VAL).
+name: kindling-mantle CI
+
+on:
+  pull_request:
+    paths:
+      - "packages/mantle/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/kindling-mantle*.yml"
+  push:
+    branches:
+      - main
+      - "feat/**"
+    paths:
+      - "packages/mantle/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/kindling-mantle*.yml"
+
+concurrency:
+  group: kindling-mantle-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/mantle
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: .
+
+      - name: Test (typecheck, build, vitest)
+        run: pnpm run test
+
+      - name: npm publish dry-run
+        run: npm publish --dry-run --access=public --ignore-scripts
