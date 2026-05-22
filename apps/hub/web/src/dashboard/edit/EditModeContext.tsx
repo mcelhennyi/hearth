@@ -234,7 +234,10 @@ export function EditModeProvider({ children }: { children: ReactNode }) {
       return undefined
     }
 
-    function onPointerDown(): void {
+    function onPointerDown(event: PointerEvent): void {
+      if ((event.target as HTMLElement).closest('.dashboard-block-wrap')) {
+        return
+      }
       clearLongPress()
       longPressTimer.current = setTimeout(() => {
         enterEdit()

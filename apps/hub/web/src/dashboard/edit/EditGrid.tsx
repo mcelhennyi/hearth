@@ -41,6 +41,8 @@ type DragVisual = {
   dy: number
 }
 
+const BLOCK_LONG_PRESS_MS = 600
+
 export function EditGrid({
   viewLayout,
   tiles,
@@ -56,6 +58,7 @@ export function EditGrid({
   const dragOrigin = useRef<{ x: number; y: number } | null>(null)
   const dragGrabOffset = useRef<{ x: number; y: number } | null>(null)
   const dragStartClient = useRef<{ x: number; y: number } | null>(null)
+  const blockLongPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [dragVisual, setDragVisual] = useState<DragVisual | null>(null)
 
   const layout = edit.active && edit.draftLayout ? edit.draftLayout : viewLayout
@@ -70,31 +73,24 @@ export function EditGrid({
     setDragVisual(null)
   }, [])
 
-  useEffect(() => {
-    edit.bindGridLongPress(edit.active ? null : gridRef.current)
-    return () => edit.bindGridLongPress(null)
-  }, [edit.active, edit.bindGridLongPress])
-
-  useEffect(() => {
-    if (!edit.active) {
-      endDrag()
+  const clearBlockLongPress = useCallback(() => {
+    if (blockLongPressTimer.current) {
+      clearTimeout(blockLongPressTimer.current)
+      blockLongPressTimer.current = null
     }
-  }, [edit.active, endDrag])
+  }, [])
 
-  const onBlockPointerDown = useCallback(
-    (blockId: string, event: ReactPointerEvent<HTMLDivElement>) => {
-      if (!edit.active) {
+  const beginBlockDrag = useCallback(
+    (blockId: string, event: ReactPointerEvent<HTMLDivElement>, blocks: DashboardLayout['blocks']) => {
+      if ((event.target as HTMLElement).closest('.dashboard-edit-remove')) {
         return
       }
-      if ((event.target as HTMLElement).closest('.dashboard-edit-remove')) {
+      const block = blocks.find((b) => b.id === blockId)
+      if (!block || !gridRef.current) {
         return
       }
       event.preventDefault()
       event.stopPropagation()
-      const block = layout.blocks.find((b) => b.id === blockId)
-      if (!block || !gridRef.current) {
-        return
-      }
       const wrapRect = event.currentTarget.getBoundingClientRect()
       dragBlockId.current = blockId
       dragOrigin.current = { x: block.x, y: block.y }
@@ -104,9 +100,60 @@ export function EditGrid({
       }
       dragStartClient.current = { x: event.clientX, y: event.clientY }
       setDragVisual({ blockId, dx: 0, dy: 0 })
-      event.currentTarget.setPointerCapture(event.pointerId)
+      try {
+        event.currentTarget.setPointerCapture(event.pointerId)
+      } catch {
+        /* capture may fail on some browsers */
+      }
     },
-    [edit.active, layout.blocks],
+    [],
+  )
+
+  useEffect(() => {
+    edit.bindGridLongPress(edit.active ? null : gridRef.current)
+    return () => edit.bindGridLongPress(null)
+  }, [edit.active, edit.bindGridLongPress])
+
+  useEffect(() => {
+    if (!edit.active) {
+      endDrag()
+      clearBlockLongPress()
+    }
+  }, [edit.active, clearBlockLongPress, endDrag])
+
+  useEffect(() => () => clearBlockLongPress(), [clearBlockLongPress])
+
+  const onBlockPointerDown = useCallback(
+    (blockId: string, event: ReactPointerEvent<HTMLDivElement>) => {
+      if ((event.target as HTMLElement).closest('.dashboard-edit-remove')) {
+        return
+      }
+
+      if (edit.active) {
+        beginBlockDrag(blockId, event, layout.blocks)
+        return
+      }
+
+      event.stopPropagation()
+      clearBlockLongPress()
+      const target = event.currentTarget
+      blockLongPressTimer.current = setTimeout(() => {
+        blockLongPressTimer.current = null
+        edit.enterEdit()
+        beginBlockDrag(blockId, event, viewLayout.blocks)
+      }, BLOCK_LONG_PRESS_MS)
+
+      const cancelLongPress = () => {
+        clearBlockLongPress()
+        target.removeEventListener('pointerup', cancelLongPress)
+        target.removeEventListener('pointercancel', cancelLongPress)
+        target.removeEventListener('pointerleave', cancelLongPress)
+      }
+      target.addEventListener('pointerup', cancelLongPress)
+      target.addEventListener('pointercancel', cancelLongPress)
+      target.addEventListener('pointerleave', cancelLongPress)
+    },
+    [beginBlockDrag, clearBlockLongPress, edit, layout.blocks, viewLayout.blocks],
   )
 
   const onBlockPointerMove = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
@@ -124,7 +171,8 @@ export function EditGrid({
 
   const onBlockPointerUp = useCallback(
     (blockId: string, event: ReactPointerEvent<HTMLDivElement>) => {
-      if (!edit.active) {
+      clearBlockLongPress()
+      if (!edit.active && !dragBlockId.current) {
         return
       }
       if (dragBlockId.current === blockId) {
@@ -159,11 +207,12 @@ export function EditGrid({
         /* capture may already be released */
       }
     },
-    [columns, edit, endDrag, layout],
+    [clearBlockLongPress, columns, edit, endDrag, layout],
   )
 
   const onBlockPointerCancel = useCallback(
     (blockId: string, event: ReactPointerEvent<HTMLDivElement>) => {
+      clearBlockLongPress()
       if (dragBlockId.current === blockId) {
         const origin = dragOrigin.current
         if (origin) {
@@ -177,7 +226,7 @@ export function EditGrid({
         /* capture may already be released */
       }
     },
-    [edit, endDrag],
+    [clearBlockLongPress, edit, endDrag],
   )
 
   return (

@@ -209,12 +209,18 @@
   min-height: 100svh;
 }
 
-.plugin-frame-host {
+.shell-main {
   min-height: 0;
 }
 
+.plugin-frame-host {
+  min-height: 0;
+  flex: 1;
+}
+
 .plugin-frame-host .plugin-frame {
-  min-height: 50svh;
+  min-height: 0;
+  flex: 1;
 }
 
 .plugin-frame-host iframe {
@@ -417,6 +423,12 @@
 
 .nav-tab.is-active {
   color: var(--hearth-accent);
+}
+
+/* Home tab stays muted on dashboard and in app mode (not accent when active). */
+.nav-tab.nav-tab--home,
+.nav-tab.nav-tab--home.is-active {
+  color: var(--hearth-muted);
 }
 
 .nav-tab--settings {

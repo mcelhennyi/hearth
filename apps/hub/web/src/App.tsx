@@ -112,12 +112,16 @@ function App() {
           ) : (
             <header className="top-bar border-b border-[var(--hearth-surface)] bg-[var(--hearth-bg)] px-4 pb-3 pt-[calc(0.75rem+var(--hearth-safe-top))]">
               <div className="top-bar__inner flex w-full items-center gap-3">
-                <h2 className="top-bar__title min-w-0 flex-1 text-lg font-semibold">Hearth</h2>
-                {isDashboard ? <EditChrome isDashboard={isDashboard} /> : null}
+                <h2 className="top-bar__title min-w-0 text-lg font-semibold">Hearth</h2>
+                <span className="top-bar-spacer" />
+                <div className="top-bar__actions">
+                  {isDashboard ? <EditChrome isDashboard={isDashboard} /> : null}
+                </div>
               </div>
             </header>
           )}
 
+          <div className="shell-main flex min-h-0 flex-1 flex-col">
           <Routes>
             <Route path="/" element={<DashboardView />} />
             {plugins.map((plugin) => (
@@ -135,6 +139,7 @@ function App() {
               />
             ))}
           </Routes>
+          </div>
 
           <InstallPrompt />
 
