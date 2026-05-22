@@ -1,6 +1,8 @@
 import { useSyncExternalStore } from 'react'
 
 import './dashboard.css'
+import { Strip } from './blocks/Strip'
+import { EmptyState } from './EmptyState'
 import { Grid } from './Grid'
 import { useDashboardData } from './useDashboardData'
 
@@ -33,6 +35,26 @@ export function DashboardView() {
     return (
       <main className="dashboard-main" data-testid="dashboard-error">
         <p className="dashboard-error-text">{error ?? 'Could not load dashboard.'}</p>
+      </main>
+    )
+  }
+
+  if (layout.blocks.length === 0) {
+    return (
+      <main className="dashboard-main" data-testid="dashboard-view">
+        <div className="dashboard-scroll" data-testid="dashboard-scroll">
+          {offline ? (
+            <p className="dashboard-offline-badge" data-testid="dashboard-offline-badge">
+              Offline — showing cached layout
+            </p>
+          ) : null}
+          {strip ? (
+            <div className="dashboard-empty-strip">
+              <Strip strip={strip} columns={columns} onDismissed={refresh} />
+            </div>
+          ) : null}
+          <EmptyState />
+        </div>
       </main>
     )
   }
