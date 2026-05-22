@@ -4,15 +4,15 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | T-FR-0006-09 (VAL handoff) |
-| **Active phase** | VAL |
-| **Branch / worktree** | `feat/FR-0006-design-language-T-FR-0006-09-edit-mode` @ `.worktrees/FR-0006-design-language/T-FR-0006-09-edit-mode/` |
+| **Active ticket** | — |
+| **Active phase** | — |
+| **Branch / worktree** | `feat/FR-0006-design-language` @ `.worktrees/FR-0006-design-language/feature/` (`110dd0a`) |
 | **Session status** | `handoff` |
-| **Next agent should** | Merge PR for **09** into `feat/FR-0006-design-language`; continue W2 (**08**, **13**) or **15**. |
+| **Next agent should** | Human merge FR-0006 PR to **`main`**; configure **`NPM_TOKEN`**; tag `kindling-mantle-v0.1.0`. |
 
 ### Parallel streams
 
-W1 merged into `feat/FR-0006-design-language` (PRs [#35](https://github.com/mcelhennyi/hearth/pull/35)–[#41](https://github.com/mcelhennyi/hearth/pull/41) may be closed after merge).
+**FR-0006** feature-complete — PR to **`main`** pending. [`90-closeout.md`](feature-history/FR-0006-design-language/90-closeout.md).
 
 ---
 
