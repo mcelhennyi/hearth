@@ -1,6 +1,6 @@
 {
   "name": "@kindling/mantle",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Mantle UI primitives, hooks, tokens, and vanilla bridge for Hearth plugins.",
   "license": "MIT",
   "private": false,
