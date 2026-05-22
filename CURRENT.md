@@ -1,12 +1,22 @@
-# CURRENT — feat/FR-0006-design-language
+# CURRENT — T-FR-0006-08 Empty state
 
-**Branch:** `feat/FR-0006-design-language`  
-**Worktree:** `.worktrees/FR-0006-design-language/feature/`
+**Branch:** `feat/FR-0006-design-language-T-FR-0006-08-empty-state`  
+**Worktree:** `.worktrees/FR-0006-design-language/T-FR-0006-08-empty-state/`
 
-## Status
+## Ticket
 
-W0 + W1 integrated on feature branch (tickets 01–07, 10–12, 14). API 269 pytest; hub web 48 Vitest; mantle 33 Vitest.
+T-FR-0006-08 — Empty state (closes DG-U4). Deps: T-FR-0006-07.
+
+## Phase
+
+**VAL done** — hub web 51 Vitest pass in Docker (`./develop web sh -c '… npm run test -- --run'`).
+
+## Delivered
+
+- `EmptyState.tsx` — headline, body, Open Settings CTA → Settings modal Plugins tab.
+- `DashboardView` — renders EmptyState when `layout.blocks.length === 0`; strip still shown above when active.
+- `EmptyState.test.tsx` — 3 tests (component + DashboardView integration).
 
 ## Next
 
-W2 frontier: **T-FR-0006-08**, **09**, **13** (deps 07, 12). Then **15** (publish). Not feature-complete until all 15 VAL-done.
+PR → `feat/FR-0006-design-language`; parent merges when W2 batch complete.

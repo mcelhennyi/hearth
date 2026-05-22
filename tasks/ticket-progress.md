@@ -70,7 +70,7 @@ W1 merged into `feat/FR-0006-design-language` (PRs [#35](https://github.com/mcel
 | T-FR-0006-05 | Plugin frame state UI | done | done | done | `FR-0006`. Frame state + overlays; 38 Vitest; [PR #39](https://github.com/mcelhennyi/hearth/pull/39). |
 | T-FR-0006-06 | Chrome slot DOM + rendering | done | done | done | `FR-0006`. [PR #37](https://github.com/mcelhennyi/hearth/pull/37). |
 | T-FR-0006-07 | Dashboard grid + block primitives | done | done | done | `FR-0006`. Grid + blocks; 30 Vitest; PR → `feat/FR-0006-design-language`. |
-| T-FR-0006-08 | Empty state | — | — | — | `FR-0006` **design**. DG-U4. Deps: T-FR-0006-07. |
+| T-FR-0006-08 | Empty state | done | done | done | `FR-0006`. DG-U4. EmptyState + DashboardView wiring; 51 Vitest (3 new). PR pending → `feat/FR-0006-design-language`. |
 | T-FR-0006-09 | Edit mode | — | — | — | `FR-0006` **design**. DG-U2, DG-U3, RW-U4. Deps: T-FR-0006-07, T-FR-0006-02. |
 | T-FR-0006-10 | @kindling/mantle package scaffold | done | done | done | `FR-0006`. `packages/mantle/`; [PR #34](https://github.com/mcelhennyi/hearth/pull/34). |
 | T-FR-0006-11 | @kindling/mantle base components | done | done | done | `FR-0006`. [PR #41](https://github.com/mcelhennyi/hearth/pull/41). |
