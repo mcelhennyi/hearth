@@ -1,0 +1,9 @@
+src/
+**/__tests__/
+**/*.test.ts
+**/*.test.tsx
+tsconfig.json
+tsup.config.ts
+.eslintrc*
+.prettierrc*
+*.log

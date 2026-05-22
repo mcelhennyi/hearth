@@ -4,15 +4,15 @@
 **Worktree:** `.worktrees/FR-0006-design-language/feature/`  
 **Feature:** FR-0006 design-language
 
-## W0 integration status
+## W0 complete (merged)
 
-| Ticket | Merged | Notes |
-|--------|--------|-------|
-| T-FR-0006-01 | yes | System tiles & strips API |
-| T-FR-0006-02 | yes | Dashboard layout API (alembic `0003_dashboard_layouts`) |
-| T-FR-0006-03 | in progress | postMessage bridge merge |
-| T-FR-0006-10 | pending | @kindling/mantle scaffold |
+| Ticket | Title |
+|--------|-------|
+| T-FR-0006-01 | System tiles & strips API |
+| T-FR-0006-02 | Dashboard layout API |
+| T-FR-0006-03 | Mantle postMessage bridge |
+| T-FR-0006-10 | @kindling/mantle package scaffold |
 
 ## Next step
 
-Finish merging ticket branches #33 and #34; run `./develop test` + `./develop web npm run test` in this worktree; push `feat/FR-0006-design-language`; run `/identify-frontier` for W1.
+Revalidate (`./develop test`, `./develop web npm run test`); push feature branch; run `/identify-frontier` for W1 (04, 05, 06, 07, 11, 12, 14).
