@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 
 import { readLayoutCache, writeLayoutCache } from './layoutCache'
+import { withDefaultShortcuts } from './defaultLayout'
 import type { DashboardLayout, PluginRegistryEntry, SystemStrip, SystemTile } from './types'
 
 export type DashboardDataState = {
@@ -60,16 +61,24 @@ export function useDashboardData(): DashboardDataState {
           return
         }
 
+        const pluginRows = Array.isArray(pluginsRes)
+          ? pluginsRes
+          : (pluginsRes?.plugins ?? [])
+        const enabledApps = pluginRows.filter((p) => p.state === 'enabled' && p.kind === 'app')
+        const appSlugs = enabledApps.map((p) => p.slug)
+        setPlugins(enabledApps)
+
         if (layoutRes) {
-          setLayout(layoutRes)
-          await writeLayoutCache(layoutRes)
+          const merged = withDefaultShortcuts(layoutRes, appSlugs)
+          setLayout(merged)
+          await writeLayoutCache(merged)
         } else {
           const cached = await readLayoutCache()
           if (cached) {
-            setLayout(cached)
+            setLayout(withDefaultShortcuts(cached, appSlugs))
             setOffline(true)
           } else {
-            setLayout(EMPTY_LAYOUT)
+            setLayout(withDefaultShortcuts(EMPTY_LAYOUT, appSlugs))
           }
         }
 
@@ -77,11 +86,6 @@ export function useDashboardData(): DashboardDataState {
         setAllTiles(catalogue)
         setTiles(catalogue.filter((t) => !t.hidden_by_user && !t.suppressed))
         setStrip(stripRes?.strip && !stripRes.strip.dismissed ? stripRes.strip : null)
-
-        const pluginRows = Array.isArray(pluginsRes)
-          ? pluginsRes
-          : (pluginsRes?.plugins ?? [])
-        setPlugins(pluginRows.filter((p) => p.state === 'enabled' && p.kind === 'app'))
       } catch {
         if (cancelled) {
           return

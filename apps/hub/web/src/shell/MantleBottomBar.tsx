@@ -66,12 +66,14 @@ export function MantleBottomBar({ isDesktop, isAppMode, plugins, bottomItems, on
         <div className="nav-pinned nav-pinned--start">
           <PinnedHomeTab isDesktop={isDesktop} />
         </div>
-        <ChromeSlot
-          slot="bottom"
-          items={bottomItems}
-          isDesktop={isDesktop}
-          onInvoke={(id, itemId) => onChromeInvoke(id, itemId)}
-        />
+        <div className="bottom-bar__center plugin-bottom-slots">
+          <ChromeSlot
+            slot="bottom"
+            items={bottomItems}
+            isDesktop={isDesktop}
+            onInvoke={(id, itemId) => onChromeInvoke(id, itemId)}
+          />
+        </div>
         <div className="nav-pinned nav-pinned--end">
           <SettingsTrigger
             variant={settingsVariant}

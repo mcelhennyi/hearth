@@ -33,11 +33,11 @@ export function PluginFrame({ slug, name, active, bridge }: PluginFrameProps) {
 
   return (
     <main
-      className="relative mx-auto min-h-[60svh] w-full max-w-6xl px-0 pb-28 pt-0 md:pb-16"
+      className="plugin-frame-host relative flex min-h-0 flex-1 flex-col pb-[calc(var(--hearth-bar-h,52px)+var(--hearth-safe-bottom))] pt-0"
       style={active ? undefined : { display: 'none' }}
       aria-hidden={!active}
     >
-      <div className="relative h-[70svh] w-full">
+      <div className="plugin-frame relative min-h-0 flex-1 w-full">
         <iframe
           ref={frameRef}
           title={name}

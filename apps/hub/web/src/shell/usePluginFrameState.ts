@@ -69,7 +69,8 @@ export function usePluginFrameState({
   )
 
   const tryMounted = useCallback(() => {
-    if (hasLoadedRef.current && hasAckRef.current) {
+    // v0: iframe load is enough to show plugin UI; ack (title/ready) may arrive before/after load.
+    if (hasLoadedRef.current) {
       applyState('mounted')
     }
   }, [applyState])
@@ -105,7 +106,10 @@ export function usePluginFrameState({
         return
       }
       try {
-        const response = await fetch(pluginSrc(slug), { method: 'HEAD', cache: 'no-store' })
+        let response = await fetch(pluginSrc(slug), { method: 'HEAD', cache: 'no-store' })
+        if (response.status === 405) {
+          response = await fetch(pluginSrc(slug), { method: 'GET', cache: 'no-store' })
+        }
         if (cancelled) return
         if (response.status >= 400) {
           applyState('error', `HTTP ${response.status}`)
