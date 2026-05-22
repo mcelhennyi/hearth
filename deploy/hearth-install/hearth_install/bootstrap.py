@@ -77,7 +77,11 @@ def plan_bootstrap(
         lines.append(f"will still write compose files under {hearth / 'compose'}")
     else:
         lines.append("verify Docker Engine (docker info)")
-        lines.append(f"run: docker compose -f {hearth / 'compose' / 'docker-compose.yml'} up -d")
+        lines.append(
+            f"run: docker compose -f docker-compose.yml "
+            f"[-f overrides/generated.plugins.yml] --project-name hearth up -d "
+            f"(cwd {hearth / 'compose'})",
+        )
     lines.append(
         "PATH: add hearth/bin to your shell profile, e.g. "
         f'export PATH="{hearth}/bin:$PATH"',
@@ -178,19 +182,34 @@ def materialize_compose_assets(repo_root: Path, hearth: Path, *, dry_run: bool) 
 
 
 def run_compose_up(
-    compose_file: Path,
+    hearth: Path,
     *,
     dry_run: bool,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
 ) -> int:
-    """``docker compose up -d`` from ``hearth/compose``."""
+    """``docker compose up -d`` from ``hearth/compose`` (same flags as ``hearth start``)."""
 
     if dry_run:
         return 0
-    command = ["docker", "compose", "-f", str(compose_file.name), "up", "-d"]
+    compose_dir = hearth / "compose"
+    compose_file = compose_dir / "docker-compose.yml"
+    overrides = compose_dir / "overrides" / "generated.plugins.yml"
+    command: list[str] = [
+        "docker",
+        "compose",
+        "-f",
+        compose_file.name,
+    ]
+    if overrides.is_file():
+        command.extend(["-f", "overrides/generated.plugins.yml"])
+    command.extend(["--project-name", "hearth"])
+    env_file = compose_dir / ".env"
+    if env_file.is_file():
+        command.extend(["--env-file", ".env"])
+    command.extend(["up", "-d"])
     proc = runner(
         command,
-        cwd=str(compose_file.parent),
+        cwd=str(compose_dir),
         check=False,
     )
     return int(proc.returncode)
@@ -294,7 +313,7 @@ def run_bootstrap(
         if not verify_docker_engine(stderr):
             return 1
 
-    code = run_compose_up(compose_file, dry_run=False, runner=compose_runner)
+    code = run_compose_up(hearth, dry_run=False, runner=compose_runner)
     if code != 0:
         print(f"bootstrap: docker compose up exited {code}", file=stderr)
     else:

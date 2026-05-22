@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import shutil
 import subprocess
@@ -158,6 +159,47 @@ def publish_plugin_dist_to_install(
     )
 
 
+def web_has_file_dependencies(web_dir: Path) -> bool:
+    """True when ``package.json`` references ``file:`` paths (needs repo-root mount)."""
+    pkg_path = web_dir / "package.json"
+    if not pkg_path.is_file():
+        return False
+    try:
+        data = json.loads(pkg_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    for section in ("dependencies", "devDependencies", "optionalDependencies"):
+        block = data.get(section)
+        if not isinstance(block, dict):
+            continue
+        for value in block.values():
+            if isinstance(value, str) and value.startswith("file:"):
+                return True
+    return False
+
+
+def resolve_docker_build_mount(
+    web_dir: Path,
+    *,
+    repo_root: Path | None,
+    plugin_root: Path,
+) -> tuple[Path, str]:
+    """Return ``(host_mount, workdir_relative)`` for the Node container."""
+    web_resolved = web_dir.resolve()
+    if repo_root is not None and web_has_file_dependencies(web_dir):
+        root = repo_root.resolve()
+        try:
+            return root, web_resolved.relative_to(root).as_posix()
+        except ValueError:
+            pass
+        plugin_resolved = plugin_root.resolve()
+        try:
+            return plugin_resolved, web_resolved.relative_to(plugin_resolved).as_posix()
+        except ValueError:
+            pass
+    return web_resolved, "."
+
+
 def lockfile_usable(lock_path: Path) -> bool:
     """True when ``package-lock.json`` is present and valid enough for ``npm ci``."""
     if not lock_path.is_file():
@@ -171,20 +213,36 @@ def lockfile_usable(lock_path: Path) -> bool:
     return '"lockfileVersion"' in text or '"packages"' in text
 
 
-def npm_install_and_build_script(web_dir: Path) -> str:
-    install = "npm ci" if lockfile_usable(web_dir / "package-lock.json") else "npm install"
+def npm_install_and_build_script(web_dir: Path, *, env: dict[str, str] | None = None) -> str:
+    """Default ``npm install`` — plugins often use ``file:`` deps; opt into ``npm ci`` via env."""
+    src = env if env is not None else os.environ
+    use_ci = src.get("HEARTH_PLUGIN_BUILD_USE_CI", "").strip().lower() in ("1", "true", "yes")
+    lock = web_dir / "package-lock.json"
+    install = "npm ci" if use_ci and lockfile_usable(lock) else "npm install"
     return f"{install} && npm run build"
 
 
-def docker_web_build_command(web_dir: Path, *, image: str) -> list[str]:
-    resolved = web_dir.resolve()
-    script = npm_install_and_build_script(resolved)
+def docker_web_build_command(
+    web_dir: Path,
+    *,
+    image: str,
+    repo_root: Path | None = None,
+    plugin_root: Path | None = None,
+    env: dict[str, str] | None = None,
+) -> list[str]:
+    mount_host, work_subdir = resolve_docker_build_mount(
+        web_dir,
+        repo_root=repo_root,
+        plugin_root=plugin_root or web_dir.parent,
+    )
+    inner = npm_install_and_build_script(web_dir, env=env)
+    script = f"cd {work_subdir} && {inner}" if work_subdir != "." else inner
     return [
         "docker",
         "run",
         "--rm",
         "-v",
-        f"{resolved}:/work",
+        f"{mount_host}:/work",
         "-w",
         "/work",
         image,
@@ -199,11 +257,19 @@ def run_plugin_web_build(
     stderr: TextIO,
     *,
     env: dict[str, str] | None = None,
+    repo_root: Path | None = None,
+    plugin_root: Path | None = None,
     runner: subprocess.CompletedProcess[str] | None = None,
 ) -> int:
-    """Run ``npm ci|install`` and ``npm run build`` inside a Node container."""
+    """Run ``npm install`` (or ``npm ci`` when opted in) and ``npm run build`` in Node."""
     image = _node_image(env=env)
-    command = docker_web_build_command(web_dir, image=image)
+    command = docker_web_build_command(
+        web_dir,
+        image=image,
+        repo_root=repo_root,
+        plugin_root=plugin_root,
+        env=env,
+    )
     try:
         if runner is not None:
             completed = runner
@@ -250,7 +316,26 @@ def cmd_plugin_build(
         print(f"hearth plugin build: {exc}", file=stderr)
         return 1
 
-    code = run_plugin_web_build(web_dir, stderr, env=env, runner=runner)
+    if repo_root is not None and web_has_file_dependencies(web_dir):
+        mantle = repo_root / "packages" / "mantle" / "package.json"
+        if not mantle.is_file():
+            print(
+                "hearth plugin build: groceries UI depends on file:packages/mantle but "
+                f"{mantle.parent} is missing.\n"
+                f"  Ensure HEARTH_REPO_ROOT ({repo_root}) includes packages/mantle "
+                "(git pull the hearth repo on feat/FR-0006-design-language).",
+                file=stderr,
+            )
+            return 1
+
+    code = run_plugin_web_build(
+        web_dir,
+        stderr,
+        env=env,
+        repo_root=repo_root,
+        plugin_root=plugin_root,
+        runner=runner,
+    )
     if code != 0:
         return code
 

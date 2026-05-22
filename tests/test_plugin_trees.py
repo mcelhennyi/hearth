@@ -83,3 +83,22 @@ def test_npm_script_uses_install_without_valid_lockfile(tmp_path: Path) -> None:
     assert "npm install" in npm_install_and_build_script(web)
     cmd = docker_web_build_command(web, image="node:20-alpine")
     assert "npm install" in cmd[-1]
+
+
+def test_docker_build_mounts_repo_root_for_file_dependencies(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    web = repo / "plugins" / "third-party" / "grocery-list" / "web"
+    web.mkdir(parents=True)
+    (web / "package.json").write_text(
+        '{"dependencies":{"@kindling/mantle":"file:../../../../packages/mantle"}}\n',
+        encoding="utf-8",
+    )
+    plugin_root = web.parent
+    cmd = docker_web_build_command(
+        web,
+        image="node:20-alpine",
+        repo_root=repo,
+        plugin_root=plugin_root,
+    )
+    assert f"{repo.resolve()}:/work" in cmd
+    assert "cd plugins/third-party/grocery-list/web" in cmd[-1]

@@ -109,7 +109,7 @@ def test_resolve_plugin_web_dir_requires_package_json(tmp_path: Path) -> None:
         resolve_plugin_web_dir(plug)
 
 
-def test_docker_web_build_command_uses_ci_when_lockfile_present(tmp_path: Path) -> None:
+def test_docker_web_build_command_defaults_to_npm_install(tmp_path: Path) -> None:
     web = tmp_path / "web"
     web.mkdir()
     (web / "package-lock.json").write_text(
@@ -117,7 +117,21 @@ def test_docker_web_build_command_uses_ci_when_lockfile_present(tmp_path: Path) 
         encoding="utf-8",
     )
     cmd = docker_web_build_command(web, image="node:20-alpine")
-    assert "node:20-alpine" in cmd
+    assert "npm install" in cmd[-1]
+
+
+def test_docker_web_build_command_uses_ci_when_opted_in(tmp_path: Path) -> None:
+    web = tmp_path / "web"
+    web.mkdir()
+    (web / "package-lock.json").write_text(
+        '{"name":"x","lockfileVersion":3,"packages":{}}\n',
+        encoding="utf-8",
+    )
+    cmd = docker_web_build_command(
+        web,
+        image="node:20-alpine",
+        env={"HEARTH_PLUGIN_BUILD_USE_CI": "1"},
+    )
     assert "npm ci" in cmd[-1]
 
 
