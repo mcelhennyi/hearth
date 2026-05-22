@@ -75,7 +75,7 @@
 | T-FR-0006-03 | Mantle postMessage bridge | done | done | done | `FR-0006`. Shell bridge; 24 Vitest; [PR #33](https://github.com/mcelhennyi/hearth/pull/33). |
 | T-FR-0006-04 | User preferences API + Settings modal | done | done | done | `FR-0006`. GET/PUT `/api/user/preferences`; SettingsModal + ThemeProvider; [PR #40](https://github.com/mcelhennyi/hearth/pull/40). |
 | T-FR-0006-05 | Plugin frame state UI | done | done | done | `FR-0006`. Frame state + overlays; 38 Vitest; [PR #39](https://github.com/mcelhennyi/hearth/pull/39). |
-| T-FR-0006-06 | Chrome slot DOM + rendering | — | — | — | `FR-0006` **design**. DG-U6 shell-side. Deps: T-FR-0006-03. |
+| T-FR-0006-06 | Chrome slot DOM + rendering | done | done | done | `FR-0006`. [PR #37](https://github.com/mcelhennyi/hearth/pull/37). |
 | T-FR-0006-07 | Dashboard grid + block primitives | done | done | done | `FR-0006`. Grid + blocks; 30 Vitest; PR → `feat/FR-0006-design-language`. |
 | T-FR-0006-08 | Empty state | — | — | — | `FR-0006` **design**. DG-U4. Deps: T-FR-0006-07. |
 | T-FR-0006-09 | Edit mode | — | — | — | `FR-0006` **design**. DG-U2, DG-U3, RW-U4. Deps: T-FR-0006-07, T-FR-0006-02. |

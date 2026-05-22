@@ -1,15 +1,39 @@
-// @PROJ-U-* — @kindling/mantle placeholder types (FR-0006 T-FR-0006-10 scaffold).
+// @PROJ-U-* — @kindling/mantle postMessage contract types (FR-0006 T-FR-0006-12).
 //
-// These are intentionally minimal stubs so dependents (apps/hub/web shell,
-// downstream plugin packages) can `import type { ... } from "@kindling/mantle/types"`
-// today. The postMessage contract and chrome surface are fully refined in
-// T-FR-0006-03 (postMessage protocol) and T-FR-0006-12 (hooks). When those
-// tickets land they tighten / replace these declarations.
+// Plugin-centric naming (inverse of apps/hub/web/src/shell/types.ts):
+//   - InboundMessage  = shell → plugin iframe
+//   - OutboundMessage = plugin → shell
 //
-// Source of truth: docs/design/mantle-ui.md.
+// Field shapes match the shell bridge (T-FR-0006-03). Source of truth:
+// docs/design/mantle-ui.md §"postMessage protocol".
 
-/** A button slot item registered via `hearth.chrome.mount`. */
-export type ChromeButton = {
+// ---------------------------------------------------------------------------
+// Theme + user payloads
+// ---------------------------------------------------------------------------
+
+export interface ThemeTokens {
+  bg: string;
+  surface: string;
+  fg: string;
+  muted: string;
+  accent: string;
+  accentFg: string;
+  mode: "light" | "dark";
+}
+
+export interface UserInfo {
+  id: string;
+  name?: string;
+  avatarUrl?: string;
+}
+
+export type FrameState = "mounted" | "loading" | "slow" | "error" | "offline";
+
+// ---------------------------------------------------------------------------
+// Chrome slot payloads
+// ---------------------------------------------------------------------------
+
+export interface ChromeButton {
   kind: "button";
   id: string;
   label: string;
@@ -17,59 +41,179 @@ export type ChromeButton = {
   variant?: "default" | "accent";
   busy?: boolean;
   disabled?: boolean;
-};
+}
 
-/** A menu slot item registered via `hearth.chrome.mount`. */
-export type ChromeMenu = {
+export interface ChromeMenu {
   kind: "menu";
   id: string;
   label: string;
   icon?: string;
-  items: Array<{
-    id: string;
-    label: string;
-    icon?: string;
-    disabled?: boolean;
-  }>;
-};
+  items: Array<{ id: string; label: string; icon?: string; disabled?: boolean }>;
+}
 
-/** Plugin iframe lifecycle state as reported by the shell. */
-export type FrameState = "Mounted" | "Loading" | "Slow" | "Error" | "Offline";
+export type ChromePayload = ChromeButton | ChromeMenu;
+export type ChromeSlot = "top" | "bottom";
+export type ChromeSurface = "app" | "dashboard";
+export type ChromeErrorReason = "limit" | "unknown_slot" | "invalid_payload";
 
-/** Resolved theme palette pushed via `hearth.theme`. Values mirror tokens.css. */
-export type ThemeTokens = {
-  mode: "light" | "dark";
-  bg: string;
-  surface: string;
-  fg: string;
-  muted: string;
-  accent: string;
-  accentFg: string;
-  error: string;
-};
+export interface ChromeRect {
+  width: number;
+  height: number;
+}
 
-/** Messages the shell pushes into the plugin iframe. */
+// ---------------------------------------------------------------------------
+// Inbound messages (shell → plugin)
+// ---------------------------------------------------------------------------
+
+export interface InboundThemeMessage {
+  type: "hearth.theme";
+  tokens: ThemeTokens;
+}
+
+export interface InboundUserMessage {
+  type: "hearth.user";
+  user: UserInfo | null;
+}
+
+export interface InboundOnlineMessage {
+  type: "hearth.online";
+  online: boolean;
+}
+
+export interface InboundFrameStateMessage {
+  type: "hearth.frame.state";
+  state: FrameState;
+}
+
+export interface InboundChromeInvokeMessage {
+  type: "hearth.chrome.invoke";
+  slot: ChromeSlot;
+  surface: ChromeSurface;
+  id: string;
+  itemId?: string;
+}
+
+export interface InboundChromeResizeMessage {
+  type: "hearth.chrome.resize";
+  slot: ChromeSlot;
+  rect: ChromeRect;
+}
+
+export interface InboundChromeErrorMessage {
+  type: "hearth.chrome.error";
+  slot: ChromeSlot;
+  surface: ChromeSurface;
+  reason: ChromeErrorReason;
+}
+
 export type InboundMessage =
-  | { type: "hearth.theme"; tokens: ThemeTokens }
-  | { type: "hearth.user"; user: { id: string; name?: string } | null }
-  | { type: "hearth.online"; online: boolean }
-  | { type: "hearth.frame.state"; state: FrameState }
-  | { type: "hearth.chrome.resize"; slot: string; rect: { width: number; height: number } }
-  | { type: "hearth.chrome.invoke"; slot: string; surface: string; id: string; itemId?: string }
-  | { type: "hearth.chrome.error"; slot: string; surface: string; reason: string };
+  | InboundThemeMessage
+  | InboundUserMessage
+  | InboundOnlineMessage
+  | InboundFrameStateMessage
+  | InboundChromeInvokeMessage
+  | InboundChromeResizeMessage
+  | InboundChromeErrorMessage;
 
-/** Messages a plugin sends out to the shell. */
+export type InboundType = InboundMessage["type"];
+
+export type InboundPayload<T extends InboundType> = Extract<
+  InboundMessage,
+  { type: T }
+>;
+
+// ---------------------------------------------------------------------------
+// Outbound messages (plugin → shell)
+// ---------------------------------------------------------------------------
+
+export type ToastLevel = "info" | "success" | "warning" | "error";
+export type HapticStyle = "selection" | "impact" | "notification";
+
+export interface OutboundTitleMessage {
+  type: "hearth.title";
+  title: string;
+}
+
+export interface OutboundToastMessage {
+  type: "hearth.toast";
+  level: ToastLevel;
+  message: string;
+}
+
+export interface OutboundNavMessage {
+  type: "hearth.nav";
+  path: string;
+}
+
+export interface OutboundHapticMessage {
+  type: "hearth.haptic";
+  style: HapticStyle;
+}
+
+export interface OutboundNotifyMessage {
+  type: "hearth.notify";
+  payload: unknown;
+}
+
+export interface OutboundReadyMessage {
+  type: "hearth.ready";
+}
+
+export interface OutboundChromeMountMessage {
+  type: "hearth.chrome.mount";
+  slot: ChromeSlot;
+  surface: ChromeSurface;
+  payload: ChromePayload;
+}
+
+export interface OutboundChromeUnmountMessage {
+  type: "hearth.chrome.unmount";
+  slot: ChromeSlot;
+  surface: ChromeSurface;
+  id: string;
+}
+
 export type OutboundMessage =
-  | { type: "hearth.title"; title: string }
-  | { type: "hearth.ready" }
-  | { type: "hearth.toast"; level: "info" | "warn" | "error" | "success"; message: string }
-  | { type: "hearth.nav"; path: string }
-  | { type: "hearth.haptic"; style: "selection" | "impact" | "notification" }
-  | { type: "hearth.notify"; payload: unknown }
-  | {
-      type: "hearth.chrome.mount";
-      slot: string;
-      surface: string;
-      payload: ChromeButton | ChromeMenu;
-    }
-  | { type: "hearth.chrome.unmount"; slot: string; surface: string; id?: string };
+  | OutboundTitleMessage
+  | OutboundToastMessage
+  | OutboundNavMessage
+  | OutboundHapticMessage
+  | OutboundNotifyMessage
+  | OutboundReadyMessage
+  | OutboundChromeMountMessage
+  | OutboundChromeUnmountMessage;
+
+export type OutboundType = OutboundMessage["type"];
+
+// ---------------------------------------------------------------------------
+// Plugin bridge API
+// ---------------------------------------------------------------------------
+
+export interface PluginBridge {
+  /** True when running inside a parent shell iframe. */
+  readonly embedded: boolean;
+  post(msg: OutboundMessage): void;
+  subscribe<T extends InboundType>(
+    type: T,
+    handler: (payload: InboundPayload<T>) => void,
+  ): () => void;
+  destroy(): void;
+}
+
+export function isInboundMessage(value: unknown): value is InboundMessage {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as { type?: unknown };
+  if (typeof candidate.type !== "string") return false;
+  switch (candidate.type) {
+    case "hearth.theme":
+    case "hearth.user":
+    case "hearth.online":
+    case "hearth.frame.state":
+    case "hearth.chrome.invoke":
+    case "hearth.chrome.resize":
+    case "hearth.chrome.error":
+      return true;
+    default:
+      return false;
+  }
+}
