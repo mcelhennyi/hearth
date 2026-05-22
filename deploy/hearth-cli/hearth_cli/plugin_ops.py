@@ -159,6 +159,64 @@ def publish_plugin_dist_to_install(
     )
 
 
+def iter_file_dependency_roots(web_dir: Path) -> list[Path]:
+    """Resolved package roots referenced via ``file:`` from ``web/package.json``."""
+    pkg_path = web_dir / "package.json"
+    if not pkg_path.is_file():
+        return []
+    try:
+        data = json.loads(pkg_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+
+    roots: list[Path] = []
+    seen: set[Path] = set()
+    for section in ("dependencies", "devDependencies", "optionalDependencies"):
+        block = data.get(section)
+        if not isinstance(block, dict):
+            continue
+        for value in block.values():
+            if not isinstance(value, str) or not value.startswith("file:"):
+                continue
+            target = (web_dir / value.removeprefix("file:")).resolve()
+            if target in seen or not (target / "package.json").is_file():
+                continue
+            seen.add(target)
+            roots.append(target)
+    return roots
+
+
+def package_publish_entry_ready(pkg_root: Path) -> bool:
+    """True when the package ``exports`` / ``main`` entry files exist on disk."""
+    pkg_path = pkg_root / "package.json"
+    if not pkg_path.is_file():
+        return False
+    try:
+        data = json.loads(pkg_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+
+    def _entry_exists(rel: str) -> bool:
+        return (pkg_root / rel.removeprefix("./")).is_file()
+
+    exports = data.get("exports")
+    if isinstance(exports, dict):
+        dot = exports.get(".")
+        if isinstance(dot, dict):
+            for key in ("import", "require", "default"):
+                rel = dot.get(key)
+                if isinstance(rel, str) and _entry_exists(rel):
+                    return True
+        elif isinstance(dot, str) and _entry_exists(dot):
+            return True
+
+    for key in ("module", "main"):
+        rel = data.get(key)
+        if isinstance(rel, str) and _entry_exists(rel):
+            return True
+    return False
+
+
 def web_has_file_dependencies(web_dir: Path) -> bool:
     """True when ``package.json`` references ``file:`` paths (needs repo-root mount)."""
     pkg_path = web_dir / "package.json"
@@ -179,25 +237,28 @@ def web_has_file_dependencies(web_dir: Path) -> bool:
 
 
 def resolve_docker_build_mount(
-    web_dir: Path,
+    project_dir: Path,
     *,
     repo_root: Path | None,
     plugin_root: Path,
+    prefer_repo_mount: bool = False,
 ) -> tuple[Path, str]:
     """Return ``(host_mount, workdir_relative)`` for the Node container."""
-    web_resolved = web_dir.resolve()
-    if repo_root is not None and web_has_file_dependencies(web_dir):
+    project_resolved = project_dir.resolve()
+    if repo_root is not None and (
+        prefer_repo_mount or web_has_file_dependencies(project_dir)
+    ):
         root = repo_root.resolve()
         try:
-            return root, web_resolved.relative_to(root).as_posix()
+            return root, project_resolved.relative_to(root).as_posix()
         except ValueError:
             pass
         plugin_resolved = plugin_root.resolve()
         try:
-            return plugin_resolved, web_resolved.relative_to(plugin_resolved).as_posix()
+            return plugin_resolved, project_resolved.relative_to(plugin_resolved).as_posix()
         except ValueError:
             pass
-    return web_resolved, "."
+    return project_resolved, "."
 
 
 def lockfile_usable(lock_path: Path) -> bool:
@@ -222,20 +283,22 @@ def npm_install_and_build_script(web_dir: Path, *, env: dict[str, str] | None = 
     return f"{install} && npm run build"
 
 
-def docker_web_build_command(
-    web_dir: Path,
+def docker_npm_project_command(
+    project_dir: Path,
     *,
     image: str,
     repo_root: Path | None = None,
     plugin_root: Path | None = None,
     env: dict[str, str] | None = None,
+    prefer_repo_mount: bool = False,
 ) -> list[str]:
     mount_host, work_subdir = resolve_docker_build_mount(
-        web_dir,
+        project_dir,
         repo_root=repo_root,
-        plugin_root=plugin_root or web_dir.parent,
+        plugin_root=plugin_root or project_dir.parent,
+        prefer_repo_mount=prefer_repo_mount,
     )
-    inner = npm_install_and_build_script(web_dir, env=env)
+    inner = npm_install_and_build_script(project_dir, env=env)
     script = f"cd {work_subdir} && {inner}" if work_subdir != "." else inner
     return [
         "docker",
@@ -252,23 +315,24 @@ def docker_web_build_command(
     ]
 
 
-def run_plugin_web_build(
-    web_dir: Path,
+def run_docker_npm_project(
+    project_dir: Path,
     stderr: TextIO,
     *,
     env: dict[str, str] | None = None,
     repo_root: Path | None = None,
     plugin_root: Path | None = None,
+    prefer_repo_mount: bool = False,
     runner: subprocess.CompletedProcess[str] | None = None,
 ) -> int:
-    """Run ``npm install`` (or ``npm ci`` when opted in) and ``npm run build`` in Node."""
     image = _node_image(env=env)
-    command = docker_web_build_command(
-        web_dir,
+    command = docker_npm_project_command(
+        project_dir,
         image=image,
         repo_root=repo_root,
         plugin_root=plugin_root,
         env=env,
+        prefer_repo_mount=prefer_repo_mount,
     )
     try:
         if runner is not None:
@@ -282,6 +346,92 @@ def run_plugin_web_build(
         print(f"hearth plugin build: {' '.join(command)} exited {completed.returncode}", file=stderr)
         return completed.returncode
     return 0
+
+
+def ensure_file_dependencies_built(
+    web_dir: Path,
+    stderr: TextIO,
+    stdout: TextIO,
+    *,
+    env: dict[str, str] | None = None,
+    repo_root: Path | None = None,
+    runner: subprocess.CompletedProcess[str] | None = None,
+) -> int:
+    """Build ``file:`` workspace packages (e.g. ``packages/mantle``) before the plugin UI."""
+    for dep_root in iter_file_dependency_roots(web_dir):
+        if package_publish_entry_ready(dep_root):
+            continue
+        pkg_path = dep_root / "package.json"
+        try:
+            data = json.loads(pkg_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            print(f"hearth plugin build: {dep_root}/package.json: {exc}", file=stderr)
+            return 1
+        scripts = data.get("scripts")
+        if not isinstance(scripts, dict) or "build" not in scripts:
+            print(
+                f"hearth plugin build: file dependency {dep_root} is not built and has no "
+                "npm run build script.",
+                file=stderr,
+            )
+            return 1
+        name = data.get("name", dep_root.name)
+        print(f"hearth plugin build: building file dependency {name} at {dep_root}", file=stdout)
+        code = run_docker_npm_project(
+            dep_root,
+            stderr,
+            env=env,
+            repo_root=repo_root,
+            plugin_root=dep_root,
+            prefer_repo_mount=repo_root is not None,
+            runner=runner,
+        )
+        if code != 0:
+            return code
+        if not package_publish_entry_ready(dep_root):
+            print(
+                f"hearth plugin build: {dep_root} build finished but publish entry is still missing",
+                file=stderr,
+            )
+            return 1
+    return 0
+
+
+def docker_web_build_command(
+    web_dir: Path,
+    *,
+    image: str,
+    repo_root: Path | None = None,
+    plugin_root: Path | None = None,
+    env: dict[str, str] | None = None,
+) -> list[str]:
+    return docker_npm_project_command(
+        web_dir,
+        image=image,
+        repo_root=repo_root,
+        plugin_root=plugin_root,
+        env=env,
+    )
+
+
+def run_plugin_web_build(
+    web_dir: Path,
+    stderr: TextIO,
+    *,
+    env: dict[str, str] | None = None,
+    repo_root: Path | None = None,
+    plugin_root: Path | None = None,
+    runner: subprocess.CompletedProcess[str] | None = None,
+) -> int:
+    """Run ``npm install`` (or ``npm ci`` when opted in) and ``npm run build`` in Node."""
+    return run_docker_npm_project(
+        web_dir,
+        stderr,
+        env=env,
+        repo_root=repo_root,
+        plugin_root=plugin_root,
+        runner=runner,
+    )
 
 
 def cmd_plugin_build(
@@ -316,17 +466,16 @@ def cmd_plugin_build(
         print(f"hearth plugin build: {exc}", file=stderr)
         return 1
 
-    if repo_root is not None and web_has_file_dependencies(web_dir):
-        mantle = repo_root / "packages" / "mantle" / "package.json"
-        if not mantle.is_file():
-            print(
-                "hearth plugin build: groceries UI depends on file:packages/mantle but "
-                f"{mantle.parent} is missing.\n"
-                f"  Ensure HEARTH_REPO_ROOT ({repo_root}) includes packages/mantle "
-                "(git pull the hearth repo on feat/FR-0006-design-language).",
-                file=stderr,
-            )
-            return 1
+    code = ensure_file_dependencies_built(
+        web_dir,
+        stderr,
+        out,
+        env=env,
+        repo_root=repo_root,
+        runner=runner,
+    )
+    if code != 0:
+        return code
 
     code = run_plugin_web_build(
         web_dir,

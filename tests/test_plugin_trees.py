@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import subprocess
+import sys
 import textwrap
 from pathlib import Path
 
@@ -11,8 +13,11 @@ from hearth_install.plugin_compose import PluginRecord
 from hearth_install.plugin_trees import find_repo_plugin_root, sync_plugin_install_tree
 from hearth_cli.plugin_ops import (
     docker_web_build_command,
+    ensure_file_dependencies_built,
+    iter_file_dependency_roots,
     lockfile_usable,
     npm_install_and_build_script,
+    package_publish_entry_ready,
 )
 
 _TINDER = textwrap.dedent(
@@ -83,6 +88,66 @@ def test_npm_script_uses_install_without_valid_lockfile(tmp_path: Path) -> None:
     assert "npm install" in npm_install_and_build_script(web)
     cmd = docker_web_build_command(web, image="node:20-alpine")
     assert "npm install" in cmd[-1]
+
+
+def test_package_publish_entry_ready_requires_built_dist(tmp_path: Path) -> None:
+    mantle = tmp_path / "mantle"
+    mantle.mkdir()
+    (mantle / "package.json").write_text(
+        '{"name":"@kindling/mantle","module":"./dist/index.js","exports":{".":{"import":"./dist/index.js"}}}\n',
+        encoding="utf-8",
+    )
+    assert not package_publish_entry_ready(mantle)
+    dist = mantle / "dist"
+    dist.mkdir()
+    (dist / "index.js").write_text("export {};\n", encoding="utf-8")
+    assert package_publish_entry_ready(mantle)
+
+
+def test_ensure_file_dependencies_builds_mantle_first(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    repo = tmp_path / "repo"
+    mantle = repo / "packages" / "mantle"
+    mantle.mkdir(parents=True)
+    (mantle / "package.json").write_text(
+        '{"name":"@kindling/mantle","scripts":{"build":"true"},"module":"./dist/index.js",'
+        '"exports":{".":{"import":"./dist/index.js"}}}\n',
+        encoding="utf-8",
+    )
+    web = repo / "plugins" / "third-party" / "grocery-list" / "web"
+    web.mkdir(parents=True)
+    (web / "package.json").write_text(
+        '{"dependencies":{"@kindling/mantle":"file:../../../../packages/mantle"}}\n',
+        encoding="utf-8",
+    )
+    assert iter_file_dependency_roots(web) == [mantle.resolve()]
+
+    calls: list[list[str]] = []
+
+    def fake_run(command: list[str], *, check: bool = False) -> subprocess.CompletedProcess[str]:
+        calls.append(command)
+        if len(calls) == 1:
+            dist = mantle / "dist"
+            dist.mkdir(exist_ok=True)
+            (dist / "index.js").write_text("export {};\n", encoding="utf-8")
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr("hearth_cli.plugin_ops.subprocess.run", fake_run)
+
+    code = ensure_file_dependencies_built(
+        web,
+        sys.stderr,
+        sys.stdout,
+        repo_root=repo,
+    )
+
+    assert code == 0
+    assert len(calls) == 1
+    assert "packages/mantle" in calls[0][-1]
+    assert "building file dependency" in capsys.readouterr().out
 
 
 def test_docker_build_mounts_repo_root_for_file_dependencies(tmp_path: Path) -> None:
