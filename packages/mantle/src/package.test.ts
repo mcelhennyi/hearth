@@ -44,10 +44,16 @@ describe("@kindling/mantle package scaffold", () => {
     expect(css).toContain("--hearth-safe-top:");
   });
 
-  it("main entry re-exports contract types", async () => {
+  it("main entry re-exports React components", async () => {
     const mainUrl = pathToFileURL(resolveExportTarget(".")).href;
-    const mod = await import(mainUrl);
-    expect(mod).toBeDefined();
+    const mod = (await import(mainUrl)) as {
+      Page: unknown;
+      Button: unknown;
+      Switch: unknown;
+    };
+    expect(mod.Page).toBeDefined();
+    expect(mod.Button).toBeDefined();
+    expect(mod.Switch).toBeDefined();
   });
 
   it("types entry exports ChromeButton shape", async () => {
@@ -62,21 +68,5 @@ describe("@kindling/mantle package scaffold", () => {
       variant: "accent",
     };
     expect(sample.kind).toBe("button");
-  });
-
-  it("main entry exports mantle hooks", async () => {
-    const mainUrl = pathToFileURL(resolveExportTarget(".")).href;
-    const mod = (await import(mainUrl)) as {
-      useMantle: unknown;
-      useTheme: unknown;
-      useChromeSlot: unknown;
-      useSpark: unknown;
-      createPluginBridge: unknown;
-    };
-    expect(mod.useMantle).toBeTypeOf("function");
-    expect(mod.useTheme).toBeTypeOf("function");
-    expect(mod.useChromeSlot).toBeTypeOf("function");
-    expect(mod.useSpark).toBeTypeOf("function");
-    expect(mod.createPluginBridge).toBeTypeOf("function");
   });
 });

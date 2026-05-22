@@ -4,22 +4,15 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | T-FR-0006-01 (W0 batch leader) |
-| **Active phase** | TEST/DEV/VAL in flight per-ticket |
-| **Branch / worktree** | `feat/FR-0006-design-language` @ `.worktrees/FR-0006-design-language/feature/`; ticket worktrees under `.worktrees/FR-0006-design-language/T-FR-0006-{01,02,03,10}-*` |
-| **Session status** | `developing` |
-| **Next agent should** | Merge W0 PRs #31–#34 into `feat/FR-0006-design-language`, revalidate in `.worktrees/FR-0006-design-language/feature/`, then `/identify-frontier` for W1 (T-FR-0006-04/05/06/07/11/12/14). |
+| **Active ticket** | FR-0006 W2 batch (next) |
+| **Active phase** | — |
+| **Branch / worktree** | `feat/FR-0006-design-language` @ `.worktrees/FR-0006-design-language/feature/` |
+| **Session status** | `handoff` |
+| **Next agent should** | `/identify-frontier` then `/develop-frontier` for W2: **T-FR-0006-08**, **09**, **13** (deps 07, 12). Feature-complete gate needs **15** too. |
 
 ### Parallel streams
 
-**FR-0002** and **FR-0003** are **done** on **`main`** ([PR #3](https://github.com/mcelhennyi/hearth/pull/3), [PR #13](https://github.com/mcelhennyi/hearth/pull/13)).
-
-| Stream label | Ticket(s) | `FR-NNNN` | Branch / worktree | Owner / note |
-|----------------|------------|-----------|-------------------|--------------|
-| W0/hearth-systems | T-FR-0006-01 | FR-0006 | `feat/FR-0006-design-language-T-FR-0006-01-system-tiles` @ `.worktrees/FR-0006-design-language/T-FR-0006-01-system-tiles/` | parallel subagent |
-| W0/hearth-dashboard-layout | T-FR-0006-02 | FR-0006 | `feat/FR-0006-design-language-T-FR-0006-02-dashboard-layout` @ `.worktrees/FR-0006-design-language/T-FR-0006-02-dashboard-layout/` | parallel subagent |
-| W0/hearth-postmessage | T-FR-0006-03 | FR-0006 | `feat/FR-0006-design-language-T-FR-0006-03-postmessage-bridge` @ `.worktrees/FR-0006-design-language/T-FR-0006-03-postmessage-bridge/` | parallel subagent |
-| W0/hearth-mantle-pkg | T-FR-0006-10 | FR-0006 | `feat/FR-0006-design-language-T-FR-0006-10-mantle-package` @ `.worktrees/FR-0006-design-language/T-FR-0006-10-mantle-package/` | parallel subagent |
+W1 merged into `feat/FR-0006-design-language` (PRs [#35](https://github.com/mcelhennyi/hearth/pull/35)–[#41](https://github.com/mcelhennyi/hearth/pull/41) may be closed after merge).
 
 ---
 

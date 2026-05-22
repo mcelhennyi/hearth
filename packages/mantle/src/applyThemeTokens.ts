@@ -2,22 +2,24 @@
 
 import type { ThemeTokens } from "./types";
 
-const TOKEN_KEYS: Array<keyof Omit<ThemeTokens, "mode">> = [
+const TOKEN_KEYS: Array<keyof ThemeTokens> = [
   "bg",
   "surface",
   "fg",
   "muted",
   "accent",
   "accentFg",
+  "mode",
 ];
 
-const CSS_VAR: Record<keyof Omit<ThemeTokens, "mode">, string> = {
+const CSS_VAR: Record<keyof ThemeTokens, string> = {
   bg: "--hearth-bg",
   surface: "--hearth-surface",
   fg: "--hearth-fg",
   muted: "--hearth-muted",
   accent: "--hearth-accent",
   accentFg: "--hearth-accent-fg",
+  mode: "--hearth-mode",
 };
 
 export function applyThemeTokens(

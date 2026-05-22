@@ -11,6 +11,7 @@
   "files": [
     "dist",
     "src/tokens.css",
+    "src/components.css",
     "README.md",
     "LICENSE"
   ],
@@ -25,11 +26,13 @@
     },
     "./tokens": "./src/tokens.css",
     "./styles.css": "./src/tokens.css",
+    "./components.css": "./src/components.css",
     "./vanilla": {
       "types": "./dist/vanilla/index.d.ts",
       "import": "./dist/vanilla/index.js",
       "require": "./dist/vanilla/index.cjs"
     },
+    "./vanilla/mantle.iife": "./dist/vanilla/mantle.iife.js",
     "./types": {
       "types": "./dist/types.d.ts",
       "import": "./dist/types.js",
@@ -56,7 +59,9 @@
     }
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "jsdom": "^29.1.0",
@@ -64,7 +69,8 @@
     "react-dom": "^19.2.5",
     "tsup": "^8.3.5",
     "typescript": "~6.0.2",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.5",
+    "vitest-axe": "^0.1.0"
   },
   "publishConfig": {
     "access": "public"

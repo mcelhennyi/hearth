@@ -1,21 +1,39 @@
 import { defineConfig } from "tsup";
 
-// @PROJ-U-* — Mantle build config (FR-0006 T-FR-0006-10 scaffold).
-// Produces ESM + CJS + .d.ts for three entry points: index, vanilla, types.
-// CSS tokens (src/tokens.css) are consumed directly via the exports map
-// (`./tokens`, `./styles.css`) and intentionally not bundled by tsup.
-export default defineConfig({
-  entry: {
-    index: "src/index.ts",
-    "vanilla/index": "src/vanilla/index.ts",
-    types: "src/types.ts",
-  },
-  format: ["esm", "cjs"],
+// @PROJ-U-* — Mantle build config (FR-0006 T-10 scaffold, T-11 components, T-14 IIFE).
+const shared = {
   dts: { compilerOptions: { ignoreDeprecations: "6.0" } },
   sourcemap: true,
   clean: true,
   splitting: false,
-  treeshake: true,
-  target: "es2022",
+  treeshake: false,
+  target: "es2022" as const,
   external: ["react", "react-dom"],
-});
+  esbuildOptions(options: { jsx?: string }) {
+    options.jsx = "automatic";
+  },
+};
+
+export default defineConfig([
+  {
+    ...shared,
+    entry: {
+      index: "src/index.ts",
+      "vanilla/index": "src/vanilla/index.ts",
+      types: "src/types.ts",
+    },
+    format: ["esm", "cjs"],
+    platform: "browser",
+  },
+  {
+    ...shared,
+    entry: { "vanilla/mantle": "src/vanilla/global.ts" },
+    format: ["iife"],
+    globalName: "mantle",
+    minify: false,
+    dts: false,
+    outExtension() {
+      return { js: ".iife.js" };
+    },
+  },
+]);
