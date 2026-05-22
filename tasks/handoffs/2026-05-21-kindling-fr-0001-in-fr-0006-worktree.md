@@ -11,6 +11,7 @@
 | Kindling PR → `main` | **Done** — `f64b6a1` |
 | Hearth `kindling` submodule bump | **Done** — `df20872` |
 | Hearth FR-0006 PR → `main` | **Pending** — [PR #46](https://github.com/mcelhennyi/hearth/pull/46) |
+| Grocery-list @ `plugins/third-party/grocery-list` | **Done** — `89d55ab` Mantle UI + kindling `f64b6a1` |
 
 ## Suggested next step
 
