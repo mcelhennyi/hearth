@@ -9,13 +9,12 @@ import { InstallPrompt, PluginFrame } from './mantle'
 import { MantleEmbedApp } from './MantleEmbedApp'
 import { usePlugins } from './usePlugins'
 import { ChromeSlot } from './shell/ChromeSlot'
+import { MantleBottomBar } from './shell/MantleBottomBar'
 import { SettingsModal, SettingsTrigger } from './shell/SettingsModal'
 import { SettingsProvider } from './shell/SettingsContext'
 import { useChromeSlotRegistry } from './shell/useChromeSlotRegistry'
 import { usePostMessageBridge } from './shell/usePostMessageBridge'
 import { ThemeProvider } from './theme/ThemeProvider'
-
-const homeTab = { key: 'home', label: 'Home', path: '/' } as const
 
 function useDesktopLayout(): boolean {
   return useSyncExternalStore(
@@ -48,7 +47,6 @@ function App() {
   const activePlugin = activeSlug ? plugins.find((p) => p.slug === activeSlug) : undefined
   const isAppMode = activeSlug !== null
   const isDashboard = !isAppMode
-  const navTabs = [homeTab, ...plugins.map((plugin) => ({ key: plugin.slug, label: plugin.name, path: `/${plugin.slug}` }))]
 
   const bridge = usePostMessageBridge()
   const chrome = useChromeSlotRegistry(bridge, activeSlug)
@@ -74,6 +72,7 @@ function App() {
     'text-[var(--hearth-fg)]',
     chrome.hasChromeSlots ? 'has-chrome-slots' : '',
     isAppMode ? 'shell--app-mode' : '',
+    isDesktop ? 'shell--desktop' : '',
   ]
     .filter(Boolean)
     .join(' ')
@@ -102,34 +101,26 @@ function App() {
                   isDesktop
                   onInvoke={(id, itemId) => chrome.invoke('top', id, itemId)}
                 />
-                <button type="button" className="text-sm text-[var(--hearth-muted)]" aria-label="Account">
+                <button type="button" className="user-btn" aria-label="Account">
                   User
                 </button>
               </nav>
             </header>
           ) : isDesktop ? (
-            <header aria-label="Mantle top bar" className="border-b border-[var(--hearth-surface)] bg-[var(--hearth-surface)]">
-              <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-                <div className="flex items-center gap-3">
-                  <img src="/logo.svg" alt="Hearth" className="h-6 w-6" />
+            <header aria-label="Mantle top bar" className="top-bar border-b border-[var(--hearth-surface)] bg-[var(--hearth-surface)]">
+              <nav className="mx-auto flex h-16 w-full max-w-6xl items-center gap-3 px-6">
+                <div className="top-bar__brand">
+                  <img src="/logo.svg" alt="" className="h-6 w-6" aria-hidden />
                   <span className="font-semibold">Hearth</span>
-                  <EditChrome isDesktop isDashboard={isDashboard} />
                 </div>
-                <ul className="flex items-center gap-4 text-sm">
-                  {navTabs.map((tab) => (
-                    <li key={tab.key}>
-                      <NavLink to={tab.path} className="rounded-md px-3 py-2 hover:bg-[var(--hearth-bg)]" end={tab.path === '/'}>
-                        {tab.label}
-                      </NavLink>
-                    </li>
-                  ))}
-                  <li>
-                    <SettingsTrigger
-                      variant="desktop-top"
-                      className="rounded-md px-3 py-2 text-[var(--hearth-muted)] hover:bg-[var(--hearth-bg)]"
-                    />
-                  </li>
-                </ul>
+                <span className="top-bar-spacer" />
+                <div className="top-bar__actions">
+                  <SettingsTrigger variant="desktop-top" className="top-btn" />
+                  <button type="button" className="user-btn" aria-label="Account">
+                    User
+                  </button>
+                  {isDashboard ? <EditChrome isDesktop isDashboard={isDashboard} /> : null}
+                </div>
               </nav>
             </header>
           ) : isAppMode ? (
@@ -149,18 +140,15 @@ function App() {
                 isDesktop={false}
                 onInvoke={(id, itemId) => chrome.invoke('top', id, itemId)}
               />
-              <button type="button" className="text-sm text-[var(--hearth-muted)]" aria-label="Account">
+              <button type="button" className="user-btn" aria-label="Account">
                 User
               </button>
             </header>
           ) : (
-            <header className="border-b border-[var(--hearth-surface)] bg-[var(--hearth-bg)] px-4 pb-3 pt-[calc(0.75rem+var(--hearth-safe-top))]">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-lg font-semibold">Hearth</h2>
-                <EditChrome isDesktop={false} isDashboard={isDashboard} />
-                {!isDashboard ? (
-                  <span className="text-sm text-[var(--hearth-muted)]">User</span>
-                ) : null}
+            <header className="top-bar border-b border-[var(--hearth-surface)] bg-[var(--hearth-bg)] px-4 pb-3 pt-[calc(0.75rem+var(--hearth-safe-top))]">
+              <div className="flex items-center gap-3">
+                <h2 className="min-w-0 flex-1 text-lg font-semibold">Hearth</h2>
+                {isDashboard ? <EditChrome isDesktop={false} isDashboard={isDashboard} /> : null}
               </div>
             </header>
           )}
@@ -185,74 +173,13 @@ function App() {
 
           <InstallPrompt />
 
-          {!isDesktop && isAppMode ? (
-            <nav
-              aria-label="Shell navigation"
-              className="bottom-bar bottom-bar--app fixed inset-x-0 bottom-0 border-t border-[var(--hearth-surface)] bg-[var(--hearth-surface)] pb-[calc(0.5rem+var(--hearth-safe-bottom))] pt-2"
-            >
-              <div className="nav-pinned nav-pinned--start">
-                <NavLink
-                  to="/"
-                  className="block rounded-lg px-3 py-3 text-center text-xs text-[var(--hearth-muted)] hover:bg-[var(--hearth-bg)]"
-                >
-                  Home
-                </NavLink>
-              </div>
-              <ChromeSlot
-                slot="bottom"
-                items={chrome.bottomItems}
-                isDesktop={false}
-                onInvoke={(id, itemId) => chrome.invoke('bottom', id, itemId)}
-              />
-              <div className="nav-pinned nav-pinned--end">
-                <SettingsTrigger
-                  variant="mobile-icon"
-                  className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-lg hover:bg-[var(--hearth-bg)]"
-                  aria-label="Settings"
-                />
-              </div>
-            </nav>
-          ) : !isDesktop ? (
-            <nav
-              aria-label="Mantle bottom tabs"
-              className="fixed inset-x-0 bottom-0 border-t border-[var(--hearth-surface)] bg-[var(--hearth-surface)] px-2 pb-[calc(0.5rem+var(--hearth-safe-bottom))] pt-2"
-            >
-              <ul
-                className="mx-auto grid max-w-md gap-1"
-                style={{ gridTemplateColumns: `repeat(${Math.min(navTabs.length + 1, 5)}, minmax(0, 1fr))` }}
-              >
-                {navTabs.slice(0, 4).map((tab) => (
-                  <li key={tab.key}>
-                    <NavLink
-                      to={tab.path}
-                      end={tab.path === '/'}
-                      className="block rounded-lg px-3 py-3 text-center text-xs text-[var(--hearth-muted)] hover:bg-[var(--hearth-bg)]"
-                    >
-                      {tab.label}
-                    </NavLink>
-                  </li>
-                ))}
-                <li className="flex justify-center">
-                  <SettingsTrigger
-                    variant="mobile-icon"
-                    className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-lg hover:bg-[var(--hearth-bg)]"
-                    aria-label="Settings"
-                  />
-                </li>
-              </ul>
-            </nav>
-          ) : null}
-
-          {isDesktop && (
-            <div className="fixed inset-x-0 bottom-0 border-t border-[var(--hearth-surface)] bg-[var(--hearth-surface)] px-6 py-2">
-              <div className="mx-auto flex max-w-6xl items-center justify-end">
-                <SettingsTrigger
-                  variant="desktop-bottom"
-                  className="rounded-md px-3 py-2 text-sm text-[var(--hearth-muted)] hover:bg-[var(--hearth-bg)]"
-                />
-              </div>
-            </div>
-          )}
+          <MantleBottomBar
+            isDesktop={isDesktop}
+            isAppMode={isAppMode}
+            plugins={plugins}
+            bottomItems={chrome.bottomItems}
+            onChromeInvoke={(id, itemId) => chrome.invoke('bottom', id, itemId)}
+          />
 
           <SettingsModal isDesktop={isDesktop} />
         </div>

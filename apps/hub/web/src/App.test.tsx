@@ -59,7 +59,7 @@ describe('Mantle layout breakpoint behavior', () => {
       </BrowserRouter>,
     )
 
-    expect(screen.getByLabelText('Mantle bottom tabs')).toBeInTheDocument()
+    expect(screen.getByLabelText('Main navigation')).toBeInTheDocument()
     expect(screen.queryByLabelText('Mantle top bar')).not.toBeInTheDocument()
     await waitFor(() => {
       expect(screen.getByTestId('dashboard-view')).toBeInTheDocument()
@@ -75,7 +75,7 @@ describe('Mantle layout breakpoint behavior', () => {
     )
 
     expect(screen.getByLabelText('Mantle top bar')).toBeInTheDocument()
-    expect(screen.queryByLabelText('Mantle bottom tabs')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Main navigation')).toBeInTheDocument()
     await waitFor(() => {
       expect(screen.getByTestId('dashboard-view')).toBeInTheDocument()
     })
@@ -100,12 +100,9 @@ describe('Mantle registry-driven navigation', () => {
       </BrowserRouter>,
     )
 
-    const bottomNav = screen.getByLabelText('Mantle bottom tabs')
-    // "Home" tab is always present
+    const bottomNav = screen.getByLabelText('Main navigation')
     expect(bottomNav).toHaveTextContent('Home')
-    // No plugin-specific label — nothing injected from registry
-    // Home + pinned Settings control (mantle-ui.md § Bottom bar).
-    expect(bottomNav.querySelectorAll('li')).toHaveLength(2)
+    expect(bottomNav.querySelectorAll('.nav-scroll .nav-tab')).toHaveLength(0)
   })
 
   it('registry with one plugin: plugin tab appears in nav', async () => {
@@ -119,10 +116,9 @@ describe('Mantle registry-driven navigation', () => {
       </BrowserRouter>,
     )
 
-    const bottomNav = screen.getByLabelText('Mantle bottom tabs')
+    const bottomNav = screen.getByLabelText('Main navigation')
     expect(bottomNav).toHaveTextContent('Test Plugin')
-    // Home + plugin + Settings.
-    expect(bottomNav.querySelectorAll('li')).toHaveLength(3)
+    expect(bottomNav.querySelectorAll('.nav-scroll .nav-tab')).toHaveLength(1)
   })
 })
 

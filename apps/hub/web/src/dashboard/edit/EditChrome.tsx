@@ -53,10 +53,6 @@ export function EditChrome({ isDesktop, isDashboard }: Props) {
     )
   }
 
-  if (!isDesktop) {
-    return null
-  }
-
   return (
     <button
       type="button"
