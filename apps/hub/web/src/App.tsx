@@ -1,12 +1,13 @@
 // REWORK-REQUIRED RW-U1 — Dashboard is a plugin list, not home grid (dashboard.md).
 // REWORK-REQUIRED RW-U2 — Settings chrome route missing (mantle-ui.md). T-FR-0001-04.
-import { useState, useSyncExternalStore } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { NavLink, Route, Routes } from 'react-router-dom'
 
 import { isMantleEmbedMode } from './mantle/embedMode'
 import { InstallPrompt, PluginFrame } from './mantle'
 import { MantleEmbedApp } from './MantleEmbedApp'
 import { usePlugins } from './usePlugins'
+import { usePostMessageBridge } from './shell/usePostMessageBridge'
 
 const homeTab = { key: 'home', label: 'Home', path: '/' } as const
 
@@ -172,6 +173,19 @@ function App() {
   const isDesktop = useDesktopLayout()
   const plugins = usePlugins()
   const navTabs = [homeTab, ...plugins.map((plugin) => ({ key: plugin.slug, label: plugin.name, path: `/${plugin.slug}` }))]
+
+  // Mantle postMessage bridge (T-FR-0006-03 — see shell/usePostMessageBridge.ts).
+  // Single owner of the plugin iframe channel. Other shell pieces (frame state UI,
+  // chrome slots, theme provider) will subscribe here in follow-up tickets.
+  const bridge = usePostMessageBridge()
+  useEffect(() => {
+    // hearth.title — set the browser tab title per mantle-ui.md §"postMessage protocol"
+    // (DG-U9 closed). The shell top-bar title sync is handled in T-FR-0006-05/06.
+    const unsub = bridge.subscribe('hearth.title', (msg) => {
+      document.title = `${msg.title} — Hearth`
+    })
+    return unsub
+  }, [bridge])
 
   return (
     <div className="min-h-svh bg-[var(--hearth-bg)] font-sans text-[var(--hearth-fg)]">

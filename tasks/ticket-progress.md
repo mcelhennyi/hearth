@@ -69,7 +69,7 @@
 | T-FR-0005-05 | Publish smoke test and doctor hints | — | — | — | `FR-0005` **design**. Deps: T-FR-0005-02. |
 | T-FR-0006-01 | System tiles & strips API | — | — | — | `FR-0006` **design**. DF-U1, DF-U2. Deps: none. |
 | T-FR-0006-02 | Dashboard layout API | — | — | — | `FR-0006` **design**. Part of RW-U1. Deps: none. |
-| T-FR-0006-03 | Mantle postMessage bridge | — | — | — | `FR-0006` **design**. DG-U6/U7/U9 shell-side. Deps: none. |
+| T-FR-0006-03 | Mantle postMessage bridge | done | done | done | `FR-0006`. Shell bridge + types; Vitest 22 pass Docker; manual smoke in `parallel/T-FR-0006-03-postmessage-bridge.md`. PR → `feat/FR-0006-design-language`. |
 | T-FR-0006-04 | User preferences API + Settings modal | — | — | — | `FR-0006` **design**. DG-U8, RW-U2. Deps: T-FR-0006-01, T-FR-0006-03. |
 | T-FR-0006-05 | Plugin frame state UI | — | — | — | `FR-0006` **design**. DG-U7. Deps: T-FR-0006-03. |
 | T-FR-0006-06 | Chrome slot DOM + rendering | — | — | — | `FR-0006` **design**. DG-U6 shell-side. Deps: T-FR-0006-03. |
