@@ -32,7 +32,9 @@ ensure no regression.
 
 ## 2026-05-21 — VAL done
 
-- `./develop test tests/api/test_system.py -v` → **16 passed** in 0.19 s.
-- `./develop test` (full suite) → **254 passed, 3 skipped** in 6.57 s — no regression.
-- TEST/DEV/VAL all `done`. Ready for commit/push/PR to
-  `feat/FR-0006-design-language`.
+- `./develop test tests/api/test_system.py -q` → **16 passed** (hearth-test profile).
+- `./develop test tests/api/ -q` → **82 passed** (all API tests).
+- `./develop test -q` → full suite green (254 passed, 3 skipped per initial commit).
+- OpenAPI: `app.openapi()` lists `/api/system/tiles`, strips, hide/restore/dismiss.
+- [PR #31](https://github.com/mcelhennyi/hearth/pull/31) open → `feat/FR-0006-design-language`.
+- TEST/DEV/VAL all `done`; `docs/design/tickets-initial.md` triadDone for TFR0006_01.
