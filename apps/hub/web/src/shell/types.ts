@@ -195,8 +195,17 @@ export type OutboundType = OutboundMessage['type']
 // Bridge API (returned by usePostMessageBridge)
 // ---------------------------------------------------------------------------
 
+export interface BridgeSubscribeOptions {
+  /** When set, the handler runs only for messages whose `event.source` is this iframe's contentWindow. */
+  frame?: HTMLIFrameElement
+}
+
 export interface Bridge {
-  subscribe<T extends InboundType>(type: T, handler: (payload: InboundPayload<T>) => void): () => void
+  subscribe<T extends InboundType>(
+    type: T,
+    handler: (payload: InboundPayload<T>) => void,
+    options?: BridgeSubscribeOptions,
+  ): () => void
   pushToPlugin(frame: HTMLIFrameElement, msg: OutboundMessage): void
   broadcastToAllPlugins(msg: OutboundMessage): void
 }

@@ -30,10 +30,15 @@ import { isInboundMessage } from './types'
 
 type AnyHandler = (payload: InboundMessage) => void
 
+type ListenerEntry = {
+  handler: AnyHandler
+  frame?: HTMLIFrameElement
+}
+
 export function usePostMessageBridge(): Bridge {
   // Map<type, Set<handler>>. Refs keep identity stable across re-renders so consumers
   // can subscribe in their own effects without the bridge tearing down between renders.
-  const listenersRef = useRef<Map<InboundType, Set<AnyHandler>>>(new Map())
+  const listenersRef = useRef<Map<InboundType, Set<ListenerEntry>>>(new Map())
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
@@ -46,9 +51,13 @@ export function usePostMessageBridge(): Bridge {
       const handlers = listenersRef.current.get(msg.type)
       if (!handlers || handlers.size === 0) return
       // Snapshot so subscribe/unsubscribe during dispatch is safe.
-      for (const handler of Array.from(handlers)) {
+      for (const entry of Array.from(handlers)) {
+        if (entry.frame) {
+          const expected = entry.frame.contentWindow
+          if (!expected || event.source !== expected) continue
+        }
         try {
-          handler(msg)
+          entry.handler(msg)
         } catch (err) {
           // Bridge must not break on a faulty subscriber.
 
@@ -67,18 +76,19 @@ export function usePostMessageBridge(): Bridge {
     function subscribe<T extends InboundType>(
       type: T,
       handler: (payload: InboundPayload<T>) => void,
+      options?: { frame?: HTMLIFrameElement },
     ): () => void {
       let set = listenersRef.current.get(type)
       if (!set) {
         set = new Set()
         listenersRef.current.set(type, set)
       }
-      const wrapped = handler as AnyHandler
-      set.add(wrapped)
+      const entry: ListenerEntry = { handler: handler as AnyHandler, frame: options?.frame }
+      set.add(entry)
       return () => {
         const current = listenersRef.current.get(type)
         if (!current) return
-        current.delete(wrapped)
+        current.delete(entry)
         if (current.size === 0) listenersRef.current.delete(type)
       }
     }

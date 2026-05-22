@@ -119,6 +119,46 @@ describe('usePostMessageBridge', () => {
     expect(navHandler).not.toHaveBeenCalled()
   })
 
+  it('subscribe with frame option ignores messages from other iframes', () => {
+    const bridge = mountBridge()
+    const handler = vi.fn()
+    const targetWindow = { postMessage: vi.fn() }
+    const otherWindow = { postMessage: vi.fn() }
+    const target = document.createElement('iframe')
+    const other = document.createElement('iframe')
+    Object.defineProperty(target, 'contentWindow', { configurable: true, value: targetWindow })
+    Object.defineProperty(other, 'contentWindow', { configurable: true, value: otherWindow })
+    document.body.appendChild(target)
+    document.body.appendChild(other)
+
+    bridge.subscribe('hearth.title', handler, { frame: target })
+
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { type: 'hearth.title', title: 'Wrong' },
+          origin: window.location.origin,
+          source: otherWindow as unknown as MessageEventSource,
+        }),
+      )
+    })
+    expect(handler).not.toHaveBeenCalled()
+
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { type: 'hearth.title', title: 'Right' },
+          origin: window.location.origin,
+          source: targetWindow as unknown as MessageEventSource,
+        }),
+      )
+    })
+    expect(handler).toHaveBeenCalledTimes(1)
+
+    document.body.removeChild(target)
+    document.body.removeChild(other)
+  })
+
   it('unsubscribe stops further dispatch but leaves other subscribers intact', () => {
     const bridge = mountBridge()
     const a = vi.fn()

@@ -230,7 +230,11 @@ function App() {
       <Routes>
         <Route path="/" element={<DashboardView />} />
         {plugins.map((plugin) => (
-          <Route key={plugin.slug} path={`/${plugin.slug}`} element={<PluginFrame slug={plugin.slug} name={plugin.name} active={true} />} />
+          <Route
+            key={plugin.slug}
+            path={`/${plugin.slug}`}
+            element={<PluginFrame slug={plugin.slug} name={plugin.name} active bridge={bridge} />}
+          />
         ))}
       </Routes>
 

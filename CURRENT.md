@@ -1,15 +1,12 @@
-# CURRENT — T-FR-0006-04 user preferences
+# CURRENT — feat/FR-0006-design-language
 
-**Branch:** `feat/FR-0006-design-language-T-FR-0006-04-user-preferences`  
-**Worktree:** `.worktrees/FR-0006-design-language/T-FR-0006-04-user-preferences/`  
-**Feature:** FR-0006 design-language
+**Branch:** `feat/FR-0006-design-language`  
+**Worktree:** `.worktrees/FR-0006-design-language/feature/`
 
-## T-FR-0006-04 complete (TEST / DEV / VAL)
+## Integration in progress
 
-- **API:** `GET/PUT /api/user/preferences` (`theme`: light | dark | system); Alembic `0004_user_preferences`.
-- **Web:** `ThemeProvider` (localStorage boot + server reconcile + `hearth.theme` broadcast); `SettingsModal` (dialog; tabs Theme / Plugins / System tiles / Diagnostics / Sign out); Settings triggers in shell chrome.
-- **Tests:** 5 pytest (`tests/api/test_user_preferences.py`); Vitest ThemeProvider + SettingsModal (+ App nav count updates); 28 web tests green in Docker.
+Merging W1 ticket branches (04–07, 11, 12, 14) after subagent VAL-done. W0 already integrated @ `782f0a2`.
 
-## Next step
+## Next
 
-Open PR to `feat/FR-0006-design-language`; after merge, continue W1 frontier (05, 06, 07, …).
+Finish W1 merges → `./develop test` + `./develop web npm run test` → push → W2 frontier (08, 09, 13).

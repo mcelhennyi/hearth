@@ -73,8 +73,8 @@
 | T-FR-0006-01 | System tiles & strips API | done | done | done | `FR-0006`. DF-U1, DF-U2. 16 pytest; [PR #31](https://github.com/mcelhennyi/hearth/pull/31) → `feat/FR-0006-design-language`. |
 | T-FR-0006-02 | Dashboard layout API | done | done | done | `FR-0006`. GET/PUT layout; 10 pytest; [PR #32](https://github.com/mcelhennyi/hearth/pull/32). |
 | T-FR-0006-03 | Mantle postMessage bridge | done | done | done | `FR-0006`. Shell bridge; 24 Vitest; [PR #33](https://github.com/mcelhennyi/hearth/pull/33). |
-| T-FR-0006-04 | User preferences API + Settings modal | done | done | done | `FR-0006`. GET/PUT `/api/user/preferences`; SettingsModal + ThemeProvider; 5 pytest + 4 new Vitest (28 total). PR → `feat/FR-0006-design-language`. |
-| T-FR-0006-05 | Plugin frame state UI | — | — | — | `FR-0006` **design**. DG-U7. Deps: T-FR-0006-03. |
+| T-FR-0006-04 | User preferences API + Settings modal | done | done | done | `FR-0006`. GET/PUT `/api/user/preferences`; SettingsModal + ThemeProvider; [PR #40](https://github.com/mcelhennyi/hearth/pull/40). |
+| T-FR-0006-05 | Plugin frame state UI | done | done | done | `FR-0006`. Frame state + overlays; 38 Vitest; [PR #39](https://github.com/mcelhennyi/hearth/pull/39). |
 | T-FR-0006-06 | Chrome slot DOM + rendering | — | — | — | `FR-0006` **design**. DG-U6 shell-side. Deps: T-FR-0006-03. |
 | T-FR-0006-07 | Dashboard grid + block primitives | — | — | — | `FR-0006` **design**. Core RW-U1. Deps: T-FR-0006-02. |
 | T-FR-0006-08 | Empty state | — | — | — | `FR-0006` **design**. DG-U4. Deps: T-FR-0006-07. |
