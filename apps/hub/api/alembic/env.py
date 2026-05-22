@@ -15,6 +15,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
+from app import models_dashboard  # noqa: F401 — register dashboard_layouts table
 from app.models import Base
 
 config = context.config

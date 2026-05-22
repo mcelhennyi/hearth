@@ -6,6 +6,7 @@ Routes:
   /api/settings        — hub settings (routes/settings.py)
   /api/auth/*          — single-user auth (routes/auth.py)
   /api/push/*          — web push subscribe/unsubscribe/test (routes/push.py)
+  /api/dashboard/layout — per-user dashboard grid (routes/dashboard.py)
 
 DB: async SQLite at HEARTH_VAR_DIR/hearth.db via db.py + Alembic migrations.
 """
