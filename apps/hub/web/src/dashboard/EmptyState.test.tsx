@@ -9,6 +9,7 @@ import { SettingsProvider } from '../shell/SettingsContext'
 import { SettingsModal } from '../shell/SettingsModal'
 import { ThemeProvider } from '../theme/ThemeProvider'
 import type { Bridge } from '../shell/types'
+import { EditModeProvider } from './edit'
 import { DashboardView } from './DashboardView'
 import { EmptyState } from './EmptyState'
 import type { DashboardLayout } from './types'
@@ -40,8 +41,10 @@ function Harness({ children }: { children: ReactNode }) {
     <MemoryRouter>
       <SettingsProvider>
         <ThemeProvider bridge={bridge}>
-          {children}
-          <SettingsModal isDesktop={false} />
+          <EditModeProvider>
+            {children}
+            <SettingsModal isDesktop={false} />
+          </EditModeProvider>
         </ThemeProvider>
       </SettingsProvider>
     </MemoryRouter>
