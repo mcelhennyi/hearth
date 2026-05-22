@@ -20,6 +20,7 @@ export type {
   OutboundType,
   ToastLevel,
   HapticStyle,
+  OverlayAction,
   PluginBridge,
 } from "./types";
 export { isInboundMessage } from "./types";
@@ -57,3 +58,6 @@ export { Input, type InputProps } from "./components/Input";
 export { TextArea, type TextAreaProps } from "./components/TextArea";
 export { Select, type SelectProps, type SelectOption } from "./components/Select";
 export { Switch, type SwitchProps } from "./components/Switch";
+export { Sheet, type SheetProps } from "./components/Sheet";
+export { Dialog, type DialogProps } from "./components/Dialog";
+export { Toast, type ToastProps } from "./components/Toast";

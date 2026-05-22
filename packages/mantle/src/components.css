@@ -365,3 +365,59 @@
   font-size: 15px;
   color: var(--hearth-fg);
 }
+
+/* Overlays — FR-0006 T-FR-0006-13 (in-iframe fallback when shell ignores) */
+
+.mantle-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: var(--hearth-safe-top) 0 var(--hearth-safe-bottom);
+}
+
+.mantle-overlay--dialog {
+  align-items: center;
+  padding: 16px;
+}
+
+.mantle-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: color-mix(in srgb, var(--hearth-bg) 70%, transparent);
+  cursor: pointer;
+}
+
+.mantle-overlay__panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-height: min(90vh, 640px);
+  background: var(--hearth-surface);
+  color: var(--hearth-fg);
+  border-radius: var(--hearth-radius-lg) var(--hearth-radius-lg) 0 0;
+  box-shadow: 0 -8px 32px color-mix(in srgb, var(--hearth-bg) 40%, transparent);
+  overflow: auto;
+}
+
+.mantle-overlay__panel--dialog {
+  max-width: 480px;
+  border-radius: var(--hearth-radius-lg);
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--hearth-bg) 50%, transparent);
+}
+
+.mantle-overlay__title {
+  padding: 16px 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.mantle-overlay__body {
+  padding: 16px;
+}

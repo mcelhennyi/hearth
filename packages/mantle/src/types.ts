@@ -173,6 +173,23 @@ export interface OutboundChromeUnmountMessage {
   id: string;
 }
 
+/** Overlay escape (plugin → shell). Shell rendering deferred; v0 accepts + logs. */
+export type OverlayAction = "open" | "close";
+
+export interface OutboundSheetMessage {
+  type: "hearth.sheet";
+  action: OverlayAction;
+  id: string;
+  title?: string;
+}
+
+export interface OutboundDialogMessage {
+  type: "hearth.dialog";
+  action: OverlayAction;
+  id: string;
+  title?: string;
+}
+
 export type OutboundMessage =
   | OutboundTitleMessage
   | OutboundToastMessage
@@ -181,7 +198,9 @@ export type OutboundMessage =
   | OutboundNotifyMessage
   | OutboundReadyMessage
   | OutboundChromeMountMessage
-  | OutboundChromeUnmountMessage;
+  | OutboundChromeUnmountMessage
+  | OutboundSheetMessage
+  | OutboundDialogMessage;
 
 export type OutboundType = OutboundMessage["type"];
 
