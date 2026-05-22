@@ -1,12 +1,14 @@
-# CURRENT — feat/FR-0006-design-language
+# CURRENT — T-FR-0006-09 edit mode
 
-**Branch:** `feat/FR-0006-design-language`  
-**Worktree:** `.worktrees/FR-0006-design-language/feature/`
+**Branch:** `feat/FR-0006-design-language-T-FR-0006-09-edit-mode`  
+**Worktree:** `.worktrees/FR-0006-design-language/T-FR-0006-09-edit-mode/`
 
-## Status
+## Phase: VAL (complete)
 
-W0 + W1 integrated on feature branch (tickets 01–07, 10–12, 14). API 269 pytest; hub web 48 Vitest; mantle 33 Vitest.
+- **TEST:** 6 Vitest in `apps/hub/web/src/dashboard/edit/edit.test.tsx` (long-press, Edit button, collisions, reduced-motion, PUT Done, no PUT Cancel).
+- **DEV:** `apps/hub/web/src/dashboard/edit/` — EditModeProvider, EditGrid, EditChrome, BlockPicker, collisions + layout draft helpers; wired in `DashboardView` + `App.tsx`; `--hearth-error` token.
+- **VAL:** `npx vitest run src/dashboard` — 12 passed (4 files). API unchanged (no `./develop test`).
 
-## Next
+## Handoff
 
-W2 frontier: **T-FR-0006-08**, **09**, **13** (deps 07, 12). Then **15** (publish). Not feature-complete until all 15 VAL-done.
+PR → `feat/FR-0006-design-language`. Parent merges ticket branch.

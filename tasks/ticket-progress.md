@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | FR-0006 W2 batch (next) |
-| **Active phase** | — |
-| **Branch / worktree** | `feat/FR-0006-design-language` @ `.worktrees/FR-0006-design-language/feature/` |
+| **Active ticket** | T-FR-0006-09 (VAL handoff) |
+| **Active phase** | VAL |
+| **Branch / worktree** | `feat/FR-0006-design-language-T-FR-0006-09-edit-mode` @ `.worktrees/FR-0006-design-language/T-FR-0006-09-edit-mode/` |
 | **Session status** | `handoff` |
-| **Next agent should** | `/identify-frontier` then `/develop-frontier` for W2: **T-FR-0006-08**, **09**, **13** (deps 07, 12). Feature-complete gate needs **15** too. |
+| **Next agent should** | Merge PR for **09** into `feat/FR-0006-design-language`; continue W2 (**08**, **13**) or **15**. |
 
 ### Parallel streams
 
@@ -71,7 +71,7 @@ W1 merged into `feat/FR-0006-design-language` (PRs [#35](https://github.com/mcel
 | T-FR-0006-06 | Chrome slot DOM + rendering | done | done | done | `FR-0006`. [PR #37](https://github.com/mcelhennyi/hearth/pull/37). |
 | T-FR-0006-07 | Dashboard grid + block primitives | done | done | done | `FR-0006`. Grid + blocks; 30 Vitest; PR → `feat/FR-0006-design-language`. |
 | T-FR-0006-08 | Empty state | — | — | — | `FR-0006` **design**. DG-U4. Deps: T-FR-0006-07. |
-| T-FR-0006-09 | Edit mode | — | — | — | `FR-0006` **design**. DG-U2, DG-U3, RW-U4. Deps: T-FR-0006-07, T-FR-0006-02. |
+| T-FR-0006-09 | Edit mode | done | done | done | `FR-0006`. Edit mode + picker; 6 Vitest (`edit.test.tsx`); PR → `feat/FR-0006-design-language`. |
 | T-FR-0006-10 | @kindling/mantle package scaffold | done | done | done | `FR-0006`. `packages/mantle/`; [PR #34](https://github.com/mcelhennyi/hearth/pull/34). |
 | T-FR-0006-11 | @kindling/mantle base components | done | done | done | `FR-0006`. [PR #41](https://github.com/mcelhennyi/hearth/pull/41). |
 | T-FR-0006-12 | @kindling/mantle hooks | done | done | done | `FR-0006`. [PR #35](https://github.com/mcelhennyi/hearth/pull/35). |

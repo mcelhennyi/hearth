@@ -1,7 +1,8 @@
-import { useSyncExternalStore } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 
 import './dashboard.css'
-import { Grid } from './Grid'
+import './edit/edit.css'
+import { BlockPicker, EditGrid, useEditMode } from './edit'
 import { useDashboardData } from './useDashboardData'
 
 function useDesktopLayout(): boolean {
@@ -19,7 +20,24 @@ function useDesktopLayout(): boolean {
 export function DashboardView() {
   const isDesktop = useDesktopLayout()
   const columns = isDesktop ? 8 : 4
-  const { layout, tiles, strip, plugins, loading, offline, error, refresh } = useDashboardData()
+  const { layout, tiles, allTiles, strip, plugins, loading, offline, error, refresh, setLayout } =
+    useDashboardData()
+  const edit = useEditMode()
+
+  useEffect(() => {
+    if (!layout) {
+      edit.registerSource(null)
+      return
+    }
+    edit.registerSource({
+      layout,
+      columns,
+      plugins,
+      allTiles,
+      offline,
+      onLayoutSaved: setLayout,
+    })
+  }, [allTiles, columns, edit.registerSource, layout, offline, plugins, setLayout])
 
   if (loading && !layout) {
     return (
@@ -39,8 +57,8 @@ export function DashboardView() {
 
   return (
     <main className="dashboard-main" data-testid="dashboard-view">
-      <Grid
-        layout={layout}
+      <EditGrid
+        viewLayout={layout}
         tiles={tiles}
         strip={strip}
         plugins={plugins}
@@ -48,6 +66,7 @@ export function DashboardView() {
         offline={offline}
         onStripDismissed={refresh}
       />
+      <BlockPicker />
     </main>
   )
 }

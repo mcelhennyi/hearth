@@ -6,12 +6,15 @@ import type { DashboardLayout, PluginRegistryEntry, SystemStrip, SystemTile } fr
 export type DashboardDataState = {
   layout: DashboardLayout | null
   tiles: SystemTile[]
+  /** Full catalogue including user-hidden tiles (edit picker). */
+  allTiles: SystemTile[]
   strip: SystemStrip | null
   plugins: PluginRegistryEntry[]
   loading: boolean
   offline: boolean
   error: string | null
   refresh: () => void
+  setLayout: (layout: DashboardLayout) => void
 }
 
 const EMPTY_LAYOUT: DashboardLayout = { version: 1, columns: 4, blocks: [] }
@@ -27,6 +30,7 @@ async function fetchJson<T>(url: string): Promise<T | null> {
 export function useDashboardData(): DashboardDataState {
   const [layout, setLayout] = useState<DashboardLayout | null>(null)
   const [tiles, setTiles] = useState<SystemTile[]>([])
+  const [allTiles, setAllTiles] = useState<SystemTile[]>([])
   const [strip, setStrip] = useState<SystemStrip | null>(null)
   const [plugins, setPlugins] = useState<PluginRegistryEntry[]>([])
   const [loading, setLoading] = useState(true)
@@ -69,7 +73,9 @@ export function useDashboardData(): DashboardDataState {
           }
         }
 
-        setTiles(tilesRes?.tiles?.filter((t) => !t.hidden_by_user && !t.suppressed) ?? [])
+        const catalogue = tilesRes?.tiles ?? []
+        setAllTiles(catalogue)
+        setTiles(catalogue.filter((t) => !t.hidden_by_user && !t.suppressed))
         setStrip(stripRes?.strip && !stripRes.strip.dismissed ? stripRes.strip : null)
 
         const pluginRows = Array.isArray(pluginsRes)
@@ -101,5 +107,10 @@ export function useDashboardData(): DashboardDataState {
     }
   }, [tick])
 
-  return { layout, tiles, strip, plugins, loading, offline, error, refresh }
+  const applyLayout = useCallback((next: DashboardLayout) => {
+    setLayout(next)
+    void writeLayoutCache(next)
+  }, [])
+
+  return { layout, tiles, allTiles, strip, plugins, loading, offline, error, refresh, setLayout: applyLayout }
 }

@@ -6,6 +6,7 @@ import 'fake-indexeddb/auto'
 
 import { writeLayoutCache } from './layoutCache'
 import { DashboardView } from './DashboardView'
+import { EditModeProvider } from './edit'
 import type { DashboardLayout } from './types'
 
 const CACHED: DashboardLayout = {
@@ -58,7 +59,9 @@ describe('DashboardView offline cache', () => {
 
     render(
       <MemoryRouter>
-        <DashboardView />
+        <EditModeProvider>
+          <DashboardView />
+        </EditModeProvider>
       </MemoryRouter>,
     )
 
