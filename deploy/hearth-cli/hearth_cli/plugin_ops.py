@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
+import sys
 from pathlib import Path
 from typing import TextIO
 
@@ -36,17 +38,18 @@ def _plugin_root_candidates(hearth_dir: Path, repo_root: Path | None, slug: str)
     return candidates
 
 
-def resolve_plugin_root(
+def _matching_plugin_roots(
     hearth_dir: Path,
     slug: str,
     *,
     repo_root: Path | None = None,
-) -> Path:
-    """Locate a plugin tree by Tinder slug under install or deploy checkout."""
+) -> list[Path]:
+    """All trees whose ``tinder.toml`` slug matches ``slug``."""
     normalized = slug.strip()
     if not normalized:
         raise PluginBuildError("plugin slug is required")
 
+    matches: list[Path] = []
     seen: set[Path] = set()
     for candidate in _plugin_root_candidates(hearth_dir, repo_root, normalized):
         resolved = candidate.resolve()
@@ -61,23 +64,97 @@ def resolve_plugin_root(
         except (OSError, TinderManifestError) as exc:
             raise PluginBuildError(str(exc)) from exc
         if manifest.slug == normalized:
-            return resolved
+            matches.append(resolved)
+    return matches
 
-    locations = f"{hearth_dir / 'plugins' / normalized}"
+
+def resolve_plugin_root(
+    hearth_dir: Path,
+    slug: str,
+    *,
+    repo_root: Path | None = None,
+) -> Path:
+    """Locate a plugin tree by Tinder slug under install or deploy checkout."""
+    matches = _matching_plugin_roots(hearth_dir, slug, repo_root=repo_root)
+    if matches:
+        return matches[0]
+
+    locations = f"{hearth_dir / 'plugins' / slug.strip()}"
     if repo_root is not None:
         locations += f" or under {repo_root / 'plugins'}"
     raise PluginBuildError(
-        f"plugin {normalized!r} not found ({locations}). "
+        f"plugin {slug.strip()!r} not found ({locations}). "
         "Install with `hearth --plugin --add` or check the slug in tinder.toml.",
     )
+
+
+def resolve_plugin_root_for_build(
+    hearth_dir: Path,
+    slug: str,
+    *,
+    repo_root: Path | None = None,
+) -> Path:
+    """Pick a plugin tree that has ``web/package.json`` for UI builds."""
+    matches = _matching_plugin_roots(hearth_dir, slug, repo_root=repo_root)
+    if not matches:
+        locations = f"{hearth_dir / 'plugins' / slug.strip()}"
+        if repo_root is not None:
+            locations += f" or under {repo_root / 'plugins'}"
+        raise PluginBuildError(
+            f"plugin {slug.strip()!r} not found ({locations}). "
+            "Install with `hearth --plugin --add` or check the slug in tinder.toml.",
+        )
+
+    with_web = [root for root in matches if (root / "web" / "package.json").is_file()]
+    if not with_web:
+        tried = ", ".join(str(p) for p in matches)
+        raise PluginBuildError(
+            f"plugin {slug.strip()!r} has no web/package.json in any checkout ({tried}). "
+            "Run `git submodule update --init` in HEARTH_REPO_ROOT or re-run "
+            "`hearth --plugin --add` from a full plugin tree.",
+        )
+
+    install_root = (hearth_dir / "plugins" / slug.strip()).resolve()
+    for root in with_web:
+        if root == install_root:
+            return root
+    return with_web[0]
 
 
 def resolve_plugin_web_dir(plugin_root: Path) -> Path:
     web_dir = plugin_root / "web"
     if not (web_dir / "package.json").is_file():
-        msg = f"hearth plugin build: no web/package.json under {plugin_root}"
+        msg = f"no web/package.json under {plugin_root}"
         raise PluginBuildError(msg)
     return web_dir
+
+
+def publish_plugin_dist_to_install(
+    build_root: Path,
+    hearth_dir: Path,
+    slug: str,
+    *,
+    stdout: TextIO,
+) -> None:
+    """Copy ``web/dist`` into ``hearth/plugins/<slug>/`` when the build used another checkout."""
+    install_root = (hearth_dir / "plugins" / slug.strip()).resolve()
+    if build_root.resolve() == install_root:
+        return
+
+    src_dist = build_root / "web" / "dist"
+    dest_dist = install_root / "web" / "dist"
+    if not src_dist.is_dir():
+        return
+
+    dest_dist.parent.mkdir(parents=True, exist_ok=True)
+    if dest_dist.exists():
+        shutil.rmtree(dest_dist)
+    shutil.copytree(src_dist, dest_dist)
+    print(
+        f"hearth plugin build: published UI to {dest_dist} "
+        "(compose mounts hearth/plugins/<slug>)",
+        file=stdout,
+    )
 
 
 def npm_install_and_build_script(web_dir: Path) -> str:
@@ -134,8 +211,10 @@ def cmd_plugin_build(
     *,
     env: dict[str, str] | None = None,
     runner: subprocess.CompletedProcess[str] | None = None,
+    stdout: TextIO | None = None,
 ) -> int:
     """Build ``web/dist`` for a registered plugin slug."""
+    out = stdout if stdout is not None else sys.stdout
     hearth = resolved.hearth_dir
     if not hearth.is_dir():
         print(f"hearth plugin build: missing hearth directory: {hearth}", file=stderr)
@@ -148,7 +227,7 @@ def cmd_plugin_build(
         repo_root = None
 
     try:
-        plugin_root = resolve_plugin_root(hearth, slug, repo_root=repo_root)
+        plugin_root = resolve_plugin_root_for_build(hearth, slug, repo_root=repo_root)
         web_dir = resolve_plugin_web_dir(plugin_root)
     except PluginBuildError as exc:
         print(f"hearth plugin build: {exc}", file=stderr)
@@ -163,9 +242,12 @@ def cmd_plugin_build(
         print(f"hearth plugin build: missing build output at {dist_index}", file=stderr)
         return 1
 
-    print(f"hearth plugin build: built {slug} UI at {web_dir / 'dist'}")
+    publish_plugin_dist_to_install(plugin_root, hearth, slug, stdout=out)
+
+    print(f"hearth plugin build: built {slug} UI at {web_dir / 'dist'}", file=out)
     print(
         "hearth plugin build: restart the plugin service to pick up static assets "
         f"(e.g. `hearth restart {slug}` or `hearth compose -- up -d --build {slug}`).",
+        file=out,
     )
     return 0
