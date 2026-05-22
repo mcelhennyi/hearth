@@ -2,9 +2,10 @@
 	path = .skeleton
 	url = git@github.com:mcelhennyi/.skeleton.git
 	branch = main
-[submodule "apps/groceries"]
-	path = apps/groceries
-	url = git@github.com:mcelhennyi/grocery-list.git
 [submodule "kindling"]
 	path = kindling
 	url = git@github.com:mcelhennyi/kindling.git
+[submodule "plugins/third-party/grocery-list"]
+	path = plugins/third-party/grocery-list
+	url = git@github.com:mcelhennyi/grocery-list.git
+	branch = master
