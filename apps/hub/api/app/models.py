@@ -80,6 +80,27 @@ class Setting(Base):
     value: Mapped[str] = mapped_column(Text, nullable=False)
 
 
+class UserSystemState(Base):
+    """Per-user (single-user v0) hide/dismiss state for system tiles and strips.
+
+    Schema authority: docs/design/dashboard.md §DF-U1, §DF-U2.
+
+      scope    "tile" | "strip"
+      item_id  tile or strip id (e.g. "ca-trust", "pwa-install")
+      hidden   True when tile is user-hidden (tiles only)
+      dismissed_at  set when strip was dismissed (strips only)
+    """
+
+    __tablename__ = "user_system_state"
+
+    scope: Mapped[str] = mapped_column(String(16), primary_key=True)
+    item_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    hidden: Mapped[bool] = mapped_column(default=False, nullable=False)
+    dismissed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+
 class AuditLog(Base):
     """Append-only record of plugin lifecycle actions."""
 
