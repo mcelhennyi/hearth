@@ -6,13 +6,15 @@
 |-------|--------|
 | **Active ticket** | — |
 | **Active phase** | — |
-| **Branch / worktree** | `feat/FR-0006-design-language` @ `.worktrees/FR-0006-design-language/feature/` (`110dd0a`) |
+| **Branch / worktree** | `feat/FR-0006-design-language` @ `.worktrees/FR-0006-design-language/feature/` (`df20872`) |
 | **Session status** | `handoff` |
-| **Next agent should** | Human merge FR-0006 PR to **`main`**; configure **`NPM_TOKEN`**; tag `kindling-mantle-v0.1.0`. |
+| **Next agent should** | Merge hearth [PR #46](https://github.com/mcelhennyi/hearth/pull/46) to **`main`**. Kindling FR-0001 done — submodule `kindling` @ `f64b6a1`. |
 
 ### Parallel streams
 
-**FR-0006** feature-complete — PR to **`main`** pending. [`90-closeout.md`](feature-history/FR-0006-design-language/90-closeout.md).
+**FR-0006** feature-complete — [PR #46](https://github.com/mcelhennyi/hearth/pull/46) to **`main`** pending. [`90-closeout.md`](feature-history/FR-0006-design-language/90-closeout.md).
+
+**Kindling FR-0001** — merged [kindling PR #1](https://github.com/mcelhennyi/kindling/pull/1) @ `f64b6a1`; hearth submodule @ `df20872`.
 
 ---
 
