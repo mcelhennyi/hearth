@@ -1,16 +1,8 @@
 // PluginFrame — sandboxed iframe for an app plugin at /<slug>/.
 //
 // All frames stay mounted when inactive (display:none) to preserve plugin state.
-// postMessage protocol (mantle-ui.md §"postMessage protocol"):
-//   shell → plugin: {type:"hearth.theme", tokens}
-//                   {type:"hearth.user", user}
-//                   {type:"hearth.online", online}
-//   plugin → shell: {type:"hearth.title", title}
-//                   {type:"hearth.toast", level, message}
-//                   {type:"hearth.nav", path}
-//                   {type:"hearth.haptic", style}
-//                   {type:"hearth.chrome.mount", …}
-//                   {type:"hearth.chrome.unmount", …}
+// The postMessage protocol is owned by `shell/usePostMessageBridge.ts` (T-FR-0006-03);
+// see `shell/types.ts` and `docs/design/mantle-ui.md §"postMessage protocol"`.
 
 export interface PluginFrameProps {
   slug: string
