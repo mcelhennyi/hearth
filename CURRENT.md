@@ -5,8 +5,8 @@
 
 ## Status
 
-W2 integrating: **T-13** merged; **T-08** merging; **T-09** pending.
+W2 integrated (08, 09, 13). Remaining: **T-FR-0006-15** (publish) before feature-complete gate.
 
 ## Next
 
-Merge T-FR-0006-09 edit mode → revalidate → push → W3 **T-FR-0006-15** (publish) only.
+Revalidate → push → `/develop-frontier` or single ticket for **15**.

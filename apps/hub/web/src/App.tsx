@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 
 import { DashboardView } from './dashboard/DashboardView'
+import { EditChrome, EditModeProvider } from './dashboard/edit'
 import { isMantleEmbedMode } from './mantle/embedMode'
 import { InstallPrompt, PluginFrame } from './mantle'
 import { MantleEmbedApp } from './MantleEmbedApp'
@@ -46,6 +47,7 @@ function App() {
   const activeSlug = activePluginSlug(location.pathname, pluginSlugs)
   const activePlugin = activeSlug ? plugins.find((p) => p.slug === activeSlug) : undefined
   const isAppMode = activeSlug !== null
+  const isDashboard = !isAppMode
   const navTabs = [homeTab, ...plugins.map((plugin) => ({ key: plugin.slug, label: plugin.name, path: `/${plugin.slug}` }))]
 
   const bridge = usePostMessageBridge()
@@ -79,6 +81,7 @@ function App() {
   return (
     <SettingsProvider>
       <ThemeProvider bridge={bridge}>
+        <EditModeProvider>
         <div className={shellClass}>
           {isDesktop && isAppMode ? (
             <header
@@ -110,6 +113,7 @@ function App() {
                 <div className="flex items-center gap-3">
                   <img src="/logo.svg" alt="Hearth" className="h-6 w-6" />
                   <span className="font-semibold">Hearth</span>
+                  <EditChrome isDesktop isDashboard={isDashboard} />
                 </div>
                 <ul className="flex items-center gap-4 text-sm">
                   {navTabs.map((tab) => (
@@ -151,9 +155,12 @@ function App() {
             </header>
           ) : (
             <header className="border-b border-[var(--hearth-surface)] bg-[var(--hearth-bg)] px-4 pb-3 pt-[calc(0.75rem+var(--hearth-safe-top))]">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-3">
                 <h2 className="text-lg font-semibold">Hearth</h2>
-                <span className="text-sm text-[var(--hearth-muted)]">User</span>
+                <EditChrome isDesktop={false} isDashboard={isDashboard} />
+                {!isDashboard ? (
+                  <span className="text-sm text-[var(--hearth-muted)]">User</span>
+                ) : null}
               </div>
             </header>
           )}
@@ -249,6 +256,7 @@ function App() {
 
           <SettingsModal isDesktop={isDesktop} />
         </div>
+        </EditModeProvider>
       </ThemeProvider>
     </SettingsProvider>
   )
