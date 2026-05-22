@@ -111,7 +111,7 @@ function TestHarness({
     <MemoryRouter>
       <EditModeProvider>
         <RegisterEditSource layout={layout} />
-        <EditChrome isDesktop={isDesktop} isDashboard />
+        <EditChrome isDashboard />
         <EditGrid
           viewLayout={layout}
           tiles={TILES}

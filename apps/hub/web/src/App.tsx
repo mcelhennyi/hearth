@@ -119,7 +119,7 @@ function App() {
                   <button type="button" className="user-btn" aria-label="Account">
                     User
                   </button>
-                  {isDashboard ? <EditChrome isDesktop isDashboard={isDashboard} /> : null}
+                  {isDashboard ? <EditChrome isDashboard={isDashboard} /> : null}
                 </div>
               </nav>
             </header>
@@ -148,7 +148,7 @@ function App() {
             <header className="top-bar border-b border-[var(--hearth-surface)] bg-[var(--hearth-bg)] px-4 pb-3 pt-[calc(0.75rem+var(--hearth-safe-top))]">
               <div className="flex items-center gap-3">
                 <h2 className="min-w-0 flex-1 text-lg font-semibold">Hearth</h2>
-                {isDashboard ? <EditChrome isDesktop={false} isDashboard={isDashboard} /> : null}
+                {isDashboard ? <EditChrome isDashboard={isDashboard} /> : null}
               </div>
             </header>
           )}

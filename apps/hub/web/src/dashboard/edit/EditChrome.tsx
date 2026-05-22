@@ -1,12 +1,11 @@
 import { useEditMode } from './EditModeContext'
 
 type Props = {
-  isDesktop: boolean
   isDashboard: boolean
 }
 
 /** Top-bar edit controls — docs/design/dashboard.md § Edit mode */
-export function EditChrome({ isDesktop, isDashboard }: Props) {
+export function EditChrome({ isDashboard }: Props) {
   const edit = useEditMode()
 
   if (!isDashboard) {

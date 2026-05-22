@@ -12,7 +12,7 @@ type Props = {
   isAppMode: boolean
   plugins: PluginNavEntry[]
   bottomItems: ChromeRegistryEntry[]
-  onChromeInvoke: (slotId: string, itemId: string) => void
+  onChromeInvoke: (slotId: string, itemId?: string) => void
 }
 
 function navTabClass(isActive: boolean, isDesktop: boolean): string {
