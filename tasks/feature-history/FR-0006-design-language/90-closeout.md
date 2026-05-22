@@ -1,6 +1,6 @@
 # FR-0006 closeout — Design-language unification
 
-**PR pending:** feature integration PR to **`main`** — see [`handoffs/2026-05-21-finish-feature.md`](handoffs/2026-05-21-finish-feature.md). Refresh merge line after merge.
+**PR pending:** [**PR #46**](https://github.com/mcelhennyi/hearth/pull/46) → **`main`** @ `6812b38`. Refresh merge line after merge.
 
 ## Executive summary
 
