@@ -43,6 +43,15 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: process.env.HEARTH_API_PROXY ?? 'http://127.0.0.1:8200',
+        changeOrigin: true,
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],

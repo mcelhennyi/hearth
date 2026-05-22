@@ -133,7 +133,7 @@ function ChromeItemView({
 
 function OverflowMenu({
   overflow,
-  showLabel,
+  showLabel: _showLabel,
   onInvoke,
 }: {
   overflow: ChromeRegistryEntry[]
