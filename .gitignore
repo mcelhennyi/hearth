@@ -1,5 +1,6 @@
 # Dependencies (add patterns when you choose a stack)
 node_modules/
+.pnpm-store/
 .venv/
 .venv-*/
 

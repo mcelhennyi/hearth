@@ -22,6 +22,7 @@
 | FR-0003 | `tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md` |
 | FR-0004 | `tasks/feature-history/FR-0004-centralized-users-auth/tickets.md` *(parked)* |
 | FR-0005 | `tasks/feature-history/FR-0005-remote-build-pi-deploy/tickets.md` *(design: Mac build → Pi `192.168.1.62`)* |
+| FR-0006 | `tasks/feature-history/FR-0006-design-language/tickets.md` *(design language / Mantle unification)* |
 
 ---
 
@@ -125,6 +126,12 @@ graph LR
   TFR0005_02_VAL --> TFR0005_04_TEST
   TFR0005_02_VAL --> TFR0005_05_TEST
 
+  %% FR-0006 — design language (W0: 01/02/03/10 parallel; see feature 20-tickets-dag.md)
+  TFR0006_10_TEST --> TFR0006_10_DEV --> TFR0006_10_VAL
+  TFR0006_10_VAL --> TFR0006_11_TEST
+  TFR0006_10_VAL --> TFR0006_12_TEST
+  TFR0006_10_VAL --> TFR0006_14_TEST
+
   class TFR0000_01_TEST,TFR0000_01_DEV,TFR0000_01_VAL triadDone
   class TFR0002_01_TEST,TFR0002_01_DEV,TFR0002_01_VAL triadDone
   class TFR0002_02_TEST,TFR0002_02_DEV,TFR0002_02_VAL triadDone
@@ -154,6 +161,7 @@ graph LR
   class TFR0001_07_TEST,TFR0001_07_DEV,TFR0001_07_VAL triadDone
   class TFR0001_09_TEST,TFR0001_09_DEV,TFR0001_09_VAL triadDone
   class TFR0001_10_TEST,TFR0001_10_DEV,TFR0001_10_VAL triadDone
+  class TFR0006_10_TEST,TFR0006_10_DEV,TFR0006_10_VAL triadDone
 
   classDef triadDone fill:#2e7d32,color:#fff
 ```
