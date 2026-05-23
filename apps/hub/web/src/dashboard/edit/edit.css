@@ -81,9 +81,12 @@
 
 .dashboard-block-wrap--dragging {
   opacity: 0.92;
-  animation: none;
   cursor: grabbing;
   touch-action: none;
+}
+
+.dashboard-grid--edit .dashboard-block-wrap--edit.dashboard-block-wrap--dragging {
+  animation: none;
 }
 
 /* Edit mode: movement only — no text selection or callouts while rearranging */

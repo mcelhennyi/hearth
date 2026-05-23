@@ -33,6 +33,16 @@
   padding-bottom: calc(var(--hearth-grid-pad) + var(--hearth-safe-bottom, 0px) + 72px);
 }
 
+@media (max-width: 767px) {
+  .dashboard-scroll,
+  .dashboard-scroll * {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
 @media (min-width: 768px) {
   .dashboard-scroll {
     padding-bottom: calc(var(--hearth-grid-pad) + var(--hearth-safe-bottom, 0px) + 72px);

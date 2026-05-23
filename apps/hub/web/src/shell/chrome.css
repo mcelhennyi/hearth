@@ -209,6 +209,24 @@
   min-height: 100svh;
 }
 
+@media (max-width: 767px) {
+  .shell,
+  .shell * {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .shell input,
+  .shell textarea,
+  .shell select,
+  .shell [contenteditable='true'] {
+    user-select: text;
+    -webkit-user-select: text;
+  }
+}
+
 .shell-main {
   min-height: 0;
 }

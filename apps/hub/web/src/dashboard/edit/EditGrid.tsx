@@ -41,7 +41,23 @@ type DragVisual = {
   dy: number
 }
 
+type BlockPointerSnapshot = {
+  clientX: number
+  clientY: number
+  pointerId: number
+  targetEl: HTMLDivElement
+}
+
 const BLOCK_LONG_PRESS_MS = 600
+
+function snapshotBlockPointer(event: ReactPointerEvent<HTMLDivElement>): BlockPointerSnapshot {
+  return {
+    clientX: event.clientX,
+    clientY: event.clientY,
+    pointerId: event.pointerId,
+    targetEl: event.currentTarget,
+  }
+}
 
 export function EditGrid({
   viewLayout,
@@ -81,27 +97,22 @@ export function EditGrid({
   }, [])
 
   const beginBlockDrag = useCallback(
-    (blockId: string, event: ReactPointerEvent<HTMLDivElement>, blocks: DashboardLayout['blocks']) => {
-      if ((event.target as HTMLElement).closest('.dashboard-edit-remove')) {
-        return
-      }
+    (blockId: string, pointer: BlockPointerSnapshot, blocks: DashboardLayout['blocks']) => {
       const block = blocks.find((b) => b.id === blockId)
       if (!block || !gridRef.current) {
         return
       }
-      event.preventDefault()
-      event.stopPropagation()
-      const wrapRect = event.currentTarget.getBoundingClientRect()
+      const wrapRect = pointer.targetEl.getBoundingClientRect()
       dragBlockId.current = blockId
       dragOrigin.current = { x: block.x, y: block.y }
       dragGrabOffset.current = {
-        x: event.clientX - wrapRect.left,
-        y: event.clientY - wrapRect.top,
+        x: pointer.clientX - wrapRect.left,
+        y: pointer.clientY - wrapRect.top,
       }
-      dragStartClient.current = { x: event.clientX, y: event.clientY }
+      dragStartClient.current = { x: pointer.clientX, y: pointer.clientY }
       setDragVisual({ blockId, dx: 0, dy: 0 })
       try {
-        event.currentTarget.setPointerCapture(event.pointerId)
+        pointer.targetEl.setPointerCapture(pointer.pointerId)
       } catch {
         /* capture may fail on some browsers */
       }
@@ -130,17 +141,20 @@ export function EditGrid({
       }
 
       if (edit.active) {
-        beginBlockDrag(blockId, event, layout.blocks)
+        event.preventDefault()
+        event.stopPropagation()
+        beginBlockDrag(blockId, snapshotBlockPointer(event), layout.blocks)
         return
       }
 
       event.stopPropagation()
       clearBlockLongPress()
       const target = event.currentTarget
+      const pointer = snapshotBlockPointer(event)
       blockLongPressTimer.current = setTimeout(() => {
         blockLongPressTimer.current = null
         edit.enterEdit()
-        beginBlockDrag(blockId, event, viewLayout.blocks)
+        beginBlockDrag(blockId, pointer, viewLayout.blocks)
       }, BLOCK_LONG_PRESS_MS)
 
       const cancelLongPress = () => {

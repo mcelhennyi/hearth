@@ -69,8 +69,9 @@ export function usePluginFrameState({
   )
 
   const tryMounted = useCallback(() => {
-    // v0: iframe load is enough to show plugin UI; ack (title/ready) may arrive before/after load.
-    if (hasLoadedRef.current) {
+    // A browser load event can still fire for proxy error pages; require a same-frame
+    // plugin ack before dropping the shell overlay.
+    if (hasLoadedRef.current && hasAckRef.current) {
       applyState('mounted')
     }
   }, [applyState])

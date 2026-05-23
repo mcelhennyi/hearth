@@ -196,6 +196,29 @@ describe('dashboard edit mode', () => {
     expect(grid).toHaveClass('dashboard-grid--reduced-motion')
   })
 
+  it('starts dragging from a block long-press without reusing a stale pointer event', async () => {
+    vi.useFakeTimers()
+    render(<TestHarness />)
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    const block = screen.getByTestId('dashboard-block-wrap-b-a')
+    fireEvent.pointerDown(block, { clientX: 20, clientY: 20, pointerId: 1 })
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(600)
+    })
+
+    expect(screen.getByTestId('dashboard-edit-done')).toBeInTheDocument()
+    expect(block).toHaveClass('dashboard-block-wrap--dragging')
+
+    fireEvent.pointerMove(block, { clientX: 140, clientY: 20, pointerId: 1 })
+    expect(block).toHaveStyle({ transform: 'translate(120px, 0px)' })
+
+    fireEvent.pointerUp(block, { clientX: 140, clientY: 20, pointerId: 1 })
+    expect(block).not.toHaveClass('dashboard-block-wrap--dragging')
+  })
+
   it('PUTs layout on Done', async () => {
     const putMock = vi.fn().mockResolvedValue({
       ok: true,
