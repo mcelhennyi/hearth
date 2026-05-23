@@ -210,6 +210,7 @@ describe('dashboard edit mode', () => {
     })
 
     expect(screen.getByTestId('dashboard-edit-done')).toBeInTheDocument()
+    expect(block).toHaveClass('dashboard-block-wrap--app-shortcut')
     expect(block).toHaveClass('dashboard-block-wrap--dragging')
 
     fireEvent.pointerMove(block, { clientX: 140, clientY: 20, pointerId: 1 })

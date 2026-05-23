@@ -68,6 +68,14 @@
   animation-delay: calc(var(--jiggle-phase, 0) * 0.1s);
 }
 
+.dashboard-grid--edit .dashboard-block-wrap--app-shortcut.dashboard-block-wrap--edit::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  cursor: grab;
+}
+
 .dashboard-grid--edit.dashboard-grid--reduced-motion .dashboard-block-wrap--edit {
   animation: none;
   outline: 2px dashed var(--hearth-muted);

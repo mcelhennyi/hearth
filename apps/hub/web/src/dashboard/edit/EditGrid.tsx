@@ -308,6 +308,7 @@ export function EditGrid({
           const colliding = edit.collidingIds.has(block.id)
           const wrapClass = [
             'dashboard-block-wrap',
+            block.type === 'app-shortcut' ? 'dashboard-block-wrap--app-shortcut' : '',
             edit.active ? 'dashboard-block-wrap--edit' : '',
             edit.active && colliding ? 'dashboard-block-wrap--collision' : '',
             edit.active && isDragging ? 'dashboard-block-wrap--dragging' : '',
