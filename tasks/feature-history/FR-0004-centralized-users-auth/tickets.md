@@ -245,7 +245,7 @@ Capstone: minimal fixture plugin (`auth-fixture` or extend groceries-stub):
 
 Amend FR-0004 from single local account to multi-user local identity:
 
-- Promote the multi-user model into FR-0004 design docs and authoritative `docs/design/` notes where they still say "single local user".
+- Promote the multi-user model into FR-0004 design docs and authoritative `docs/design/` notes where they still describe the old single-account model.
 - Define `users` schema fields: stable opaque id, unique normalized username, display name, roles, disabled flag, password hash, timestamps.
 - Define migration from the landed single `local` account into the first admin user.
 - Define first-run semantics: first account is `admin,user`; later accounts default to `user`.

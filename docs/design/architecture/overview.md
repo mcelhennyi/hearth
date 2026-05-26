@@ -136,13 +136,13 @@ Full schema and error envelope: [`docs/design/spark-api.md`](../spark-api.md).
 
 ```mermaid
 graph LR
-  Dev[Developer laptop] -- docker compose up --> Compose[Compose stack: nginx + hub + plugin sandboxes]
-  Pi[Pi/Mac mini bare metal] -- ./install.sh --> SystemD[systemd: nginx.service + hearth-hub.service + hearth-plugin@<slug>.service]
+  Dev[Developer laptop] -- docker compose up --> Compose[Compose stack: Caddy + hub + plugin sandboxes]
+  Pi[Pi/Mac mini bare metal] -- ./install.sh --> SystemD[systemd: caddy.service + hearth-hub.service + hearth-plugin@<slug>.service]
   Backup[Cloud storage<br/>Phase 2] -. ember-relay sync .- Pi
 ```
 
-- **Dev:** Docker Compose with hot-reload for hub, mounted plugin folders, single-process nginx. Plugins run as additional Compose services scaffolded by Kindling.
-- **Prod:** systemd units. nginx as a system package. Hub owns `var/hearth/` (data, sockets, generated nginx fragments). `install.sh` wires it up and prompts for the local user password.
+- **Dev:** Docker Compose with hot-reload for hub, mounted plugin folders, single-process Caddy. Plugins run as additional Compose services scaffolded by Kindling.
+- **Prod:** systemd units. Caddy as a system package. Hub owns `var/hearth/` (data, sockets, generated Caddy fragments). `install.sh` wires it up and sends the operator through `hearth-users` first-admin setup.
 - **Phase 2:** Ember relay (separate FR) speaks to the hub over an outbound persistent connection so users can reach `https://<id>.ember.example/` from anywhere with end-to-end encryption.
 
 ## 8. Identity (MVP)
@@ -167,7 +167,7 @@ Backup strategy lives in [`docs/design/deployment.md`](../deployment.md). MVP ex
 
 ## 10. Non-goals (MVP)
 
-- Multi-user, role-based permissions.
+- Fine-grained per-plugin authorization beyond the baseline `admin` / `user` account roles.
 - Federation / clustering across multiple Hearth boxes.
 - A plugin marketplace, ratings, or paid plugins.
 - Realtime ML / heavy media transcode (the C++ door is open but unscaffolded).

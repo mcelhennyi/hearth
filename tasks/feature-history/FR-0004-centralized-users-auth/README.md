@@ -1,6 +1,6 @@
 # FR-0004 — Centralized users auth (built-in plugin + gateway)
 
-**Status:** `done`
+**Status:** `in-progress` — reopened for multi-user correction
 **Allocated:** 2026-05-17
 **Registry:** [`REGISTRY.md`](../REGISTRY.md)
 

@@ -97,7 +97,7 @@ This tree is the **bare-metal** layout: paths under `/opt`, `/etc`, and `/var` a
   plugins/<slug>/        (per-plugin data dirs)
   run/                   (Unix sockets — not backed up)
   log/
-  secrets/               (mode 0600 — VAPID keys, local user password hash, …)
+  secrets/               (mode 0600 — VAPID keys, auth bootstrap secrets, …)
 ```
 
 `hearth-users` may bootstrap the first local admin account from an optional ignored
@@ -230,7 +230,7 @@ flowchart TD
   F --> G[Create /var/hearth and /etc/hearth]
   G --> H[Install systemd / launchd units]
   H --> I[Generate VAPID keypair for Web Push]
-  I --> J[Prompt for local user password]
+  I --> J[Start hearth-users first-admin setup]
   J --> K[Generate initial hearth.toml + Caddyfile]
   K --> L[Start hearth-hub + caddy]
   L --> M[Print: https://hearth.home.arpa/ and 'next: trust the local CA on your iPhone']

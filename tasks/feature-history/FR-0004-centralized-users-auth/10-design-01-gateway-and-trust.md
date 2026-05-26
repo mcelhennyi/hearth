@@ -115,10 +115,32 @@ FR-0004 local identity is multi-user:
 
 - First-run setup creates the first account with `admin,user` roles.
 - Login requires a username (or future email alias) plus password; password-only login is not acceptable for a multi-user Hearth.
-- The original single-account schema (`id = "local"`, display name `Local user`) must migrate in place to an admin account without breaking existing sessions more than necessary. If the prior account has no username, use `local` as the initial username and let the operator rename it in user management.
+- Users are stored with: stable opaque `id`, unique normalized `username`, `display_name`, `roles`, `disabled`, `password_hash`, `created_at`, `updated_at`, and nullable `last_login_at`.
+- The original single-account schema (`id = "local"`, display name `Local user`) must migrate in place to an admin account without breaking existing sessions more than necessary. If the prior account has no username, use `local` as the initial username and let the operator rename it in user management. The migrated account keeps the old id only as a compatibility alias if existing sessions require it; new installs generate opaque ids.
 - Sessions bind to a concrete user id. Verify, Spark `session.current`, audit logs, Mantle `useUser()`, and gateway headers must all report the same user id/display name/roles.
 - Account management is admin-only in the built-in provider: list users, create user, disable user, reset password, and update display name/roles. The final enabled admin cannot be disabled or demoted.
 - User ids are stable opaque ids. Usernames are unique, normalized for lookup, and safe to change only through an explicit admin flow.
+
+### Migration plan
+
+1. Add the multi-user tables while preserving the existing session cookie name and provider route prefixes.
+2. If the old single-account row exists, create one enabled admin user from it: `username = "local"` unless a stored username already exists, `display_name = "Local user"` unless a display name already exists, and `roles = ["admin", "user"]`.
+3. Repoint sessions to the migrated user where the old session store can be mapped safely. Sessions that cannot be mapped fail closed and require login.
+4. For a fresh install, `/hearth-users/login` shows setup mode and creates the first enabled admin. After the first user exists, setup mode is unavailable.
+5. Later created users default to `roles = ["user"]`, `disabled = false`, and no admin powers until an enabled admin grants them.
+6. Admin mutations must write audit events and enforce final-admin safety before committing the change.
+
+### Single-user statement classification
+
+| Statement / location | Classification | Action |
+|----------------------|----------------|--------|
+| FR-0004 `10-design-00-skeleton.md` described one local credential input and password-change Spark method. | Updated | The L0 skeleton now describes first-admin setup, username/password login, account fields, admin user-management operations, and multi-user session claims. |
+| FR-0004 `10-design-01-gateway-and-trust.md` still referenced the old `id = "local"` / `Local user` single account. | Updated | This L1 doc now treats that value only as migration input; new installs use stable opaque ids and normalized usernames. |
+| FR-0004 `tickets.md` mentions "single-user statement", "single-user table/session data", and hardcoded `local` assumptions. | Ticketed | These phrases are intentional ticket language: `T-FR-0004-11` audits docs, `T-FR-0004-12` migrates schema/session data, and `T-FR-0004-14` removes runtime claim assumptions. |
+| `docs/design/architecture/overview.md` still listed multi-user role-based permissions as an MVP non-goal. | Updated | The non-goal now excludes fine-grained per-plugin authorization, while FR-0004 owns baseline local multi-user accounts and `admin` / `user` roles. |
+| `docs/design/deployment.md` stored "local user password hash" in secrets and prompted for a local user password during install. | Updated | Deployment now describes auth bootstrap secrets and first-admin setup through `hearth-users`. |
+| `docs/design/notifications.md` says "single-user home scale only" for push fan-out. | Intentionally deferred | The statement scopes notification fan-out capacity, not FR-0004 identity. `T-FR-0004-16` will refresh operator/compliance docs if multi-user E2E changes notification guidance. |
+| `docs/design/satellite-repos/ember.md` defers group identity / household sharing until after single-user remote access. | Intentionally deferred | Ember remote sharing is outside FR-0004. FR-0004 only changes local Hearth identity behind the gateway. |
 
 **Follow-up FR:** A complete custom user service adapter remains outside FR-0004. A later FR should specify the service lifecycle, operator onboarding, health checks, OIDC/social-login adapters, and any replacement UI for `/hearth-users/login`; this ticket only records `provider=external` plus a verify URL and preserves the same hub-normalized header contract.
 
