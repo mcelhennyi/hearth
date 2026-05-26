@@ -14,7 +14,7 @@ HEARTH_INSTALL_ROOT=~/hearth-deploy ./install --skip-compose-up
 
 Heavy logic lives in `hearth_install.bootstrap`; the `./install` file is a thin `PYTHONPATH` wrapper. Docker Engine installation is **not** automated (unsafe to mutate the host from this script); missing Docker yields a clear message pointing at [Docker Engine install](https://docs.docker.com/engine/install/) and the Pi `get.docker.com` flow.
 
-The generated **`hearth/compose/docker-compose.yml`** ships the **FR-0002** PWA prototype stack (Caddy `tls internal`, hub API, optional `ca-export` profile) plus `include` of plugin overrides. **`./install`** also writes **`compose/.env`** (`HEARTH_REPO_ROOT`) and copies **`compose/caddy/`** from the deploy checkout. Operators build the Mantle UI with **`hearth pwa build`** (see repo-root **`SETUP.md`**). Requires Compose **v2.20+** for the top-level **`include`** field.
+The generated **`hearth/compose/docker-compose.yml`** ships the **FR-0002** PWA prototype stack (Caddy `tls internal`, hub API, optional `ca-export` profile) plus `include` of plugin overrides. **`./install`** also writes **`compose/.env`** (`HEARTH_REPO_ROOT`) and copies **`compose/caddy/`** from the deploy checkout. Operators build the Mantle UI with **`hearth pwa build`** and plugin static UIs with **`hearth plugin build <slug>`** (both use Docker-hosted `npm`; see repo-root **`SETUP.md`**). Requires Compose **v2.20+** for the top-level **`include`** field.
 
 ## Contents
 

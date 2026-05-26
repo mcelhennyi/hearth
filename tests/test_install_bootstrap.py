@@ -121,7 +121,20 @@ def test_compose_up_invokes_docker(monkeypatch: pytest.MonkeyPatch, tmp_path: Pa
     assert code == 0
     assert not checked["docker"]
     hearth = inst / "hearth"
-    expected_cmd = ["docker", "compose", "-f", "docker-compose.yml", "up", "-d"]
+    expected_cmd = [
+        "docker",
+        "compose",
+        "-f",
+        "docker-compose.yml",
+        "-f",
+        "overrides/generated.plugins.yml",
+        "--project-name",
+        "hearth",
+        "--env-file",
+        ".env",
+        "up",
+        "-d",
+    ]
     assert calls == [(expected_cmd, str(hearth / "compose"))]
 
 

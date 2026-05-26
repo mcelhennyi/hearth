@@ -1,0 +1,182 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Grid snapshots > matches desktop grid snapshot (8 columns) 1`] = `
+<div
+  class="dashboard-scroll"
+  data-offline="false"
+  data-testid="dashboard-scroll"
+>
+  <div
+    class="dashboard-grid"
+    data-testid="dashboard-grid"
+    style="--hearth-columns: 8;"
+  >
+    <div
+      aria-label="Install Hearth"
+      class="dashboard-block dashboard-block--strip"
+      data-testid="strip-pwa-install"
+      role="region"
+      style="grid-column: 1 / span 8;"
+    >
+      <div
+        class="dashboard-strip-text"
+      >
+        <strong>
+          Install Hearth
+        </strong>
+        <span>
+          Add to Home Screen
+        </span>
+      </div>
+      <button
+        class="dashboard-strip-action"
+        type="button"
+      >
+        Learn more
+      </button>
+      <button
+        aria-label="Dismiss"
+        class="dashboard-strip-dismiss"
+        type="button"
+      >
+        Dismiss
+      </button>
+    </div>
+    <div
+      class="dashboard-block-wrap"
+      style="grid-column: 1 / span 1; grid-row: 1 / span 1;"
+    >
+      <button
+        aria-label="Open Alpha"
+        class="dashboard-block dashboard-block--app-shortcut"
+        data-testid="block-app-alpha"
+        type="button"
+      >
+        <span
+          aria-hidden="true"
+          class="dashboard-app-icon"
+          style="background: linear-gradient(145deg, rgb(255, 106, 61), rgb(184, 58, 20));"
+        >
+          A
+        </span>
+        <span
+          class="dashboard-app-label"
+        >
+          Alpha
+        </span>
+      </button>
+    </div>
+    <div
+      class="dashboard-block-wrap"
+      style="grid-column: 2 / span 2; grid-row: 1 / span 1;"
+    >
+      <button
+        aria-label="Open Beta App"
+        class="dashboard-block dashboard-block--app-shortcut"
+        data-testid="block-app-beta"
+        type="button"
+      >
+        <span
+          aria-hidden="true"
+          class="dashboard-app-icon"
+          style="background: linear-gradient(145deg, rgb(255, 106, 61), rgb(184, 58, 20));"
+        >
+          B
+        </span>
+        <span
+          class="dashboard-app-label"
+        >
+          Beta App
+        </span>
+      </button>
+    </div>
+    <div
+      class="dashboard-block-wrap"
+      style="grid-column: 4 / span 2; grid-row: 1 / span 2;"
+    >
+      <div
+        aria-label="pantry widget"
+        class="dashboard-block dashboard-block--widget is-placeholder"
+        data-span-h="2"
+        data-testid="block-widget-b-w"
+      >
+        <div
+          class="dashboard-widget-inner"
+        >
+          <span
+            class="dashboard-widget-title"
+          >
+            pantry
+          </span>
+          <span
+            class="dashboard-widget-metric"
+          >
+            Widget support coming soon
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Grid snapshots > matches mobile grid snapshot (4 columns) 1`] = `
+<div
+  class="dashboard-grid"
+  data-testid="dashboard-grid"
+  style="--hearth-columns: 4;"
+>
+  <div
+    class="dashboard-block-wrap"
+    style="grid-column: 1 / span 1; grid-row: 1 / span 1;"
+  >
+    <button
+      aria-label="Open Groceries"
+      class="dashboard-block dashboard-block--app-shortcut"
+      data-testid="block-app-groceries"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+        class="dashboard-app-icon"
+        style="background: linear-gradient(145deg, rgb(74, 222, 128), rgb(22, 163, 74));"
+      >
+        G
+      </span>
+      <span
+        class="dashboard-app-label"
+      >
+        Groceries
+      </span>
+    </button>
+  </div>
+  <div
+    class="dashboard-block-wrap"
+    style="grid-column: 2 / span 1; grid-row: 1 / span 1;"
+  >
+    <button
+      aria-label="Trust local CA"
+      class="dashboard-block dashboard-block--system"
+      data-testid="block-system-ca-trust"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+        class="dashboard-system-icon"
+      >
+        🔐
+      </span>
+      <span
+        class="dashboard-system-label"
+      >
+        Trust local CA
+      </span>
+      <span
+        class="dashboard-system-body"
+      >
+        Install certificate
+      </span>
+    </button>
+  </div>
+</div>
+`;

@@ -27,3 +27,11 @@
 - Authored `tickets.md` with `### T-FR-0006-01..15` canonical sections including phases (TEST/DEV/VAL) and acceptance.
 - Updated `tasks/ticket-progress.md` and `tasks/feature-history/TICKET-SOURCES.md`.
 - **Next:** push, then author kindling FR-0001 and grocery FR-0002 tickets, then present develop-or-stop.
+
+## 2026-05-21 — T-FR-0006-10: `@kindling/mantle` package scaffold
+
+- Worktree: `.worktrees/FR-0006-design-language/T-FR-0006-10-mantle-package/` on `feat/FR-0006-design-language-T-FR-0006-10-mantle-package`.
+- Added `packages/mantle/` (tsup ESM+CJS+dts, `src/tokens.css` per `mantle-ui.md`, stub barrels, `types.ts`, vitest exports-map tests).
+- `pnpm-workspace.yaml` includes `packages/*`; `.pnpm-store/` gitignored (not committed).
+- VAL: `./develop web` → `pnpm --filter @kindling/mantle test` (build + typecheck + vitest) in Docker.
+- **Next:** PR into `feat/FR-0006-design-language`; unblocks T-FR-0006-11/12/14 (not T-15 publish).

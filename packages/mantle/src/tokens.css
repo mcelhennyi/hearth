@@ -1,0 +1,45 @@
+/*
+ * @kindling/mantle — design tokens
+ *
+ * Source of truth: docs/design/mantle-ui.md § Tokens.
+ * Default palette is dark; light palette applied via `prefers-color-scheme`.
+ * Plugins MUST consume these variables and MUST NOT hardcode brand colors.
+ *
+ * Includes --hearth-error per FR-0006 dashboard amendment (System tile
+ * destructive surface). Other --hearth-* tokens follow mantle-ui.md.
+ */
+
+:root {
+  /* Palette (dark default) */
+  --hearth-bg: #0f1115;
+  --hearth-surface: #161a22;
+  --hearth-fg: #e6e6e6;
+  --hearth-muted: #9aa3b2;
+  --hearth-accent: #ff6a3d;
+  --hearth-accent-fg: #0f1115;
+  --hearth-error: #ef4444;
+
+  /* Radii */
+  --hearth-radius-sm: 4px;
+  --hearth-radius-md: 8px;
+  --hearth-radius-lg: 16px;
+
+  /* Typography */
+  --hearth-font-sans: -apple-system, Inter, system-ui, sans-serif;
+
+  /* Safe areas (iOS notch / home indicator) */
+  --hearth-safe-top: env(safe-area-inset-top);
+  --hearth-safe-bottom: env(safe-area-inset-bottom);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --hearth-bg: #fafafa;
+    --hearth-surface: #ffffff;
+    --hearth-fg: #111111;
+    --hearth-muted: #6b7280;
+    --hearth-accent: #ff6a3d;
+    --hearth-accent-fg: #0f1115;
+    --hearth-error: #b91c1c;
+  }
+}

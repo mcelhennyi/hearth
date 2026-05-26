@@ -1,8 +1,29 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import 'fake-indexeddb/auto'
 import App from './App'
 import type { PluginNavEntry } from './usePlugins'
+
+function mockDashboardApis(): void {
+  const payloads: Record<string, unknown> = {
+    '/api/dashboard/layout': { version: 1, columns: 4, blocks: [] },
+    '/api/system/tiles': { tiles: [] },
+    '/api/system/strips': { strip: null },
+    '/api/plugins': [],
+  }
+  vi.stubGlobal(
+    'fetch',
+    vi.fn((input: RequestInfo) => {
+      const url = typeof input === 'string' ? input : input.url
+      const body = payloads[url]
+      if (body !== undefined) {
+        return Promise.resolve({ ok: true, json: async () => body })
+      }
+      return Promise.resolve({ ok: false, json: async () => ({}) })
+    }),
+  )
+}
 
 function setBreakpoint(width: number): void {
   window.matchMedia = ((query: string) => ({
@@ -27,9 +48,10 @@ vi.mock('./usePlugins', async (importOriginal) => {
 describe('Mantle layout breakpoint behavior', () => {
   beforeEach(() => {
     window.history.replaceState({}, '', '/')
+    mockDashboardApis()
   })
 
-  it('shows bottom tabs under 768px', () => {
+  it('shows bottom tabs under 768px', async () => {
     setBreakpoint(390)
     render(
       <BrowserRouter>
@@ -37,12 +59,14 @@ describe('Mantle layout breakpoint behavior', () => {
       </BrowserRouter>,
     )
 
-    expect(screen.getByLabelText('Mantle bottom tabs')).toBeInTheDocument()
+    expect(screen.getByLabelText('Main navigation')).toBeInTheDocument()
     expect(screen.queryByLabelText('Mantle top bar')).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Send test notification' })).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('dashboard-view')).toBeInTheDocument()
+    })
   })
 
-  it('shows top bar at and above 768px', () => {
+  it('shows top bar at and above 768px', async () => {
     setBreakpoint(768)
     render(
       <BrowserRouter>
@@ -51,13 +75,17 @@ describe('Mantle layout breakpoint behavior', () => {
     )
 
     expect(screen.getByLabelText('Mantle top bar')).toBeInTheDocument()
-    expect(screen.queryByLabelText('Mantle bottom tabs')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Main navigation')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('dashboard-view')).toBeInTheDocument()
+    })
   })
 })
 
 describe('Mantle registry-driven navigation', () => {
   beforeEach(() => {
     window.history.replaceState({}, '', '/')
+    mockDashboardApis()
     // Mobile breakpoint so bottom tabs are visible
     setBreakpoint(390)
   })
@@ -72,11 +100,9 @@ describe('Mantle registry-driven navigation', () => {
       </BrowserRouter>,
     )
 
-    const bottomNav = screen.getByLabelText('Mantle bottom tabs')
-    // "Home" tab is always present
+    const bottomNav = screen.getByLabelText('Main navigation')
     expect(bottomNav).toHaveTextContent('Home')
-    // No plugin-specific label — nothing injected from registry
-    expect(bottomNav.querySelectorAll('li')).toHaveLength(1)
+    expect(bottomNav.querySelectorAll('.nav-scroll .nav-tab')).toHaveLength(0)
   })
 
   it('registry with one plugin: plugin tab appears in nav', async () => {
@@ -90,9 +116,9 @@ describe('Mantle registry-driven navigation', () => {
       </BrowserRouter>,
     )
 
-    const bottomNav = screen.getByLabelText('Mantle bottom tabs')
+    const bottomNav = screen.getByLabelText('Main navigation')
     expect(bottomNav).toHaveTextContent('Test Plugin')
-    expect(bottomNav.querySelectorAll('li')).toHaveLength(2)
+    expect(bottomNav.querySelectorAll('.nav-scroll .nav-tab')).toHaveLength(1)
   })
 })
 

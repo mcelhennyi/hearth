@@ -33,6 +33,7 @@ from hearth_install.version_manifest import (
 
 from hearth_cli import backup_cmd, update_cmd
 from hearth_cli.install_context import ResolvedInstall, resolve_install
+from hearth_cli.plugin_ops import cmd_plugin_build
 from hearth_cli.pwa_ops import cmd_pwa_build, cmd_pwa_vapid_gen
 from hearth_cli.tls_ops import cmd_ca_export
 
@@ -168,6 +169,14 @@ def build_parser() -> argparse.ArgumentParser:
     pwa_sub = pwa.add_subparsers(dest="pwa_command", required=True)
     pwa_sub.add_parser("build", help="Build apps/hub/web and publish to hearth/compose/static/.")
     pwa_sub.add_parser("vapid-gen", help="Generate var/hearth/secrets/vapid.{pub,priv} in the deploy checkout.")
+
+    plugin = subparsers.add_parser("plugin", help="Plugin operator helpers.")
+    plugin_sub = plugin.add_subparsers(dest="plugin_command", required=True)
+    plugin_build = plugin_sub.add_parser(
+        "build",
+        help="Build a plugin web/ tree (npm in Docker) under hearth/plugins/<slug> or the deploy checkout.",
+    )
+    plugin_build.add_argument("slug", help="Plugin slug from tinder.toml (e.g. groceries).")
 
     backup = subparsers.add_parser("backup", help="Create a backup archive of /var/hearth data.")
     backup.add_argument(
@@ -665,6 +674,13 @@ def cmd_plugin_argv(
         resolved = resolve_install(install_raw)
         return cmd_plugin_list(resolved, stdout, stderr)
 
+    if suffix[0] == "build":
+        if len(suffix) != 2:
+            print("hearth --plugin build: expected SLUG (e.g. groceries).", file=stderr)
+            return 2
+        resolved = resolve_install(install_raw)
+        return cmd_plugin_build(resolved, suffix[1], stderr)
+
     if suffix[0] == "enter":
         rest = suffix[1:]
         slug: str | None = None
@@ -699,7 +715,8 @@ def cmd_plugin_argv(
         )
 
     print(
-        "hearth --plugin: expected `list`, `enter [--slug SLUG]`, or `--add GIT_URL_OR_PATH`.",
+        "hearth --plugin: expected `list`, `build SLUG`, `enter [--slug SLUG]`, "
+        "or `--add GIT_URL_OR_PATH`.",
         file=stderr,
     )
     return 2
@@ -769,6 +786,10 @@ def run(
         if ns.pwa_command == "vapid-gen":
             return cmd_pwa_vapid_gen(resolved, stderr)
         return _unreachable(ns.pwa_command)
+    if ns.command == "plugin":
+        if ns.plugin_command == "build":
+            return cmd_plugin_build(resolved, ns.slug, stderr, env=env)
+        return _unreachable(ns.plugin_command)
     if ns.command == "backup":
         var_dir = _resolve_var_dir(ns.var_dir, env=env)
         return backup_cmd.cmd_backup(

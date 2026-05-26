@@ -63,11 +63,11 @@ services:
       HEARTH_PLUGIN_SLUG: groceries
       HEARTH_VAR_DIR: /var/hearth
     volumes:
-      - ../plugins/groceries:/app:ro
-      - ../var/plugins/groceries:/var/hearth/plugins/groceries
+      - ../../plugins/groceries:/app:ro
+      - ../../var/plugins/groceries:/var/hearth/plugins/groceries
   recipes:
     build:
-      context: ../plugins/recipes
+      context: ../../plugins/recipes
     command:
       - python
       - -m
@@ -82,8 +82,8 @@ services:
       HEARTH_PLUGIN_SLUG: recipes
       HEARTH_VAR_DIR: /var/hearth
     volumes:
-      - ../plugins/recipes:/app:ro
-      - ../var/plugins/recipes:/var/hearth/plugins/recipes
+      - ../../plugins/recipes:/app:ro
+      - ../../var/plugins/recipes:/var/hearth/plugins/recipes
 """
 
 
