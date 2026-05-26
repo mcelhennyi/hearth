@@ -4,7 +4,7 @@ Branch: `feat/FR-0004-centralized-users-auth`
 
 Worktree: `.worktrees/FR-0004-centralized-users-auth/feature/`
 
-Status: `T-FR-0004-10` reached focused VAL locally. Starting feature branch includes `T-FR-0004-02` through `T-FR-0004-09`.
+Status: `T-FR-0004-10` is merged and FR-0004 satisfies the §2d feature-complete gate. Starting feature branch includes `T-FR-0004-02` through `T-FR-0004-10`.
 
 Current ticket branch:
 
@@ -59,6 +59,13 @@ Latest T-FR-0004-10 validation:
 - `./develop web npm run build` — passed.
 - `./develop web npm run lint` — passed.
 
+Combined feature validation after T10 merge:
+
+- `./develop test` — 277 passed, 3 skipped, 4 warnings.
+- `./develop web npm run test` — 4 files passed, 12 tests passed.
+- `./develop web npm run build` — passed.
+- `./develop web npm run lint` — passed.
+
 Next action:
 
-- Commit, push, open the T10 PR, then merge T10 into `feat/FR-0004-centralized-users-auth`.
+- Run `finish-feature` closeout for FR-0004.

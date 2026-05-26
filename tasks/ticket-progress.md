@@ -7,8 +7,8 @@
 | **Active ticket** | `T-FR-0004-10` |
 | **Active phase** | TEST → DEV → VAL |
 | **Branch / worktree** | `feat/FR-0004-centralized-users-auth` @ `.worktrees/FR-0004-centralized-users-auth/feature/`; next worktree `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-10-plugin-trust-e2e/` |
-| **Session status** | `testing` |
-| **Next agent should** | Merge `T-FR-0004-10` to `feat/FR-0004-centralized-users-auth`, run full feature validation, then finish-feature if the §2d feature-complete gate passes. |
+| **Session status** | `complete` |
+| **Next agent should** | Run `finish-feature` closeout for FR-0004: write `90-closeout.md`, update registry/current focus, and open the feature PR to `main`. |
 
 ### Parallel streams
 
@@ -16,7 +16,7 @@
 
 **Kindling FR-0001** — merged [kindling PR #1](https://github.com/mcelhennyi/kindling/pull/1) @ `f64b6a1`; hearth submodule bumped on `feat/FR-0006-design-language` @ `df20872`.
 
-**FR-0004** resumed — `T-FR-0004-02` through `T-FR-0004-09` merged into `feat/FR-0004-centralized-users-auth`; `T-FR-0004-10` is the capstone frontier ticket before feature closeout.
+**FR-0004** feature-complete — `T-FR-0004-02` through `T-FR-0004-10` merged into `feat/FR-0004-centralized-users-auth`; finish-feature closeout is next.
 
 ---
 
