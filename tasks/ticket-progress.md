@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `FR-0004` multi-user extension |
-| **Active phase** | planning |
-| **Branch / worktree** | `feat/FR-0004-centralized-users-auth` at `.worktrees/FR-0004-centralized-users-auth/feature/` |
-| **Session status** | `ready-for-frontier` |
-| **Next agent should** | Run `/develop-frontier` for the new FR-0004 multi-user wave, starting with `T-FR-0004-11`. Do not treat PR #56 as feature-complete until `T-FR-0004-11` through `T-FR-0004-16` are done. |
+| **Active ticket** | `T-FR-0004-11` Multi-user design amendment and migration plan |
+| **Active phase** | TEST → DEV → VAL |
+| **Branch / worktree** | `feat/FR-0004-centralized-users-auth-T-FR-0004-11-multi-user-design` at `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-11-multi-user-design/` |
+| **Session status** | `developing` |
+| **Next agent should** | Complete `T-FR-0004-11` in its child worktree, update only that progress row, push the ticket branch, and merge it back to `feat/FR-0004-centralized-users-auth`. Do not treat PR #56 as feature-complete until `T-FR-0004-11` through `T-FR-0004-16` are done. |
 
 ### Parallel streams
 
