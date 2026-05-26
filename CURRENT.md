@@ -8,7 +8,8 @@ Status: finish-feature closeout is superseded by the multi-user correction. [PR 
 
 Current ticket branch:
 
-- `T-FR-0004-12` — Users plugin: multi-user schema, migration, and auth API. Merged into `feat/FR-0004-centralized-users-auth`; next frontier is `T-FR-0004-13` / `T-FR-0004-14`.
+- `T-FR-0004-14` — Session, Spark, gateway, and Mantle claims use real users. Worktree `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-14-real-user-claims/`, branch `feat/FR-0004-centralized-users-auth-T-FR-0004-14-real-user-claims`.
+- Phase: VAL complete. TEST added cross-contract coverage for two distinct users across hub verify, Spark/session/audit, Mantle shell postMessage, `@kindling/mantle useUser()`, and Kindling-relevant trust paths. DEV fixed `@kindling/mantle` `UserInfo` to expose `roles?: string[]`.
 
 Completed:
 
@@ -76,7 +77,7 @@ Latest T-FR-0004-11 validation:
 
 Next action:
 
-- Continue the multi-user wave with `T-FR-0004-13` / `T-FR-0004-14` as the dependency graph allows.
+- Push `feat/FR-0004-centralized-users-auth-T-FR-0004-14-real-user-claims` and open a PR targeting `feat/FR-0004-centralized-users-auth`. Do not merge or alter the parallel `T-FR-0004-13` stream.
 
 Latest T-FR-0004-12 validation:
 
@@ -85,3 +86,15 @@ Latest T-FR-0004-12 validation:
 - `./develop test tests/builtin/test_hearth_users.py` — 23 passed.
 - `./develop test tests/builtin/test_hearth_users.py tests/spark/test_broker.py tests/api/test_auth_verify_alias.py` — 55 passed, 2 warnings.
 - `git diff --check` — passed.
+
+Latest T-FR-0004-14 validation:
+
+- RED: `./develop web sh -lc 'corepack enable && cd /workspace && corepack pnpm --filter @kindling/mantle test'` failed before DEV because `UserInfo` did not expose `roles?: string[]`.
+- `./develop test tests/builtin/test_hearth_users.py tests/api/test_auth_verify_alias.py tests/api/test_gateway_identity_contract.py tests/test_kindling_plugin_contract.py tests/spark/test_broker.py tests/proxy/test_caddy.py` — 83 passed, 1 skipped, 8 warnings.
+- `./develop web npm run test -- App.test.tsx` — 9 passed.
+- `./develop web sh -lc 'corepack enable && cd /workspace && corepack pnpm --filter @kindling/mantle test'` — 38 passed.
+- `./develop web npm run test` — 64 passed.
+- `./develop web npm run build` — passed.
+- `./develop web npx eslint src/App.test.tsx` — passed.
+- `git diff --check` — passed.
+- `./develop web npm run lint` — blocked by pre-existing non-T14 lint errors in dashboard/edit, shell chrome/frame hooks, SettingsContext, and ThemeProvider.

@@ -79,6 +79,68 @@ def test_builtin_verify_forwards_cookie_and_returns_signed_headers(
     )
 
 
+def test_builtin_verify_signs_distinct_real_user_claims(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+    sig_secret: str,
+) -> None:
+    monkeypatch.setenv("HEARTH_USER_SIG_SECRET", sig_secret)
+    provider_claims = {
+        "ada-session": {
+            "user_id": "user_ada_123",
+            "display_name": "Ada Lovelace",
+            "roles": ["admin", "user"],
+        },
+        "grace-session": {
+            "user_id": "user_grace_456",
+            "display_name": "Grace Hopper",
+            "roles": ["user"],
+        },
+    }
+
+    async def fake_fetch(_url: str, request: Request) -> auth_verify.ProviderResult:
+        cookie = request.headers.get("cookie", "")
+        token = cookie.removeprefix("hearth_session=")
+        return auth_verify.ProviderResult(status_code=200, claims=provider_claims[token])
+
+    monkeypatch.setattr(auth_verify, "fetch_provider_claims", fake_fetch)
+
+    ada = client.get(
+        "/api/auth/verify",
+        cookies={"hearth_session": "ada-session"},
+        headers={"X-Forwarded-Method": "GET", "X-Forwarded-Uri": "/sample-plugin/api/me"},
+    )
+    grace = client.get(
+        "/api/auth/verify",
+        cookies={"hearth_session": "grace-session"},
+        headers={"X-Forwarded-Method": "GET", "X-Forwarded-Uri": "/sample-plugin/api/me"},
+    )
+
+    assert ada.status_code == 200
+    assert grace.status_code == 200
+    assert ada.headers["X-Hearth-User-Id"] == "user_ada_123"
+    assert ada.headers["X-Hearth-User-Name"] == "Ada Lovelace"
+    assert ada.headers["X-Hearth-Roles"] == "admin,user"
+    assert grace.headers["X-Hearth-User-Id"] == "user_grace_456"
+    assert grace.headers["X-Hearth-User-Name"] == "Grace Hopper"
+    assert grace.headers["X-Hearth-Roles"] == "user"
+    assert ada.headers["X-Hearth-User-Sig"] == _signature(
+        sig_secret,
+        user_id="user_ada_123",
+        ts=ada.headers["X-Hearth-User-Ts"],
+        method="GET",
+        path="/sample-plugin/api/me",
+    )
+    assert grace.headers["X-Hearth-User-Sig"] == _signature(
+        sig_secret,
+        user_id="user_grace_456",
+        ts=grace.headers["X-Hearth-User-Ts"],
+        method="GET",
+        path="/sample-plugin/api/me",
+    )
+    assert ada.headers["X-Hearth-User-Sig"] != grace.headers["X-Hearth-User-Sig"]
+
+
 def test_external_verify_uses_configured_url(
     client: TestClient,
     monkeypatch: pytest.MonkeyPatch,

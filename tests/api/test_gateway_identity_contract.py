@@ -85,3 +85,61 @@ def test_gateway_signed_identity_is_accepted_by_generated_plugin(
         "name": "Local Owner",
         "roles": ["owner"],
     }
+
+
+def test_gateway_and_kindling_trust_accept_distinct_real_user_claims(
+    client: TestClient,
+    monkeypatch: Any,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setenv("HEARTH_USER_SIG_SECRET", "real-user-secret")
+    claims_by_cookie = {
+        "ada-session": {
+            "user_id": "user_ada_123",
+            "display_name": "Ada Lovelace",
+            "roles": ["admin", "user"],
+        },
+        "grace-session": {
+            "user_id": "user_grace_456",
+            "display_name": "Grace Hopper",
+            "roles": ["user"],
+        },
+    }
+
+    async def fake_fetch(_url: str, request: Request) -> auth_verify.ProviderResult:
+        token = request.headers.get("cookie", "").removeprefix("hearth_session=")
+        return auth_verify.ProviderResult(status_code=200, claims=claims_by_cookie[token])
+
+    monkeypatch.setattr(auth_verify, "fetch_provider_claims", fake_fetch)
+    plugin_client = _rendered_plugin_client(tmp_path, monkeypatch)
+
+    results: list[dict[str, object]] = []
+    for token in ["ada-session", "grace-session"]:
+        verify_response = client.get(
+            "/api/auth/verify",
+            cookies={"hearth_session": token},
+            headers={
+                "X-Forwarded-Method": "GET",
+                "X-Forwarded-Uri": "/sample-plugin/api/me",
+            },
+        )
+        assert verify_response.status_code == 200
+        proxied_response = plugin_client.get(
+            "/api/me",
+            headers={
+                "X-Hearth-User-Id": verify_response.headers["X-Hearth-User-Id"],
+                "X-Hearth-User-Ts": verify_response.headers["X-Hearth-User-Ts"],
+                "X-Hearth-User-Sig": verify_response.headers["X-Hearth-User-Sig"],
+                "X-Hearth-User-Name": verify_response.headers["X-Hearth-User-Name"],
+                "X-Hearth-Roles": verify_response.headers["X-Hearth-Roles"],
+                "X-Original-Method": "GET",
+                "X-Original-Uri": "/sample-plugin/api/me",
+            },
+        )
+        assert proxied_response.status_code == 200
+        results.append(proxied_response.json())
+
+    assert results == [
+        {"id": "user_ada_123", "name": "Ada Lovelace", "roles": ["admin", "user"]},
+        {"id": "user_grace_456", "name": "Grace Hopper", "roles": ["user"]},
+    ]

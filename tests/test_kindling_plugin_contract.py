@@ -27,17 +27,22 @@ def _signed_headers(
     method: str = "GET",
     path: str = "/api/me",
     user_id: str = "local",
+    name: str = "Local User",
+    roles: str | None = None,
     ts: int | None = None,
 ) -> dict[str, str]:
     ts_text = str(int(time.time()) if ts is None else ts)
     payload = "\n".join([user_id, ts_text, method.upper(), path]).encode("utf-8")
     sig = hmac.new(secret.encode("utf-8"), payload, hashlib.sha256).hexdigest()
-    return {
+    headers = {
         "X-Hearth-User-Id": user_id,
         "X-Hearth-User-Ts": ts_text,
         "X-Hearth-User-Sig": sig,
-        "X-Hearth-User-Name": "Local User",
+        "X-Hearth-User-Name": name,
     }
+    if roles is not None:
+        headers["X-Hearth-Roles"] = roles
+    return headers
 
 
 def _rendered_app_client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
@@ -103,6 +108,40 @@ def test_rendered_plugin_accepts_signed_hearth_user_headers(
         "id": "local",
         "name": "Local User",
         "roles": [],
+    }
+
+
+def test_rendered_plugin_accepts_distinct_real_user_headers(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    client = _rendered_app_client(tmp_path, monkeypatch)
+    ada = _signed_headers(
+        secret="test-secret",
+        user_id="user_ada_123",
+        name="Ada Lovelace",
+        roles="admin,user",
+    )
+    grace = _signed_headers(
+        secret="test-secret",
+        user_id="user_grace_456",
+        name="Grace Hopper",
+        roles="user",
+    )
+
+    ada_response = client.get("/api/me", headers=ada)
+    grace_response = client.get("/api/me", headers=grace)
+
+    assert ada_response.status_code == 200
+    assert grace_response.status_code == 200
+    assert ada_response.json() == {
+        "id": "user_ada_123",
+        "name": "Ada Lovelace",
+        "roles": ["admin", "user"],
+    }
+    assert grace_response.json() == {
+        "id": "user_grace_456",
+        "name": "Grace Hopper",
+        "roles": ["user"],
     }
 
 

@@ -5,13 +5,25 @@ import 'fake-indexeddb/auto'
 import App from './App'
 import type { PluginNavEntry } from './usePlugins'
 
-function mockDashboardApis(): void {
+interface TestSessionPayload {
+  user_id: string
+  display_name: string
+  roles: string[]
+}
+
+const defaultSessionPayload: TestSessionPayload = {
+  user_id: 'user_ada_123',
+  display_name: 'Ada Lovelace',
+  roles: ['admin', 'user'],
+}
+
+function mockDashboardApis(session: TestSessionPayload = defaultSessionPayload): void {
   const payloads: Record<string, unknown> = {
     '/api/dashboard/layout': { version: 1, columns: 4, blocks: [] },
     '/api/system/tiles': { tiles: [] },
     '/api/system/strips': { strip: null },
     '/api/plugins': [],
-    '/hearth-users/api/session': { user_id: 'local-owner', display_name: 'Local Owner', roles: ['owner'] },
+    '/hearth-users/api/session': session,
   }
   vi.stubGlobal(
     'fetch',
@@ -178,10 +190,48 @@ describe('Mantle hearth-users session contract', () => {
       expect(postMessage).toHaveBeenCalledWith(
         {
           type: 'hearth.user',
-          user: { id: 'local-owner', name: 'Local Owner', roles: ['owner'] },
+          user: { id: 'user_ada_123', name: 'Ada Lovelace', roles: ['admin', 'user'] },
         },
         window.location.origin,
       )
+    })
+  })
+
+  it('posts the current real user when the authenticated session changes', async () => {
+    const { usePlugins } = await import('./usePlugins')
+    vi.mocked(usePlugins).mockReturnValue([{ slug: 'test-plugin', name: 'Test Plugin', showInTabBar: true, order: 0 }])
+
+    async function postedUserFor(session: TestSessionPayload) {
+      mockDashboardApis(session)
+      window.history.replaceState({}, '', '/test-plugin')
+      const rendered = render(
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>,
+      )
+      const frame = (await screen.findByTitle('Test Plugin')) as HTMLIFrameElement
+      expect(frame.contentWindow).toBeTruthy()
+      const postMessage = vi.spyOn(frame.contentWindow!, 'postMessage')
+      frame.dispatchEvent(new Event('load'))
+      await waitFor(() => expect(postMessage).toHaveBeenCalledWith(
+        {
+          type: 'hearth.user',
+          user: { id: session.user_id, name: session.display_name, roles: session.roles },
+        },
+        window.location.origin,
+      ))
+      rendered.unmount()
+    }
+
+    await postedUserFor({
+      user_id: 'user_ada_123',
+      display_name: 'Ada Lovelace',
+      roles: ['admin', 'user'],
+    })
+    await postedUserFor({
+      user_id: 'user_grace_456',
+      display_name: 'Grace Hopper',
+      roles: ['user'],
     })
   })
 })
