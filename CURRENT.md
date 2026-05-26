@@ -1,14 +1,14 @@
 # FR-0004 — centralized users auth
 
-Branch: `feat/FR-0004-centralized-users-auth`
+Branch: `feat/FR-0004-centralized-users-auth-T-FR-0004-13-first-admin-login-ui`
 
-Worktree: `.worktrees/FR-0004-centralized-users-auth/feature/`
+Worktree: `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-13-first-admin-login-ui/`
 
 Status: finish-feature closeout is superseded by the multi-user correction. [PR #56](https://github.com/mcelhennyi/hearth/pull/56) is only a feature-branch preview until `T-FR-0004-11` through `T-FR-0004-16` land. Starting feature branch includes `T-FR-0004-02` through `T-FR-0004-10`.
 
 Current ticket branch:
 
-- `T-FR-0004-12` — Users plugin: multi-user schema, migration, and auth API. Merged into `feat/FR-0004-centralized-users-auth`; next frontier is `T-FR-0004-13` / `T-FR-0004-14`.
+- `T-FR-0004-13` — Hearth Users UI: first admin setup and username login. TEST/DEV/VAL complete. RED coverage first failed on prefixed `/hearth-users/...` endpoint wiring and the static placeholder UI; implementation now provides prefix-aware setup/login routes and real bundled provider UI.
 
 Completed:
 
@@ -85,3 +85,16 @@ Latest T-FR-0004-12 validation:
 - `./develop test tests/builtin/test_hearth_users.py` — 23 passed.
 - `./develop test tests/builtin/test_hearth_users.py tests/spark/test_broker.py tests/api/test_auth_verify_alias.py` — 55 passed, 2 warnings.
 - `git diff --check` — passed.
+
+Latest T-FR-0004-13 validation:
+
+- RED phase: `./develop test tests/builtin/test_hearth_users.py` failed as expected on missing `/hearth-users/...` endpoint literals and the inert static UI.
+- `./develop test tests/builtin/test_hearth_users.py` — 27 passed.
+- `./develop test tests/builtin/test_hearth_users.py tests/api/test_auth_verify_alias.py tests/spark/test_broker.py` — 59 passed, 3 warnings.
+- Full suite: `./develop test` — initially blocked by an uninitialized `kindling` submodule in this new worktree; after `git submodule update --init kindling`, 341 passed, 3 skipped, 4 warnings.
+- `git diff --check` — passed.
+- Manual/Pi browser exception: no Pi or real browser target was available in this session; automated coverage verifies the HTML/API/static UI contract and local-only `next` handling.
+
+Next action:
+
+- Open the T13 PR against `feat/FR-0004-centralized-users-auth`; keep T14 isolated in its separate worktree.

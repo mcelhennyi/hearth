@@ -48,7 +48,13 @@ def _safe_next(next_url: str | None) -> str:
     return next_url
 
 
-def _auth_html(*, setup_required: bool, next_url: str = "/") -> str:
+def _prefixed(request: Request) -> bool:
+    return request.url.path == f"/{PLUGIN_SLUG}" or request.url.path.startswith(
+        f"/{PLUGIN_SLUG}/"
+    )
+
+
+def _auth_html(*, setup_required: bool, next_url: str = "/", prefixed: bool = False) -> str:
     mode = "setup" if setup_required else "login"
     title = "Create your Hearth admin" if setup_required else "Sign in to Hearth"
     intro = (
@@ -62,7 +68,12 @@ def _auth_html(*, setup_required: bool, next_url: str = "/") -> str:
         if setup_required
         else "This signs you into Hearth and all enabled plugins."
     )
+    setup_endpoint = f"/{PLUGIN_SLUG}/api/setup" if prefixed else "/api/setup"
+    login_endpoint = f"/{PLUGIN_SLUG}/login" if prefixed else "/login"
+    password_autocomplete = "new-password" if setup_required else "current-password"
     escaped_next = html.escape(_safe_next(next_url), quote=True)
+    escaped_setup_endpoint = html.escape(setup_endpoint, quote=True)
+    escaped_login_endpoint = html.escape(login_endpoint, quote=True)
     return f"""<!doctype html>
 <html lang="en">
   <head>
@@ -195,7 +206,13 @@ def _auth_html(*, setup_required: bool, next_url: str = "/") -> str:
         <p class="eyebrow">Hearth Users</p>
         <h1>{html.escape(title)}</h1>
         <p>{html.escape(intro)}</p>
-        <form id="auth-form" data-mode="{mode}" data-next="{escaped_next}">
+        <form
+          id="auth-form"
+          data-mode="{mode}"
+          data-next="{escaped_next}"
+          data-setup-endpoint="{escaped_setup_endpoint}"
+          data-login-endpoint="{escaped_login_endpoint}"
+        >
           <label for="username">Username</label>
           <input
             id="username"
@@ -219,7 +236,7 @@ def _auth_html(*, setup_required: bool, next_url: str = "/") -> str:
             name="password"
             type="password"
             minlength="8"
-            autocomplete="current-password"
+            autocomplete="{password_autocomplete}"
             required
           />
           <button type="submit">{html.escape(button)}</button>
@@ -235,8 +252,7 @@ def _auth_html(*, setup_required: bool, next_url: str = "/") -> str:
       const displayName = document.querySelector("#display-name");
       const password = document.querySelector("#password");
       const button = form.querySelector("button");
-      const base = window.location.pathname.startsWith("/hearth-users") ? "/hearth-users" : "";
-      const endpoint = form.dataset.mode === "setup" ? `${{base}}/api/setup` : `${{base}}/login`;
+      const endpoint = form.dataset.mode === "setup" ? form.dataset.setupEndpoint : form.dataset.loginEndpoint;
       if (form.dataset.mode !== "setup") {{
         document.querySelectorAll("[data-setup-only]").forEach((element) => element.remove());
       }}
@@ -735,6 +751,7 @@ def create_app(
     async def health() -> dict[str, object]:
         return {"ok": True, "service": "hearth-users"}
 
+    @app.post(f"/{PLUGIN_SLUG}/api/setup")
     @app.post("/api/setup")
     async def setup(request: Request, response: Response) -> dict[str, object]:
         username, display_name, password = await _setup_fields_from_request(request)
@@ -748,6 +765,7 @@ def create_app(
         _write_audit_event(audit_path, action="auth.setup", claims=claims)
         return claims
 
+    @app.post(f"/{PLUGIN_SLUG}/login")
     @app.post("/login")
     async def login(request: Request, response: Response) -> dict[str, object]:
         client_key = _client_key(request)
@@ -792,6 +810,7 @@ def create_app(
         )
         return claims
 
+    @app.post(f"/{PLUGIN_SLUG}/logout")
     @app.post("/logout")
     async def logout(request: Request, response: Response) -> dict[str, str]:
         claims = store.session_claims(request.cookies.get(SESSION_COOKIE))
@@ -805,31 +824,41 @@ def create_app(
         )
         return {"status": "ok"}
 
+    @app.get(f"/{PLUGIN_SLUG}/api/session")
     @app.get("/api/session")
     async def session(request: Request) -> dict[str, object]:
         return _require_claims(store, request)
 
+    @app.get(f"/{PLUGIN_SLUG}/api/verify")
     @app.get("/api/verify")
     async def verify(request: Request) -> dict[str, object]:
         return _require_claims(store, request)
 
+    @app.get(f"/{PLUGIN_SLUG}/login", response_class=HTMLResponse)
     @app.get("/login", response_class=HTMLResponse)
     async def login_page(request: Request) -> str:
         return _auth_html(
             setup_required=not store.has_user(),
             next_url=_safe_next(request.query_params.get("next")),
+            prefixed=_prefixed(request),
         )
 
+    @app.get(f"/{PLUGIN_SLUG}/", response_class=HTMLResponse)
     @app.get("/", response_class=HTMLResponse)
     async def index(request: Request) -> str:
         return _auth_html(
             setup_required=not store.has_user(),
             next_url=_safe_next(request.query_params.get("next")),
+            prefixed=_prefixed(request),
         )
 
+    @app.get(f"/{PLUGIN_SLUG}/logout")
     @app.get("/logout")
     async def logout_redirect(request: Request) -> RedirectResponse:
-        response = RedirectResponse(url="/login", status_code=303)
+        response = RedirectResponse(
+            url=f"/{PLUGIN_SLUG}/login" if _prefixed(request) else "/login",
+            status_code=303,
+        )
         claims = store.session_claims(request.cookies.get(SESSION_COOKIE))
         store.delete_session(request.cookies.get(SESSION_COOKIE))
         _delete_session_cookie(response)
@@ -846,6 +875,7 @@ def create_app(
         return _auth_html(
             setup_required=not store.has_user(),
             next_url=_safe_next(request.query_params.get("next")),
+            prefixed=_prefixed(request),
         )
 
     return app

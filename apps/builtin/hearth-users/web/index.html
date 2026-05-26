@@ -9,10 +9,27 @@
   <body>
     <main id="app">
       <section class="login-shell">
+        <span class="mark">H</span>
         <p class="eyebrow">Hearth Users</p>
-        <h1>Login</h1>
-        <p>Built-in identity is being wired in for this Hearth.</p>
-        <button type="button">Login</button>
+        <h1>Create your Hearth admin</h1>
+        <p id="intro">This local Hearth needs its first admin account before plugins can open.</p>
+        <form
+          id="auth-form"
+          data-mode="setup"
+          data-next="/"
+          data-setup-endpoint="/api/setup"
+          data-login-endpoint="/login"
+        >
+          <label for="username">Username</label>
+          <input id="username" name="username" type="text" autocomplete="username" required />
+          <label for="display-name" data-setup-only>Display name</label>
+          <input id="display-name" name="display_name" type="text" autocomplete="name" data-setup-only />
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required />
+          <button type="submit">Create admin</button>
+        </form>
+        <p class="helper" id="helper">Use at least 8 characters. This account is stored only on this Hearth.</p>
+        <div id="message" class="message" role="status" aria-live="polite"></div>
       </section>
     </main>
   </body>
