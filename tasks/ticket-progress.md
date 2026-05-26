@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0004-11` Multi-user design amendment and migration plan |
+| **Active ticket** | `T-FR-0004-12` Users plugin: multi-user schema, migration, and auth API |
 | **Active phase** | TEST → DEV → VAL |
-| **Branch / worktree** | `feat/FR-0004-centralized-users-auth-T-FR-0004-11-multi-user-design` at `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-11-multi-user-design/` |
+| **Branch / worktree** | `feat/FR-0004-centralized-users-auth-T-FR-0004-12-multi-user-auth-api` at `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-12-multi-user-auth-api/` |
 | **Session status** | `developing` |
-| **Next agent should** | Complete `T-FR-0004-11` in its child worktree, update only that progress row, push the ticket branch, and merge it back to `feat/FR-0004-centralized-users-auth`. Do not treat PR #56 as feature-complete until `T-FR-0004-11` through `T-FR-0004-16` are done. |
+| **Next agent should** | Complete `T-FR-0004-12` in its child worktree, update only that progress row, push the ticket branch, and merge it back to `feat/FR-0004-centralized-users-auth`. Do not treat PR #56 as feature-complete until `T-FR-0004-11` through `T-FR-0004-16` are done. |
 
 ### Parallel streams
 
