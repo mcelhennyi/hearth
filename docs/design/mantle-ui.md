@@ -213,7 +213,7 @@ Settings is a **floating modal** over the shell, not a separate route. Both the 
 | Plugins tab | List of enabled/disabled `app` and `widget` plugins; toggles call `POST /api/plugins/<slug>/{enable,disable}`. |
 | System tiles tab | Show / hide the dashboard's `system` block tiles (see [`dashboard.md`](dashboard.md#system-block--content-and-configuration-df-u1-closed-2026-05-21)). |
 | Diagnostics tab | Hub health, CA trust status, hub uptime; links to the FR-0003 `hearth doctor` output where available. |
-| Sign out | Calls `POST /api/auth/logout` and reloads the shell. |
+| Sign out | Calls `POST /hearth-users/logout` when the built-in provider is active; external providers must expose an equivalent logout URL through hub settings. |
 
 **Reduced-motion:** The desktop modal fades in (160 ms) instead of scaling; the mobile sheet snaps without spring animation.
 

@@ -20,6 +20,7 @@ Promote FR-0004 design into authoritative `docs/design/`:
 - Add `builtin` flag to [`plugin-contract.md`](../../../docs/design/plugin-contract.md).
 - Update [`deployment.md`](../../../docs/design/deployment.md) — Caddy `auth_request`, public vs protected routes.
 - Update [`mantle-ui.md`](../../../docs/design/mantle-ui.md) — login at `/hearth-users/`, trust headers.
+- Update [`satellite-repos/kindling.md`](../../../docs/design/satellite-repos/kindling.md) — Kindling changes must carry a dense child-repo compliance changelog entry.
 - Document FR-0001 **`T-FR-0001-09`** split (identity → FR-0004; push stays unless Q1 closed).
 
 #### Phases
@@ -39,18 +40,18 @@ Promote FR-0004 design into authoritative `docs/design/`:
 
 #### Purpose
 
-Create `apps/hearth-users/` (submodule-ready layout):
+Create `apps/builtin/hearth-users/` (platform-plugin layout):
 
 - `tinder.toml` with `builtin = true` (schema addition from T01).
 - FastAPI `create_app` stub, static Vite UI placeholder.
-- Hub install path registers plugin as built-in on first boot.
+- Hub install path registers plugin as built-in on first boot without treating it as a normal external `apps/<slug>/` plugin.
 
 #### Phases
 
 | Phase | Goal | Exit criteria |
 |-------|------|----------------|
 | **TEST** | Manifest validates | `kindling validate` or hub tinder tests pass; builtin cannot be uninstalled via API. |
-| **DEV** | Scaffold | Plugin serves `GET /health`; UI shows placeholder login. |
+| **DEV** | Scaffold | Plugin serves `GET /health`; UI shows placeholder login; platform path is documented as the sole exception to plugin agnosticism. |
 | **VAL** | Enabled in dev Compose; reachable at `/hearth-users/`. | |
 
 ---
@@ -66,7 +67,7 @@ Implement identity per [`10-design-01-gateway-and-trust.md`](10-design-01-gatewa
 
 - Argon2id password storage; first-run set password.
 - Session cookie; `POST /login`, `POST /logout`, `GET /api/session`.
-- `GET /api/verify` returns 200/401 for edge auth.
+- `GET /api/verify` returns 200/401 claims for edge auth; hub alias normalizes those claims into signed upstream headers.
 
 #### Phases
 
@@ -87,13 +88,13 @@ Implement identity per [`10-design-01-gateway-and-trust.md`](10-design-01-gatewa
 
 - `GET /api/auth/verify` — delegates to active provider (builtin plugin loopback or external URL).
 - Settings model `auth.provider`, `auth.external_verify_url`.
-- Distribute `HEARTH_USER_SIG_SECRET` to plugins at supervisor start.
+- Generate `HEARTH_USER_SIG_SECRET`, sign `X-Hearth-User-*` headers with timestamp freshness, and distribute the secret to plugins at supervisor start.
 
 #### Phases
 
 | Phase | Goal | Exit criteria |
 |-------|------|----------------|
-| **TEST** | Hub API tests | Builtin forward; external mock server; misconfig → 503. |
+| **TEST** | Hub API tests | Builtin forward; external mock server; misconfig → 503; signed headers include `X-Hearth-User-Ts`. |
 | **DEV** | Implement | Settings CRUD; secret generation on install. |
 | **VAL** | Verify endpoint callable from Caddy sidecar in Compose. | |
 
@@ -109,7 +110,7 @@ Implement identity per [`10-design-01-gateway-and-trust.md`](10-design-01-gatewa
 Extend proxy fragment generator:
 
 - `auth_request /api/auth/verify` (or internal URI) on plugin routes.
-- Inject `X-Hearth-User-Id`, `X-Hearth-User-Sig`, optional name/roles on success.
+- Strip inbound browser-supplied `X-Hearth-*` headers, then inject only hub-verified `X-Hearth-User-Id`, `X-Hearth-User-Ts`, `X-Hearth-User-Sig`, optional name/roles on success.
 - 302 to `/hearth-users/login?next=` for HTML; 401 JSON for APIs.
 
 **Note:** Requires existing Caddy generation from FR-0001/FR-0003; coordinate in VAL diary if stubbed.
@@ -156,6 +157,7 @@ Update Kindling `templates/plugin-python/` (and TS if present):
 
 - `require_hearth_user()` dependency / middleware.
 - README section “Authentication”.
+- Dense child-repo compliance changelog entry for this Kindling contract change.
 - Remove default login components from template.
 - `kindling new` smoke test uses headers in pytest.
 
@@ -164,7 +166,7 @@ Update Kindling `templates/plugin-python/` (and TS if present):
 | Phase | Goal | Exit criteria |
 |-------|------|----------------|
 | **TEST** | Template test | Generated plugin rejects missing headers on protected route. |
-| **DEV** | Template + docs | Published in Kindling repo or vendor path per FR-0001-07 policy. |
+| **DEV** | Template + docs | Published in Kindling repo or vendor path per FR-0001-07 policy; updates the compliance changelog so existing plugins can be brought forward. |
 | **VAL** | `kindling new test-auth` installs and documents trust model. | |
 
 ---

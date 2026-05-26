@@ -6,6 +6,18 @@
 
 A plugin is **discoverable** when a `tinder.toml` file exists at the plugin's root and parses against the schema below. A plugin is **installable** when discovery succeeds and required permissions are acceptable to the user.
 
+## Built-in platform plugins
+
+Most plugins are external app repos discovered under `apps/<slug>/`, drop-in paths, or future registries. Hearth may also ship **built-in platform plugins** that implement core system behavior while still using Tinder, Spark, and the same proxy contracts.
+
+| Rule | Built-in behavior |
+|------|-------------------|
+| Source path | Built-ins live under a platform namespace such as `apps/builtin/<slug>/`, never as regular external app source under `apps/<slug>/`. |
+| Manifest | `[plugin].builtin = true`; `[plugin].kind` still follows the normal `app` / `widget` rules. |
+| Registry | Built-ins are registered on first boot and cannot be uninstalled through normal plugin APIs. |
+| Disable policy | A built-in may be disabled only when its design names an alternate provider; for `hearth-users`, `auth.provider=external` must be healthy first. |
+| Template impact | Kindling templates must not treat built-ins as examples to copy; they are platform services with stricter lifecycle rules. |
+
 ## Plugin kind: app vs widget
 
 Every plugin declares a **kind** that determines whether it ships a full UI. **Home grid contributions** (app icon and/or widgets) are declared separately — see [`dashboard.md`](dashboard.md#what-plugins-can-put-on-the-home-grid).

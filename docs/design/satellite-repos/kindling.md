@@ -94,6 +94,23 @@ Hearth has `.skeleton/` + `vendor/kindling/` + `apps/hub/` only. It must not gro
 - `tinder.schema = "1"` lives in `kindling/tinder/schemas/v1.json` and is the authoritative wire format that the hub validates against.
 - Breaking changes go through Hearth's amendment process (`docs/ai-context.md`) — the spec lives in Hearth, the implementation lives in Kindling.
 
+## Child-repo compliance changelog
+
+Every change to the Kindling repo that affects generated plugin repos, templates, shared runtime packages, Tinder schema, Spark clients, Mantle APIs, or required development workflow must update a dense, AI-readable changelog entry before it is considered complete.
+
+The changelog entry must give a downstream agent enough information to update child repos without rereading the whole Kindling diff:
+
+| Field | Required content |
+|-------|------------------|
+| **Contract area** | Template, Mantle, Spark, Tinder, CLI, workflow, or docs. |
+| **Compatibility** | Breaking, additive, deprecation, migration-only, or docs-only. |
+| **Who must update** | Which child repos are affected and how to detect applicability. |
+| **Required edits** | File patterns, symbols, manifests, commands, or config keys to change. |
+| **Verification** | Exact tests, `kindling validate`, smoke checks, or manual checks that prove compliance. |
+| **Fallback** | What an older child repo may safely do until migrated, if anything. |
+
+This is a product-surface requirement, not release-note fluff: agents maintaining existing plugins such as `grocery-list` should be able to consume the changelog as a migration checklist.
+
 ## What it is **not**
 
 - A plugin marketplace.

@@ -4,22 +4,19 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | T-FR-0006-01 (W0 batch leader) |
-| **Active phase** | TEST/DEV/VAL in flight per-ticket |
-| **Branch / worktree** | `feat/FR-0006-design-language` @ `.worktrees/FR-0006-design-language/feature/`; ticket worktrees under `.worktrees/FR-0006-design-language/T-FR-0006-{01,02,03,10}-*` |
+| **Active ticket** | `T-FR-0004-02` |
+| **Active phase** | TEST → DEV → VAL |
+| **Branch / worktree** | `feat/FR-0004-centralized-users-auth` @ `.worktrees/FR-0004-centralized-users-auth/feature/`; ticket worktree `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-02-hearth-users-scaffold/` |
 | **Session status** | `developing` |
-| **Next agent should** | Follow each ticket subagent's `parallel/T-FR-0006-XX-*.md` diary; when all four W0 tickets are VAL-done, merge each ticket branch into `feat/FR-0006-design-language` and re-run `/identify-frontier` for W1 (T-FR-0006-04/05/06/07/11/12/14). |
+| **Next agent should** | Continue FR-0004 frontier: complete `T-FR-0004-02` in its child worktree, update only its progress row, then merge to `feat/FR-0004-centralized-users-auth` and identify the next wave. |
 
 ### Parallel streams
 
-**FR-0002** and **FR-0003** are **done** on **`main`** ([PR #3](https://github.com/mcelhennyi/hearth/pull/3), [PR #13](https://github.com/mcelhennyi/hearth/pull/13)).
+**FR-0006** feature-complete — PR to **`main`** pending. [`90-closeout.md`](feature-history/FR-0006-design-language/90-closeout.md).
 
-| Stream label | Ticket(s) | `FR-NNNN` | Branch / worktree | Owner / note |
-|----------------|------------|-----------|-------------------|--------------|
-| W0/hearth-systems | T-FR-0006-01 | FR-0006 | `feat/FR-0006-design-language-T-FR-0006-01-system-tiles` @ `.worktrees/FR-0006-design-language/T-FR-0006-01-system-tiles/` | parallel subagent |
-| W0/hearth-dashboard-layout | T-FR-0006-02 | FR-0006 | `feat/FR-0006-design-language-T-FR-0006-02-dashboard-layout` @ `.worktrees/FR-0006-design-language/T-FR-0006-02-dashboard-layout/` | parallel subagent |
-| W0/hearth-postmessage | T-FR-0006-03 | FR-0006 | `feat/FR-0006-design-language-T-FR-0006-03-postmessage-bridge` @ `.worktrees/FR-0006-design-language/T-FR-0006-03-postmessage-bridge/` | parallel subagent |
-| W0/hearth-mantle-pkg | T-FR-0006-10 | FR-0006 | `feat/FR-0006-design-language-T-FR-0006-10-mantle-package` @ `.worktrees/FR-0006-design-language/T-FR-0006-10-mantle-package/` | parallel subagent |
+**Kindling FR-0001** — merged [kindling PR #1](https://github.com/mcelhennyi/kindling/pull/1) @ `f64b6a1`; hearth submodule bumped on `feat/FR-0006-design-language` @ `df20872`.
+
+**FR-0004** resumed — `T-FR-0004-02` scaffold work active under `.worktrees/FR-0004-centralized-users-auth/`.
 
 ---
 
@@ -55,36 +52,36 @@
 | T-FR-0001-08 | groceries reference plugin | done | done | done | `FR-0001`. grocery-list repo pushed; submodule at apps/groceries; 4 install tests + conftest; 210 tests pass via Docker. iPhone walkthrough deferred (same as T05/T09). |
 | T-FR-0001-09 | Auth, VAPID, Web Push + ntfy | done | done | done | `FR-0001`. argon2id auth, itsdangerous sessions, lockout, Web Push (VAPID+410 pruning), ntfy. 141 tests pass via Docker. Manual iPhone VAL deferred (needs real device). [PR #25](https://github.com/mcelhennyi/hearth/pull/25). |
 | T-FR-0001-10 | Pi/Mac mini install.sh + backup | done | done | done | `FR-0001`. deploy/install.sh + systemd/launchd units + hearth backup/restore. 235 tests pass via Docker. [PR #30](https://github.com/mcelhennyi/hearth/pull/30). |
-| T-FR-0004-01 | Design amendments: centralized auth architecture | done | done | done | `FR-0004` **parked**. Design in feature tree; see diary. |
-| T-FR-0004-02 | Built-in hearth-users plugin scaffold | — | — | — | `FR-0004` **parked** — after FR-0002 cert VAL + FR-0001-04 VAL. |
-| T-FR-0004-03 | Users plugin: password, session, verify API | — | — | — | `FR-0004` **parked**. |
-| T-FR-0004-04 | Hub auth verify alias and provider settings | — | — | — | `FR-0004` **parked**. |
-| T-FR-0004-05 | Caddy auth_request and header injection | — | — | — | `FR-0004` **parked**. |
-| T-FR-0004-06 | Spark session capabilities and builtin registry rules | — | — | — | `FR-0004` **parked**. |
-| T-FR-0004-07 | Kindling template: trust middleware and no local login | — | — | — | `FR-0004` **parked**. |
-| T-FR-0004-08 | Mantle shell: login via hearth-users and useUser contract | — | — | — | `FR-0004` **parked**. |
-| T-FR-0004-09 | External auth provider stub and operator settings UI | — | — | — | `FR-0004` **parked**. |
-| T-FR-0004-10 | E2E: plugin trusts gateway identity | — | — | — | `FR-0004` **parked** (capstone). |
+| T-FR-0004-01 | Design amendments: centralized auth architecture | done | done | done | `FR-0004` resumed; 2026-05-26 audit added built-in path, trust-header, and Kindling changelog requirements. |
+| T-FR-0004-02 | Built-in hearth-users plugin scaffold | — | — | — | `FR-0004` active frontier. Deps satisfied. |
+| T-FR-0004-03 | Users plugin: password, session, verify API | — | — | — | `FR-0004`. Deps: T-FR-0004-02. |
+| T-FR-0004-04 | Hub auth verify alias and provider settings | — | — | — | `FR-0004`. Deps: T-FR-0004-03. |
+| T-FR-0004-05 | Caddy auth_request and header injection | — | — | — | `FR-0004`. Deps: T-FR-0004-04. |
+| T-FR-0004-06 | Spark session capabilities and builtin registry rules | — | — | — | `FR-0004`. Deps: T-FR-0004-03. |
+| T-FR-0004-07 | Kindling template: trust middleware and no local login | — | — | — | `FR-0004`; every Kindling change must update child-repo compliance changelog. Deps: T-FR-0004-01, T-FR-0004-04. |
+| T-FR-0004-08 | Mantle shell: login via hearth-users and useUser contract | — | — | — | `FR-0004`. Deps: T-FR-0004-03, T-FR-0004-05. |
+| T-FR-0004-09 | External auth provider stub and operator settings UI | — | — | — | `FR-0004`. Deps: T-FR-0004-04. |
+| T-FR-0004-10 | E2E: plugin trusts gateway identity | — | — | — | `FR-0004` capstone. |
 | T-FR-0005-01 | Remote-build profile in deployment.md | — | — | — | `FR-0005` **design**. |
 | T-FR-0005-02 | `hearth pwa publish` (rsync static to Pi) | — | — | — | `FR-0005` **design**; Pi **`192.168.1.62`**. Deps: T-FR-0005-01. |
 | T-FR-0005-03 | Hub image build and publish (arm64 bundle) | — | — | — | `FR-0005` **design** P1. Deps: T-FR-0005-01. |
 | T-FR-0005-04 | SETUP.md Mac-build / Pi-runtime operator guide | — | — | — | `FR-0005` **design**. Deps: T-FR-0005-02. |
 | T-FR-0005-05 | Publish smoke test and doctor hints | — | — | — | `FR-0005` **design**. Deps: T-FR-0005-02. |
-| T-FR-0006-01 | System tiles & strips API | — | — | — | `FR-0006` **design**. DF-U1, DF-U2. Deps: none. |
-| T-FR-0006-02 | Dashboard layout API | — | — | — | `FR-0006` **design**. Part of RW-U1. Deps: none. |
-| T-FR-0006-03 | Mantle postMessage bridge | — | — | — | `FR-0006` **design**. DG-U6/U7/U9 shell-side. Deps: none. |
-| T-FR-0006-04 | User preferences API + Settings modal | — | — | — | `FR-0006` **design**. DG-U8, RW-U2. Deps: T-FR-0006-01, T-FR-0006-03. |
-| T-FR-0006-05 | Plugin frame state UI | — | — | — | `FR-0006` **design**. DG-U7. Deps: T-FR-0006-03. |
-| T-FR-0006-06 | Chrome slot DOM + rendering | — | — | — | `FR-0006` **design**. DG-U6 shell-side. Deps: T-FR-0006-03. |
-| T-FR-0006-07 | Dashboard grid + block primitives | — | — | — | `FR-0006` **design**. Core RW-U1. Deps: T-FR-0006-02. |
-| T-FR-0006-08 | Empty state | — | — | — | `FR-0006` **design**. DG-U4. Deps: T-FR-0006-07. |
-| T-FR-0006-09 | Edit mode | — | — | — | `FR-0006` **design**. DG-U2, DG-U3, RW-U4. Deps: T-FR-0006-07, T-FR-0006-02. |
-| T-FR-0006-10 | @kindling/mantle package scaffold | — | — | — | `FR-0006` **design**. Deps: none. |
-| T-FR-0006-11 | @kindling/mantle base components | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10. |
-| T-FR-0006-12 | @kindling/mantle hooks | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10, T-FR-0006-03. |
-| T-FR-0006-13 | @kindling/mantle overlays | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10, T-FR-0006-12. |
-| T-FR-0006-14 | @kindling/mantle vanilla bridge | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10, T-FR-0006-03. |
-| T-FR-0006-15 | @kindling/mantle publish | — | — | — | `FR-0006` **design**. Deps: T-FR-0006-10..14. |
+| T-FR-0006-01 | System tiles & strips API | done | done | done | `FR-0006`. DF-U1, DF-U2. 16 pytest; [PR #31](https://github.com/mcelhennyi/hearth/pull/31) → `feat/FR-0006-design-language`. |
+| T-FR-0006-02 | Dashboard layout API | done | done | done | `FR-0006`. GET/PUT layout; 10 pytest; [PR #32](https://github.com/mcelhennyi/hearth/pull/32). |
+| T-FR-0006-03 | Mantle postMessage bridge | done | done | done | `FR-0006`. Shell bridge; 24 Vitest; [PR #33](https://github.com/mcelhennyi/hearth/pull/33). |
+| T-FR-0006-04 | User preferences API + Settings modal | done | done | done | `FR-0006`. [PR #40](https://github.com/mcelhennyi/hearth/pull/40); merged to feature @ `8598fd5`. |
+| T-FR-0006-05 | Plugin frame state UI | done | done | done | `FR-0006`. [PR #39](https://github.com/mcelhennyi/hearth/pull/39). |
+| T-FR-0006-06 | Chrome slot DOM + rendering | done | done | done | `FR-0006`. [PR #37](https://github.com/mcelhennyi/hearth/pull/37). |
+| T-FR-0006-07 | Dashboard grid + block primitives | done | done | done | `FR-0006`. Grid + blocks; merged to feature @ `8598fd5`. |
+| T-FR-0006-08 | Empty state | done | done | done | `FR-0006`. [PR #42](https://github.com/mcelhennyi/hearth/pull/42); merged @ `f861c57`. |
+| T-FR-0006-09 | Edit mode | done | done | done | `FR-0006`. [PR #44](https://github.com/mcelhennyi/hearth/pull/44); merged @ `f861c57`. |
+| T-FR-0006-10 | @kindling/mantle package scaffold | done | done | done | `FR-0006`. `packages/mantle/`; [PR #34](https://github.com/mcelhennyi/hearth/pull/34). |
+| T-FR-0006-11 | @kindling/mantle base components | done | done | done | `FR-0006`. [PR #41](https://github.com/mcelhennyi/hearth/pull/41). |
+| T-FR-0006-12 | @kindling/mantle hooks | done | done | done | `FR-0006`. [PR #35](https://github.com/mcelhennyi/hearth/pull/35). |
+| T-FR-0006-13 | @kindling/mantle overlays | done | done | done | `FR-0006`. [PR #43](https://github.com/mcelhennyi/hearth/pull/43); merged @ `f861c57`. |
+| T-FR-0006-14 | @kindling/mantle vanilla bridge | done | done | done | `FR-0006`. [PR #36](https://github.com/mcelhennyi/hearth/pull/36). |
+| T-FR-0006-15 | @kindling/mantle publish | done | done | done | `FR-0006`. [PR #45](https://github.com/mcelhennyi/hearth/pull/45); merged @ `110dd0a`. **`NPM_TOKEN`** for first publish. |
 
 ---
 
@@ -92,5 +89,5 @@
 
 1. **FR-0003** is **closed** on **`main`** — see [`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md).
 2. **FR-0001** is **done** on **`main`** — merged [PR #30](https://github.com/mcelhennyi/hearth/pull/30) @ `0811ed2`; [`90-closeout.md`](feature-history/FR-0001-hearth-platform/90-closeout.md).
-3. **FR-0004** is **`parked`** — unblocked; set `in-progress` in `REGISTRY.md` when staffing **`T-FR-0004-02`**. **FR-0005** is **`design`** — start with [**Remote-build profile**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd) ([`T-FR-0005-01`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd)), then [**`hearth pwa publish`**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi) ([`T-FR-0005-02`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi)); home Pi **`192.168.1.62`**. See [`REGISTRY.md`](feature-history/REGISTRY.md).
+3. **FR-0004** is **`in-progress`** — staff **`T-FR-0004-02`** first. **FR-0005** is **`design`** — start with [**Remote-build profile**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd) ([`T-FR-0005-01`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd)), then [**`hearth pwa publish`**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi) ([`T-FR-0005-02`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi)); home Pi **`192.168.1.62`**. See [`REGISTRY.md`](feature-history/REGISTRY.md).
 4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.

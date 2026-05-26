@@ -1,12 +1,12 @@
 # FR-0004 — Centralized users auth (built-in plugin + gateway)
 
-**Status:** `parked`
+**Status:** `in-progress`
 **Allocated:** 2026-05-17
 **Registry:** [`REGISTRY.md`](../REGISTRY.md)
 
-## Parked until
+## Resume status
 
-Implementation and frontier work stay **paused** until both gates below are **VAL-done** in [`tasks/ticket-progress.md`](../../ticket-progress.md):
+Implementation was parked until both gates below were **VAL-done** in [`tasks/ticket-progress.md`](../../ticket-progress.md). They are now satisfied, so FR-0004 may resume on **`feat/FR-0004-centralized-users-auth`** with **`T-FR-0004-02`** as the next implementation ticket after the 2026-05-26 design audit.
 
 | Gate | Feature | Ticket(s) | What “done” means |
 |------|---------|-----------|-------------------|
@@ -14,9 +14,7 @@ Implementation and frontier work stay **paused** until both gates below are **VA
 | | | [**Real-iPhone walkthrough + closeout report**](../FR-0002-iphone-pwa-prototype/tickets.md) (`T-FR-0002-04`) **VAL** | FR-0002 prototype closed; cert + install path validated on device |
 | **2. Initial platform UI** | **FR-0001** | [**Mantle PWA shell and iframe embed**](../FR-0001-hearth-platform/tickets.md) (`T-FR-0001-04`) **VAL** | Hub shell at `/` with Mantle chrome, plugin iframe, `useUser()` / postMessage contract (typically after reusing FR-0002 Mantle bones) |
 
-Until then: **no** `T-FR-0004-02`…`10` worktrees; design artifacts in this folder remain authoritative.
-
-**Design-only progress:** [**Design amendments: centralized auth architecture**](tickets.md) (`T-FR-0004-01`) — complete in feature history; re-run or commit `docs/design/` amendments on `main` when resuming if they are not already merged.
+**Design-only progress:** [**Design amendments: centralized auth architecture**](tickets.md) (`T-FR-0004-01`) — complete in feature history and refreshed by the 2026-05-26 audit. Implementation starts with the built-in provider scaffold.
 
 ## Charter (one sentence)
 

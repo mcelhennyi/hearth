@@ -15,8 +15,8 @@ sequenceDiagram
   C->>H: auth_request GET /api/auth/verify
   H->>U: forward verify (loopback)
   alt valid session
-    U-->>H: 200
-    H-->>C: 200 + auth user headers
+    U-->>H: 200 + claims
+    H-->>C: 200 + signed auth user headers
     C->>P: GET /api/items + X-Hearth-User-Id + X-Hearth-User-Sig
     P-->>C: 200 JSON
     C-->>B: 200 JSON
@@ -38,13 +38,16 @@ sequenceDiagram
 | Header | Required | Semantics |
 |--------|----------|-----------|
 | `X-Hearth-User-Id` | yes, when authenticated | Stable id (MVP: `"local"`) |
-| `X-Hearth-User-Sig` | yes | `HMAC-SHA256(secret, user_id + "\n" + timestamp)`; hub rejects stale timestamps (>60s) |
+| `X-Hearth-User-Ts` | yes | Unix seconds when the hub verify alias generated the upstream identity headers |
+| `X-Hearth-User-Sig` | yes | `HMAC-SHA256(secret, user_id + "\n" + ts + "\n" + method + "\n" + path)`; plugin middleware rejects stale timestamps (>60s) |
 | `X-Hearth-User-Name` | optional | Display name for UI |
 | `X-Hearth-Roles` | optional | Comma-separated; MVP: `user` |
 
 Plugins **must** validate the signature with a secret delivered via environment (`HEARTH_USER_SIG_SECRET` from hub at plugin start), not trust raw `X-Hearth-User-Id` alone.
 
-**Loopback-only injection:** Caddy sets these only on upstream requests to plugin backends bound to `127.0.0.1`. Plugins must not be reachable on LAN without passing through Caddy.
+**Header source and stripping:** `/api/auth/verify` is the only component that creates `X-Hearth-User-*` headers. Caddy must strip any inbound `X-Hearth-*` request headers from the browser, call the verify alias, then copy only the alias response headers to the plugin upstream. External auth providers return claims to the hub alias; the hub still normalizes and signs the upstream headers.
+
+**Loopback-only injection:** Caddy forwards these only on upstream requests to plugin backends bound to `127.0.0.1` or container-internal networks. Plugins must not be reachable on LAN without passing through Caddy.
 
 ## Built-in plugin: `hearth-users`
 
@@ -52,6 +55,7 @@ Plugins **must** validate the signature with a secret delivered via environment 
 |----------|--------|
 | Slug | `hearth-users` |
 | Route prefix | `/hearth-users/` |
+| Source path | `apps/builtin/hearth-users/` in Hearth; external apps still live outside the hub repo or as submodules |
 | Built-in | `true` in registry — cannot uninstall; may be **disabled** only when `auth.provider=external` |
 | UI | Mantle-themed login + password change + first-run set password |
 | Data | `var/hearth/plugins/hearth-users/users.sqlite` |
@@ -114,6 +118,7 @@ Document in Kindling template README and generated plugin:
 3. **TypeScript (plugin backend if any):** same checks for Node template.
 4. **React:** `useUser()` from `@kindling/mantle` only; never read cookies from plugin JS.
 5. **`tinder.toml`:** `permissions.network = "loopback"` default; document that LAN exposure is via Caddy only.
+6. **Child-repo compliance changelog:** every Kindling contract/template change must update a dense, AI-readable changelog entry that tells existing child plugin repos what to change, how to detect drift, and how to verify compliance.
 
 ## FR-0001 amendment note
 

@@ -6,13 +6,13 @@
 
 | ID | Title | Type | Deps | Summary | Group |
 |----|-------|------|------|---------|-------|
-| T-FR-0004-01 | Design amendments: centralized auth architecture | Story | none | Amend `docs/design/architecture/overview.md`, deployment, plugin-contract (`builtin`), mantle-ui; FR-0001-09 split note | P0 |
-| T-FR-0004-02 | Built-in hearth-users plugin scaffold | Story | T-FR-0004-01 | `apps/hearth-users/`, tinder.toml with `builtin=true`, placeholder UI | P0 |
+| T-FR-0004-01 | Design amendments: centralized auth architecture | Story | none | Amend `docs/design/architecture/overview.md`, deployment, plugin-contract (`builtin`), mantle-ui, Kindling changelog policy; FR-0001-09 split note | P0 |
+| T-FR-0004-02 | Built-in hearth-users plugin scaffold | Story | T-FR-0004-01 | `apps/builtin/hearth-users/`, tinder.toml with `builtin=true`, placeholder UI | P0 |
 | T-FR-0004-03 | Users plugin: password, session, verify API | Story | T-FR-0004-02 | Argon2id, SQLite, login/logout, `/api/verify` for edge | P0 |
 | T-FR-0004-04 | Hub auth verify alias and provider settings | Story | T-FR-0004-03 | `/api/auth/verify`, `auth.provider` settings, forward to builtin/external | P1 |
 | T-FR-0004-05 | Caddy auth_request and header injection | Story | T-FR-0004-04 | Regenerate routes: subrequest + `X-Hearth-*` on plugin upstreams | P1 |
 | T-FR-0004-06 | Spark session capabilities and builtin registry rules | Story | T-FR-0004-03 | `hearth-users.session.*`; hub cannot uninstall builtin | P1 |
-| T-FR-0004-07 | Kindling template: trust middleware and no local login | Story | T-FR-0004-01, T-FR-0004-04 | `require_hearth_user`, docs, template tests | P2 |
+| T-FR-0004-07 | Kindling template: trust middleware and no local login | Story | T-FR-0004-01, T-FR-0004-04 | `require_hearth_user`, docs, template tests, child-repo compliance changelog | P2 |
 | T-FR-0004-08 | Mantle shell: login via hearth-users and useUser contract | Story | T-FR-0004-03, T-FR-0004-05 | Remove hub login routes; redirect unauth; `hearth.user` payload | P2 |
 | T-FR-0004-09 | External auth provider stub and operator settings UI | Story | T-FR-0004-04 | `provider=external` + verify URL; fail-closed; dashboard warning | P2 |
 | T-FR-0004-10 | E2E: plugin trusts gateway identity | Story | T-FR-0004-05, T-FR-0004-07, T-FR-0004-08 | Fixture plugin + Playwright/pytest: header auth, login redirect | P3 |
