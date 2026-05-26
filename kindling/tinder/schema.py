@@ -80,6 +80,7 @@ class PluginBlock(BaseModel):
     version: str
     hearth_min: str = "0.1.0"
     kind: PluginKind = "app"
+    builtin: bool = False
     description: str | None = None
     icon: str | None = None
 

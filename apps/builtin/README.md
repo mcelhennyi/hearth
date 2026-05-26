@@ -1,0 +1,8 @@
+# Built-in Platform Plugins
+
+`apps/builtin/<slug>/` is the sole Hearth repository exception to plugin agnosticism.
+
+Built-ins use Tinder manifests, Spark-facing boundaries, and normal gateway routes, but they
+ship with Hearth because they provide platform services that should not live inside the hub
+monolith. External plugins still belong in separate repositories mounted under `apps/<slug>/`
+or installed from drop-in paths.

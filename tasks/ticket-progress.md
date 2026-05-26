@@ -53,7 +53,7 @@
 | T-FR-0001-09 | Auth, VAPID, Web Push + ntfy | done | done | done | `FR-0001`. argon2id auth, itsdangerous sessions, lockout, Web Push (VAPID+410 pruning), ntfy. 141 tests pass via Docker. Manual iPhone VAL deferred (needs real device). [PR #25](https://github.com/mcelhennyi/hearth/pull/25). |
 | T-FR-0001-10 | Pi/Mac mini install.sh + backup | done | done | done | `FR-0001`. deploy/install.sh + systemd/launchd units + hearth backup/restore. 235 tests pass via Docker. [PR #30](https://github.com/mcelhennyi/hearth/pull/30). |
 | T-FR-0004-01 | Design amendments: centralized auth architecture | done | done | done | `FR-0004` resumed; 2026-05-26 audit added built-in path, trust-header, and Kindling changelog requirements. |
-| T-FR-0004-02 | Built-in hearth-users plugin scaffold | — | — | — | `FR-0004` active frontier. Deps satisfied. |
+| T-FR-0004-02 | Built-in hearth-users plugin scaffold | done | done | done | Built-in manifest/schema, first-boot registration, uninstall guard, FastAPI `/health`, placeholder Vite UI, and dev Caddy/Compose route implemented. Validation after merging feature @ `5f461e4`: targeted `./develop test` 5 passed; full `./develop test` 243 passed, 3 skipped; Compose Caddy `/hearth-users/` and `/hearth-users/health` HTTP 200. |
 | T-FR-0004-03 | Users plugin: password, session, verify API | — | — | — | `FR-0004`. Deps: T-FR-0004-02. |
 | T-FR-0004-04 | Hub auth verify alias and provider settings | — | — | — | `FR-0004`. Deps: T-FR-0004-03. |
 | T-FR-0004-05 | Caddy auth_request and header injection | — | — | — | `FR-0004`. Deps: T-FR-0004-04. |

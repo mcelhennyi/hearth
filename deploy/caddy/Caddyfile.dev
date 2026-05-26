@@ -3,6 +3,9 @@ hearth.home.arpa {
   handle /api/* {
     reverse_proxy hub:8200
   }
+  handle_path /hearth-users/* {
+    reverse_proxy hearth-users:8000
+  }
   import Caddyfile.plugins
   handle {
     root * /srv
