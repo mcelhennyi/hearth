@@ -70,6 +70,24 @@ def test_hearth_users_login_page_renders_setup_form(tmp_path: Path) -> None:
     assert "/src/main.ts" not in response.text
 
 
+def test_hearth_users_login_page_posts_setup_json_shape(tmp_path: Path) -> None:
+    module = _load_hearth_users_app()
+    client = _client(module, tmp_path)
+
+    response = client.get("/hearth-users/login?next=/dashboard")
+
+    assert response.status_code == 200
+    assert 'data-mode="setup"' in response.text
+    assert 'name="username"' in response.text
+    assert 'name="display_name"' in response.text
+    assert 'name="password"' in response.text
+    assert "/hearth-users/api/setup" in response.text
+    assert "JSON.stringify" in response.text
+    assert "username: username.value" in response.text
+    assert "display_name:" in response.text
+    assert "password: password.value" in response.text
+
+
 def test_hearth_users_login_page_renders_login_after_setup(
     hearth_users: object, tmp_path: Path
 ) -> None:
@@ -86,12 +104,90 @@ def test_hearth_users_login_page_renders_login_after_setup(
         == 200
     )
 
-    response = client.get("/login?next=https://evil.example/path")
+    response = client.get("/hearth-users/login?next=https://evil.example/path")
 
     assert response.status_code == 200
     assert "Sign in to Hearth" in response.text
     assert 'data-mode="login"' in response.text
     assert 'data-next="/"' in response.text
+    assert 'name="username"' in response.text
+    assert 'name="password"' in response.text
+    assert "/hearth-users/login" in response.text
+
+
+def test_prefixed_setup_and_login_endpoints_accept_ui_json(
+    hearth_users: object, tmp_path: Path
+) -> None:
+    client = _client(hearth_users, tmp_path)
+
+    setup = client.post(
+        "/hearth-users/api/setup",
+        json={
+            "username": "ada",
+            "display_name": "Ada Lovelace",
+            "password": "correcthorsebattery",
+        },
+    )
+    client.post("/hearth-users/logout")
+    login = client.post(
+        "/hearth-users/login",
+        json={"username": "ada", "password": "correcthorsebattery"},
+    )
+
+    assert setup.status_code == 200
+    assert login.status_code == 200
+    assert login.json() == setup.json()
+
+
+def test_hearth_users_static_ui_is_real_provider_form() -> None:
+    web_root = REPO_ROOT / "apps" / "builtin" / "hearth-users" / "web"
+    index_html = (web_root / "index.html").read_text(encoding="utf-8")
+    main_ts = (web_root / "src" / "main.ts").read_text(encoding="utf-8")
+
+    assert "Login coming soon" not in main_ts
+    assert "being wired in" not in index_html
+    assert 'name="username"' in index_html
+    assert 'name="display_name"' in index_html
+    assert 'name="password"' in index_html
+    assert "/api/setup" in main_ts
+    assert "/login" in main_ts
+    assert "JSON.stringify" in main_ts
+    assert "username" in main_ts
+    assert "display_name" in main_ts
+    assert "password" in main_ts
+
+
+def test_login_errors_are_clear_for_ui_states(hearth_users: object, tmp_path: Path) -> None:
+    store = hearth_users.UsersStore(tmp_path)
+    store.create_user(
+        username="ada",
+        display_name="Ada Lovelace",
+        password="right-password",
+        roles=["admin", "user"],
+    )
+    disabled = store.create_user(
+        username="grace",
+        display_name="Grace Hopper",
+        password="grace-password",
+        roles=["user"],
+    )
+    store.set_user_disabled(str(disabled["user_id"]), True)
+    client = _client(hearth_users, tmp_path)
+
+    wrong = client.post("/login", json={"username": "ada", "password": "wrong-password"})
+    disabled_login = client.post(
+        "/login", json={"username": "grace", "password": "grace-password"}
+    )
+    for _ in range(hearth_users.MAX_FAILED_ATTEMPTS - 1):
+        client.post("/login", json={"username": "ada", "password": "wrong-password"})
+    locked = client.post("/login", json={"username": "ada", "password": "right-password"})
+
+    assert wrong.status_code == 401
+    assert wrong.json()["detail"] == "Invalid username or password."
+    assert disabled_login.status_code == 403
+    assert disabled_login.json()["detail"] == "User is disabled."
+    assert locked.status_code == 429
+    assert locked.json()["detail"] == "Too many failed attempts; try again later."
 
 
 def test_first_run_setup_stores_argon2id_password_in_plugin_sqlite(
