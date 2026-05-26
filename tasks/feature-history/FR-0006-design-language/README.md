@@ -9,7 +9,7 @@ Cross-repo design-language alignment across **hearth**, **kindling**, and **groc
 1. Design doc amendments (`dashboard.md`, `mantle-ui.md`, `plugin-contract.md`).
 2. Mantle shell — chrome slots, postMessage, frame states, Settings modal.
 3. Dashboard grid — layout API, blocks, empty state, edit mode.
-4. **`@kindling/mantle`** — components, hooks, vanilla bridge, overlays, npm publish pipeline.
+4. **`@kindling/mantle`** — components, hooks, vanilla bridge, overlays, private package artifact validation.
 
 ## Partner FRs
 

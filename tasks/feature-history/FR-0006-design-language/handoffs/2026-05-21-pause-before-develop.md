@@ -29,7 +29,7 @@ When the user runs `/feature-request-continue` (in this repo or via the projects
    - **kindling:** `T-FR-0001-01` (Python template tokens + theme listener) — see [`kindling/tasks/feature-history/FR-0001-plugin-ui-system/handoffs/2026-05-21-pause-before-develop.md`](https://github.com/mcelhennyi/kindling/blob/main/tasks/feature-history/FR-0001-plugin-ui-system/handoffs/2026-05-21-pause-before-develop.md).
    - **grocery-list:** `T-FR-0002-01` (Vite + React scaffold) — see [`grocery-list/tasks/feature-history/FR-0002-mantle-ui/handoffs/2026-05-21-pause-before-develop.md`](https://github.com/mcelhennyi/grocery-list/blob/master/tasks/feature-history/FR-0002-mantle-ui/handoffs/2026-05-21-pause-before-develop.md).
    - **Six subagents in parallel**, one per ticket; one child worktree per ticket under each repo's `.worktrees/FR-NNNN-<slug>/`.
-5. **Cross-repo coordination:** kindling T-FR-0001-02 and grocery T-FR-0002-02..08 soft-depend on hearth `T-FR-0006-15` (npm publish). Do **not** block W0; those dependent tickets stay pending until hearth T-FR-0006-10..14 are VAL-done and T-FR-0006-15 publishes.
+5. **Cross-repo coordination:** kindling T-FR-0001-02 and grocery T-FR-0002-02..08 soft-depend on hearth `T-FR-0006-15` (Mantle package artifact). Do **not** block W0; those dependent tickets stay pending until hearth T-FR-0006-10..14 are VAL-done and T-FR-0006-15 has a private/local package consumption path.
 
 ## Out of scope on resume
 

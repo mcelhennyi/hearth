@@ -8,7 +8,7 @@
 | **Active phase** | TEST → DEV → VAL |
 | **Branch / worktree** | `main` @ `25e3381`; grocery `feat/FR-0001-mvp-reference-plugin` @ `plugins/third-party/grocery-list/` |
 | **Session status** | `developing` |
-| **Next agent should** | FR-0006 is merged to `main` via [PR #46](https://github.com/mcelhennyi/hearth/pull/46) @ `25e3381`. Configure **`NPM_TOKEN`**, tag **`kindling-mantle-v0.1.0`**, then staff grocery **FR-0002** Mantle UI. Run `plugins/third-party/grocery-list/tests/smoke/e2e-hearth.sh` when hub is up. |
+| **Next agent should** | FR-0006 is merged to `main` via [PR #46](https://github.com/mcelhennyi/hearth/pull/46) @ `25e3381`. Keep **`@kindling/mantle`** private for now, then staff grocery **FR-0002** Mantle UI using a local/private package path. Run `plugins/third-party/grocery-list/tests/smoke/e2e-hearth.sh` when hub is up. |
 
 ### Parallel streams
 
@@ -79,7 +79,7 @@
 | T-FR-0006-12 | @kindling/mantle hooks | done | done | done | `FR-0006`. [PR #35](https://github.com/mcelhennyi/hearth/pull/35). |
 | T-FR-0006-13 | @kindling/mantle overlays | done | done | done | `FR-0006`. [PR #43](https://github.com/mcelhennyi/hearth/pull/43); merged @ `f861c57`. |
 | T-FR-0006-14 | @kindling/mantle vanilla bridge | done | done | done | `FR-0006`. [PR #36](https://github.com/mcelhennyi/hearth/pull/36). |
-| T-FR-0006-15 | @kindling/mantle publish | done | done | done | `FR-0006`. [PR #45](https://github.com/mcelhennyi/hearth/pull/45); merged @ `110dd0a`. **`NPM_TOKEN`** for first publish. |
+| T-FR-0006-15 | @kindling/mantle package validation | done | done | done | `FR-0006`. [PR #45](https://github.com/mcelhennyi/hearth/pull/45); merged @ `110dd0a`. Public npm publish deferred; keep package private for now. |
 
 ---
 

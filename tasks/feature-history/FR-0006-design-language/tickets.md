@@ -311,14 +311,15 @@ Sets up the package authored in this repo, published to npm.
 
 ---
 
-### T-FR-0006-15 — `@kindling/mantle` publish
+### T-FR-0006-15 — `@kindling/mantle` package validation
 
 **Type:** release · **Deps:** 10–14 · **Order:** P3 · **Owner:** —
 
 **Surface**
 
 - `pnpm changeset` (or simple manual versioning) configured.
-- `npm publish --access=public` via GitHub Actions when a tag `kindling-mantle-vX.Y.Z` is pushed.
+- Package remains private in this repo for now; no public npm publish.
+- GitHub Actions validates a package artifact dry-run when a tag `kindling-mantle-vX.Y.Z` is pushed.
 - CHANGELOG.md seeded with v0.1.0 entry.
 - README documents install + minimal example pointing at kindling's `plugin-ui-system.md`.
 
@@ -326,6 +327,6 @@ Sets up the package authored in this repo, published to npm.
 
 | Phase | Acceptance |
 |-------|------------|
-| **TEST** | Dry-run `npm publish --dry-run` in CI green. |
+| **TEST** | Package artifact dry-run in CI green. |
 | **DEV** | Workflow + docs + version. |
-| **VAL** | Tag-driven publish to npm registry succeeds; kindling and grocery-list can `pnpm add @kindling/mantle@0.1.0`. |
+| **VAL** | Public npm publish explicitly deferred; kindling and grocery-list consume the local/private package path until publish policy changes. |
