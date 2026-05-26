@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0004-05`, `T-FR-0004-07`, `T-FR-0004-09` |
+| **Active ticket** | `T-FR-0004-07`, `T-FR-0004-08`, `T-FR-0004-09` |
 | **Active phase** | TEST → DEV → VAL |
-| **Branch / worktree** | `feat/FR-0004-centralized-users-auth` @ `.worktrees/FR-0004-centralized-users-auth/feature/`; next worktrees `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-05-caddy-auth-request/`, `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-07-kindling-trust-template/`, `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-09-external-auth-settings/` |
+| **Branch / worktree** | `feat/FR-0004-centralized-users-auth` @ `.worktrees/FR-0004-centralized-users-auth/feature/`; next worktrees `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-07-kindling-trust-template/`, `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-08-mantle-login-use-user/`, `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-09-external-auth-settings/` |
 | **Session status** | `developing` |
-| **Next agent should** | Continue FR-0004 frontier with `T-FR-0004-05`, `T-FR-0004-07`, and `T-FR-0004-09` in parallel, then merge them to `feat/FR-0004-centralized-users-auth`. |
+| **Next agent should** | Repair `T-FR-0004-07` PR #51 amd64 install smoke, then continue FR-0004 frontier with `T-FR-0004-08` and `T-FR-0004-09` in parallel. |
 
 ### Parallel streams
 
@@ -16,7 +16,7 @@
 
 **Kindling FR-0001** — merged [kindling PR #1](https://github.com/mcelhennyi/kindling/pull/1) @ `f64b6a1`; hearth submodule bumped on `feat/FR-0006-design-language` @ `df20872`.
 
-**FR-0004** resumed — `T-FR-0004-02`, `T-FR-0004-03`, `T-FR-0004-04`, and `T-FR-0004-06` merged into `feat/FR-0004-centralized-users-auth`; `T-FR-0004-05`, `T-FR-0004-07`, and `T-FR-0004-09` are the next frontier tickets.
+**FR-0004** resumed — `T-FR-0004-02`, `T-FR-0004-03`, `T-FR-0004-04`, `T-FR-0004-05`, and `T-FR-0004-06` merged into `feat/FR-0004-centralized-users-auth`; `T-FR-0004-07` is open with PR #51 amd64 install-smoke repair needed, and `T-FR-0004-08`/`T-FR-0004-09` are the next frontier tickets.
 
 ---
 
@@ -58,7 +58,7 @@
 | T-FR-0004-04 | Hub auth verify alias and provider settings | done | done | done | Merged latest `feat/FR-0004-centralized-users-auth` with T06 preserved. Auth settings, hub `/api/auth/verify`, signed `X-Hearth-User-*` headers, fail-closed provider handling, persisted `HEARTH_USER_SIG_SECRET`, plugin Compose secret injection, and dev Compose `argon2-cffi` for `hearth-users` implemented. Validation: focused merged slice 75 passed; full `./develop test` 266 passed, 3 skipped; Caddy sidecar `/api/auth/verify` returned 401 without session and 200 with signed headers after login. |
 | T-FR-0004-05 | Caddy auth_request and header injection | done | done | done | Hub and install Caddy fragments now strip inbound `X-Hearth-*`, forward-auth through `/api/auth/verify`, copy signed user headers, preserve API 401s, and redirect HTML to `/hearth-users/login?next=...`. Validation: focused proxy/compose tests 15 passed, 1 skipped; full `./develop test` 269 passed, 3 skipped. |
 | T-FR-0004-06 | Spark session capabilities and builtin registry rules | done | done | done | `FR-0004`. Spark `session.current` works for `hub` via permission-checked local handler; `hearth-users` declares session capability/events, auth/session audit JSONL, and builtin disable/uninstall are rejected pending T04 external-provider settings. Validation: `./develop test` 257 passed, 3 skipped. |
-| T-FR-0004-07 | Kindling template: trust middleware and no local login | — | — | — | `FR-0004`; every Kindling change must update child-repo compliance changelog. Deps: T-FR-0004-01, T-FR-0004-04. |
+| T-FR-0004-07 | Kindling template: trust middleware and no local login | done | done | pending | `FR-0004`; PR #51 opened with child-repo compliance changelog and local validation (`./develop test tests/test_kindling_plugin_contract.py` 13 passed; full `./develop test` 272 passed, 3 skipped), but amd64 install smoke failed and needs repair before merge. |
 | T-FR-0004-08 | Mantle shell: login via hearth-users and useUser contract | — | — | — | `FR-0004`. Deps: T-FR-0004-03, T-FR-0004-05. |
 | T-FR-0004-09 | External auth provider stub and operator settings UI | — | — | — | `FR-0004`. Deps: T-FR-0004-04. |
 | T-FR-0004-10 | E2E: plugin trusts gateway identity | — | — | — | `FR-0004` capstone. |
@@ -89,5 +89,5 @@
 
 1. **FR-0003** is **closed** on **`main`** — see [`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md).
 2. **FR-0001** is **done** on **`main`** — merged [PR #30](https://github.com/mcelhennyi/hearth/pull/30) @ `0811ed2`; [`90-closeout.md`](feature-history/FR-0001-hearth-platform/90-closeout.md).
-3. **FR-0004** is **`in-progress`** — staff **`T-FR-0004-05`**, **`T-FR-0004-07`**, and **`T-FR-0004-09`** next. **FR-0005** is **`design`** — start with [**Remote-build profile**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd) ([`T-FR-0005-01`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd)), then [**`hearth pwa publish`**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi) ([`T-FR-0005-02`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi)); home Pi **`192.168.1.62`**. See [`REGISTRY.md`](feature-history/REGISTRY.md).
+3. **FR-0004** is **`in-progress`** — repair **`T-FR-0004-07`** PR #51, then staff **`T-FR-0004-08`** and **`T-FR-0004-09`** next. **FR-0005** is **`design`** — start with [**Remote-build profile**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd) ([`T-FR-0005-01`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd)), then [**`hearth pwa publish`**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi) ([`T-FR-0005-02`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi)); home Pi **`192.168.1.62`**. See [`REGISTRY.md`](feature-history/REGISTRY.md).
 4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.

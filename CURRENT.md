@@ -4,24 +4,13 @@ Branch: `feat/FR-0004-centralized-users-auth`
 
 Worktree: `.worktrees/FR-0004-centralized-users-auth/feature/`
 
-Status: `T-FR-0004-05` TEST, DEV, and VAL are complete. Starting feature branch includes `T-FR-0004-02`, `T-FR-0004-03`, `T-FR-0004-04`, and `T-FR-0004-06`.
+Status: `T-FR-0004-05` is merged into the feature branch. Starting feature branch includes `T-FR-0004-02`, `T-FR-0004-03`, `T-FR-0004-04`, `T-FR-0004-05`, and `T-FR-0004-06`.
 
 Current ticket branch:
 
-- `T-FR-0004-05` — Caddy auth_request and header injection.
-- Phase: VAL complete on 2026-05-26.
-- Scope guard: proxy/Caddy generation only; no Kindling trust middleware, Mantle shell login/useUser, or external auth settings UI.
-
-T-FR-0004-05 TEST:
-
-- Added focused golden tests for hub and install Caddy fragments.
-- Red run: `./develop test tests/proxy/test_caddy.py tests/test_plugin_compose_generation.py` failed on the legacy direct-proxy fragments, as expected.
-
-Latest validation after merging T04:
-
-- Focused merged slice — 75 passed.
-- `./develop test` — 266 passed, 3 skipped, 3 warnings.
-- Caddy sidecar `/api/auth/verify` probe returned 401 without session and 200 with signed `X-Hearth-User-*` headers after login.
+- `T-FR-0004-07` — Kindling template trust middleware and no local login. PR #51 is open; local validation passed, but amd64 install smoke failed and needs repair before merge.
+- `T-FR-0004-08` — Mantle shell login via `hearth-users` and `useUser` contract. Now dependency-eligible after T05.
+- `T-FR-0004-09` — External auth provider stub and operator settings UI.
 
 Completed:
 
@@ -29,6 +18,7 @@ Completed:
 - `T-FR-0004-02` — built-in `hearth-users` scaffold, built-in registry support, Tinder `builtin` schema, uninstall guard, dev Caddy/Compose route, tests.
 - `T-FR-0004-03` — `hearth-users` password setup, Argon2id storage, login/logout, session cookie, session API, verify claims, tests.
 - `T-FR-0004-04` — hub `/api/auth/verify`, auth provider settings, signed `X-Hearth-User-*` headers, fail-closed provider behavior, persisted signing secret, plugin Compose secret injection.
+- `T-FR-0004-05` — Caddy route protection, forward-auth through hub `/api/auth/verify`, verified `X-Hearth-User-*` injection, HTML redirect to `/hearth-users/login`, API 401 preservation.
 - `T-FR-0004-06` — Spark `session.current`, session capability/events, auth/session audit JSONL, and builtin disable guard.
 
 VAL result:
@@ -38,4 +28,5 @@ VAL result:
 
 Next action:
 
-- Commit, push, and open a ticket PR against `feat/FR-0004-centralized-users-auth`.
+- Repair PR #51 amd64 install smoke for `T-FR-0004-07`, then merge it into the feature branch.
+- Staff `T-FR-0004-08` and `T-FR-0004-09` next.
