@@ -4,7 +4,7 @@ Branch: `feat/FR-0004-centralized-users-auth-T-FR-0004-06-spark-session-builtin-
 
 Worktree: `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-06-spark-session-builtin-rules/`
 
-Status: VAL complete for `T-FR-0004-06`; committed locally.
+Status: VAL complete for `T-FR-0004-06`; pushed and PR opened.
 
 Scope:
 
@@ -38,8 +38,12 @@ Latest VAL:
 
 Commit:
 
-- `feat(auth): add Spark session builtin rules`.
+- `788889f` — `feat(auth): add Spark session builtin rules`.
+
+PR:
+
+- https://github.com/mcelhennyi/hearth/pull/49
 
 Next:
 
-- Push this ticket branch and open a PR to `feat/FR-0004-centralized-users-auth`.
+- Integration owner should review and merge PR #49 into `feat/FR-0004-centralized-users-auth` with the parallel T04 stream.
