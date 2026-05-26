@@ -1,6 +1,6 @@
 # Development standards
 
-Use with **`docs/ai-context.md`**. This file mirrors Cursor-facing rules for Claude Code sessions.
+Use with **`docs/ai-context.md`**. This file mirrors Cursor-facing rules for Claude Code sessions; Codex points here from **`AGENTS.md`** for shared development standards.
 
 **Documentation as source of truth** (design vs process, escalation tags): **`docs/ai-context.md`** and **`docs-authority-and-escalation.md`** (mirrors **`.cursor/rules/docs-authority-and-escalation.mdc`**).
 
@@ -14,7 +14,7 @@ Use with **`docs/ai-context.md`**. This file mirrors Cursor-facing rules for Cla
 - Use the traceability prefix defined in **`docs/design/documentation-style.md`** (default pattern **`@PROJ-<AREA>-<NUMBER>`** until customized).
 - **What to comment:** **why** something is done a non-obvious way; **preconditions, errors, and threading** for public APIs or process boundaries; **stubs and temporary** behavior, with **DESIGN-GAP** or a ticket reference when design is incomplete.
 - **What to skip:** comments that only narrate the next line in English; JSDoc that duplicates an obvious function name with no new information.
-- **Claude / Cursor / humans:** the same bar applies — explanatory, not noise.
+- **Claude / Cursor / Codex / humans:** the same bar applies — explanatory, not noise.
 
 ## Tie backs to documentation
 

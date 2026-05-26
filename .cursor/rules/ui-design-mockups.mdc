@@ -7,8 +7,6 @@ alwaysApply: true
 
 When the user asks to **create or update UI design** — screens, flows, layout, chrome, tokens-as-used, plugin surfaces, dashboard tiles, or any **visible** product behavior in **`docs/design/`** — agents must deliver **static HTML mockups** that show the **exact look and feel** (layout, typography, color, spacing, states) **before** opening or extending **React / Mantle / app implementation** tickets or writing production UI code.
 
-**Authority split:** **`docs/design/…` markdown** = logical source of truth (behavior, contracts). **`docs/design/mockups/`** HTML/CSS = layout and visual design language source of truth. Link mocks from design docs; **do not** put ASCII layout pictures in markdown.
-
 ### When this applies
 
 - New or revised **UI** sections in **`docs/design/…`** (including Mantle shell, hub dashboard, plugin chrome).
@@ -28,7 +26,7 @@ When the user asks to **create or update UI design** — screens, flows, layout,
    - Use **realistic copy** and representative data; avoid lorem-only wireframes when layout depends on content length.
    - Add **desktop and phone** variants when breakpoints, safe areas, or touch targets matter (`*-desktop.html`, `*-iphone.html`, or team-equivalent names).
    - Share CSS via a sibling **`.css`** file when multiple mocks reuse tokens (e.g. **`docs/design/mockups/<slug>-mock.css`**).
-2. **Design doc update:** link each mock from the authoritative **`docs/design/…`** doc (relative paths); update **`docs/design/mockups/README.md`** index when adding files. State which mock is canonical per viewport. Remove ASCII layout diagrams from markdown when mocks replace them.
+2. **Design doc update:** link each mock from the authoritative **`docs/design/…`** doc (relative paths). State which mock is canonical per viewport.
 3. **Only then:** ticket bodies, **`T-FR-NNNN-xx`** DEV work, or React/Mantle implementation — mocks are the visual source of truth until amended.
 
 ### Quality bar

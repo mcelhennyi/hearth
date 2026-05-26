@@ -11,8 +11,7 @@ Conventions for **documentation** and **traceability**. **Stack-specific** rules
 
 - Non-trivial units (services, modules, handlers) carry **`@PROJ-<AREA>-<NUMBER>`** in a short comment or docstring **for stacks where inline tags make sense**.
 - Replace **`PROJ`** with your project prefix (set during **`init-project`**).
-- **Areas:** use the area letters in **`tasks/TAG-REGISTRY.md`** (`A` hub API, `U` UI/Mantle, `D` deployment, `S` Spark, `T` Tinder, `N` notifications, `I` identity, `P` proxy). Define new letters in that registry and here before first use.
-- **Prefix for Hearth:** `@HRT-<AREA>-<n>` (e.g. `@HRT-A-1`).
+- **Areas:** define a small set for your product (examples: `API`, `AUTH`, `DATA`, `UI`, `JOB`).
 
 ## Ticket IDs (map to `FR-NNNN`)
 
@@ -36,7 +35,7 @@ Implementation ticket **definitions** (headings, phases, **Deps:**) live in **`t
 
 **Mermaid triad nodes:** For **`T-FR-NNNN-xx`**, node ids **`TFR` + `NNNN` + `_` + `xx` + `_` + `TEST|DEV|VAL`**. When a ticket is fully complete, add the corresponding `class … triadDone` line in **`docs/design/tickets-initial.md`** (see that file).
 
-## Writing rules for Cursor / Claude
+## Writing rules for Cursor / Claude / Codex
 
 1. **Prefer pointers over duplication** — Link to `docs/design/...` instead of restating full diagrams in tickets.
 2. **Tables for conventions** — When listing options, use markdown tables.
@@ -44,13 +43,7 @@ Implementation ticket **definitions** (headings, phases, **Deps:**) live in **`t
 4. **No scope creep in comments** — Comments summarize; design decisions live in `docs/design/`.
 5. **Amendments** — Use the HTML comment block format from **`docs/ai-context.md`** when revising authoritative sections.
 6. **Durable doc tags (`REWORK-REQUIRED`, `GROWTH`)** — When settled design/intent is correct but **shipped code or another doc is knowingly out of sync**, flag with `REWORK-REQUIRED` (deviating file/spec + intended end state); persists until rework lands. When **v0 is correct now** but a **named limit or issue** requires a **future design upgrade**, flag with `GROWTH` (trigger, limitation, upgrade, v0 until triggered). For **objectively evaluable** `GROWTH` triggers, add **`Monitor:`** (metric, threshold, checkpoint) and implement optional **`GROWTH_TRIGGERED`** logging per **`.claude/rules/growth-monitoring.md`** / **`.cursor/rules/growth-monitoring.mdc`** (compile-outable, runtime-off by default). Do **not** silently edit design to match deviating code or pre-build upgrades before the trigger. Full conventions: **`.claude/rules/rework-required.md`** / **`.cursor/rules/rework-required.mdc`** and **`.claude/rules/growth-required.md`** / **`.cursor/rules/growth-required.mdc`**; escalation context in **`docs/ai-context.md`**. If you publish a docs site, add highlight classes (e.g. `design-doc-rework`, `design-doc-growth`) in your project stylesheet — styling is project-owned, tags are not.
-7. **UI design HTML mocks** — **Logical** behavior (zones, routes, APIs, data models, acceptance rules) lives in **`docs/design/…`**. **Layout and visual design language** (proportions, spacing, typography and color as rendered, chrome on screen) are authoritative in **`docs/design/mockups/`** (static HTML + CSS). Design docs **must link** to the canonical mock(s) per viewport; **do not** embed ASCII art layout diagrams for spatial reference. Index: **[`mockups/README.md`](mockups/README.md)**. Ship or update mocks **before** UI implementation tickets or React/shell code. Rule: **`.cursor/rules/ui-design-mockups.mdc`** (mirrored **`.claude/rules/ui-design-mockups.md`**).
-
-## Hub vs plugin repositories
-
-- **`apps/hub/`** documents and implements **platform** behavior only (registry, Mantle shell, Spark broker, settings).
-- **Plugin apps** live in **separate git repos**; Hearth references them as `apps/<slug>/` submodules. Design examples may use slugs like `groceries`; that does not imply source in the Hearth tree.
-- **Kindling** is its own repo, bootstrapped from **`.skeleton`** with a **`.skeleton/`** submodule inside Kindling—see [`satellite-repos/kindling.md`](satellite-repos/kindling.md).
+7. **UI design HTML mocks** — When creating or updating **user-visible** UI in **`docs/design/`**, ship **static HTML** under **`docs/design/mockups/`** (and link from the design doc) **before** UI implementation tickets or React/shell code. Mocks must show the intended **look and feel** (layout, type, color, spacing, key states), not wireframe placeholders. Use desktop and phone variants when responsive behavior matters. Rule: **`.cursor/rules/ui-design-mockups.mdc`** (mirrored **`.claude/rules/ui-design-mockups.md`**).
 
 ## Code tie-backs
 

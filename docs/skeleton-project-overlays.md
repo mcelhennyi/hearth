@@ -16,6 +16,7 @@ Examples:
 |------------------------------------------------------|-------------------------------------------------------------------|
 | **`docs/ai-context.md`** | **`docs/ai-context.project.md`** |
 | **`CLAUDE.md`** | **`CLAUDE.project.md`** |
+| **`AGENTS.md`** | **`AGENTS.project.md`** |
 
 Rules:
 
@@ -33,7 +34,7 @@ The same pattern applies to other single-file roots when useful, as long as the 
 
 **`docs/ai-context.md`** and **`.cursor/rules/main.mdc`** define session bootstrap: load the base file, then the **`.project.`** file **when it exists**, in that order. Section numbers (for example **§4**) in an overlay refer to the **base** **`docs/ai-context.md`** unless the overlay states otherwise.
 
-**`CLAUDE.md`** instructs Claude Code to load **`CLAUDE.project.md`** after the base file when present.
+**`CLAUDE.md`** instructs Claude Code to load **`CLAUDE.project.md`** after the base file when present. **`AGENTS.md`** gives Codex the same pattern with **`AGENTS.project.md`**.
 
 ## Maintainer note (skeleton upstream)
 
