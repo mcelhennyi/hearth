@@ -20,7 +20,7 @@ Canonical ticket bodies in [`tickets.md`](tickets.md). This file is the planning
 | T-FR-0006-12 | `@kindling/mantle` hooks | impl | 10, 03 (contract types) | P1 | `useMantle`, `useTheme`, `useUser`, `useChromeSlot`, `useHaptics`, `useNotifications`, `useSpark` (stub). |
 | T-FR-0006-13 | `@kindling/mantle` overlays | impl | 10, 12 | P2 | `<Sheet>` `<Toast>` `<Dialog>` routed via postMessage; Toast=stub for DG-U11. |
 | T-FR-0006-14 | `@kindling/mantle` vanilla bridge | impl | 10, 03 | P1 | `vanilla/theme.ts` + `vanilla/chrome.ts` for non-React plugins. |
-| T-FR-0006-15 | `@kindling/mantle` publish | release | 10, 11, 12, 13, 14 | P3 | Versioning, README, CHANGELOG, `npm publish --access=public` workflow. |
+| T-FR-0006-15 | `@kindling/mantle` package validation | release | 10, 11, 12, 13, 14 | P3 | Versioning, README, CHANGELOG, private package guard, and artifact dry-run workflow. |
 
 ## Mermaid DAG
 

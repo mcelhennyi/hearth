@@ -6,9 +6,9 @@ import pkg from "../package.json";
 
 const pkgRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
-describe("@kindling/mantle publish packaging", () => {
-  it("npm publish --dry-run lists the package tarball contents", () => {
-    const out = execSync("npm publish --dry-run --access=public --ignore-scripts 2>&1", {
+describe("@kindling/mantle package artifact", () => {
+  it("npm pack --dry-run lists the package tarball contents", () => {
+    const out = execSync("npm pack --dry-run --ignore-scripts 2>&1", {
       cwd: pkgRoot,
       encoding: "utf8",
       shell: "/bin/sh",

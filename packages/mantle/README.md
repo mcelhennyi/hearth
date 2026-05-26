@@ -77,22 +77,20 @@ For the full plugin UI contract (chrome slots, frame states, overlay escape, non
 ```bash
 pnpm --filter @kindling/mantle build
 pnpm --filter @kindling/mantle test
-pnpm --filter @kindling/mantle publish:dry-run
+pnpm --filter @kindling/mantle pack:dry-run
 ```
 
 In Docker (hearth dev loop): `./develop web sh -lc 'cd /workspace && pnpm --filter @kindling/mantle test'`.
 
-## Publishing (maintainers)
+## Packaging (maintainers)
 
-Versioning is **manual** — bump `version` in `package.json` and add a [CHANGELOG](./CHANGELOG.md) entry before tagging.
+This package is **private for now**. Do not configure an npm publishing token or publish it to the public registry until the project records an explicit publish policy change.
 
-1. Merge mantle changes to the integration branch and confirm **kindling-mantle CI** is green (`npm publish --dry-run` in `.github/workflows/kindling-mantle-ci.yml`).
-2. Tag the commit: `git tag kindling-mantle-v0.1.0 && git push origin kindling-mantle-v0.1.0`
-3. **kindling-mantle publish** workflow runs `npm publish --access=public` when the tag is pushed.
+Versioning is **manual** — bump `version` in `package.json` and add a [CHANGELOG](./CHANGELOG.md) entry before cutting any private package artifact.
 
-The tag suffix must match `package.json` `version` (e.g. tag `kindling-mantle-v0.1.0` → `"version": "0.1.0"`).
-
-**Registry setup:** create an npm automation token with publish access to the `@kindling` scope and add it as repository secret **`NPM_TOKEN`**. Without that secret, CI dry-run still passes; the publish workflow fails at the publish step until configured.
+1. Merge mantle changes to the integration branch and confirm **kindling-mantle CI** is green.
+2. Run `pnpm --filter @kindling/mantle pack:dry-run` and inspect the tarball contents.
+3. Use a local/private package path for partner repos until publish policy changes.
 
 ## Authoritative design docs
 
