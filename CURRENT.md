@@ -6,15 +6,10 @@ Worktree: `.worktrees/FR-0004-centralized-users-auth/feature/`
 
 Status: `T-FR-0004-02`, `T-FR-0004-03`, `T-FR-0004-04`, and `T-FR-0004-06` are merged into the feature branch.
 
-Latest validation before merging T04:
-
-- T06 targeted frontier tests — 9 passed.
-- `./develop test` — 257 passed, 3 skipped, 1 warning.
-
-T04 worker validation before integration:
+Latest validation after merging T04:
 
 - Focused merged slice — 75 passed.
-- `./develop test` — 266 passed, 3 skipped.
+- `./develop test` — 266 passed, 3 skipped, 3 warnings.
 - Caddy sidecar `/api/auth/verify` probe returned 401 without session and 200 with signed `X-Hearth-User-*` headers after login.
 
 Completed:
