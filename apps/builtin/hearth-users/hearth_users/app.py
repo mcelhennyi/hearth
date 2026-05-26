@@ -313,6 +313,30 @@ def _serialize_roles(roles: list[str]) -> str:
     return ",".join(dict.fromkeys(roles))
 
 
+def _normalize_roles(roles: list[str] | None) -> list[str]:
+    normalized = [
+        role.strip().lower()
+        for role in (roles if roles is not None else ["user"])
+        if role.strip()
+    ]
+    return list(dict.fromkeys(normalized or ["user"]))
+
+
+def _public_user(row: sqlite3.Row) -> dict[str, object]:
+    return {
+        "user_id": str(row["id"]),
+        "username": str(row["username"]),
+        "display_name": str(row["display_name"]),
+        "roles": _parse_roles(str(row["roles"])),
+        "disabled": bool(row["disabled"]),
+        "created_at": int(row["created_at"]),
+        "updated_at": int(row["updated_at"]),
+        "last_login_at": (
+            int(row["last_login_at"]) if row["last_login_at"] is not None else None
+        ),
+    }
+
+
 def _default_audit_log_path(data_dir: Path) -> Path:
     configured = os.getenv("HEARTH_USERS_AUDIT_LOG")
     if configured:
@@ -338,6 +362,7 @@ def _write_audit_event(
     claims: dict[str, object] | None = None,
     topic: str | None = None,
     ok: bool = True,
+    extra: dict[str, object] | None = None,
 ) -> None:
     audit_log_path.parent.mkdir(parents=True, exist_ok=True)
     record: dict[str, object] = {
@@ -351,6 +376,8 @@ def _write_audit_event(
     if claims is not None:
         record["user_id"] = claims.get("user_id", "")
         record["roles"] = claims.get("roles", [])
+    if extra:
+        record.update(extra)
     with audit_log_path.open("a", encoding="utf-8") as log:
         log.write(json.dumps(record, sort_keys=True) + "\n")
 
@@ -583,6 +610,104 @@ class UsersStore:
             ).fetchone()
         return row
 
+    def list_public_users(self) -> list[dict[str, object]]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                select id, username, display_name, roles, disabled, created_at, updated_at,
+                       last_login_at
+                from users
+                order by lower(username)
+                """
+            ).fetchall()
+        return [_public_user(row) for row in rows]
+
+    def get_public_user(self, user_id: str) -> dict[str, object] | None:
+        with self._connect() as conn:
+            row = conn.execute(
+                """
+                select id, username, display_name, roles, disabled, created_at, updated_at,
+                       last_login_at
+                from users
+                where id = ?
+                """,
+                (user_id,),
+            ).fetchone()
+        return _public_user(row) if row is not None else None
+
+    def enabled_admin_count(self, excluding_user_id: str | None = None) -> int:
+        with self._connect() as conn:
+            rows = conn.execute(
+                "select id, roles from users where disabled = 0"
+            ).fetchall()
+        return sum(
+            1
+            for row in rows
+            if row["id"] != excluding_user_id and "admin" in _parse_roles(str(row["roles"]))
+        )
+
+    def update_user(
+        self,
+        user_id: str,
+        *,
+        display_name: str | None = None,
+        roles: list[str] | None = None,
+        disabled: bool | None = None,
+    ) -> dict[str, object]:
+        existing = self.get_public_user(user_id)
+        if existing is None:
+            raise KeyError(user_id)
+
+        next_roles = roles if roles is not None else list(existing["roles"])
+        next_disabled = disabled if disabled is not None else bool(existing["disabled"])
+        is_enabled_admin = "admin" in existing["roles"] and not bool(existing["disabled"])
+        remains_enabled_admin = "admin" in next_roles and not next_disabled
+        if is_enabled_admin and not remains_enabled_admin:
+            if self.enabled_admin_count(excluding_user_id=user_id) == 0:
+                raise RuntimeError("Cannot disable or demote the last enabled admin.")
+
+        next_display_name = (
+            display_name.strip() if display_name is not None else str(existing["display_name"])
+        )
+        if not next_display_name:
+            raise ValueError("Display name is required.")
+
+        now = int(time.time())
+        with self._connect() as conn:
+            conn.execute(
+                """
+                update users
+                set display_name = ?, roles = ?, disabled = ?, updated_at = ?
+                where id = ?
+                """,
+                (
+                    next_display_name,
+                    _serialize_roles(next_roles),
+                    1 if next_disabled else 0,
+                    now,
+                    user_id,
+                ),
+            )
+        refreshed = self.get_public_user(user_id)
+        if refreshed is None:
+            raise KeyError(user_id)
+        return refreshed
+
+    def reset_password(self, user_id: str, password: str) -> dict[str, object]:
+        existing = self.get_public_user(user_id)
+        if existing is None:
+            raise KeyError(user_id)
+        now = int(time.time())
+        with self._connect() as conn:
+            conn.execute(
+                "update users set password_hash = ?, updated_at = ? where id = ?",
+                (_hash_password(password), now, user_id),
+            )
+        refreshed = self.get_public_user(user_id)
+        if refreshed is None:
+            raise KeyError(user_id)
+        return refreshed
+
     def record_login(self, user_id: str) -> None:
         now = int(time.time())
         with self._connect() as conn:
@@ -716,6 +841,22 @@ def _require_claims(store: UsersStore, request: Request) -> dict[str, object]:
     return claims
 
 
+def _require_admin(store: UsersStore, request: Request) -> dict[str, object]:
+    claims = _require_claims(store, request)
+    roles = claims.get("roles", [])
+    if not isinstance(roles, list) or "admin" not in roles:
+        raise HTTPException(status_code=403, detail="Admin role required.")
+    return claims
+
+
+def _roles_from_payload(value: object) -> list[str] | None:
+    if value is None:
+        return None
+    if not isinstance(value, list) or not all(isinstance(role, str) for role in value):
+        raise HTTPException(status_code=400, detail="Roles must be a list of strings.")
+    return _normalize_roles(value)
+
+
 def spark_session_current(store: UsersStore, params: dict[str, Any]) -> dict[str, object]:
     token = params.get("session_token")
     claims = store.session_claims(token if isinstance(token, str) else None)
@@ -833,6 +974,122 @@ def create_app(
     @app.get("/api/verify")
     async def verify(request: Request) -> dict[str, object]:
         return _require_claims(store, request)
+
+    @app.get(f"/{PLUGIN_SLUG}/api/admin/users")
+    @app.get("/api/admin/users")
+    async def admin_list_users(request: Request) -> dict[str, object]:
+        _require_admin(store, request)
+        return {"users": store.list_public_users()}
+
+    @app.post(f"/{PLUGIN_SLUG}/api/admin/users", status_code=201)
+    @app.post("/api/admin/users", status_code=201)
+    async def admin_create_user(request: Request) -> dict[str, object]:
+        claims = _require_admin(store, request)
+        payload: Any = await request.json()
+        if not isinstance(payload, dict):
+            raise HTTPException(status_code=400, detail="Invalid JSON.")
+        username = payload.get("username")
+        display_name = payload.get("display_name")
+        password = payload.get("password")
+        if not isinstance(username, str) or not username.strip():
+            raise HTTPException(status_code=400, detail="Username is required.")
+        if not isinstance(display_name, str) or not display_name.strip():
+            raise HTTPException(status_code=400, detail="Display name is required.")
+        if not isinstance(password, str) or not password:
+            raise HTTPException(status_code=400, detail="Password is required.")
+        if len(password) < 8:
+            raise HTTPException(
+                status_code=400, detail="Password must be at least 8 characters."
+            )
+        try:
+            created_claims = store.create_user(
+                username=username,
+                display_name=display_name,
+                password=password,
+                roles=_roles_from_payload(payload.get("roles")) or ["user"],
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        user = store.get_public_user(str(created_claims["user_id"]))
+        if user is None:
+            raise HTTPException(status_code=500, detail="User was not created.")
+        _write_audit_event(
+            audit_path,
+            action="admin.user.create",
+            claims=claims,
+            extra={"target_user_id": user["user_id"]},
+        )
+        return user
+
+    @app.patch(f"/{PLUGIN_SLUG}/api/admin/users/{{user_id}}")
+    @app.patch("/api/admin/users/{user_id}")
+    async def admin_update_user(
+        user_id: str, request: Request
+    ) -> dict[str, object]:
+        claims = _require_admin(store, request)
+        payload: Any = await request.json()
+        if not isinstance(payload, dict):
+            raise HTTPException(status_code=400, detail="Invalid JSON.")
+        display_name = payload.get("display_name")
+        if display_name is not None and not isinstance(display_name, str):
+            raise HTTPException(status_code=400, detail="Display name must be a string.")
+        disabled = payload.get("disabled")
+        if disabled is not None and not isinstance(disabled, bool):
+            raise HTTPException(status_code=400, detail="Disabled must be a boolean.")
+        before = store.get_public_user(user_id)
+        if before is None:
+            raise HTTPException(status_code=404, detail="User not found.")
+        try:
+            user = store.update_user(
+                user_id,
+                display_name=display_name,
+                roles=_roles_from_payload(payload.get("roles")),
+                disabled=disabled,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except RuntimeError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        action = "admin.user.update"
+        if disabled is True and before["disabled"] is False:
+            action = "admin.user.disable"
+        elif disabled is False and before["disabled"] is True:
+            action = "admin.user.enable"
+        _write_audit_event(
+            audit_path,
+            action=action,
+            claims=claims,
+            extra={"target_user_id": user["user_id"]},
+        )
+        return user
+
+    @app.post(f"/{PLUGIN_SLUG}/api/admin/users/{{user_id}}/password")
+    @app.post("/api/admin/users/{user_id}/password")
+    async def admin_reset_password(
+        user_id: str, request: Request
+    ) -> dict[str, object]:
+        claims = _require_admin(store, request)
+        payload: Any = await request.json()
+        if not isinstance(payload, dict):
+            raise HTTPException(status_code=400, detail="Invalid JSON.")
+        password = payload.get("password")
+        if not isinstance(password, str) or not password:
+            raise HTTPException(status_code=400, detail="Password is required.")
+        if len(password) < 8:
+            raise HTTPException(
+                status_code=400, detail="Password must be at least 8 characters."
+            )
+        try:
+            user = store.reset_password(user_id, password)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="User not found.") from exc
+        _write_audit_event(
+            audit_path,
+            action="admin.user.reset_password",
+            claims=claims,
+            extra={"target_user_id": user["user_id"]},
+        )
+        return user
 
     @app.get(f"/{PLUGIN_SLUG}/login", response_class=HTMLResponse)
     @app.get("/login", response_class=HTMLResponse)
