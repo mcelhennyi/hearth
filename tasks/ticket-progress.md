@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0004-15` Admin user management API and settings UI |
+| **Active ticket** | `T-FR-0004-16` Multi-user E2E and compliance changelog refresh |
 | **Active phase** | TEST → DEV → VAL |
-| **Branch / worktree** | `feat/FR-0004-centralized-users-auth` @ `.worktrees/FR-0004-centralized-users-auth/feature/`; next child worktree `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-15-admin-user-management/` |
+| **Branch / worktree** | `feat/FR-0004-centralized-users-auth` @ `.worktrees/FR-0004-centralized-users-auth/feature/`; next child worktree `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-16-multi-user-e2e-compliance/` |
 | **Session status** | `developing` |
-| **Next agent should** | Run `T-FR-0004-15` in its child worktree, update only that progress row, push the ticket branch, and merge back to `feat/FR-0004-centralized-users-auth`. Do not treat PR #56 as feature-complete until `T-FR-0004-11` through `T-FR-0004-16` are done. |
+| **Next agent should** | Run `T-FR-0004-16` in its child worktree, update only that progress row, push the ticket branch, and merge back to `feat/FR-0004-centralized-users-auth`. If T16 reaches VAL done, run `finish-feature` only after full feature validation confirms the §2d gate. |
 
 ### Parallel streams
 
