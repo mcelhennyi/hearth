@@ -36,6 +36,7 @@ services:
       - ../../:/workspace
     environment:
       - PYTHONUNBUFFERED=1
+      - HEARTH_VAR_DIR=/workspace/var/hearth
 
   docs:
     profiles: ["docs"]

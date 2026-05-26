@@ -118,6 +118,36 @@ plugins:
     assert f"HEARTH_USER_SIG_SECRET: {secret}" in output.read_text(encoding="utf-8")
 
 
+def test_generate_plugin_compose_mounts_secrets_only_for_hearth_users(tmp_path: Path) -> None:
+    hearth = ensure_hearth_layout(tmp_path, hearth_ref="hearth-users-secrets-test")
+    for slug in ("hearth-users", "groceries"):
+        (hearth / "plugins" / slug).mkdir(parents=True)
+    (hearth / "state" / "plugins.yaml").write_text(
+        """\
+schema: 1
+plugins:
+  - slug: hearth-users
+    source_git: builtin://hearth-users
+    enabled: true
+    image: ghcr.io/example/hearth-users:0.1.0
+    port: 8000
+  - slug: groceries
+    source_git: https://example.test/groceries.git
+    enabled: true
+    image: ghcr.io/example/groceries:0.1.0
+    port: 8301
+""",
+        encoding="utf-8",
+    )
+
+    output = generate_plugin_compose(hearth).read_text(encoding="utf-8")
+
+    assert "  hearth-users:" in output
+    assert "      - ../var/secrets:/var/hearth/secrets:ro" in output
+    groceries_block = output.split("  groceries:", 1)[1]
+    assert "../var/secrets:/var/hearth/secrets:ro" not in groceries_block
+
+
 def test_generate_plugin_caddy_auth_gate_matches_trust_contract(tmp_path: Path) -> None:
     hearth = ensure_hearth_layout(tmp_path, hearth_ref="caddy-auth-test")
 

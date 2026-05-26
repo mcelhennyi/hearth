@@ -100,6 +100,11 @@ This tree is the **bare-metal** layout: paths under `/opt`, `/etc`, and `/var` a
   secrets/               (mode 0600 — VAPID keys, local user password hash, …)
 ```
 
+`hearth-users` may bootstrap the first local account from an optional ignored
+file at `var/hearth/secrets/hearth-users-default-password` (or
+`$HEARTH_USERS_BOOTSTRAP_PASSWORD_FILE`). The file is read only when no local
+user exists; it does not reset an existing password on restart.
+
 On macOS: prefix `/opt` and `/var` with `/usr/local` and `/etc` with `/usr/local/etc`. The install script abstracts this.
 
 ## Docker profile (Pi)

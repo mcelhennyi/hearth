@@ -65,6 +65,13 @@ def _default_audit_log_path(data_dir: Path) -> Path:
     return data_dir / "auth-session.jsonl"
 
 
+def _default_bootstrap_password_file() -> Path:
+    configured = os.getenv("HEARTH_USERS_BOOTSTRAP_PASSWORD_FILE")
+    if configured:
+        return Path(configured)
+    return Path(os.getenv("HEARTH_VAR_DIR", "var/hearth")) / "secrets" / "hearth-users-default-password"
+
+
 def _write_audit_event(
     audit_log_path: Path,
     *,
@@ -191,6 +198,16 @@ class UsersStore:
             )
         return _claims()
 
+    def bootstrap_user_from_password_file(self, password_file: Path) -> dict[str, object] | None:
+        if self.has_user() or not password_file.exists():
+            return None
+        password = password_file.read_text(encoding="utf-8").strip()
+        if len(password) < 8:
+            raise RuntimeError(
+                f"hearth-users bootstrap password file must contain at least 8 characters: {password_file}"
+            )
+        return self.create_user(password)
+
     def load_password_hash(self) -> str | None:
         with self._connect() as conn:
             row = conn.execute(
@@ -293,12 +310,21 @@ def spark_session_current(store: UsersStore, params: dict[str, Any]) -> dict[str
 def create_app(
     data_dir: Path | str | None = None,
     audit_log_path: Path | str | None = None,
+    bootstrap_password_file: Path | str | None = None,
 ) -> FastAPI:
     app = FastAPI(title="Hearth Users", docs_url=None, redoc_url=None)
     store = UsersStore(Path(data_dir) if data_dir is not None else _default_data_dir())
     audit_path = (
         Path(audit_log_path) if audit_log_path is not None else _default_audit_log_path(store.data_dir)
     )
+    bootstrap_path = (
+        Path(bootstrap_password_file)
+        if bootstrap_password_file is not None
+        else _default_bootstrap_password_file()
+    )
+    bootstrapped_claims = store.bootstrap_user_from_password_file(bootstrap_path)
+    if bootstrapped_claims is not None:
+        _write_audit_event(audit_path, action="auth.bootstrap", claims=bootstrapped_claims)
     app.state.users_store = store
     app.state.audit_log_path = audit_path
 

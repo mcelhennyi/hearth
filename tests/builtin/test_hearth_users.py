@@ -32,10 +32,17 @@ def hearth_users() -> object:
     module._lockout.clear()
 
 
-def _client(module: object, data_dir: Path, audit_log_path: Path | None = None) -> TestClient:
+def _client(
+    module: object,
+    data_dir: Path,
+    audit_log_path: Path | None = None,
+    bootstrap_password_file: Path | None = None,
+) -> TestClient:
     kwargs = {"data_dir": data_dir}
     if audit_log_path is not None:
         kwargs["audit_log_path"] = audit_log_path
+    if bootstrap_password_file is not None:
+        kwargs["bootstrap_password_file"] = bootstrap_password_file
     return TestClient(module.create_app(**kwargs), base_url="https://testserver")
 
 
@@ -80,6 +87,49 @@ def test_first_run_setup_stores_argon2id_password_in_plugin_sqlite(
     assert row is not None
     assert row[0].startswith("$argon2id$")
     assert "correcthorsebattery" not in row[0]
+
+
+def test_bootstrap_password_file_seeds_local_user(
+    hearth_users: object, tmp_path: Path
+) -> None:
+    password_file = tmp_path / "secrets" / "hearth-users-default-password"
+    password_file.parent.mkdir()
+    password_file.write_text("dev-default-password\n", encoding="utf-8")
+    audit_log_path = tmp_path / "auth-session.jsonl"
+    client = _client(
+        hearth_users,
+        tmp_path / "data",
+        audit_log_path,
+        bootstrap_password_file=password_file,
+    )
+
+    login = client.post("/login", json={"password": "dev-default-password"})
+
+    assert login.status_code == 200
+    assert login.json() == {
+        "user_id": "local",
+        "display_name": "Local user",
+        "roles": ["user"],
+    }
+    records = [json.loads(line) for line in audit_log_path.read_text().splitlines()]
+    assert records[0]["action"] == "auth.bootstrap"
+    assert records[0]["user_id"] == "local"
+
+
+def test_bootstrap_password_file_does_not_override_existing_user(
+    hearth_users: object, tmp_path: Path
+) -> None:
+    password_file = tmp_path / "secrets" / "hearth-users-default-password"
+    password_file.parent.mkdir()
+    password_file.write_text("bootstrap-password\n", encoding="utf-8")
+    data_dir = tmp_path / "data"
+    client = _client(hearth_users, data_dir)
+    assert client.post("/api/setup", json={"password": "first-password"}).status_code == 200
+
+    restarted = _client(hearth_users, data_dir, bootstrap_password_file=password_file)
+
+    assert restarted.post("/login", json={"password": "bootstrap-password"}).status_code == 401
+    assert restarted.post("/login", json={"password": "first-password"}).status_code == 200
 
 
 def test_setup_rejects_second_password(hearth_users: object, tmp_path: Path) -> None:

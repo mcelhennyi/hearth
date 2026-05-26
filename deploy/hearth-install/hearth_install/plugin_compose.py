@@ -219,15 +219,19 @@ def _compose_service(hearth: Path, record: PluginRecord) -> dict[str, Any]:
         "HEARTH_PLUGIN_SLUG": record.slug,
         "HEARTH_USER_SIG_SECRET": _load_or_create_user_sig_secret(hearth),
     }
+    volumes = [
+        f"../plugins/{record.slug}:/app:ro",
+        f"../var/plugins/{record.slug}:/var/hearth/plugins/{record.slug}",
+    ]
+    if record.slug == "hearth-users":
+        volumes.append("../var/secrets:/var/hearth/secrets:ro")
+
     service.update(
         {
             "restart": "unless-stopped",
             "expose": [str(record.port)],
             "environment": dict(sorted(env.items())),
-            "volumes": [
-                f"../plugins/{record.slug}:/app:ro",
-                f"../var/plugins/{record.slug}:/var/hearth/plugins/{record.slug}",
-            ],
+            "volumes": volumes,
         },
     )
     return service

@@ -16,6 +16,7 @@ FR-0004 ships Hearth-owned identity as a built-in `hearth-users` plugin and rout
 | Mantle session/login/user bridge | `apps/hub/web/src/App.tsx`, `apps/hub/web/src/mantle/PluginFrame.tsx`, `kindling/mantle/useUser.ts` |
 | Kindling trust template | `deploy/kindling-contract/hearth_kindling_contract/templates/plugin-python/` |
 | Downstream compliance notes | `deploy/kindling-contract/COMPLIANCE_CHANGELOG.md`, `.skeleton/docs/ai-context.md` |
+| Optional local-account bootstrap | `var/hearth/secrets/hearth-users-default-password` or `$HEARTH_USERS_BOOTSTRAP_PASSWORD_FILE` |
 
 ## Tickets
 
