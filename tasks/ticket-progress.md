@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0004-08`, `T-FR-0004-09` |
+| **Active ticket** | `T-FR-0004-09` |
 | **Active phase** | TEST → DEV → VAL |
 | **Branch / worktree** | `feat/FR-0004-centralized-users-auth` @ `.worktrees/FR-0004-centralized-users-auth/feature/`; next worktrees `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-08-mantle-login-use-user/`, `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-09-external-auth-settings/` |
-| **Session status** | `developing` |
-| **Next agent should** | Continue FR-0004 frontier with `T-FR-0004-08` and `T-FR-0004-09` in parallel, then merge them to `feat/FR-0004-centralized-users-auth`. |
+| **Session status** | `complete` |
+| **Next agent should** | Merge `T-FR-0004-08` to `feat/FR-0004-centralized-users-auth`; continue FR-0004 frontier with `T-FR-0004-09`. |
 
 ### Parallel streams
 
@@ -59,7 +59,7 @@
 | T-FR-0004-05 | Caddy auth_request and header injection | done | done | done | Hub and install Caddy fragments now strip inbound `X-Hearth-*`, forward-auth through `/api/auth/verify`, copy signed user headers, preserve API 401s, and redirect HTML to `/hearth-users/login?next=...`. Validation: focused proxy/compose tests 15 passed, 1 skipped; full `./develop test` 269 passed, 3 skipped. |
 | T-FR-0004-06 | Spark session capabilities and builtin registry rules | done | done | done | `FR-0004`. Spark `session.current` works for `hub` via permission-checked local handler; `hearth-users` declares session capability/events, auth/session audit JSONL, and builtin disable/uninstall are rejected pending T04 external-provider settings. Validation: `./develop test` 257 passed, 3 skipped. |
 | T-FR-0004-07 | Kindling template: trust middleware and no local login | done | done | done | Generated Python template now ships `require_hearth_user()` trust middleware, protected-route sample, no-local-login README/useUser guidance, and dense child-repo compliance changelog. Combined feature validation: focused template tests 13 passed; full `./develop test` 275 passed, 3 skipped. |
-| T-FR-0004-08 | Mantle shell: login via hearth-users and useUser contract | — | — | — | `FR-0004`. Deps: T-FR-0004-03, T-FR-0004-05. |
+| T-FR-0004-08 | Mantle shell: login via hearth-users and useUser contract | done | done | done | `FR-0004`. Shell fetches `/hearth-users/api/session`, sends unauth users to `/hearth-users/login?next=...`, broadcasts verified `hearth.user` claims to plugin iframes, and removes hub password-form duplication. Validation: `./develop web npm run test` 11 passed; `./develop web npm run lint` passed; `./develop web npm run build` passed. Real iPhone PWA login-once walkthrough documented as host/manual exception. |
 | T-FR-0004-09 | External auth provider stub and operator settings UI | — | — | — | `FR-0004`. Deps: T-FR-0004-04. |
 | T-FR-0004-10 | E2E: plugin trusts gateway identity | — | — | — | `FR-0004` capstone. |
 | T-FR-0005-01 | Remote-build profile in deployment.md | — | — | — | `FR-0005` **design**. |

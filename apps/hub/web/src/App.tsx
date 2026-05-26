@@ -1,14 +1,79 @@
 // REWORK-REQUIRED RW-U1 — Dashboard is a plugin list, not home grid (dashboard.md).
 // REWORK-REQUIRED RW-U2 — Settings chrome route missing (mantle-ui.md). T-FR-0001-04.
-import { useState, useSyncExternalStore } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { NavLink, Route, Routes } from 'react-router-dom'
 
 import { isMantleEmbedMode } from './mantle/embedMode'
 import { InstallPrompt, PluginFrame } from './mantle'
+import type { HearthUser } from './mantle'
 import { MantleEmbedApp } from './MantleEmbedApp'
 import { usePlugins } from './usePlugins'
 
 const homeTab = { key: 'home', label: 'Home', path: '/' } as const
+
+type SessionState =
+  | { status: 'loading'; user: null }
+  | { status: 'authenticated'; user: HearthUser }
+  | { status: 'unauthenticated'; user: null }
+  | { status: 'error'; user: null }
+
+interface HearthUsersSessionResponse {
+  user_id?: unknown
+  display_name?: unknown
+  roles?: unknown
+}
+
+function normalizeSessionUser(payload: HearthUsersSessionResponse): HearthUser | null {
+  if (typeof payload.user_id !== 'string' || payload.user_id.length === 0) {
+    return null
+  }
+  return {
+    id: payload.user_id,
+    name: typeof payload.display_name === 'string' && payload.display_name.length > 0 ? payload.display_name : undefined,
+    roles: Array.isArray(payload.roles) ? payload.roles.filter((role): role is string => typeof role === 'string') : [],
+  }
+}
+
+function useHearthUsersSession(): SessionState {
+  const [session, setSession] = useState<SessionState>({ status: 'loading', user: null })
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadSession(): Promise<void> {
+      try {
+        const response = await fetch('/hearth-users/api/session', { credentials: 'include' })
+        if (cancelled) return
+        if (response.status === 401) {
+          setSession({ status: 'unauthenticated', user: null })
+          return
+        }
+        if (!response.ok) {
+          setSession({ status: 'error', user: null })
+          return
+        }
+        const user = normalizeSessionUser((await response.json()) as HearthUsersSessionResponse)
+        setSession(user ? { status: 'authenticated', user } : { status: 'error', user: null })
+      } catch {
+        if (!cancelled) {
+          setSession({ status: 'error', user: null })
+        }
+      }
+    }
+
+    void loadSession()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  return session
+}
+
+function hearthUsersLoginHref(): string {
+  const next = `${window.location.pathname}${window.location.search}${window.location.hash}` || '/'
+  return `/hearth-users/login?next=${encodeURIComponent(next)}`
+}
 
 function useDesktopLayout(): boolean {
   return useSyncExternalStore(
@@ -164,14 +229,39 @@ function DashboardView() {
 
 // PluginFrame is imported from ./mantle/PluginFrame — see src/mantle/.
 
-function App() {
-  if (isMantleEmbedMode()) {
-    return <MantleEmbedApp />
-  }
-
+function MantleShellApp() {
   const isDesktop = useDesktopLayout()
+  const session = useHearthUsersSession()
   const plugins = usePlugins()
   const navTabs = [homeTab, ...plugins.map((plugin) => ({ key: plugin.slug, label: plugin.name, path: `/${plugin.slug}` }))]
+
+  if (session.status === 'loading') {
+    return (
+      <main className="flex min-h-svh items-center justify-center bg-[var(--hearth-bg)] px-4 font-sans text-[var(--hearth-fg)]">
+        <p className="text-sm text-[var(--hearth-muted)]">Checking session...</p>
+      </main>
+    )
+  }
+
+  if (session.status !== 'authenticated') {
+    return (
+      <main className="flex min-h-svh items-center justify-center bg-[var(--hearth-bg)] px-4 font-sans text-[var(--hearth-fg)]">
+        <section className="w-full max-w-sm rounded-lg border border-[var(--hearth-surface)] bg-[var(--hearth-surface)] p-6 shadow-sm">
+          <img src="/logo.svg" alt="" className="h-8 w-8" />
+          <h1 className="mt-4 text-2xl font-semibold">Hearth</h1>
+          <p className="mt-2 text-sm text-[var(--hearth-muted)]">
+            {session.status === 'error' ? 'Session status is unavailable.' : 'Sign in once to use Hearth and its plugins.'}
+          </p>
+          <a
+            href={hearthUsersLoginHref()}
+            className="mt-5 inline-flex rounded-lg bg-[var(--hearth-accent)] px-4 py-2 text-sm font-medium text-[var(--hearth-bg)]"
+          >
+            Sign in with Hearth Users
+          </a>
+        </section>
+      </main>
+    )
+  }
 
   return (
     <div className="min-h-svh bg-[var(--hearth-bg)] font-sans text-[var(--hearth-fg)]">
@@ -197,7 +287,7 @@ function App() {
         <header className="border-b border-[var(--hearth-surface)] bg-[var(--hearth-bg)] px-4 pb-3 pt-[calc(0.75rem+var(--hearth-safe-top))]">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Hearth</h2>
-            <span className="text-sm text-[var(--hearth-muted)]">User</span>
+            <span className="text-sm text-[var(--hearth-muted)]">{session.user.name ?? session.user.id}</span>
           </div>
         </header>
       )}
@@ -205,7 +295,11 @@ function App() {
       <Routes>
         <Route path="/" element={<DashboardView />} />
         {plugins.map((plugin) => (
-          <Route key={plugin.slug} path={`/${plugin.slug}`} element={<PluginFrame slug={plugin.slug} name={plugin.name} active={true} />} />
+          <Route
+            key={plugin.slug}
+            path={`/${plugin.slug}`}
+            element={<PluginFrame slug={plugin.slug} name={plugin.name} active={true} user={session.user} />}
+          />
         ))}
       </Routes>
 
@@ -236,6 +330,10 @@ function App() {
       )}
     </div>
   )
+}
+
+function App() {
+  return isMantleEmbedMode() ? <MantleEmbedApp /> : <MantleShellApp />
 }
 
 export default App

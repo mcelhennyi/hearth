@@ -7,7 +7,7 @@
 //
 // Matches the install-prompt requirement in mantle-ui.md §"Install prompt".
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 const DISMISS_KEY = 'hearth:install-prompt-dismissed'
 
@@ -29,13 +29,7 @@ function isStandalone(): boolean {
 }
 
 export function InstallPrompt() {
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    if (isIosSafari() && !isStandalone() && !localStorage.getItem(DISMISS_KEY)) {
-      setVisible(true)
-    }
-  }, [])
+  const [visible, setVisible] = useState(() => isIosSafari() && !isStandalone() && !localStorage.getItem(DISMISS_KEY))
 
   function dismiss() {
     localStorage.setItem(DISMISS_KEY, '1')
