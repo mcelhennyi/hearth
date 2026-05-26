@@ -133,6 +133,37 @@ curl -sk --resolve hearth.home.arpa:443:127.0.0.1 https://hearth.home.arpa/api/h
 
 Expect `{"status":"ok"}`.
 
+### Create the first Hearth admin
+
+Open **`https://hearth.home.arpa/hearth-users/login`** after the stack is healthy.
+On a fresh install the page is in setup mode and asks for:
+
+- **Username** — the sign-in name for the first local admin.
+- **Display name** — what plugins and Hearth Settings show.
+- **Password** — stored by the built-in `hearth-users` provider.
+
+Submitting the setup form creates the first enabled admin with roles
+`admin,user` and signs the browser in. Use **`https://hearth.home.arpa/`** after
+setup; plugin routes should not ask for their own login.
+
+The optional bootstrap password file
+`$HEARTH_INSTALL_ROOT/hearth/var/hearth/secrets/hearth-users-default-password`
+is only for unattended first setup. It seeds a legacy-compatible `local` admin
+when no user exists and is ignored after the first account has been created.
+
+### Add later users
+
+Sign in as an admin, open Hearth **Settings → Account**, and use the users table
+to create additional local accounts. Later users sign in at
+**`/hearth-users/login`** with their own username and password. Admin controls are
+hidden or denied for non-admin users, and Hearth prevents disabling or demoting
+the final enabled admin.
+
+To verify the multi-user gateway path on a Pi, sign out, sign in as the first
+admin, open a protected plugin, then repeat as a second user. The plugin should
+see the active user's id, display name, and roles from Hearth; a plugin-local
+login form or stale previous-user display is drift.
+
 ---
 
 ## 5. DNS and Pi-hole (required for iPhones)

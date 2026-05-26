@@ -2,7 +2,12 @@
 
 Date: 2026-05-26
 
-**Superseded 2026-05-26:** Product corrected FR-0004 to require multi-user local auth before closeout. Treat this handoff as the completed single-account slice only; continue with `T-FR-0004-11` through `T-FR-0004-16`.
+**Superseded 2026-05-26:** Product corrected FR-0004 to require multi-user
+local auth before closeout. Treat this handoff as the completed single-account
+slice only. **Do not merge PR #56 to `main` from this handoff.** Continue
+through `T-FR-0004-16`, merge that ticket into
+`feat/FR-0004-centralized-users-auth`, revalidate the feature branch, then rerun
+`finish-feature`.
 
 Feature branch: `feat/FR-0004-centralized-users-auth`
 
@@ -10,7 +15,12 @@ Feature PR: [PR #56](https://github.com/mcelhennyi/hearth/pull/56) → `main`
 
 ## Executive summary
 
-FR-0004's first slice is complete on the feature branch. It adds the built-in `hearth-users` identity provider, hub verify/signing, Caddy auth gates for plugin routes, Mantle login/session/user delivery, Kindling trust middleware, external verify URL settings, and a capstone test proving a generated plugin accepts only gateway-verified identity. It is not final FR-0004 closeout until the multi-user extension lands.
+FR-0004's first slice is complete on the feature branch. It adds the built-in
+`hearth-users` identity provider, hub verify/signing, Caddy auth gates for
+plugin routes, Mantle login/session/user delivery, Kindling trust middleware,
+external verify URL settings, and a capstone test proving a generated plugin
+accepts only gateway-verified identity. It is not final FR-0004 closeout until
+the multi-user extension lands and parent validation passes.
 
 ## Merged branches
 
@@ -35,12 +45,14 @@ FR-0004's first slice is complete on the feature branch. It adds the built-in `h
 
 ## Suggested next step
 
-Review [PR #56](https://github.com/mcelhennyi/hearth/pull/56); the merger should remove repo-root `CURRENT.md` from `main` and refresh `90-closeout.md` with the merge SHA after landing.
+Hold [PR #56](https://github.com/mcelhennyi/hearth/pull/56) as a preview until
+`T-FR-0004-16` lands. The next finish-feature run should refresh `90-closeout.md`
+with final validation and only then open/update the default-branch PR.
 
 ## Options
 
 | Option | When |
 |--------|------|
-| Merge PR | Human review accepts FR-0004. |
+| Hold PR #56 | Multi-user T16 is not merged and feature validation has not rerun. |
 | Request changes | Review finds auth UX, trust header, or install-route concerns. |
 | Continue next FR | Start FR-0005 while FR-0004 waits in PR review. |
