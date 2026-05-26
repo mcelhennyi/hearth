@@ -6,7 +6,7 @@
 
 ## Resume status
 
-Implementation is feature-complete on **`feat/FR-0004-centralized-users-auth`** as of 2026-05-26. [**PR #56**](https://github.com/mcelhennyi/hearth/pull/56) to **`main`** is pending. Closeout: [`90-closeout.md`](90-closeout.md).
+Implementation is no longer feature-complete after the 2026-05-26 multi-user correction. The first single-account slice is on **`feat/FR-0004-centralized-users-auth`** and [**PR #56**](https://github.com/mcelhennyi/hearth/pull/56), but closeout must wait for extension tickets **`T-FR-0004-11`…`T-FR-0004-16`**. The next frontier starts with **`T-FR-0004-11`**.
 
 | Gate | Feature | Ticket(s) | What “done” means |
 |------|---------|-----------|-------------------|
@@ -18,7 +18,7 @@ Implementation is feature-complete on **`feat/FR-0004-centralized-users-auth`** 
 
 ## Charter (one sentence)
 
-Move login, session, and authorization for every plugin behind a **built-in Hearth users plugin** and a **single public gateway** (Caddy → hub-or-plugin routes), so new Kindling-scaffolded apps inherit the contract by default and operators can later swap in a custom user service.
+Move multi-user login, session, and authorization for every plugin behind a **built-in Hearth users plugin** and a **single public gateway** (Caddy → hub-or-plugin routes), so new Kindling-scaffolded apps inherit the contract by default and operators can later swap in a custom user service.
 
 ## Artifacts
 

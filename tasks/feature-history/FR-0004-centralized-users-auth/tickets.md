@@ -236,9 +236,159 @@ Capstone: minimal fixture plugin (`auth-fixture` or extend groceries-stub):
 
 ---
 
+### T-FR-0004-11 — Multi-user design amendment and migration plan
+
+**Title:** Multi-user design amendment and migration plan
+**Deps:** `T-FR-0004-10`
+
+#### Purpose
+
+Amend FR-0004 from single local account to multi-user local identity:
+
+- Promote the multi-user model into FR-0004 design docs and authoritative `docs/design/` notes where they still say "single local user".
+- Define `users` schema fields: stable opaque id, unique normalized username, display name, roles, disabled flag, password hash, timestamps.
+- Define migration from the landed single `local` account into the first admin user.
+- Define first-run semantics: first account is `admin,user`; later accounts default to `user`.
+- Define admin safety rules: final enabled admin cannot be disabled or demoted.
+
+#### Phases
+
+| Phase | Goal | Exit criteria |
+|-------|------|----------------|
+| **TEST** | Design checklist | Every existing single-user statement is classified as updated, intentionally deferred, or ticketed. |
+| **DEV** | Amend docs | FR docs, design docs, and ticket DAG reflect multi-user behavior and migration. |
+| **VAL** | Frontier-ready | `tickets.md`, `20-tickets-dag.md`, and `tasks/ticket-progress.md` expose follow-on tickets for `/develop-frontier`. |
+
+---
+
+### T-FR-0004-12 — Users plugin: multi-user schema, migration, and auth API
+
+**Title:** Users plugin: multi-user schema, migration, and auth API
+**Deps:** `T-FR-0004-11`
+
+#### Purpose
+
+Replace the single `local` account with a multi-user account model in `hearth-users`:
+
+- SQLite migration from the existing single-user table/session data.
+- `POST /api/setup` creates the first admin account with username, display name, and password.
+- `POST /login` requires username + password and creates a session for that user id.
+- Sessions, `/api/session`, `/api/verify`, and audit records return the stored user id/display name/roles.
+- Disabled users cannot log in; existing sessions for disabled users fail verify.
+
+#### Phases
+
+| Phase | Goal | Exit criteria |
+|-------|------|----------------|
+| **TEST** | Plugin pytest | Migration, username uniqueness, first admin setup, multi-user login, disabled-user verify, and lockout vectors fail before implementation. |
+| **DEV** | Implement schema/API | Backward-compatible migration; no password-only login remains. |
+| **VAL** | Focused auth tests | `./develop test tests/builtin/test_hearth_users.py` passes with multi-user coverage. |
+
+---
+
+### T-FR-0004-13 — Hearth Users UI: first admin setup and username login
+
+**Title:** Hearth Users UI: first admin setup and username login
+**Deps:** `T-FR-0004-12`
+
+#### Purpose
+
+Make the built-in provider UI match multi-user behavior:
+
+- First-run setup asks for username, display name, and password.
+- Existing installs show username + password login.
+- The page remains self-contained and Mantle-aligned when served through `/hearth-users/`.
+- `next` redirect remains local-only and works after setup/login.
+- Clear errors for duplicate usernames, disabled accounts, wrong password, and lockout.
+
+#### Phases
+
+| Phase | Goal | Exit criteria |
+|-------|------|----------------|
+| **TEST** | HTML/API tests | Served login HTML contains username fields in the correct modes and posts the expected JSON shape. |
+| **DEV** | Implement provider UI | No inert placeholder; no password-only form. |
+| **VAL** | Browser/manual | Pi/local browser: create first admin, log out, log in with username, redirect back to Hearth. |
+
+---
+
+### T-FR-0004-14 — Session, Spark, gateway, and Mantle claims use real users
+
+**Title:** Session, Spark, gateway, and Mantle claims use real users
+**Deps:** `T-FR-0004-12`
+
+#### Purpose
+
+Carry multi-user claims through every existing FR-0004 contract:
+
+- Hub `/api/auth/verify` signs the actual user id, display name, and roles from `hearth-users`.
+- Caddy continues stripping inbound `X-Hearth-*` and forwarding only hub-signed claims.
+- Spark `hearth-users.session.current`, audit events, and login/logout topics include the actual user id.
+- Mantle `useUser()` and `hearth.user` postMessage receive the same user id/display name/roles.
+- Kindling trust helpers continue validating signatures without assuming `local`.
+
+#### Phases
+
+| Phase | Goal | Exit criteria |
+|-------|------|----------------|
+| **TEST** | Cross-contract tests | Hub verify, Spark, Mantle, and Kindling tests prove two different users produce different claims. |
+| **DEV** | Update claim plumbing | Remove hardcoded `local`/`Local user` assumptions from runtime paths. |
+| **VAL** | Focused combined validation | Auth, Spark, gateway, and web tests pass in Docker wrappers. |
+
+---
+
+### T-FR-0004-15 — Admin user management API and settings UI
+
+**Title:** Admin user management API and settings UI
+**Deps:** `T-FR-0004-12`, `T-FR-0004-14`
+
+#### Purpose
+
+Give the first admin a safe way to manage additional local users:
+
+- Admin-only APIs: list users, create user, update display name, reset password, disable/enable user, update roles.
+- Settings UI under Hearth account/auth surfaces those APIs without exposing password hashes.
+- Enforce final-admin safety: cannot disable or demote the last enabled admin.
+- Write audit events for create/update/disable/reset operations.
+
+#### Phases
+
+| Phase | Goal | Exit criteria |
+|-------|------|----------------|
+| **TEST** | API/web tests | Non-admins are denied; admins can create and disable users; final-admin safety is enforced. |
+| **DEV** | API + UI | Settings page manages users; no direct DB editing required for normal operation. |
+| **VAL** | Manual flow | Create second user, log in as second user, verify admin-only controls are hidden/denied. |
+
+---
+
+### T-FR-0004-16 — Multi-user E2E and compliance changelog refresh
+
+**Title:** Multi-user E2E and compliance changelog refresh
+**Deps:** `T-FR-0004-13`, `T-FR-0004-14`, `T-FR-0004-15`
+
+#### Purpose
+
+Close the multi-user extension with end-to-end proof and child-repo guidance:
+
+- E2E: create first admin, create second user, log in as each, and verify a protected plugin sees the correct user.
+- Update Kindling dense compliance changelog with multi-user drift detection and required child repo changes.
+- Update FR-0004 closeout/handoffs so PR #56 is no longer described as complete until the multi-user wave lands.
+- Refresh Pi operator instructions for first-admin setup and adding later users.
+
+#### Phases
+
+| Phase | Goal | Exit criteria |
+|-------|------|----------------|
+| **TEST** | E2E + compliance checks | Fixture plugin proves user switching; Kindling changelog contains AI-readable migration instructions. |
+| **DEV** | Polish docs/tests | Closeout and operator docs reflect multi-user reality. |
+| **VAL** | Full validation | `./develop test`, web test/lint/build, and install smoke pass; Pi walkthrough recorded if available. |
+
+---
+
 ## Acceptance for FR-0004 closeout
 
-- Operator logs in once at `/hearth-users/login`; all plugin routes work without per-plugin login UI.
+- Operator creates the first admin account at `/hearth-users/login`, can add at least one additional local user, and each user can log in without per-plugin login UI.
+- Plugin routes receive the correct signed identity for the active user, including stable user id, display name, and roles.
+- Admin user management prevents disabling or demoting the final enabled admin.
 - Kindling-generated plugin documents and enforces trust middleware.
 - Settings can point verify at an external URL (stub); builtin can be disabled only with valid external config.
 - Design docs and FR-0001-09 scope are aligned via amendment.

@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `FR-0005` design tickets |
+| **Active ticket** | `FR-0004` multi-user extension |
 | **Active phase** | planning |
-| **Branch / worktree** | default branch for design or a future `feat/FR-0005-remote-build-pi-deploy` worktree |
-| **Session status** | `handoff` |
-| **Next agent should** | Review/merge the pending FR-0004 feature PR, then start FR-0005 with `T-FR-0005-01` when ready. |
+| **Branch / worktree** | `feat/FR-0004-centralized-users-auth` at `.worktrees/FR-0004-centralized-users-auth/feature/` |
+| **Session status** | `ready-for-frontier` |
+| **Next agent should** | Run `/develop-frontier` for the new FR-0004 multi-user wave, starting with `T-FR-0004-11`. Do not treat PR #56 as feature-complete until `T-FR-0004-11` through `T-FR-0004-16` are done. |
 
 ### Parallel streams
 
@@ -16,7 +16,7 @@
 
 **Kindling FR-0001** — merged [kindling PR #1](https://github.com/mcelhennyi/kindling/pull/1) @ `f64b6a1`; hearth submodule bumped on `feat/FR-0006-design-language` @ `df20872`.
 
-**FR-0004** feature-complete — `T-FR-0004-02` through `T-FR-0004-10` merged into `feat/FR-0004-centralized-users-auth`; [PR #56](https://github.com/mcelhennyi/hearth/pull/56) to **`main`** pending. Closeout: [`FR-0004-centralized-users-auth/90-closeout.md`](feature-history/FR-0004-centralized-users-auth/90-closeout.md).
+**FR-0004** reopened for multi-user — `T-FR-0004-02` through `T-FR-0004-10` merged into `feat/FR-0004-centralized-users-auth`, but product correction requires `T-FR-0004-11` through `T-FR-0004-16` before feature closeout. [PR #56](https://github.com/mcelhennyi/hearth/pull/56) should remain a feature-branch preview, not final merge, until the multi-user wave lands.
 
 ---
 
@@ -62,6 +62,12 @@
 | T-FR-0004-08 | Mantle shell: login via hearth-users and useUser contract | done | done | done | `FR-0004`. Shell fetches `/hearth-users/api/session`, sends unauth users to `/hearth-users/login?next=...`, broadcasts verified `hearth.user` claims to plugin iframes, and removes hub password-form duplication. Validation: `./develop web npm run test` 11 passed; `./develop web npm run lint` passed; `./develop web npm run build` passed. Real iPhone PWA login-once walkthrough documented as host/manual exception. |
 | T-FR-0004-09 | External auth provider stub and operator settings UI | done | done | done | `FR-0004`. Settings route records builtin/external provider toggles and external verify URLs; hub verify fails closed when builtin auth is disabled and preserves the external provider header contract. Combined feature validation: focused API 13 passed; full `./develop test` 276 passed, 3 skipped; web Vitest 4 files/12 tests passed; web build passed; web lint passed. |
 | T-FR-0004-10 | E2E: plugin trusts gateway identity | done | done | done | `FR-0004` capstone. Hub verify signs identity for the public plugin URI; Caddy forwards original method/URI to the plugin; generated Kindling plugin rejects direct calls and accepts verified gateway headers. Validation: focused 16 passed, 1 skipped; full `./develop test` 277 passed, 3 skipped; web test/build/lint passed. |
+| T-FR-0004-11 | Multi-user design amendment and migration plan | — | — | — | `FR-0004` multi-user extension. Deps: T-FR-0004-10. Next frontier seed. |
+| T-FR-0004-12 | Users plugin: multi-user schema, migration, and auth API | — | — | — | `FR-0004` multi-user extension. Deps: T-FR-0004-11. |
+| T-FR-0004-13 | Hearth Users UI: first admin setup and username login | — | — | — | `FR-0004` multi-user extension. Deps: T-FR-0004-12. |
+| T-FR-0004-14 | Session, Spark, gateway, and Mantle claims use real users | — | — | — | `FR-0004` multi-user extension. Deps: T-FR-0004-12. |
+| T-FR-0004-15 | Admin user management API and settings UI | — | — | — | `FR-0004` multi-user extension. Deps: T-FR-0004-12, T-FR-0004-14. |
+| T-FR-0004-16 | Multi-user E2E and compliance changelog refresh | — | — | — | `FR-0004` multi-user extension. Deps: T-FR-0004-13, T-FR-0004-14, T-FR-0004-15. |
 | T-FR-0005-01 | Remote-build profile in deployment.md | — | — | — | `FR-0005` **design**. |
 | T-FR-0005-02 | `hearth pwa publish` (rsync static to Pi) | — | — | — | `FR-0005` **design**; Pi **`192.168.1.62`**. Deps: T-FR-0005-01. |
 | T-FR-0005-03 | Hub image build and publish (arm64 bundle) | — | — | — | `FR-0005` **design** P1. Deps: T-FR-0005-01. |
@@ -89,5 +95,5 @@
 
 1. **FR-0003** is **closed** on **`main`** — see [`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md).
 2. **FR-0001** is **done** on **`main`** — merged [PR #30](https://github.com/mcelhennyi/hearth/pull/30) @ `0811ed2`; [`90-closeout.md`](feature-history/FR-0001-hearth-platform/90-closeout.md).
-3. **FR-0004** is **feature-complete** with [PR #56](https://github.com/mcelhennyi/hearth/pull/56) to **`main`** pending. **FR-0005** is **`design`** — start with [**Remote-build profile**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd) ([`T-FR-0005-01`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd)), then [**`hearth pwa publish`**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi) ([`T-FR-0005-02`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi)); home Pi **`192.168.1.62`**. See [`REGISTRY.md`](feature-history/REGISTRY.md).
+3. **FR-0004** is **reopened for multi-user**. Run `/develop-frontier` from the FR-0004 feature worktree; the first eligible ticket is [`T-FR-0004-11`](feature-history/FR-0004-centralized-users-auth/tickets.md#t-fr-0004-11--multi-user-design-amendment-and-migration-plan). **FR-0005** remains **`design`** and should wait unless explicitly prioritized.
 4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.

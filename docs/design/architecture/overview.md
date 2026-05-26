@@ -149,7 +149,7 @@ graph LR
 
 > REWORK-REQUIRED RW-I1 — This section describes hub-issued password sessions and **nginx** `auth_request`. **Intended state:** centralized auth via built-in **`hearth-users`** plugin, Caddy `auth_request` to hub verify, and `X-Hearth-User-*` trust headers per [`tasks/feature-history/FR-0004-centralized-users-auth/10-design-01-gateway-and-trust.md`](../../tasks/feature-history/FR-0004-centralized-users-auth/10-design-01-gateway-and-trust.md) (promote to `docs/design/` when FR-0004 resumes). Until rework lands, treat FR-0004 feature design as the implementation target for auth work.
 
-- **One local user**, local password (Argon2id), session cookie issued by the built-in `hearth-users` plugin.
+- **Multiple local users**, local passwords (Argon2id), session cookies issued by the built-in `hearth-users` plugin. First account is the local admin; additional accounts receive user-scoped identity claims through the same gateway trust contract.
 - Plugins do not implement their own login — they trust signed `X-Hearth-User-*` headers injected by Caddy after a sub-request to the hub's `/api/auth/verify` alias.
 - Phase 2: Ember relay issues device-bound tokens; same header contract on the inside.
 

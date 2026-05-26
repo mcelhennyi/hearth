@@ -1,6 +1,6 @@
 # FR-0004 closeout — Centralized users auth
 
-**PR pending:** [**PR #56**](https://github.com/mcelhennyi/hearth/pull/56) — feature branch `feat/FR-0004-centralized-users-auth` → **`main`**. Closeout drafted at finish-feature; refresh merge line after merge.
+**Status update 2026-05-26:** This closeout is superseded by the multi-user correction. [**PR #56**](https://github.com/mcelhennyi/hearth/pull/56) remains the feature branch preview, but FR-0004 should not merge to **`main`** until `T-FR-0004-11` through `T-FR-0004-16` land and this closeout is refreshed.
 
 ## Executive summary
 

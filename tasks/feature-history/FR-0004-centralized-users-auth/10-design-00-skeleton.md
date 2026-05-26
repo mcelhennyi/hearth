@@ -35,7 +35,7 @@ Hearth is the **only public HTTPS origin** for the home LAN. Caddy terminates TL
 
 | Input | Output | Storage |
 |-------|--------|---------|
-| Local password (setup / change) | Session cookie (`HttpOnly`, `Secure`, `SameSite=Lax`) | `var/hearth/plugins/hearth-users/` (plugin-owned SQLite) |
+| Local username + password (setup / change) | Session cookie (`HttpOnly`, `Secure`, `SameSite=Lax`) | `var/hearth/plugins/hearth-users/` (plugin-owned SQLite) |
 | Session id (cookie) | Verified user claims | Session table in plugin DB |
 | Registry: built-in flag | Plugin cannot be uninstalled; disable = stop routing UI only if policy says so | `var/hearth/hearth.db` (hub) |
 
@@ -63,4 +63,5 @@ graph TB
 | Q1 | Does Web Push / VAPID stay in hub (`T-FR-0001-09`) or move under `hearth-users`? | Closed for FR-0004 MVP: push stays hub-owned; users plugin owns identity only. |
 | Q2 | Cookie name and path: site-wide `/` vs `/hearth-users/` only? | Closed for FR-0004 MVP: `hearth_session`, `Path=/`, `HttpOnly`, `Secure`, `SameSite=Lax`. |
 | Q3 | Signature algorithm and key rotation for `X-Hearth-User-Sig` | Closed for MVP in L1: HMAC-SHA256 with timestamp freshness; rotation deferred. |
-| Q4 | Minimum roles model for plugins (empty vs `["user"]`) | MVP: single role `user` |
+| Q4 | Minimum roles model for plugins (empty vs `["user"]`) | MVP: first account gets `admin,user`; additional accounts default to `user`; roles are delivered in `X-Hearth-Roles` and `useUser()`. |
+| Q5 | Is FR-0004 single-user or multi-user? | Revised 2026-05-26: **multi-user**. The first landed slice is insufficient; tickets `T-FR-0004-11`…`T-FR-0004-16` extend the branch before closeout. |

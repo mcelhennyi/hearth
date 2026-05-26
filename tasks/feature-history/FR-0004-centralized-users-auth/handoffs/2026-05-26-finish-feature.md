@@ -2,13 +2,15 @@
 
 Date: 2026-05-26
 
+**Superseded 2026-05-26:** Product corrected FR-0004 to require multi-user local auth before closeout. Treat this handoff as the completed single-account slice only; continue with `T-FR-0004-11` through `T-FR-0004-16`.
+
 Feature branch: `feat/FR-0004-centralized-users-auth`
 
 Feature PR: [PR #56](https://github.com/mcelhennyi/hearth/pull/56) → `main`
 
 ## Executive summary
 
-FR-0004 is feature-complete on the feature branch. It adds the built-in `hearth-users` identity provider, hub verify/signing, Caddy auth gates for plugin routes, Mantle login/session/user delivery, Kindling trust middleware, external verify URL settings, and a capstone test proving a generated plugin accepts only gateway-verified identity.
+FR-0004's first slice is complete on the feature branch. It adds the built-in `hearth-users` identity provider, hub verify/signing, Caddy auth gates for plugin routes, Mantle login/session/user delivery, Kindling trust middleware, external verify URL settings, and a capstone test proving a generated plugin accepts only gateway-verified identity. It is not final FR-0004 closeout until the multi-user extension lands.
 
 ## Merged branches
 
