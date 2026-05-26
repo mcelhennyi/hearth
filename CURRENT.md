@@ -1,23 +1,49 @@
-# FR-0004 — centralized users auth
+# FR-0004 — T-FR-0004-06 Spark session and builtin registry
 
-Branch: `feat/FR-0004-centralized-users-auth`
+Branch: `feat/FR-0004-centralized-users-auth-T-FR-0004-06-spark-session-builtin-rules`
 
-Worktree: `.worktrees/FR-0004-centralized-users-auth/feature/`
+Worktree: `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-06-spark-session-builtin-rules/`
 
-Status: `T-FR-0004-02` and `T-FR-0004-03` are merged into the feature branch. Skeleton sync is applied at `.skeleton` `5a007a8` and root `docs/ai-context.md` includes the downstream compliance changelog rule.
+Status: VAL complete for `T-FR-0004-06`; pushed and PR opened.
 
-Latest validation:
+Scope:
 
-- `./develop test tests/builtin/test_hearth_users.py` — 10 passed.
-- `./develop test` — 251 passed, 3 skipped, 1 warning.
+- Add/verify Spark `session.current` for the built-in `hearth-users` provider.
+- Add login/logout event contracts where supported by the current Spark broker.
+- Harden built-in registry rules for skip/uninstall rejection; document or stub provider-disable policy if it belongs to T04.
+- Add audit log entries for auth/session events where the existing audit model supports it.
 
-Completed:
+Recent context:
 
-- `T-FR-0004-01` — design amendments and 2026-05-26 audit.
-- `T-FR-0004-02` — built-in `hearth-users` scaffold, built-in registry support, Tinder `builtin` schema, uninstall guard, dev Caddy/Compose route, tests.
-- `T-FR-0004-03` — `hearth-users` password setup, Argon2id storage, login/logout, session cookie, session API, verify claims, tests.
+- `T-FR-0004-02` and `T-FR-0004-03` are merged into the starting feature branch.
+- Avoid implementing hub `/api/auth/verify` provider settings; that remains `T-FR-0004-04`.
 
-Next frontier:
+Latest TEST:
 
-- `T-FR-0004-04` — Hub auth verify alias and provider settings.
-- `T-FR-0004-06` — Spark session capabilities and builtin registry rules.
+- `./develop test tests/tinder/test_loader.py::TestValidManifest::test_hearth_users_builtin_manifest_loads tests/api/test_builtins.py tests/spark/test_broker.py::test_local_session_current_handler_for_hearth_users tests/spark/test_broker.py::test_local_session_current_handler_enforces_call_permissions tests/builtin/test_hearth_users.py::test_spark_session_current_returns_claims_for_session_token tests/builtin/test_hearth_users.py::test_spark_session_current_returns_unauthenticated_without_session tests/builtin/test_hearth_users.py::test_login_and_logout_write_session_audit_events` — expected failures: missing session capability manifest, builtin disable guard, broker local method registry, users `session.current`, and auth/session audit JSONL.
+
+Latest DEV:
+
+- Same targeted command — 9 passed.
+- Implemented `hearth-users` Tinder `session.current` plus login/logout event contract.
+- Added Spark broker local method registration with permission checks and audit records.
+- Added users plugin `spark_session_current` and auth/session JSONL audit entries.
+- Rejected disabling built-in plugins until T04 external-provider settings can prove a healthy alternate provider.
+
+Latest VAL:
+
+- `./develop test` — 257 passed, 3 skipped, 1 warning.
+- Updated `tasks/ticket-progress.md` for `T-FR-0004-06` only.
+- Updated `docs/design/tickets-initial.md` `triadDone` for `T-FR-0004-06`.
+
+Commit:
+
+- `788889f` — `feat(auth): add Spark session builtin rules`.
+
+PR:
+
+- https://github.com/mcelhennyi/hearth/pull/49
+
+Next:
+
+- Integration owner should review and merge PR #49 into `feat/FR-0004-centralized-users-auth` with the parallel T04 stream.

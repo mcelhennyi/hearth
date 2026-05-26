@@ -331,6 +331,112 @@ async def test_call_timeout(broker_with_perms):
     writer_callee.close()
 
 
+@pytest.mark.asyncio
+async def test_local_session_current_handler_for_hearth_users(tmp_path: Path):
+    sock = tmp_path / "spark.sock"
+    log = tmp_path / "spark.jsonl"
+    b = SparkBroker(
+        sock_path=sock,
+        log_path=log,
+        permissions={
+            "hub": PluginPermissions(spark_call=["hearth-users.session.current"]),
+        },
+    )
+    b.register_method(
+        "hearth-users",
+        "session.current",
+        lambda params: {"authenticated": True, "user_id": params["user_id"]},
+    )
+    task = asyncio.create_task(b.serve_forever())
+    await asyncio.sleep(0.05)
+
+    reader, writer = await _raw_connect(sock, "hub")
+    req_id = new_id()
+    await _raw_send(
+        writer,
+        {
+            "v": 1,
+            "id": req_id,
+            "kind": "call",
+            "from": "hub",
+            "to": "hearth-users",
+            "method": "session.current",
+            "params": {"user_id": "local"},
+        },
+    )
+
+    reply = await _raw_recv(reader)
+
+    assert reply["kind"] == "reply"
+    assert reply["result"] == {"authenticated": True, "user_id": "local"}
+
+    writer.close()
+    await b.stop()
+    task.cancel()
+    try:
+        await task
+    except (asyncio.CancelledError, Exception):
+        pass
+
+    records = [json.loads(rec) for rec in log.read_text().strip().splitlines()]
+    assert any(
+        rec["from"] == "hub"
+        and rec["to"] == "hearth-users"
+        and rec["method"] == "session.current"
+        and rec["ok"] is True
+        and rec["local_handler"] is True
+        for rec in records
+    )
+
+
+@pytest.mark.asyncio
+async def test_local_session_current_handler_enforces_call_permissions(tmp_path: Path):
+    sock = tmp_path / "spark.sock"
+    log = tmp_path / "spark.jsonl"
+    called = False
+
+    def handler(_params: dict[str, Any]) -> dict[str, bool]:
+        nonlocal called
+        called = True
+        return {"authenticated": True}
+
+    b = SparkBroker(
+        sock_path=sock,
+        log_path=log,
+        permissions={"plugin": PluginPermissions(spark_call=[])},
+    )
+    b.register_method("hearth-users", "session.current", handler)
+    task = asyncio.create_task(b.serve_forever())
+    await asyncio.sleep(0.05)
+
+    reader, writer = await _raw_connect(sock, "plugin")
+    await _raw_send(
+        writer,
+        {
+            "v": 1,
+            "id": new_id(),
+            "kind": "call",
+            "from": "plugin",
+            "to": "hearth-users",
+            "method": "session.current",
+        },
+    )
+
+    reply = await _raw_recv(reader)
+
+    assert reply["kind"] == "error"
+    assert reply["code"] == "PERMISSION_DENIED"
+    assert called is False
+
+    writer.close()
+    await b.stop()
+    task.cancel()
+    try:
+        await task
+    except (asyncio.CancelledError, Exception):
+        pass
+
+
 # ---------------------------------------------------------------------------
 # Broker integration — publish / subscribe
 # ---------------------------------------------------------------------------
