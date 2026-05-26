@@ -1,6 +1,7 @@
 // REWORK-REQUIRED RW-U1 — Dashboard is a plugin list, not home grid (dashboard.md).
 // REWORK-REQUIRED RW-U2 — Settings chrome route missing (mantle-ui.md). T-FR-0001-04.
 import { useEffect, useState, useSyncExternalStore } from 'react'
+import type { FormEvent } from 'react'
 import { NavLink, Route, Routes } from 'react-router-dom'
 
 import { isMantleEmbedMode } from './mantle/embedMode'
@@ -10,6 +11,18 @@ import { MantleEmbedApp } from './MantleEmbedApp'
 import { usePlugins } from './usePlugins'
 
 const homeTab = { key: 'home', label: 'Home', path: '/' } as const
+const settingsTab = { key: 'settings', label: 'Settings', path: '/settings' } as const
+
+type AuthProvider = 'builtin' | 'external'
+
+interface AuthSettings {
+  provider: AuthProvider
+  external_verify_url: string | null
+}
+
+interface SettingsResponse {
+  auth: AuthSettings
+}
 
 type SessionState =
   | { status: 'loading'; user: null }
@@ -227,13 +240,154 @@ function DashboardView() {
   )
 }
 
+function SettingsView() {
+  const [provider, setProvider] = useState<AuthProvider>('builtin')
+  const [externalVerifyUrl, setExternalVerifyUrl] = useState('')
+  const [status, setStatus] = useState('Loading settings...')
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadSettings(): Promise<void> {
+      try {
+        const response = await fetch('/api/settings')
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`)
+        }
+        const payload = (await response.json()) as SettingsResponse
+        if (cancelled) {
+          return
+        }
+        setProvider(payload.auth.provider)
+        setExternalVerifyUrl(payload.auth.external_verify_url ?? '')
+        setStatus('Settings loaded.')
+      } catch (error) {
+        if (!cancelled) {
+          setStatus(`Failed to load settings: ${error instanceof Error ? error.message : 'unknown error'}`)
+        }
+      }
+    }
+
+    void loadSettings()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  async function saveSettings(event: FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault()
+    setSaving(true)
+    setStatus('Saving...')
+    try {
+      const response = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          auth: {
+            provider,
+            external_verify_url: externalVerifyUrl.trim() || null,
+          },
+        }),
+      })
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      const payload = (await response.json()) as SettingsResponse
+      setProvider(payload.auth.provider)
+      setExternalVerifyUrl(payload.auth.external_verify_url ?? '')
+      setStatus('Auth provider settings saved.')
+    } catch (error) {
+      setStatus(`Failed to save settings: ${error instanceof Error ? error.message : 'unknown error'}`)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <main className="mx-auto flex w-full max-w-3xl px-4 pb-28 pt-8 md:px-8 md:pb-16">
+      <section className="w-full rounded-lg border border-[var(--hearth-surface)] bg-[var(--hearth-surface)] p-5 shadow-sm">
+        <h1 className="text-xl font-semibold text-[var(--hearth-fg)]">Settings</h1>
+        <form className="mt-5 space-y-5" onSubmit={(event) => void saveSettings(event)}>
+          <fieldset className="space-y-3">
+            <legend className="text-sm font-medium text-[var(--hearth-fg)]">Auth provider</legend>
+            <label className="flex items-start gap-3 rounded-md border border-[color-mix(in_srgb,var(--hearth-muted)_35%,transparent)] p-3 text-sm">
+              <input
+                type="radio"
+                name="auth-provider"
+                value="builtin"
+                checked={provider === 'builtin'}
+                onChange={() => setProvider('builtin')}
+                className="mt-1"
+              />
+              <span>
+                <span className="block font-medium text-[var(--hearth-fg)]">Built-in Hearth users</span>
+                <span className="block text-[var(--hearth-muted)]">Use the local hearth-users verify service.</span>
+              </span>
+            </label>
+            <label className="flex items-start gap-3 rounded-md border border-[color-mix(in_srgb,var(--hearth-muted)_35%,transparent)] p-3 text-sm">
+              <input
+                type="radio"
+                name="auth-provider"
+                value="external"
+                checked={provider === 'external'}
+                onChange={() => setProvider('external')}
+                className="mt-1"
+              />
+              <span>
+                <span className="block font-medium text-[var(--hearth-fg)]">External verify URL</span>
+                <span className="block text-[var(--hearth-muted)]">Use a custom service that returns Hearth user claims.</span>
+              </span>
+            </label>
+          </fieldset>
+
+          <label className="block text-sm font-medium text-[var(--hearth-fg)]">
+            Verify URL
+            <input
+              type="url"
+              value={externalVerifyUrl}
+              onChange={(event) => setExternalVerifyUrl(event.target.value)}
+              placeholder="https://auth.example.test/verify"
+              className="mt-2 block w-full rounded-md border border-[color-mix(in_srgb,var(--hearth-muted)_35%,transparent)] bg-[var(--hearth-bg)] px-3 py-2 text-sm text-[var(--hearth-fg)] outline-none focus:border-[var(--hearth-accent)]"
+            />
+          </label>
+
+          {provider === 'external' && (
+            <p className="rounded-md border border-[color-mix(in_srgb,var(--hearth-accent)_45%,transparent)] bg-[color-mix(in_srgb,var(--hearth-accent)_12%,transparent)] p-3 text-sm text-[var(--hearth-fg)]">
+              If the external service is unreachable or misconfigured, Hearth verify fails closed with HTTP 503.
+            </p>
+          )}
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="submit"
+              disabled={saving}
+              className="rounded-md bg-[var(--hearth-accent)] px-4 py-2 text-sm font-medium text-[var(--hearth-accent-fg)] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {saving ? 'Saving...' : 'Save'}
+            </button>
+            <p role="status" className="text-sm text-[var(--hearth-muted)]">
+              {status}
+            </p>
+          </div>
+        </form>
+      </section>
+    </main>
+  )
+}
+
 // PluginFrame is imported from ./mantle/PluginFrame — see src/mantle/.
 
 function MantleShellApp() {
   const isDesktop = useDesktopLayout()
   const session = useHearthUsersSession()
   const plugins = usePlugins()
-  const navTabs = [homeTab, ...plugins.map((plugin) => ({ key: plugin.slug, label: plugin.name, path: `/${plugin.slug}` }))]
+
+  const navTabs = [
+    homeTab,
+    ...plugins.map((plugin) => ({ key: plugin.slug, label: plugin.name, path: `/${plugin.slug}` })),
+    settingsTab,
+  ]
 
   if (session.status === 'loading') {
     return (
@@ -294,6 +448,7 @@ function MantleShellApp() {
 
       <Routes>
         <Route path="/" element={<DashboardView />} />
+        <Route path="/settings" element={<SettingsView />} />
         {plugins.map((plugin) => (
           <Route
             key={plugin.slug}

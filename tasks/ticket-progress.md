@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0004-09` |
+| **Active ticket** | `T-FR-0004-10` |
 | **Active phase** | TEST → DEV → VAL |
-| **Branch / worktree** | `feat/FR-0004-centralized-users-auth` @ `.worktrees/FR-0004-centralized-users-auth/feature/`; next worktrees `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-08-mantle-login-use-user/`, `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-09-external-auth-settings/` |
-| **Session status** | `complete` |
-| **Next agent should** | Merge `T-FR-0004-08` to `feat/FR-0004-centralized-users-auth`; continue FR-0004 frontier with `T-FR-0004-09`. |
+| **Branch / worktree** | `feat/FR-0004-centralized-users-auth` @ `.worktrees/FR-0004-centralized-users-auth/feature/`; next worktree `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-10-plugin-trust-e2e/` |
+| **Session status** | `developing` |
+| **Next agent should** | Run `T-FR-0004-10` capstone E2E: plugin trusts gateway identity, then finish-feature if the §2d feature-complete gate passes. |
 
 ### Parallel streams
 
@@ -16,7 +16,7 @@
 
 **Kindling FR-0001** — merged [kindling PR #1](https://github.com/mcelhennyi/kindling/pull/1) @ `f64b6a1`; hearth submodule bumped on `feat/FR-0006-design-language` @ `df20872`.
 
-**FR-0004** resumed — `T-FR-0004-02`, `T-FR-0004-03`, `T-FR-0004-04`, `T-FR-0004-05`, `T-FR-0004-06`, and `T-FR-0004-07` merged into `feat/FR-0004-centralized-users-auth`; `T-FR-0004-08`/`T-FR-0004-09` are the next frontier tickets.
+**FR-0004** resumed — `T-FR-0004-02` through `T-FR-0004-09` merged into `feat/FR-0004-centralized-users-auth`; `T-FR-0004-10` is the capstone frontier ticket before feature closeout.
 
 ---
 
@@ -60,7 +60,7 @@
 | T-FR-0004-06 | Spark session capabilities and builtin registry rules | done | done | done | `FR-0004`. Spark `session.current` works for `hub` via permission-checked local handler; `hearth-users` declares session capability/events, auth/session audit JSONL, and builtin disable/uninstall are rejected pending T04 external-provider settings. Validation: `./develop test` 257 passed, 3 skipped. |
 | T-FR-0004-07 | Kindling template: trust middleware and no local login | done | done | done | Generated Python template now ships `require_hearth_user()` trust middleware, protected-route sample, no-local-login README/useUser guidance, and dense child-repo compliance changelog. Combined feature validation: focused template tests 13 passed; full `./develop test` 275 passed, 3 skipped. |
 | T-FR-0004-08 | Mantle shell: login via hearth-users and useUser contract | done | done | done | `FR-0004`. Shell fetches `/hearth-users/api/session`, sends unauth users to `/hearth-users/login?next=...`, broadcasts verified `hearth.user` claims to plugin iframes, and removes hub password-form duplication. Validation: `./develop web npm run test` 11 passed; `./develop web npm run lint` passed; `./develop web npm run build` passed. Real iPhone PWA login-once walkthrough documented as host/manual exception. |
-| T-FR-0004-09 | External auth provider stub and operator settings UI | — | — | — | `FR-0004`. Deps: T-FR-0004-04. |
+| T-FR-0004-09 | External auth provider stub and operator settings UI | done | done | done | `FR-0004`. Settings route records builtin/external provider toggles and external verify URLs; hub verify fails closed when builtin auth is disabled and preserves the external provider header contract. Combined feature validation: focused API 13 passed; full `./develop test` 276 passed, 3 skipped; web Vitest 4 files/12 tests passed; web build passed; web lint passed. |
 | T-FR-0004-10 | E2E: plugin trusts gateway identity | — | — | — | `FR-0004` capstone. |
 | T-FR-0005-01 | Remote-build profile in deployment.md | — | — | — | `FR-0005` **design**. |
 | T-FR-0005-02 | `hearth pwa publish` (rsync static to Pi) | — | — | — | `FR-0005` **design**; Pi **`192.168.1.62`**. Deps: T-FR-0005-01. |
@@ -89,5 +89,5 @@
 
 1. **FR-0003** is **closed** on **`main`** — see [`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md).
 2. **FR-0001** is **done** on **`main`** — merged [PR #30](https://github.com/mcelhennyi/hearth/pull/30) @ `0811ed2`; [`90-closeout.md`](feature-history/FR-0001-hearth-platform/90-closeout.md).
-3. **FR-0004** is **`in-progress`** — staff **`T-FR-0004-08`** and **`T-FR-0004-09`** next. **FR-0005** is **`design`** — start with [**Remote-build profile**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd) ([`T-FR-0005-01`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd)), then [**`hearth pwa publish`**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi) ([`T-FR-0005-02`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi)); home Pi **`192.168.1.62`**. See [`REGISTRY.md`](feature-history/REGISTRY.md).
+3. **FR-0004** is **`in-progress`** — staff **`T-FR-0004-10`** next, then run feature closeout if the §2d gate passes. **FR-0005** is **`design`** — start with [**Remote-build profile**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd) ([`T-FR-0005-01`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd)), then [**`hearth pwa publish`**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi) ([`T-FR-0005-02`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi)); home Pi **`192.168.1.62`**. See [`REGISTRY.md`](feature-history/REGISTRY.md).
 4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
