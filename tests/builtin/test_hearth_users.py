@@ -56,15 +56,32 @@ def test_hearth_users_health(tmp_path: Path) -> None:
     assert response.json() == {"ok": True, "service": "hearth-users"}
 
 
-def test_hearth_users_placeholder_login(tmp_path: Path) -> None:
+def test_hearth_users_login_page_renders_setup_form(tmp_path: Path) -> None:
     module = _load_hearth_users_app()
     client = _client(module, tmp_path)
 
-    response = client.get("/")
+    response = client.get("/login?next=/groceries")
 
     assert response.status_code == 200
     assert "Hearth Users" in response.text
-    assert "Login" in response.text
+    assert "Create your Hearth password" in response.text
+    assert 'data-mode="setup"' in response.text
+    assert 'data-next="/groceries"' in response.text
+    assert "/src/main.ts" not in response.text
+
+
+def test_hearth_users_login_page_renders_login_after_setup(
+    hearth_users: object, tmp_path: Path
+) -> None:
+    client = _client(hearth_users, tmp_path)
+    assert client.post("/api/setup", json={"password": "correcthorsebattery"}).status_code == 200
+
+    response = client.get("/login?next=https://evil.example/path")
+
+    assert response.status_code == 200
+    assert "Sign in to Hearth" in response.text
+    assert 'data-mode="login"' in response.text
+    assert 'data-next="/"' in response.text
 
 
 def test_first_run_setup_stores_argon2id_password_in_plugin_sqlite(

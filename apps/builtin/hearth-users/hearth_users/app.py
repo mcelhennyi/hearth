@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import html
 import json
 import logging
 import os
@@ -17,10 +18,6 @@ from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerifyMismatchError
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
-
-APP_ROOT = Path(__file__).resolve().parents[1]
-DIST_INDEX = APP_ROOT / "web" / "dist" / "index.html"
-SOURCE_INDEX = APP_ROOT / "web" / "index.html"
 
 SESSION_COOKIE = "hearth_session"
 SESSION_TTL_SECONDS = 7 * 24 * 3600
@@ -45,12 +42,211 @@ def _default_data_dir() -> Path:
     return Path(os.getenv("HEARTH_VAR_DIR", "var/hearth")) / "plugins" / "hearth-users"
 
 
-def _placeholder_html() -> str:
-    if DIST_INDEX.exists():
-        return DIST_INDEX.read_text(encoding="utf-8")
-    if SOURCE_INDEX.exists():
-        return SOURCE_INDEX.read_text(encoding="utf-8")
-    return "<!doctype html><title>Hearth Users</title><h1>Hearth Users</h1><button>Login</button>"
+def _safe_next(next_url: str | None) -> str:
+    if not next_url or not next_url.startswith("/") or next_url.startswith("//"):
+        return "/"
+    return next_url
+
+
+def _auth_html(*, setup_required: bool, next_url: str = "/") -> str:
+    mode = "setup" if setup_required else "login"
+    title = "Create your Hearth password" if setup_required else "Sign in to Hearth"
+    intro = (
+        "This local Hearth needs an owner password before plugins can open."
+        if setup_required
+        else "Use your local Hearth password to continue."
+    )
+    button = "Create password" if setup_required else "Sign in"
+    helper = (
+        "Use at least 8 characters. This is stored only on this Hearth."
+        if setup_required
+        else "This signs you into Hearth and all enabled plugins."
+    )
+    escaped_next = html.escape(_safe_next(next_url), quote=True)
+    return f"""<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hearth Users</title>
+    <style>
+      :root {{
+        --hearth-bg: #f7f5ef;
+        --hearth-fg: #1f2933;
+        --hearth-muted: #697386;
+        --hearth-surface: #ffffff;
+        --hearth-border: #d9ded8;
+        --hearth-accent: #0f766e;
+        --hearth-accent-strong: #115e59;
+        color: var(--hearth-fg);
+        background: var(--hearth-bg);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }}
+      * {{ box-sizing: border-box; }}
+      body {{ margin: 0; }}
+      main {{
+        align-items: center;
+        display: flex;
+        min-height: 100svh;
+        padding: 24px;
+      }}
+      section {{
+        background: var(--hearth-surface);
+        border: 1px solid var(--hearth-border);
+        border-radius: 8px;
+        box-shadow: 0 18px 50px rgb(31 41 51 / 10%);
+        margin: 0 auto;
+        max-width: 392px;
+        padding: 28px;
+        width: min(100%, 392px);
+      }}
+      .mark {{
+        align-items: center;
+        background: var(--hearth-fg);
+        border-radius: 8px;
+        color: var(--hearth-bg);
+        display: inline-flex;
+        font-size: 0.9rem;
+        font-weight: 800;
+        height: 34px;
+        justify-content: center;
+        letter-spacing: 0;
+        width: 34px;
+      }}
+      .eyebrow {{
+        color: var(--hearth-muted);
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin: 18px 0 8px;
+        text-transform: uppercase;
+      }}
+      h1 {{
+        font-size: 1.65rem;
+        letter-spacing: 0;
+        line-height: 1.15;
+        margin: 0;
+      }}
+      p {{
+        color: var(--hearth-muted);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin: 10px 0 0;
+      }}
+      form {{
+        display: grid;
+        gap: 12px;
+        margin-top: 22px;
+      }}
+      label {{
+        color: var(--hearth-fg);
+        font-size: 0.86rem;
+        font-weight: 700;
+      }}
+      input {{
+        border: 1px solid var(--hearth-border);
+        border-radius: 6px;
+        color: var(--hearth-fg);
+        font: inherit;
+        min-height: 44px;
+        padding: 0 12px;
+        width: 100%;
+      }}
+      input:focus {{
+        border-color: var(--hearth-accent);
+        box-shadow: 0 0 0 3px rgb(15 118 110 / 16%);
+        outline: none;
+      }}
+      button {{
+        background: var(--hearth-accent);
+        border: 0;
+        border-radius: 6px;
+        color: #ffffff;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 800;
+        min-height: 44px;
+        padding: 0 16px;
+      }}
+      button:hover {{ background: var(--hearth-accent-strong); }}
+      button:disabled {{ cursor: wait; opacity: 0.7; }}
+      .message {{
+        border-radius: 6px;
+        display: none;
+        font-size: 0.88rem;
+        margin-top: 14px;
+        padding: 10px 12px;
+      }}
+      .message[data-visible="true"] {{ display: block; }}
+      .message[data-kind="error"] {{
+        background: #fef2f2;
+        color: #991b1b;
+      }}
+      .message[data-kind="ok"] {{
+        background: #ecfdf5;
+        color: #065f46;
+      }}
+      .helper {{ font-size: 0.84rem; }}
+    </style>
+  </head>
+  <body>
+    <main>
+      <section>
+        <span class="mark">H</span>
+        <p class="eyebrow">Hearth Users</p>
+        <h1>{html.escape(title)}</h1>
+        <p>{html.escape(intro)}</p>
+        <form id="auth-form" data-mode="{mode}" data-next="{escaped_next}">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" minlength="8" autocomplete="current-password" required autofocus />
+          <button type="submit">{html.escape(button)}</button>
+        </form>
+        <p class="helper">{html.escape(helper)}</p>
+        <div id="message" class="message" role="status" aria-live="polite"></div>
+      </section>
+    </main>
+    <script>
+      const form = document.querySelector("#auth-form");
+      const message = document.querySelector("#message");
+      const password = document.querySelector("#password");
+      const button = form.querySelector("button");
+      const base = window.location.pathname.startsWith("/hearth-users") ? "/hearth-users" : "";
+      const endpoint = form.dataset.mode === "setup" ? `${{base}}/api/setup` : `${{base}}/login`;
+
+      function showMessage(kind, text) {{
+        message.dataset.kind = kind;
+        message.dataset.visible = "true";
+        message.textContent = text;
+      }}
+
+      form.addEventListener("submit", async (event) => {{
+        event.preventDefault();
+        button.disabled = true;
+        showMessage("ok", form.dataset.mode === "setup" ? "Creating password..." : "Signing in...");
+        try {{
+          const response = await fetch(endpoint, {{
+            method: "POST",
+            credentials: "include",
+            headers: {{ "content-type": "application/json" }},
+            body: JSON.stringify({{ password: password.value }}),
+          }});
+          if (!response.ok) {{
+            let detail = "Sign in failed.";
+            try {{
+              const payload = await response.json();
+              if (payload && payload.detail) detail = payload.detail;
+            }} catch (_error) {{}}
+            throw new Error(detail);
+          }}
+          window.location.assign(form.dataset.next || "/");
+        }} catch (error) {{
+          showMessage("error", error instanceof Error ? error.message : "Sign in failed.");
+          button.disabled = false;
+          password.focus();
+        }}
+      }});
+    </script>
+  </body>
+</html>"""
 
 
 def _claims() -> dict[str, object]:
@@ -397,12 +593,18 @@ def create_app(
         return _require_claims(store, request)
 
     @app.get("/login", response_class=HTMLResponse)
-    async def login_page() -> str:
-        return _placeholder_html()
+    async def login_page(request: Request) -> str:
+        return _auth_html(
+            setup_required=not store.has_user(),
+            next_url=_safe_next(request.query_params.get("next")),
+        )
 
     @app.get("/", response_class=HTMLResponse)
-    async def index() -> str:
-        return _placeholder_html()
+    async def index(request: Request) -> str:
+        return _auth_html(
+            setup_required=not store.has_user(),
+            next_url=_safe_next(request.query_params.get("next")),
+        )
 
     @app.get("/logout")
     async def logout_redirect(request: Request) -> RedirectResponse:
@@ -419,7 +621,10 @@ def create_app(
         return response
 
     @app.get("/{_path:path}", response_class=HTMLResponse)
-    async def spa_fallback(_path: str) -> str:
-        return _placeholder_html()
+    async def spa_fallback(_path: str, request: Request) -> str:
+        return _auth_html(
+            setup_required=not store.has_user(),
+            next_url=_safe_next(request.query_params.get("next")),
+        )
 
     return app
