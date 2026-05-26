@@ -170,6 +170,8 @@ route /groceries/* {
     }
   }
 
+  request_header X-Original-Method {http.request.method}
+  request_header X-Original-Uri {http.request.orig_uri}
   reverse_proxy groceries:8301
 }
 """

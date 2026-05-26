@@ -56,6 +56,8 @@ class TestRenderFragment:
         assert "X-Hearth-User-Name" in result
         assert "X-Hearth-Roles" in result
         assert "redir /hearth-users/login?next={http.request.orig_uri} 302" in result
+        assert "request_header X-Original-Method {http.request.method}" in result
+        assert "request_header X-Original-Uri {http.request.orig_uri}" in result
         assert "reverse_proxy groceries-app:8000" in result
 
     def test_api_and_html_auth_failures_are_split(self) -> None:
@@ -73,8 +75,9 @@ class TestRenderFragment:
 
         strip_index = result.index("request_header -X-Hearth-*")
         copy_index = result.index("copy_headers")
+        original_index = result.index("request_header X-Original-Uri")
         proxy_index = result.index("reverse_proxy groceries-app:8000")
-        assert strip_index < copy_index < proxy_index
+        assert strip_index < copy_index < original_index < proxy_index
 
     def test_disabled_plugin_is_excluded(self) -> None:
         plugins = [

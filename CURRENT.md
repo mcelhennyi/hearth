@@ -4,7 +4,7 @@ Branch: `feat/FR-0004-centralized-users-auth`
 
 Worktree: `.worktrees/FR-0004-centralized-users-auth/feature/`
 
-Status: `T-FR-0004-08` and `T-FR-0004-09` are merging into the feature branch after local VAL. Starting feature branch includes `T-FR-0004-02` through `T-FR-0004-09`.
+Status: `T-FR-0004-10` reached focused VAL locally. Starting feature branch includes `T-FR-0004-02` through `T-FR-0004-09`.
 
 Current ticket branch:
 
@@ -21,6 +21,7 @@ Completed:
 - `T-FR-0004-07` — Kindling Python template trust middleware, protected-route sample, no-local-login README/useUser guidance, and dense child-repo compliance changelog.
 - `T-FR-0004-08` — Mantle shell fetches `/hearth-users/api/session`, unauthenticated users link to `/hearth-users/login?next=...`, plugin iframes receive verified `hearth.user` claims, and the stale hub password form is replaced by a handoff link.
 - `T-FR-0004-09` — hub builtin-disabled fail-closed verify behavior, Settings route/provider form, external verify URL save flow, and custom user service follow-up note.
+- `T-FR-0004-10` — capstone gateway identity contract: hub verify signs identity for the public plugin URI, Caddy passes original method/URI to plugins, and a generated Kindling plugin rejects direct calls but accepts verified gateway headers.
 
 Latest T-FR-0004-08 validation:
 
@@ -39,10 +40,6 @@ Latest T-FR-0004-09 validation:
 - `./develop web npm run build` — production build passed.
 - `./develop web npm run lint` — blocked by pre-existing lint errors in `src/mantle/InstallPrompt.tsx` and `src/sw.ts`; no T09 files reported after the hook-order fix.
 
-Next action:
-
-- Staff `T-FR-0004-10` next.
-
 Combined T-FR-0004-08/T-FR-0004-09 feature validation:
 
 - `./develop web npm ci` — installed dependencies.
@@ -52,3 +49,16 @@ Combined T-FR-0004-08/T-FR-0004-09 feature validation:
 - `./develop test` — 276 passed, 3 skipped, 3 warnings.
 - `./develop web npm run build` — passed.
 - `./develop web npm run lint` — passed.
+
+Latest T-FR-0004-10 validation:
+
+- `./develop test tests/api/test_gateway_identity_contract.py tests/proxy/test_caddy.py tests/test_plugin_compose_generation.py` — 16 passed, 1 skipped, 2 warnings.
+- `./develop test` — 277 passed, 3 skipped, 4 warnings.
+- `./develop web npm ci` — installed dependencies.
+- `./develop web npm run test` — 4 files passed, 12 tests passed.
+- `./develop web npm run build` — passed.
+- `./develop web npm run lint` — passed.
+
+Next action:
+
+- Commit, push, open the T10 PR, then merge T10 into `feat/FR-0004-centralized-users-auth`.

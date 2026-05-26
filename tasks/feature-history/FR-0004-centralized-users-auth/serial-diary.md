@@ -1,5 +1,15 @@
 # FR-0004 — Serial diary
 
+## 2026-05-26 (session) — T-FR-0004-10 gateway identity capstone
+
+**Stage:** TEST → DEV → VAL for **T-FR-0004-10**
+
+**Recap (plain English):** Added a capstone identity contract test that simulates the real gateway chain: hub `/api/auth/verify` signs user headers for `/sample-plugin/api/me`, Caddy is expected to pass `X-Original-Method` / `X-Original-Uri` to the upstream plugin, and a generated Kindling plugin rejects direct requests but accepts the verified gateway identity. Updated both dev and install Caddy fragment generators to inject those original request headers before `reverse_proxy`, and updated golden Caddy tests.
+
+**Validation:** `./develop test tests/api/test_gateway_identity_contract.py tests/proxy/test_caddy.py tests/test_plugin_compose_generation.py` — 16 passed, 1 skipped, 2 warnings. `./develop test` — 277 passed, 3 skipped, 4 warnings. `./develop web npm run test` — 4 files passed, 12 tests passed. `./develop web npm run build` — passed. `./develop web npm run lint` — passed.
+
+**Next:** Run full feature validation, merge the ticket branch to `feat/FR-0004-centralized-users-auth`, then run `finish-feature` closeout if the §2d gate passes.
+
 ## 2026-05-17 (session) — Intake + design L0/L1 + tickets
 
 **Stage:** intake, design skeleton, ticket DAG
