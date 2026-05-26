@@ -132,6 +132,20 @@ def test_bootstrap_password_file_does_not_override_existing_user(
     assert restarted.post("/login", json={"password": "first-password"}).status_code == 200
 
 
+def test_short_bootstrap_password_file_is_ignored_without_crashing(
+    hearth_users: object, tmp_path: Path
+) -> None:
+    password_file = tmp_path / "secrets" / "hearth-users-default-password"
+    password_file.parent.mkdir()
+    password_file.write_text("short\n", encoding="utf-8")
+
+    client = _client(hearth_users, tmp_path / "data", bootstrap_password_file=password_file)
+
+    assert client.get("/health").status_code == 200
+    assert client.post("/login", json={"password": "short"}).status_code == 403
+    assert client.post("/api/setup", json={"password": "first-password"}).status_code == 200
+
+
 def test_setup_rejects_second_password(hearth_users: object, tmp_path: Path) -> None:
     client = _client(hearth_users, tmp_path)
     assert client.post("/api/setup", json={"password": "first-password"}).status_code == 200

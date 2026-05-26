@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import os
 import secrets
 import sqlite3
@@ -30,6 +31,8 @@ LOCAL_USER_ID = "local"
 LOCAL_DISPLAY_NAME = "Local user"
 LOCAL_ROLES = ["user"]
 PLUGIN_SLUG = "hearth-users"
+
+log = logging.getLogger(__name__)
 
 _password_hasher = PasswordHasher()
 _lockout: dict[str, tuple[int, float]] = {}
@@ -203,9 +206,11 @@ class UsersStore:
             return None
         password = password_file.read_text(encoding="utf-8").strip()
         if len(password) < 8:
-            raise RuntimeError(
-                f"hearth-users bootstrap password file must contain at least 8 characters: {password_file}"
+            log.warning(
+                "hearth-users bootstrap password file ignored: must contain at least 8 characters (%s)",
+                password_file,
             )
+            return None
         return self.create_user(password)
 
     def load_password_hash(self) -> str | None:
