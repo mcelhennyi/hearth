@@ -686,3 +686,148 @@ def test_session_expiry_invalidates_verify(hearth_users: object, tmp_path: Path)
     response = client.get("/api/verify")
 
     assert response.status_code == 401
+
+
+def test_admin_users_api_denies_non_admins(hearth_users: object, tmp_path: Path) -> None:
+    store = hearth_users.UsersStore(tmp_path)
+    store.create_user(
+        username="ada",
+        display_name="Ada Lovelace",
+        password="ada-password",
+        roles=["admin", "user"],
+    )
+    store.create_user(
+        username="grace",
+        display_name="Grace Hopper",
+        password="grace-password",
+        roles=["user"],
+    )
+    client = _client(hearth_users, tmp_path)
+    login = client.post(
+        "/login", json={"username": "grace", "password": "grace-password"}
+    )
+    assert login.status_code == 200
+
+    response = client.get("/api/admin/users")
+
+    assert response.status_code == 403
+    assert response.json()["detail"] == "Admin role required."
+
+
+def test_admin_users_api_creates_and_disables_users_without_hashes(
+    hearth_users: object, tmp_path: Path
+) -> None:
+    audit_log_path = tmp_path / "auth-session.jsonl"
+    client = _client(hearth_users, tmp_path, audit_log_path)
+    setup = client.post(
+        "/api/setup",
+        json={
+            "username": "ada",
+            "display_name": "Ada Lovelace",
+            "password": "correcthorsebattery",
+        },
+    )
+    assert setup.status_code == 200
+
+    created = client.post(
+        "/api/admin/users",
+        json={
+            "username": "grace",
+            "display_name": "Grace Hopper",
+            "password": "grace-password",
+            "roles": ["user"],
+        },
+    )
+    listed = client.get("/api/admin/users")
+    disabled = client.patch(
+        f"/api/admin/users/{created.json()['user_id']}",
+        json={"disabled": True},
+    )
+
+    assert created.status_code == 201
+    assert created.json()["username"] == "grace"
+    assert created.json()["roles"] == ["user"]
+    assert "password_hash" not in json.dumps(created.json())
+    assert listed.status_code == 200
+    assert [user["username"] for user in listed.json()["users"]] == ["ada", "grace"]
+    assert "password_hash" not in json.dumps(listed.json())
+    assert disabled.status_code == 200
+    assert disabled.json()["disabled"] is True
+    records = [json.loads(line) for line in audit_log_path.read_text().splitlines()]
+    assert [record["action"] for record in records][-2:] == [
+        "admin.user.create",
+        "admin.user.disable",
+    ]
+    assert records[-2]["user_id"] == setup.json()["user_id"]
+    assert records[-2]["target_user_id"] == created.json()["user_id"]
+
+
+def test_admin_users_api_enforces_final_admin_safety(
+    hearth_users: object, tmp_path: Path
+) -> None:
+    client = _client(hearth_users, tmp_path)
+    setup = client.post(
+        "/api/setup",
+        json={
+            "username": "ada",
+            "display_name": "Ada Lovelace",
+            "password": "correcthorsebattery",
+        },
+    )
+    admin_id = setup.json()["user_id"]
+
+    disable = client.patch(f"/api/admin/users/{admin_id}", json={"disabled": True})
+    demote = client.patch(f"/api/admin/users/{admin_id}", json={"roles": ["user"]})
+
+    assert disable.status_code == 409
+    assert disable.json()["detail"] == "Cannot disable or demote the last enabled admin."
+    assert demote.status_code == 409
+    assert demote.json()["detail"] == "Cannot disable or demote the last enabled admin."
+
+
+def test_admin_users_api_updates_roles_display_name_and_password(
+    hearth_users: object, tmp_path: Path
+) -> None:
+    audit_log_path = tmp_path / "auth-session.jsonl"
+    client = _client(hearth_users, tmp_path, audit_log_path)
+    client.post(
+        "/api/setup",
+        json={
+            "username": "ada",
+            "display_name": "Ada Lovelace",
+            "password": "correcthorsebattery",
+        },
+    )
+    created = client.post(
+        "/hearth-users/api/admin/users",
+        json={
+            "username": "grace",
+            "display_name": "Grace Hopper",
+            "password": "grace-password",
+            "roles": ["user"],
+        },
+    )
+    user_id = created.json()["user_id"]
+
+    updated = client.patch(
+        f"/hearth-users/api/admin/users/{user_id}",
+        json={"display_name": "Rear Admiral Grace Hopper", "roles": ["admin", "user"]},
+    )
+    reset = client.post(
+        f"/hearth-users/api/admin/users/{user_id}/password",
+        json={"password": "new-grace-password"},
+    )
+    client.post("/logout")
+    login = client.post(
+        "/login", json={"username": "grace", "password": "new-grace-password"}
+    )
+
+    assert updated.status_code == 200
+    assert updated.json()["display_name"] == "Rear Admiral Grace Hopper"
+    assert updated.json()["roles"] == ["admin", "user"]
+    assert reset.status_code == 200
+    assert login.status_code == 200
+    assert login.json()["display_name"] == "Rear Admiral Grace Hopper"
+    records = [json.loads(line) for line in audit_log_path.read_text().splitlines()]
+    assert "admin.user.update" in [record["action"] for record in records]
+    assert "admin.user.reset_password" in [record["action"] for record in records]

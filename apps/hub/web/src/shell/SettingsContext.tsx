@@ -1,9 +1,16 @@
 // Settings modal open state — T-FR-0006-04.
 // Spec: docs/design/mantle-ui.md § Settings modal.
+/* eslint-disable react-refresh/only-export-components */
 
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
 
-export type SettingsTab = 'theme' | 'plugins' | 'system-tiles' | 'diagnostics' | 'sign-out'
+export type SettingsTab =
+  | 'theme'
+  | 'account'
+  | 'plugins'
+  | 'system-tiles'
+  | 'diagnostics'
+  | 'sign-out'
 
 type SettingsContextValue = {
   isOpen: boolean

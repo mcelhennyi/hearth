@@ -1,14 +1,18 @@
 # FR-0004 — centralized users auth
 
-Branch: `feat/FR-0004-centralized-users-auth`
+Branch: `feat/FR-0004-centralized-users-auth-T-FR-0004-15-admin-user-management`
 
-Worktree: `.worktrees/FR-0004-centralized-users-auth/feature/`
+Worktree: `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-15-admin-user-management/`
 
 Status: finish-feature closeout is superseded by the multi-user correction. [PR #56](https://github.com/mcelhennyi/hearth/pull/56) is only a feature-branch preview until `T-FR-0004-11` through `T-FR-0004-16` land. Starting feature branch includes `T-FR-0004-02` through `T-FR-0004-10`.
 
 Current ticket branch:
 
-- `T-FR-0004-15` — Admin user management API and settings UI. Ready for the next frontier after `T-FR-0004-13` and `T-FR-0004-14` were merged.
+- `T-FR-0004-15` — Admin user management API and settings UI.
+- Phase: complete; ready to push and open ticket PR to `feat/FR-0004-centralized-users-auth`.
+- RED: `./develop test tests/builtin/test_hearth_users.py` failed with 4 expected admin API failures; `./develop web npm run test -- SettingsModal.test.tsx` failed with 2 expected Account UI failures.
+- DEV: admin user-management APIs and hub Settings Account tab implemented; focused backend and modal tests pass.
+- Scope: add failing API/UI tests for admin-only user management, implement hearth-users admin endpoints/UI, enforce final-admin safety, write management audit events, validate focused + broader slices.
 
 Completed:
 
@@ -108,3 +112,17 @@ Latest T-FR-0004-14 validation:
 - `./develop web npx eslint src/App.test.tsx` — passed.
 - `git diff --check` — passed.
 - `./develop web npm run lint` — blocked by pre-existing non-T14 lint errors in dashboard/edit, shell chrome/frame hooks, SettingsContext, and ThemeProvider.
+
+Latest T-FR-0004-15 validation:
+
+- RED: `./develop test tests/builtin/test_hearth_users.py` failed with 4 expected admin API failures; `./develop web npm run test -- SettingsModal.test.tsx` failed with 2 expected Account UI failures.
+- `./develop test tests/builtin/test_hearth_users.py` — 32 passed.
+- `./develop web npm run test -- SettingsModal.test.tsx` — 4 passed.
+- `./develop test tests/builtin/test_hearth_users.py tests/api/test_auth_verify_alias.py tests/spark/test_broker.py` — 65 passed, 5 warnings.
+- `./develop web npm run test` — 15 files passed, 66 tests passed.
+- `git diff --check` — passed.
+- `git submodule update --init kindling` — required in this fresh child worktree before full backend validation.
+- `./develop test` — 349 passed, 3 skipped, 8 warnings.
+- `./develop web npm run build` — passed.
+- `./develop web npx eslint src/shell/SettingsModal.tsx src/shell/SettingsModal.test.tsx src/shell/SettingsContext.tsx` — passed.
+- `./develop web npm run lint` — blocked by pre-existing non-T15 lint errors in dashboard edit files, chrome/frame hooks, `ChromeSlot.tsx`, and `ThemeProvider.tsx`.
