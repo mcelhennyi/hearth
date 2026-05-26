@@ -4,7 +4,7 @@ Branch: `feat/FR-0004-centralized-users-auth-T-FR-0004-03-users-session-verify`
 
 Worktree: `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-03-users-session-verify/`
 
-Status: TEST, DEV, and VAL complete for `T-FR-0004-03` on 2026-05-26.
+Status: TEST, DEV, and VAL complete for `T-FR-0004-03` on 2026-05-26. Ticket PR opened: https://github.com/mcelhennyi/hearth/pull/48.
 
 Completed context:
 
@@ -31,7 +31,7 @@ VAL result:
 
 Current phase:
 
-- Ready to commit, push, and open a ticket PR against `feat/FR-0004-centralized-users-auth`.
+- Complete; branch pushed and PR #48 is open against `feat/FR-0004-centralized-users-auth`.
 
 Next action:
 
