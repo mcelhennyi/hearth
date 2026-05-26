@@ -109,6 +109,8 @@ Nav entry may be hidden on mobile tab bar (overflow / settings only) — **DESIG
 
 Disabling built-in without a working external URL **fails closed** (503 on verify). UI warns in dashboard settings.
 
+**Follow-up FR:** A complete custom user service adapter remains outside FR-0004. A later FR should specify the service lifecycle, operator onboarding, health checks, OIDC/social-login adapters, and any replacement UI for `/hearth-users/login`; this ticket only records `provider=external` plus a verify URL and preserves the same hub-normalized header contract.
+
 ## Kindling starter changes
 
 Document in Kindling template README and generated plugin:

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
@@ -76,7 +76,8 @@ describe('Mantle registry-driven navigation', () => {
     // "Home" tab is always present
     expect(bottomNav).toHaveTextContent('Home')
     // No plugin-specific label — nothing injected from registry
-    expect(bottomNav.querySelectorAll('li')).toHaveLength(1)
+    expect(bottomNav.querySelectorAll('li')).toHaveLength(2)
+    expect(bottomNav).toHaveTextContent('Settings')
   })
 
   it('registry with one plugin: plugin tab appears in nav', async () => {
@@ -92,7 +93,67 @@ describe('Mantle registry-driven navigation', () => {
 
     const bottomNav = screen.getByLabelText('Mantle bottom tabs')
     expect(bottomNav).toHaveTextContent('Test Plugin')
-    expect(bottomNav.querySelectorAll('li')).toHaveLength(2)
+    expect(bottomNav.querySelectorAll('li')).toHaveLength(3)
+  })
+})
+
+describe('Auth provider settings', () => {
+  beforeEach(() => {
+    setBreakpoint(768)
+    window.history.replaceState({}, '', '/settings')
+  })
+
+  it('loads the current provider and records an external verify URL toggle', async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      if (input === '/api/settings' && !init) {
+        return new Response(
+          JSON.stringify({
+            auth: { provider: 'builtin', external_verify_url: null },
+          }),
+          { headers: { 'Content-Type': 'application/json' } },
+        )
+      }
+      if (input === '/api/settings' && init?.method === 'PUT') {
+        return new Response(
+          JSON.stringify({
+            auth: {
+              provider: 'external',
+              external_verify_url: 'https://auth.example.test/verify',
+            },
+          }),
+          { headers: { 'Content-Type': 'application/json' } },
+        )
+      }
+      return new Response(null, { status: 404 })
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    render(
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>,
+    )
+
+    expect(await screen.findByRole('radio', { name: /built-in hearth users/i })).toBeChecked()
+    fireEvent.click(screen.getByRole('radio', { name: /external verify url/i }))
+    fireEvent.change(screen.getByPlaceholderText('https://auth.example.test/verify'), {
+      target: { value: 'https://auth.example.test/verify' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('status')).toHaveTextContent('Auth provider settings saved.')
+    })
+    expect(fetchMock).toHaveBeenLastCalledWith('/api/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        auth: {
+          provider: 'external',
+          external_verify_url: 'https://auth.example.test/verify',
+        },
+      }),
+    })
   })
 })
 

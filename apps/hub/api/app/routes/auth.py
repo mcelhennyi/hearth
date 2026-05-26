@@ -28,6 +28,7 @@ from app.auth import (
     verify_session_token,
 )
 from app.db import get_session
+from app.models import Plugin
 from app.routes.settings import _auth_settings, _load_settings
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -106,6 +107,8 @@ async def verify(request: Request, session: AsyncSession = Depends(get_session))
     rows = await _load_settings(session)
     auth_settings = _auth_settings(rows)
     if auth_settings.provider == "builtin":
+        if not await _builtin_auth_provider_enabled(session):
+            raise HTTPException(status_code=503, detail="Built-in auth provider is disabled.")
         provider_url = auth_verify.builtin_verify_url()
     else:
         provider_url = auth_settings.external_verify_url
@@ -126,3 +129,8 @@ async def verify(request: Request, session: AsyncSession = Depends(get_session))
         raise HTTPException(status_code=503, detail="Auth provider unavailable.") from exc
 
     return Response(status_code=200, headers=headers)
+
+
+async def _builtin_auth_provider_enabled(session: AsyncSession) -> bool:
+    plugin = await session.get(Plugin, "hearth-users")
+    return plugin is None or plugin.state == "enabled"

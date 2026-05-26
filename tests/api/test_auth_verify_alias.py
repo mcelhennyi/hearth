@@ -15,6 +15,7 @@ from fastapi import Request
 from fastapi.testclient import TestClient
 
 from app import auth_verify
+from app.routes import auth as auth_routes
 
 
 FetchFn = Callable[[str, Request], Awaitable[auth_verify.ProviderResult]]
@@ -188,3 +189,18 @@ def test_unreachable_provider_fails_closed(
     resp = client.get("/api/auth/verify")
 
     assert resp.status_code == 503
+
+
+def test_builtin_verify_disabled_provider_fails_closed(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    async def disabled(_session: object) -> bool:
+        return False
+
+    monkeypatch.setattr(auth_routes, "_builtin_auth_provider_enabled", disabled)
+
+    resp = client.get("/api/auth/verify")
+
+    assert resp.status_code == 503
+    assert "X-Hearth-User-Id" not in resp.headers
