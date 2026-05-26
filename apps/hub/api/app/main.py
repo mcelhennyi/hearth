@@ -20,6 +20,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from sqlalchemy import text
 
+from . import auth_verify
 from .builtins import register_builtin_plugins
 from .db import _DEFAULT_VAR_DIR, _SessionFactory, engine
 from .models import Base
@@ -46,6 +47,7 @@ DEFAULT_PUSH_CONFIG = PushConfig(
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     _DEFAULT_VAR_DIR.mkdir(parents=True, exist_ok=True)
+    auth_verify.load_or_create_user_sig_secret()
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
         columns = await conn.execute(text("PRAGMA table_info(plugins)"))

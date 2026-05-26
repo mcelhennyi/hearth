@@ -30,7 +30,7 @@ services:
     container_name: hearth-users
     working_dir: /workspace/apps/builtin/hearth-users
     command: >-
-      sh -lc "pip install -q fastapi uvicorn[standard] &&
+      sh -lc "pip install -q fastapi uvicorn[standard] argon2-cffi &&
       uvicorn hearth_users.app:create_app --factory --host 0.0.0.0 --port 8000 --reload"
     volumes:
       - ../../:/workspace

@@ -11,6 +11,10 @@ def test_get_settings_returns_defaults(client: TestClient) -> None:
     assert data.get("theme") == "dark"
     assert data.get("hostname") == "hearth.home.arpa"
     assert data.get("notification_channel") == "web-push"
+    assert data.get("auth") == {
+        "provider": "builtin",
+        "external_verify_url": None,
+    }
 
 
 def test_put_settings_updates_value(client: TestClient) -> None:
@@ -31,3 +35,31 @@ def test_put_settings_partial_update_leaves_others_unchanged(client: TestClient)
     data = resp.json()
     assert data.get("theme") == "light"
     assert data.get("hostname") == "hearth.home.arpa"
+    assert data.get("auth") == {
+        "provider": "builtin",
+        "external_verify_url": None,
+    }
+
+
+def test_put_settings_updates_auth_provider(client: TestClient) -> None:
+    resp = client.put(
+        "/api/settings",
+        json={
+            "auth": {
+                "provider": "external",
+                "external_verify_url": "http://auth.example.test/verify",
+            }
+        },
+    )
+
+    assert resp.status_code == 200
+    assert resp.json()["auth"] == {
+        "provider": "external",
+        "external_verify_url": "http://auth.example.test/verify",
+    }
+
+
+def test_put_settings_rejects_unknown_auth_provider(client: TestClient) -> None:
+    resp = client.put("/api/settings", json={"auth": {"provider": "oauth"}})
+
+    assert resp.status_code == 422

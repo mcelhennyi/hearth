@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import secrets
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -170,6 +171,7 @@ def _compose_service(hearth: Path, record: PluginRecord) -> dict[str, Any]:
         "HEARTH_VAR_DIR": "/var/hearth",
         "HEARTH_PLUGIN_PORT": str(record.port),
         "HEARTH_PLUGIN_SLUG": record.slug,
+        "HEARTH_USER_SIG_SECRET": _load_or_create_user_sig_secret(hearth),
     }
     service.update(
         {
@@ -183,6 +185,23 @@ def _compose_service(hearth: Path, record: PluginRecord) -> dict[str, Any]:
         },
     )
     return service
+
+
+def _load_or_create_user_sig_secret(hearth: Path) -> str:
+    path = hearth / "var" / "secrets" / "user-sig.key"
+    if path.exists():
+        secret = path.read_text(encoding="utf-8").strip()
+        if secret:
+            return secret
+
+    secret = secrets.token_urlsafe(48)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(secret + "\n", encoding="utf-8")
+    try:
+        path.chmod(0o600)
+    except OSError:
+        pass
+    return secret
 
 
 def _compose_path_from_hearth(path: str) -> str:
