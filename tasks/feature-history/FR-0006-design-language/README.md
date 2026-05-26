@@ -1,6 +1,6 @@
 # FR-0006 — Design-language unification
 
-**Status:** `done` (feature-complete; PR to **`main`** pending) · **Owner:** human + AI · **Started:** 2026-05-21
+**Status:** `done` (merged to **`main`** via [PR #46](https://github.com/mcelhennyi/hearth/pull/46) @ `25e3381`) · **Owner:** human + AI · **Started:** 2026-05-21
 
 Cross-repo design-language alignment across **hearth**, **kindling**, and **grocery-list**. Closeout: [`90-closeout.md`](90-closeout.md) · Finish handoff: [`handoffs/2026-05-21-finish-feature.md`](handoffs/2026-05-21-finish-feature.md).
 

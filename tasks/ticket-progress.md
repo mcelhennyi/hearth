@@ -6,13 +6,13 @@
 |-------|--------|
 | **Active ticket** | grocery-list `T-FR-0001-01` → `T-FR-0001-04` (serialized) |
 | **Active phase** | TEST → DEV → VAL |
-| **Branch / worktree** | hearth `feat/FR-0006-design-language` @ `.worktrees/FR-0006-design-language/feature/`; grocery `feat/FR-0001-mvp-reference-plugin` @ `plugins/third-party/grocery-list/` |
+| **Branch / worktree** | `main` @ `25e3381`; grocery `feat/FR-0001-mvp-reference-plugin` @ `plugins/third-party/grocery-list/` |
 | **Session status** | `developing` |
-| **Next agent should** | Grocery FR-0001 done @ `b4cc00b` on `feat/FR-0006-design-language`. Merge hearth FR-0006 PR to `main`; then staff grocery **FR-0002** Mantle UI. Run `plugins/third-party/grocery-list/tests/smoke/e2e-hearth.sh` when hub is up. |
+| **Next agent should** | FR-0006 is merged to `main` via [PR #46](https://github.com/mcelhennyi/hearth/pull/46) @ `25e3381`. Configure **`NPM_TOKEN`**, tag **`kindling-mantle-v0.1.0`**, then staff grocery **FR-0002** Mantle UI. Run `plugins/third-party/grocery-list/tests/smoke/e2e-hearth.sh` when hub is up. |
 
 ### Parallel streams
 
-**FR-0006** feature-complete — PR to **`main`** pending. [`90-closeout.md`](feature-history/FR-0006-design-language/90-closeout.md).
+**FR-0006** done on **`main`** via [PR #46](https://github.com/mcelhennyi/hearth/pull/46) @ `25e3381`. [`90-closeout.md`](feature-history/FR-0006-design-language/90-closeout.md).
 
 **Kindling FR-0001** — merged [kindling PR #1](https://github.com/mcelhennyi/kindling/pull/1) @ `f64b6a1`; hearth submodule bumped on `feat/FR-0006-design-language` @ `df20872`.
 

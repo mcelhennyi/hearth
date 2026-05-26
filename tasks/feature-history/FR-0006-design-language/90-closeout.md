@@ -1,6 +1,6 @@
 # FR-0006 closeout — Design-language unification
 
-**PR pending:** [**PR #46**](https://github.com/mcelhennyi/hearth/pull/46) → **`main`** @ `6812b38`. Refresh merge line after merge.
+**Merged:** [**PR #46**](https://github.com/mcelhennyi/hearth/pull/46) → **`main`** @ `25e3381` on 2026-05-26. Feature branch head before merge: `121706e`.
 
 ## Executive summary
 
@@ -40,7 +40,7 @@ FR-0006 unifies the Hearth dashboard and Mantle shell with the design docs and m
 
 ## Validation
 
-- `./develop test` — **269** pytest passed, 3 skipped
+- `./develop test` — **287** pytest passed, 3 skipped (2026-05-26 conflict-fix rerun)
 - Hub web Vitest — **57** passed (14 files)
 - `@kindling/mantle` `pnpm test` — **37** passed (includes `npm publish --dry-run`)
 
@@ -56,18 +56,18 @@ FR-0006 unifies the Hearth dashboard and Mantle shell with the design docs and m
 
 ## Suggested next step
 
-Merge the feature PR to **`main`**, configure **`NPM_TOKEN`**, push tag **`kindling-mantle-v0.1.0`**, then run partner FRs in kindling and grocery-list.
+Configure **`NPM_TOKEN`**, push tag **`kindling-mantle-v0.1.0`**, then run partner FRs in kindling and grocery-list.
 
 ## Options
 
 | Option | When |
 |--------|------|
-| Merge PR | Default — integrates FR-0006 on `main` |
 | Staff FR-0004 auth | After merge if auth is next platform priority |
 | Staff FR-0005 remote-build | Parallel design track on `main` |
 
 ## Audit
 
-- **Feature branch:** `feat/FR-0006-design-language` @ `110dd0a` (retained on remote)
+- **Feature branch:** `feat/FR-0006-design-language` @ `121706e` (retained on remote)
+- **Merge:** [PR #46](https://github.com/mcelhennyi/hearth/pull/46) @ `25e3381`
 - **Ticket PRs:** #31–#45 → feature branch
 - **Handoff:** [`handoffs/2026-05-21-finish-feature.md`](handoffs/2026-05-21-finish-feature.md)
