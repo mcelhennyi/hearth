@@ -1,5 +1,41 @@
 # Kindling Contract Compliance Changelog
 
+## 2026-05-26 — T-FR-0004-08 Mantle session and login handoff
+
+**Contract area:** Mantle shell auth, `useUser()` delivery, login UI ownership.
+
+**Compatibility:** Breaking for child repos or local Mantle copies that render a
+plugin-local or hub-local password form; additive for plugins that already rely
+on Hearth gateway identity and `useUser()`.
+
+**Who must update:** Any child plugin repo, local Kindling fork, or copied
+Mantle shell that contains a `LoginScreen` posting to `/api/auth/login`, reads
+session identity from a plugin-local cookie, or expects the plugin iframe to
+discover user state without a shell `hearth.user` message. Drift is present when
+`rg "/api/auth/login|current-password|hearth.user.request" <repo>` finds a local
+login form or no `hearth.user` listener/hook exists.
+
+**Required edits:** Replace local password forms with a link to
+`/hearth-users/login?next=<encoded-current-path>`; have the shell fetch
+`/hearth-users/api/session` with credentials before rendering authenticated
+chrome; normalize `user_id`, `display_name`, and `roles` to the Mantle
+`{id,name,roles}` user shape; send `{type:"hearth.user", user}` to plugin
+iframes on iframe load and in response to `{type:"hearth.user.request"}`;
+consume `useUser()` in plugin UI instead of cookies or local login state.
+
+**Verification:** Run the web/Mantle test suite for the child repo; add or keep
+tests that mock a 401 session and assert the login link points at
+`/hearth-users/login`, mock a 200 session and assert shell chrome renders, and
+spy on iframe `postMessage` to confirm the `hearth.user` payload matches
+verified claims. For Hearth itself the validation command is
+`./develop web npm run test && ./develop web npm run lint && ./develop web npm
+run build`.
+
+**Fallback:** Public-only plugins may defer user-specific UI, but they must not
+add a password form or issue their own session cookie. If the shell cannot reach
+`/hearth-users/api/session`, fail closed by showing only the Hearth Users login
+handoff rather than rendering authenticated plugin chrome.
+
 ## 2026-05-26 — T-FR-0004-07 gateway trust headers
 
 **Contract area:** Template, Mantle guidance, backend auth helper, generated docs.
