@@ -104,6 +104,8 @@ def _render_plugin_route(*, slug: str, upstream: str) -> list[str]:
         "    }",
         "  }",
         "",
+        "  request_header X-Original-Method {http.request.method}",
+        "  request_header X-Original-Uri {http.request.orig_uri}",
         f"  reverse_proxy {upstream}",
         "}",
         "",

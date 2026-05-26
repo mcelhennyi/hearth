@@ -7,8 +7,8 @@
 | **Active ticket** | `T-FR-0004-10` |
 | **Active phase** | TEST → DEV → VAL |
 | **Branch / worktree** | `feat/FR-0004-centralized-users-auth` @ `.worktrees/FR-0004-centralized-users-auth/feature/`; next worktree `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-10-plugin-trust-e2e/` |
-| **Session status** | `developing` |
-| **Next agent should** | Run `T-FR-0004-10` capstone E2E: plugin trusts gateway identity, then finish-feature if the §2d feature-complete gate passes. |
+| **Session status** | `testing` |
+| **Next agent should** | Merge `T-FR-0004-10` to `feat/FR-0004-centralized-users-auth`, run full feature validation, then finish-feature if the §2d feature-complete gate passes. |
 
 ### Parallel streams
 
@@ -61,7 +61,7 @@
 | T-FR-0004-07 | Kindling template: trust middleware and no local login | done | done | done | Generated Python template now ships `require_hearth_user()` trust middleware, protected-route sample, no-local-login README/useUser guidance, and dense child-repo compliance changelog. Combined feature validation: focused template tests 13 passed; full `./develop test` 275 passed, 3 skipped. |
 | T-FR-0004-08 | Mantle shell: login via hearth-users and useUser contract | done | done | done | `FR-0004`. Shell fetches `/hearth-users/api/session`, sends unauth users to `/hearth-users/login?next=...`, broadcasts verified `hearth.user` claims to plugin iframes, and removes hub password-form duplication. Validation: `./develop web npm run test` 11 passed; `./develop web npm run lint` passed; `./develop web npm run build` passed. Real iPhone PWA login-once walkthrough documented as host/manual exception. |
 | T-FR-0004-09 | External auth provider stub and operator settings UI | done | done | done | `FR-0004`. Settings route records builtin/external provider toggles and external verify URLs; hub verify fails closed when builtin auth is disabled and preserves the external provider header contract. Combined feature validation: focused API 13 passed; full `./develop test` 276 passed, 3 skipped; web Vitest 4 files/12 tests passed; web build passed; web lint passed. |
-| T-FR-0004-10 | E2E: plugin trusts gateway identity | — | — | — | `FR-0004` capstone. |
+| T-FR-0004-10 | E2E: plugin trusts gateway identity | done | done | done | `FR-0004` capstone. Hub verify signs identity for the public plugin URI; Caddy forwards original method/URI to the plugin; generated Kindling plugin rejects direct calls and accepts verified gateway headers. Validation: focused 16 passed, 1 skipped; full `./develop test` 277 passed, 3 skipped; web test/build/lint passed. |
 | T-FR-0005-01 | Remote-build profile in deployment.md | — | — | — | `FR-0005` **design**. |
 | T-FR-0005-02 | `hearth pwa publish` (rsync static to Pi) | — | — | — | `FR-0005` **design**; Pi **`192.168.1.62`**. Deps: T-FR-0005-01. |
 | T-FR-0005-03 | Hub image build and publish (arm64 bundle) | — | — | — | `FR-0005` **design** P1. Deps: T-FR-0005-01. |

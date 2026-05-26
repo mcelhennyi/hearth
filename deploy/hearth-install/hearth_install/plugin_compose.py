@@ -144,6 +144,8 @@ def _render_plugin_caddy_route(slug: str, upstream: str) -> str:
         "    }",
         "  }",
         "",
+        "  request_header X-Original-Method {http.request.method}",
+        "  request_header X-Original-Uri {http.request.orig_uri}",
         f"  reverse_proxy {upstream}",
         "}",
     ]
