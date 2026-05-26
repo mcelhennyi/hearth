@@ -32,6 +32,12 @@ FR-0004 ships Hearth-owned identity as a built-in `hearth-users` plugin and rout
 | `T-FR-0004-08` | Mantle login handoff and `hearth.user` bridge | TEST / DEV / VAL **done** |
 | `T-FR-0004-09` | External auth provider stub and settings UI | TEST / DEV / VAL **done** |
 | `T-FR-0004-10` | Gateway identity capstone contract | TEST / DEV / VAL **done** |
+| `T-FR-0004-11` | Multi-user design amendment and migration plan | TEST / DEV / VAL **done** |
+| `T-FR-0004-12` | Multi-user schema, migration, and auth API | Pending |
+| `T-FR-0004-13` | First-admin setup and username login UI | Pending |
+| `T-FR-0004-14` | Real-user claims through session, Spark, gateway, and Mantle | Pending |
+| `T-FR-0004-15` | Admin user management API and settings UI | Pending |
+| `T-FR-0004-16` | Multi-user E2E and compliance changelog refresh | Pending |
 
 ## Validation
 
