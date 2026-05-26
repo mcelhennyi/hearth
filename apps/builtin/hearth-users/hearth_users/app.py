@@ -26,7 +26,7 @@ MAX_FAILED_ATTEMPTS = 5
 
 LOCAL_USER_ID = "local"
 LOCAL_DISPLAY_NAME = "Local user"
-LOCAL_ROLES = ["user"]
+LOCAL_ROLES = ["admin", "user"]
 PLUGIN_SLUG = "hearth-users"
 
 log = logging.getLogger(__name__)
@@ -50,15 +50,15 @@ def _safe_next(next_url: str | None) -> str:
 
 def _auth_html(*, setup_required: bool, next_url: str = "/") -> str:
     mode = "setup" if setup_required else "login"
-    title = "Create your Hearth password" if setup_required else "Sign in to Hearth"
+    title = "Create your Hearth admin" if setup_required else "Sign in to Hearth"
     intro = (
-        "This local Hearth needs an owner password before plugins can open."
+        "This local Hearth needs its first admin account before plugins can open."
         if setup_required
-        else "Use your local Hearth password to continue."
+        else "Use your Hearth username and password to continue."
     )
-    button = "Create password" if setup_required else "Sign in"
+    button = "Create admin" if setup_required else "Sign in"
     helper = (
-        "Use at least 8 characters. This is stored only on this Hearth."
+        "Use at least 8 characters. This account is stored only on this Hearth."
         if setup_required
         else "This signs you into Hearth and all enabled plugins."
     )
@@ -196,8 +196,32 @@ def _auth_html(*, setup_required: bool, next_url: str = "/") -> str:
         <h1>{html.escape(title)}</h1>
         <p>{html.escape(intro)}</p>
         <form id="auth-form" data-mode="{mode}" data-next="{escaped_next}">
+          <label for="username">Username</label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            autocomplete="username"
+            required
+            autofocus
+          />
+          <label for="display-name" data-setup-only>Display name</label>
+          <input
+            id="display-name"
+            name="display_name"
+            type="text"
+            autocomplete="name"
+            data-setup-only
+          />
           <label for="password">Password</label>
-          <input id="password" name="password" type="password" minlength="8" autocomplete="current-password" required autofocus />
+          <input
+            id="password"
+            name="password"
+            type="password"
+            minlength="8"
+            autocomplete="current-password"
+            required
+          />
           <button type="submit">{html.escape(button)}</button>
         </form>
         <p class="helper">{html.escape(helper)}</p>
@@ -207,10 +231,15 @@ def _auth_html(*, setup_required: bool, next_url: str = "/") -> str:
     <script>
       const form = document.querySelector("#auth-form");
       const message = document.querySelector("#message");
+      const username = document.querySelector("#username");
+      const displayName = document.querySelector("#display-name");
       const password = document.querySelector("#password");
       const button = form.querySelector("button");
       const base = window.location.pathname.startsWith("/hearth-users") ? "/hearth-users" : "";
       const endpoint = form.dataset.mode === "setup" ? `${{base}}/api/setup` : `${{base}}/login`;
+      if (form.dataset.mode !== "setup") {{
+        document.querySelectorAll("[data-setup-only]").forEach((element) => element.remove());
+      }}
 
       function showMessage(kind, text) {{
         message.dataset.kind = kind;
@@ -227,7 +256,11 @@ def _auth_html(*, setup_required: bool, next_url: str = "/") -> str:
             method: "POST",
             credentials: "include",
             headers: {{ "content-type": "application/json" }},
-            body: JSON.stringify({{ password: password.value }}),
+            body: JSON.stringify({{
+              username: username.value,
+              display_name: displayName && displayName.isConnected ? displayName.value : undefined,
+              password: password.value,
+            }}),
           }});
           if (!response.ok) {{
             let detail = "Sign in failed.";
@@ -241,20 +274,27 @@ def _auth_html(*, setup_required: bool, next_url: str = "/") -> str:
         }} catch (error) {{
           showMessage("error", error instanceof Error ? error.message : "Sign in failed.");
           button.disabled = false;
-          password.focus();
+          username.focus();
         }}
       }});
     </script>
   </body>
 </html>"""
 
+def _new_user_id() -> str:
+    return f"user_{secrets.token_urlsafe(16)}"
 
-def _claims() -> dict[str, object]:
-    return {
-        "user_id": LOCAL_USER_ID,
-        "display_name": LOCAL_DISPLAY_NAME,
-        "roles": LOCAL_ROLES,
-    }
+
+def _normalize_username(username: str) -> str:
+    return username.strip().lower()
+
+
+def _parse_roles(roles: str) -> list[str]:
+    return [role for role in roles.split(",") if role]
+
+
+def _serialize_roles(roles: list[str]) -> str:
+    return ",".join(dict.fromkeys(roles))
 
 
 def _default_audit_log_path(data_dir: Path) -> Path:
@@ -268,7 +308,11 @@ def _default_bootstrap_password_file() -> Path:
     configured = os.getenv("HEARTH_USERS_BOOTSTRAP_PASSWORD_FILE")
     if configured:
         return Path(configured)
-    return Path(os.getenv("HEARTH_VAR_DIR", "var/hearth")) / "secrets" / "hearth-users-default-password"
+    return (
+        Path(os.getenv("HEARTH_VAR_DIR", "var/hearth"))
+        / "secrets"
+        / "hearth-users-default-password"
+    )
 
 
 def _write_audit_event(
@@ -352,11 +396,14 @@ class UsersStore:
                 """
                 create table if not exists users (
                     id text primary key,
+                    username text,
                     display_name text not null,
                     roles text not null,
+                    disabled integer not null default 0,
                     password_hash text not null,
                     created_at integer not null,
-                    updated_at integer not null
+                    updated_at integer not null,
+                    last_login_at integer
                 )
                 """
             )
@@ -370,51 +417,171 @@ class UsersStore:
                 )
                 """
             )
+            self._migrate_users(conn)
+
+    def _migrate_users(self, conn: sqlite3.Connection) -> None:
+        columns = {
+            str(row["name"])
+            for row in conn.execute("pragma table_info(users)").fetchall()
+        }
+        if "username" not in columns:
+            conn.execute("alter table users add column username text")
+        if "disabled" not in columns:
+            conn.execute("alter table users add column disabled integer not null default 0")
+        if "last_login_at" not in columns:
+            conn.execute("alter table users add column last_login_at integer")
+
+        now = int(time.time())
+        conn.execute(
+            """
+            update users
+            set username = lower(trim(id)),
+                updated_at = ?
+            where username is null or trim(username) = ''
+            """,
+            (now,),
+        )
+        conn.execute(
+            """
+            update users
+            set roles = ?,
+                display_name = case
+                    when trim(display_name) = '' then ?
+                    else display_name
+                end,
+                disabled = 0,
+                updated_at = ?
+            where id = ?
+            """,
+            (_serialize_roles(LOCAL_ROLES), LOCAL_DISPLAY_NAME, now, LOCAL_USER_ID),
+        )
+        conn.execute("create unique index if not exists users_username_unique on users(username)")
 
     def has_user(self) -> bool:
         with self._connect() as conn:
-            row = conn.execute("select 1 from users where id = ?", (LOCAL_USER_ID,)).fetchone()
+            row = conn.execute("select 1 from users limit 1").fetchone()
         return row is not None
 
-    def create_user(self, password: str) -> dict[str, object]:
+    def create_user(
+        self,
+        *,
+        username: str,
+        display_name: str,
+        password: str,
+        roles: list[str],
+        user_id: str | None = None,
+    ) -> dict[str, object]:
+        normalized_username = _normalize_username(username)
+        display_name = display_name.strip()
+        if not normalized_username:
+            raise ValueError("Username is required.")
+        if not display_name:
+            raise ValueError("Display name is required.")
         now = int(time.time())
+        user_id = user_id or _new_user_id()
         with self._connect() as conn:
-            if self.has_user():
-                raise HTTPException(status_code=409, detail="Password already configured.")
+            existing = conn.execute(
+                "select 1 from users where username = ?", (normalized_username,)
+            ).fetchone()
+            if existing is not None:
+                raise ValueError("Username already exists.")
             conn.execute(
                 """
-                insert into users (id, display_name, roles, password_hash, created_at, updated_at)
-                values (?, ?, ?, ?, ?, ?)
+                insert into users (
+                    id,
+                    username,
+                    display_name,
+                    roles,
+                    disabled,
+                    password_hash,
+                    created_at,
+                    updated_at,
+                    last_login_at
+                )
+                values (?, ?, ?, ?, 0, ?, ?, ?, null)
                 """,
                 (
-                    LOCAL_USER_ID,
-                    LOCAL_DISPLAY_NAME,
-                    ",".join(LOCAL_ROLES),
+                    user_id,
+                    normalized_username,
+                    display_name,
+                    _serialize_roles(roles),
                     _hash_password(password),
                     now,
                     now,
                 ),
             )
-        return _claims()
+        return {
+            "user_id": user_id,
+            "display_name": display_name,
+            "roles": list(dict.fromkeys(roles)),
+        }
 
-    def bootstrap_user_from_password_file(self, password_file: Path) -> dict[str, object] | None:
+    def create_first_admin(
+        self, username: str, display_name: str, password: str
+    ) -> dict[str, object]:
+        if self.has_user():
+            raise HTTPException(status_code=409, detail="First admin already configured.")
+        try:
+            return self.create_user(
+                username=username,
+                display_name=display_name,
+                password=password,
+                roles=LOCAL_ROLES,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    def bootstrap_user_from_password_file(
+        self, password_file: Path
+    ) -> dict[str, object] | None:
         if self.has_user() or not password_file.exists():
             return None
         password = password_file.read_text(encoding="utf-8").strip()
         if len(password) < 8:
             log.warning(
-                "hearth-users bootstrap password file ignored: must contain at least 8 characters (%s)",
+                "hearth-users bootstrap password file ignored: must contain at least "
+                "8 characters (%s)",
                 password_file,
             )
             return None
-        return self.create_user(password)
+        return self.create_user(
+            user_id=LOCAL_USER_ID,
+            username=LOCAL_USER_ID,
+            display_name=LOCAL_DISPLAY_NAME,
+            password=password,
+            roles=LOCAL_ROLES,
+        )
 
-    def load_password_hash(self) -> str | None:
+    def load_user_for_login(self, username: str) -> sqlite3.Row | None:
+        normalized_username = _normalize_username(username)
+        if not normalized_username:
+            return None
         with self._connect() as conn:
             row = conn.execute(
-                "select password_hash from users where id = ?", (LOCAL_USER_ID,)
+                """
+                select id, display_name, roles, disabled, password_hash
+                from users
+                where username = ?
+                """,
+                (normalized_username,),
             ).fetchone()
-        return str(row["password_hash"]) if row else None
+        return row
+
+    def record_login(self, user_id: str) -> None:
+        now = int(time.time())
+        with self._connect() as conn:
+            conn.execute(
+                "update users set last_login_at = ?, updated_at = ? where id = ?",
+                (now, now, user_id),
+            )
+
+    def set_user_disabled(self, user_id: str, disabled: bool) -> None:
+        now = int(time.time())
+        with self._connect() as conn:
+            conn.execute(
+                "update users set disabled = ?, updated_at = ? where id = ?",
+                (1 if disabled else 0, now, user_id),
+            )
 
     def create_session(self, user_id: str) -> str:
         token = secrets.token_urlsafe(32)
@@ -447,7 +614,7 @@ class UsersStore:
                 select u.id, u.display_name, u.roles
                 from sessions s
                 join users u on u.id = s.user_id
-                where s.token_hash = ? and s.expires_at > ?
+                where s.token_hash = ? and s.expires_at > ? and u.disabled = 0
                 """,
                 (token_hash, now),
             ).fetchone()
@@ -456,11 +623,11 @@ class UsersStore:
         return {
             "user_id": str(row["id"]),
             "display_name": str(row["display_name"]),
-            "roles": [role for role in str(row["roles"]).split(",") if role],
+            "roles": _parse_roles(str(row["roles"])),
         }
 
 
-async def _password_from_request(request: Request) -> str:
+async def _fields_from_request(request: Request) -> dict[str, str]:
     content_type = request.headers.get("content-type", "")
     raw = await request.body()
     if "application/json" in content_type:
@@ -468,13 +635,46 @@ async def _password_from_request(request: Request) -> str:
             payload: Any = await request.json()
         except ValueError as exc:
             raise HTTPException(status_code=400, detail="Invalid JSON.") from exc
-        password = payload.get("password") if isinstance(payload, dict) else None
+        if not isinstance(payload, dict):
+            raise HTTPException(status_code=400, detail="Invalid JSON.")
+        fields = {
+            key: value
+            for key, value in payload.items()
+            if isinstance(key, str) and isinstance(value, str)
+        }
     else:
-        fields = parse_qs(raw.decode("utf-8"))
-        password = fields.get("password", [None])[0]
+        parsed = parse_qs(raw.decode("utf-8"))
+        fields = {
+            key: values[0]
+            for key, values in parsed.items()
+            if values and isinstance(values[0], str)
+        }
+    return fields
+
+
+async def _setup_fields_from_request(request: Request) -> tuple[str, str, str]:
+    fields = await _fields_from_request(request)
+    username = fields.get("username")
+    display_name = fields.get("display_name")
+    password = fields.get("password")
+    if not isinstance(username, str) or not username.strip():
+        raise HTTPException(status_code=400, detail="Username is required.")
+    if not isinstance(display_name, str) or not display_name.strip():
+        raise HTTPException(status_code=400, detail="Display name is required.")
     if not isinstance(password, str) or not password:
         raise HTTPException(status_code=400, detail="Password is required.")
-    return password
+    return username, display_name, password
+
+
+async def _login_fields_from_request(request: Request) -> tuple[str, str]:
+    fields = await _fields_from_request(request)
+    username = fields.get("username")
+    password = fields.get("password")
+    if not isinstance(username, str) or not username.strip():
+        raise HTTPException(status_code=400, detail="Username is required.")
+    if not isinstance(password, str) or not password:
+        raise HTTPException(status_code=400, detail="Password is required.")
+    return username, password
 
 
 def _set_session_cookie(response: Response, token: str) -> None:
@@ -516,7 +716,9 @@ def create_app(
     app = FastAPI(title="Hearth Users", docs_url=None, redoc_url=None)
     store = UsersStore(Path(data_dir) if data_dir is not None else _default_data_dir())
     audit_path = (
-        Path(audit_log_path) if audit_log_path is not None else _default_audit_log_path(store.data_dir)
+        Path(audit_log_path)
+        if audit_log_path is not None
+        else _default_audit_log_path(store.data_dir)
     )
     bootstrap_path = (
         Path(bootstrap_password_file)
@@ -535,11 +737,13 @@ def create_app(
 
     @app.post("/api/setup")
     async def setup(request: Request, response: Response) -> dict[str, object]:
-        password = await _password_from_request(request)
+        username, display_name, password = await _setup_fields_from_request(request)
         if len(password) < 8:
-            raise HTTPException(status_code=400, detail="Password must be at least 8 characters.")
-        claims = store.create_user(password)
-        token = store.create_session(LOCAL_USER_ID)
+            raise HTTPException(
+                status_code=400, detail="Password must be at least 8 characters."
+            )
+        claims = store.create_first_admin(username, display_name, password)
+        token = store.create_session(str(claims["user_id"]))
         _set_session_cookie(response, token)
         _write_audit_event(audit_path, action="auth.setup", claims=claims)
         return claims
@@ -548,21 +752,38 @@ def create_app(
     async def login(request: Request, response: Response) -> dict[str, object]:
         client_key = _client_key(request)
         if _is_locked_out(client_key):
-            raise HTTPException(status_code=429, detail="Too many failed attempts; try again later.")
+            raise HTTPException(
+                status_code=429, detail="Too many failed attempts; try again later."
+            )
 
-        stored_hash = store.load_password_hash()
-        if stored_hash is None:
+        username, password = await _login_fields_from_request(request)
+        user = store.load_user_for_login(username)
+        if user is None:
+            if not store.has_user():
+                raise HTTPException(status_code=403, detail="No password configured.")
+            _record_failed_attempt(client_key)
+            raise HTTPException(status_code=401, detail="Invalid username or password.")
+        if int(user["disabled"]) != 0:
+            raise HTTPException(status_code=403, detail="User is disabled.")
+
+        stored_hash = str(user["password_hash"])
+        if not stored_hash:
             raise HTTPException(status_code=403, detail="No password configured.")
 
-        password = await _password_from_request(request)
         if not _verify_password(password, stored_hash):
             _record_failed_attempt(client_key)
-            raise HTTPException(status_code=401, detail="Invalid password.")
+            raise HTTPException(status_code=401, detail="Invalid username or password.")
 
         _clear_lockout(client_key)
-        token = store.create_session(LOCAL_USER_ID)
+        user_id = str(user["id"])
+        token = store.create_session(user_id)
         _set_session_cookie(response, token)
-        claims = _claims()
+        store.record_login(user_id)
+        claims = {
+            "user_id": user_id,
+            "display_name": str(user["display_name"]),
+            "roles": _parse_roles(str(user["roles"])),
+        }
         _write_audit_event(
             audit_path,
             action="auth.login",
