@@ -31,3 +31,16 @@ python -m hearth_install /path/to/install-root --generate-plugin-compose
 ```
 
 The output lives at `compose/overrides/generated.plugins.yml`.
+
+## First admin and later users
+
+After the stack is running, open `https://hearth.home.arpa/hearth-users/login`.
+On a fresh install this creates the first local admin account with username,
+display name, and password. The optional
+`var/hearth/secrets/hearth-users-default-password` file is only a first-run
+bootstrap fallback and does not reset existing accounts.
+
+Sign in as an admin and use Hearth Settings -> Account to add later users, reset
+passwords, update roles, or disable accounts. Hearth prevents disabling or
+demoting the final enabled admin. Plugins should receive the active user through
+Hearth gateway headers and Mantle `useUser()`; plugin-local login is drift.

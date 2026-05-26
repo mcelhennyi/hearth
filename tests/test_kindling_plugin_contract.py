@@ -263,3 +263,22 @@ def test_kindling_contract_compliance_changelog_documents_trust_migration() -> N
         "Fallback",
     ]:
         assert f"**{field}:**" in changelog
+
+
+def test_kindling_contract_compliance_changelog_documents_multi_user_migration() -> None:
+    changelog = Path("deploy/kindling-contract/COMPLIANCE_CHANGELOG.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert "T-FR-0004-16" in changelog
+    assert "multi-user" in changelog
+    for required in [
+        "first admin",
+        "second user",
+        "drift",
+        "X-Hearth-Roles",
+        "useUser()",
+        "kindling validate",
+        "protected route",
+    ]:
+        assert required in changelog

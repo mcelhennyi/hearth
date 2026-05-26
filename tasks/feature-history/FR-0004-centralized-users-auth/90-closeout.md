@@ -1,10 +1,21 @@
 # FR-0004 closeout — Centralized users auth
 
-**Status update 2026-05-26:** This closeout is superseded by the multi-user correction. [**PR #56**](https://github.com/mcelhennyi/hearth/pull/56) remains the feature branch preview, but FR-0004 should not merge to **`main`** until `T-FR-0004-11` through `T-FR-0004-16` land and this closeout is refreshed.
+**Status update 2026-05-26:** This closeout remains a draft until the
+multi-user correction is integrated. [**PR #56**](https://github.com/mcelhennyi/hearth/pull/56)
+is a feature-branch preview only; FR-0004 should not merge to **`main`** until
+`T-FR-0004-11` through `T-FR-0004-16` are merged to
+`feat/FR-0004-centralized-users-auth`, full feature validation passes, and the
+parent orchestrator reruns `finish-feature`.
 
 ## Executive summary
 
-FR-0004 ships Hearth-owned identity as a built-in `hearth-users` plugin and routes plugin access through the gateway trust contract. Operators log in once, Caddy verifies sessions through hub `/api/auth/verify`, plugins receive signed `X-Hearth-User-*` identity headers, Kindling-generated backends enforce the gateway trust middleware, and Mantle plugin frames receive the same verified user through `hearth.user`.
+FR-0004 ships Hearth-owned multi-user identity as a built-in `hearth-users`
+plugin and routes plugin access through the gateway trust contract. Operators
+create the first admin, add later users in Settings, Caddy verifies sessions
+through hub `/api/auth/verify`, plugins receive signed `X-Hearth-User-*`
+identity headers, Kindling-generated backends enforce the gateway trust
+middleware, and Mantle plugin frames receive the same verified user through
+`hearth.user`.
 
 ## Delivered surfaces
 
@@ -33,20 +44,28 @@ FR-0004 ships Hearth-owned identity as a built-in `hearth-users` plugin and rout
 | `T-FR-0004-09` | External auth provider stub and settings UI | TEST / DEV / VAL **done** |
 | `T-FR-0004-10` | Gateway identity capstone contract | TEST / DEV / VAL **done** |
 | `T-FR-0004-11` | Multi-user design amendment and migration plan | TEST / DEV / VAL **done** |
-| `T-FR-0004-12` | Multi-user schema, migration, and auth API | Pending |
-| `T-FR-0004-13` | First-admin setup and username login UI | Pending |
-| `T-FR-0004-14` | Real-user claims through session, Spark, gateway, and Mantle | Pending |
-| `T-FR-0004-15` | Admin user management API and settings UI | Pending |
-| `T-FR-0004-16` | Multi-user E2E and compliance changelog refresh | Pending |
+| `T-FR-0004-12` | Multi-user schema, migration, and auth API | TEST / DEV / VAL **done** |
+| `T-FR-0004-13` | First-admin setup and username login UI | TEST / DEV / VAL **done** |
+| `T-FR-0004-14` | Real-user claims through session, Spark, gateway, and Mantle | TEST / DEV / VAL **done** |
+| `T-FR-0004-15` | Admin user management API and settings UI | TEST / DEV / VAL **done** |
+| `T-FR-0004-16` | Multi-user E2E and compliance changelog refresh | TEST / DEV / VAL **done** in ticket branch; merge and parent validation pending |
 
 ## Validation
 
-- `./develop test` — 277 passed, 3 skipped, 4 warnings.
-- `./develop web npm run test` — 4 files passed, 12 tests passed.
-- `./develop web npm run build` — passed.
-- `./develop web npm run lint` — passed.
-- Ticket-level Caddy sidecar probe during T04 returned 401 without session and 200 with signed headers after login.
-- Real iPhone PWA login-once walkthrough remains a manual environment exception; automated Mantle contract tests cover login handoff, session fetch, and iframe user payload.
+- Latest integrated feature validation before T16: `./develop test` — 349
+  passed, 3 skipped, 8 warnings; web test/build passed; targeted Settings lint
+  passed. Full web lint remains blocked by pre-existing non-FR-0004 lint debt
+  recorded in `tasks/ticket-progress.md`.
+- T16 ticket-branch validation: `./develop test` — 351 passed, 3 skipped, 10
+  warnings; `./develop web npm run test` — 15 files / 66 tests passed;
+  `./develop web npm run build` — passed; install-layout smoke passed.
+- T16 adds a stitched multi-user E2E proof: first admin setup, second user
+  creation, login as each user, hub verify/signing, and a generated Kindling
+  protected route seeing the active user's id, display name, and roles.
+- Real Pi/iPhone walkthrough remains a manual environment exception until the
+  parent finish-feature run has a Pi target available; automated coverage now
+  covers login handoff, session fetch, iframe user payload, and protected plugin
+  user switching.
 
 ## Deferred / follow-up
 
@@ -58,13 +77,15 @@ FR-0004 ships Hearth-owned identity as a built-in `hearth-users` plugin and rout
 
 ## Suggested next step
 
-Open and review the feature PR to `main`; after merge, refresh this closeout with the merge SHA and remove repo-root `CURRENT.md` from `main`.
+Merge `T-FR-0004-16` into `feat/FR-0004-centralized-users-auth`, run full
+feature validation, then rerun `finish-feature` only if every FR-0004 ticket row
+is TEST / DEV / VAL **done**.
 
 ## Options
 
 | Option | When |
 |--------|------|
-| Merge PR | Use when human review accepts the full centralized auth line. |
+| Hold PR #56 | Use until the multi-user T16 branch is merged and feature validation passes. |
 | Request changes | Use if real-device validation or operator UX wants another pass before `main`. |
 | Start FR-0005 | Use after PR review begins; FR-0005 remote-build work is already designed. |
 

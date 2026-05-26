@@ -1,18 +1,19 @@
 # FR-0004 — centralized users auth
 
-Branch: `feat/FR-0004-centralized-users-auth-T-FR-0004-15-admin-user-management`
+Branch: `feat/FR-0004-centralized-users-auth-T-FR-0004-16-multi-user-e2e-compliance`
 
-Worktree: `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-15-admin-user-management/`
+Worktree: `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-16-multi-user-e2e-compliance/`
 
 Status: finish-feature closeout is superseded by the multi-user correction. [PR #56](https://github.com/mcelhennyi/hearth/pull/56) is only a feature-branch preview until `T-FR-0004-11` through `T-FR-0004-16` land. Starting feature branch includes `T-FR-0004-02` through `T-FR-0004-10`.
 
 Current ticket branch:
 
-- `T-FR-0004-15` — Admin user management API and settings UI.
-- Phase: complete; ready to push and open ticket PR to `feat/FR-0004-centralized-users-auth`.
-- RED: `./develop test tests/builtin/test_hearth_users.py` failed with 4 expected admin API failures; `./develop web npm run test -- SettingsModal.test.tsx` failed with 2 expected Account UI failures.
-- DEV: admin user-management APIs and hub Settings Account tab implemented; focused backend and modal tests pass.
-- Scope: add failing API/UI tests for admin-only user management, implement hearth-users admin endpoints/UI, enforce final-admin safety, write management audit events, validate focused + broader slices.
+- `T-FR-0004-16` — Multi-user E2E and compliance changelog refresh.
+- Phase: VAL complete; ready to push and open ticket PR to `feat/FR-0004-centralized-users-auth`.
+- RED: `./develop test tests/api/test_multi_user_e2e.py tests/test_kindling_plugin_contract.py` failed as expected because the Kindling compliance changelog lacked the T16 multi-user migration entry. The new stitched E2E check already passed.
+- DEV: added the stitched first-admin/second-user/plugin identity E2E, dense Kindling multi-user migration guidance, Pi first-admin/later-user operator instructions, generated install README notes, and stale PR #56 closeout/handoff corrections.
+- Scope: final proof and documentation refresh only; no production code hooks were needed.
+- VAL: focused T16 checks passed (16 passed), full backend passed (351 passed, 3 skipped), web test/build passed, install-layout smoke passed, and `git diff --check` passed. Full web lint remains blocked by pre-existing non-T16 lint debt in dashboard edit, chrome/frame hooks, `ChromeSlot.tsx`, and `ThemeProvider.tsx`; no web source files were touched.
 
 Completed:
 
@@ -82,7 +83,7 @@ Latest T-FR-0004-11 validation:
 
 Next action:
 
-- Run `/identify-frontier` or `/develop-frontier` for `T-FR-0004-15`; `T-FR-0004-16` remains blocked until T15 is VAL-done. Do not treat PR #56 as feature-complete until `T-FR-0004-11` through `T-FR-0004-16` are done.
+- Push this ticket branch and open a PR to `feat/FR-0004-centralized-users-auth`. Do not run `finish-feature`; the parent orchestrator owns feature integration, feature validation, and closeout.
 
 Latest T-FR-0004-12 validation:
 

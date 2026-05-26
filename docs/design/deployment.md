@@ -100,8 +100,16 @@ This tree is the **bare-metal** layout: paths under `/opt`, `/etc`, and `/var` a
   secrets/               (mode 0600 — VAPID keys, auth bootstrap secrets, …)
 ```
 
-`hearth-users` may bootstrap the first local admin account from an optional ignored
-file at `var/hearth/secrets/hearth-users-default-password` (or
+`hearth-users` owns local identity. On a fresh install the operator opens
+`/hearth-users/login` to create the first admin account with username, display
+name, and password. The first admin receives `admin,user` roles, can add later
+local users from Hearth Settings, and cannot disable or demote the final enabled
+admin. Later users sign in through the same `/hearth-users/login` route; plugins
+continue to receive identity only from the gateway trust headers and Mantle
+`useUser()` messages.
+
+`hearth-users` may bootstrap the first local admin account from an optional
+ignored file at `var/hearth/secrets/hearth-users-default-password` (or
 `$HEARTH_USERS_BOOTSTRAP_PASSWORD_FILE`). The file is read only when no local
 user exists; it does not reset an existing password on restart. Multi-user
 management after first setup happens through the built-in users provider.

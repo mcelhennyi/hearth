@@ -6,7 +6,13 @@
 
 ## Resume status
 
-Implementation is no longer feature-complete after the 2026-05-26 multi-user correction. The first single-account slice is on **`feat/FR-0004-centralized-users-auth`** and [**PR #56**](https://github.com/mcelhennyi/hearth/pull/56), but closeout must wait for extension tickets **`T-FR-0004-11`…`T-FR-0004-16`**. The next frontier starts with **`T-FR-0004-11`**.
+Implementation was reopened by the 2026-05-26 multi-user correction. The first
+single-account slice is on **`feat/FR-0004-centralized-users-auth`** and
+[**PR #56**](https://github.com/mcelhennyi/hearth/pull/56), but that PR remains
+a preview until the multi-user extension tickets **`T-FR-0004-11`…`T-FR-0004-16`**
+are merged into the feature branch and parent `finish-feature` validation reruns.
+As of the T16 ticket branch, the remaining work is feature-branch merge,
+full-feature validation, and closeout.
 
 | Gate | Feature | Ticket(s) | What “done” means |
 |------|---------|-----------|-------------------|
