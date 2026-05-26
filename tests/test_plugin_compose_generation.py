@@ -71,11 +71,11 @@ services:
       HEARTH_USER_SIG_SECRET: compose-secret
       HEARTH_VAR_DIR: /var/hearth
     volumes:
-      - ../plugins/groceries:/app:ro
-      - ../var/plugins/groceries:/var/hearth/plugins/groceries
+      - ../../plugins/groceries:/app:ro
+      - ../../var/plugins/groceries:/var/hearth/plugins/groceries
   recipes:
     build:
-      context: ../plugins/recipes
+      context: ../../plugins/recipes
     command:
       - python
       - -m
@@ -91,8 +91,8 @@ services:
       HEARTH_USER_SIG_SECRET: compose-secret
       HEARTH_VAR_DIR: /var/hearth
     volumes:
-      - ../plugins/recipes:/app:ro
-      - ../var/plugins/recipes:/var/hearth/plugins/recipes
+      - ../../plugins/recipes:/app:ro
+      - ../../var/plugins/recipes:/var/hearth/plugins/recipes
 """
 
 
@@ -143,9 +143,9 @@ plugins:
     output = generate_plugin_compose(hearth).read_text(encoding="utf-8")
 
     assert "  hearth-users:" in output
-    assert "      - ../var/secrets:/var/hearth/secrets:ro" in output
+    assert "      - ../../var/secrets:/var/hearth/secrets:ro" in output
     groceries_block = output.split("  groceries:", 1)[1]
-    assert "../var/secrets:/var/hearth/secrets:ro" not in groceries_block
+    assert "../../var/secrets:/var/hearth/secrets:ro" not in groceries_block
 
 
 def test_generate_plugin_caddy_auth_gate_matches_trust_contract(tmp_path: Path) -> None:

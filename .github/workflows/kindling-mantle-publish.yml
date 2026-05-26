@@ -1,0 +1,53 @@
+# Publish @kindling/mantle to npm when tag kindling-mantle-vX.Y.Z is pushed (T-FR-0006-15).
+name: kindling-mantle publish
+
+on:
+  push:
+    tags:
+      - "kindling-mantle-v*"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/mantle
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Verify tag matches package.json version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/kindling-mantle-v}"
+          PKG="$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::Tag kindling-mantle-v${TAG} does not match package.json version ${PKG}"
+            exit 1
+          fi
+          echo "Publishing @kindling/mantle@${PKG}"
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: .
+
+      - name: Build and test
+        run: pnpm run test
+
+      - name: Publish to npm
+        run: npm publish --access=public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

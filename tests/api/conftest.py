@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from app.db import get_session
 from app.main import app
+from app import models_dashboard, models_user  # noqa: F401 — register ORM tables
 from app.models import Base
 
 # ---------------------------------------------------------------------------

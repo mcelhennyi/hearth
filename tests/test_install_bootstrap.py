@@ -127,11 +127,11 @@ def test_compose_up_invokes_docker(monkeypatch: pytest.MonkeyPatch, tmp_path: Pa
         "-f",
         "docker-compose.yml",
         "-f",
-        str(hearth / "compose" / "overrides" / "generated.plugins.yml"),
+        "overrides/generated.plugins.yml",
         "--project-name",
         "hearth",
         "--env-file",
-        str(hearth / "compose" / ".env"),
+        ".env",
         "up",
         "-d",
     ]

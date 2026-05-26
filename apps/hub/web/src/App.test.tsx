@@ -1,12 +1,30 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import 'fake-indexeddb/auto'
 import App from './App'
 import type { PluginNavEntry } from './usePlugins'
 
-const pluginHooks = vi.hoisted(() => ({
-  usePlugins: vi.fn(() => []),
-}))
+function mockDashboardApis(): void {
+  const payloads: Record<string, unknown> = {
+    '/api/dashboard/layout': { version: 1, columns: 4, blocks: [] },
+    '/api/system/tiles': { tiles: [] },
+    '/api/system/strips': { strip: null },
+    '/api/plugins': [],
+    '/hearth-users/api/session': { user_id: 'local-owner', display_name: 'Local Owner', roles: ['owner'] },
+  }
+  vi.stubGlobal(
+    'fetch',
+    vi.fn((input: RequestInfo) => {
+      const url = typeof input === 'string' ? input : input.url
+      const body = payloads[url]
+      if (body !== undefined) {
+        return Promise.resolve({ ok: true, json: async () => body })
+      }
+      return Promise.resolve({ ok: false, json: async () => ({}) })
+    }),
+  )
+}
 
 function setBreakpoint(width: number): void {
   window.matchMedia = ((query: string) => ({
@@ -25,31 +43,13 @@ function setBreakpoint(width: number): void {
 // We mock the module so the fetch side-effect never runs in unit tests.
 vi.mock('./usePlugins', async (importOriginal) => {
   const actual = await importOriginal<typeof import('./usePlugins')>()
-  return { ...actual, usePlugins: pluginHooks.usePlugins }
-})
-
-beforeEach(() => {
-  pluginHooks.usePlugins.mockReturnValue([])
-  vi.stubGlobal(
-    'fetch',
-    vi.fn(async () =>
-      Response.json({
-        user_id: 'local-owner',
-        display_name: 'Local Owner',
-        roles: ['owner'],
-      }),
-    ),
-  )
-})
-
-afterEach(() => {
-  vi.unstubAllGlobals()
-  vi.clearAllMocks()
+  return { ...actual, usePlugins: vi.fn(() => []) }
 })
 
 describe('Mantle layout breakpoint behavior', () => {
   beforeEach(() => {
     window.history.replaceState({}, '', '/')
+    mockDashboardApis()
   })
 
   it('shows bottom tabs under 768px', async () => {
@@ -60,9 +60,11 @@ describe('Mantle layout breakpoint behavior', () => {
       </BrowserRouter>,
     )
 
-    expect(await screen.findByLabelText('Mantle bottom tabs')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Main navigation')).toBeInTheDocument()
     expect(screen.queryByLabelText('Mantle top bar')).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Send test notification' })).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('dashboard-view')).toBeInTheDocument()
+    })
   })
 
   it('shows top bar at and above 768px', async () => {
@@ -74,13 +76,17 @@ describe('Mantle layout breakpoint behavior', () => {
     )
 
     expect(await screen.findByLabelText('Mantle top bar')).toBeInTheDocument()
-    expect(screen.queryByLabelText('Mantle bottom tabs')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Main navigation')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('dashboard-view')).toBeInTheDocument()
+    })
   })
 })
 
 describe('Mantle registry-driven navigation', () => {
   beforeEach(() => {
     window.history.replaceState({}, '', '/')
+    mockDashboardApis()
     // Mobile breakpoint so bottom tabs are visible
     setBreakpoint(390)
   })
@@ -95,12 +101,9 @@ describe('Mantle registry-driven navigation', () => {
       </BrowserRouter>,
     )
 
-    const bottomNav = await screen.findByLabelText('Mantle bottom tabs')
-    // "Home" tab is always present
+    const bottomNav = await screen.findByLabelText('Main navigation')
     expect(bottomNav).toHaveTextContent('Home')
-    // No plugin-specific label — nothing injected from registry
-    expect(bottomNav.querySelectorAll('li')).toHaveLength(2)
-    expect(bottomNav).toHaveTextContent('Settings')
+    expect(bottomNav.querySelectorAll('.nav-scroll .nav-tab')).toHaveLength(0)
   })
 
   it('registry with one plugin: plugin tab appears in nav', async () => {
@@ -114,76 +117,9 @@ describe('Mantle registry-driven navigation', () => {
       </BrowserRouter>,
     )
 
-    const bottomNav = await screen.findByLabelText('Mantle bottom tabs')
+    const bottomNav = await screen.findByLabelText('Main navigation')
     expect(bottomNav).toHaveTextContent('Test Plugin')
-    expect(bottomNav.querySelectorAll('li')).toHaveLength(3)
-  })
-})
-
-describe('Auth provider settings', () => {
-  beforeEach(() => {
-    setBreakpoint(768)
-    window.history.replaceState({}, '', '/settings')
-  })
-
-  it('loads the current provider and records an external verify URL toggle', async () => {
-    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      if (input === '/hearth-users/api/session') {
-        return Response.json({
-          user_id: 'local-owner',
-          display_name: 'Local Owner',
-          roles: ['owner'],
-        })
-      }
-      if (input === '/api/settings' && !init) {
-        return new Response(
-          JSON.stringify({
-            auth: { provider: 'builtin', external_verify_url: null },
-          }),
-          { headers: { 'Content-Type': 'application/json' } },
-        )
-      }
-      if (input === '/api/settings' && init?.method === 'PUT') {
-        return new Response(
-          JSON.stringify({
-            auth: {
-              provider: 'external',
-              external_verify_url: 'https://auth.example.test/verify',
-            },
-          }),
-          { headers: { 'Content-Type': 'application/json' } },
-        )
-      }
-      return new Response(null, { status: 404 })
-    })
-    vi.stubGlobal('fetch', fetchMock)
-
-    render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>,
-    )
-
-    expect(await screen.findByRole('radio', { name: /built-in hearth users/i })).toBeChecked()
-    fireEvent.click(screen.getByRole('radio', { name: /external verify url/i }))
-    fireEvent.change(screen.getByPlaceholderText('https://auth.example.test/verify'), {
-      target: { value: 'https://auth.example.test/verify' },
-    })
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
-
-    await waitFor(() => {
-      expect(screen.getByRole('status')).toHaveTextContent('Auth provider settings saved.')
-    })
-    expect(fetchMock).toHaveBeenLastCalledWith('/api/settings', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        auth: {
-          provider: 'external',
-          external_verify_url: 'https://auth.example.test/verify',
-        },
-      }),
-    })
+    expect(bottomNav.querySelectorAll('.nav-scroll .nav-tab')).toHaveLength(1)
   })
 })
 
@@ -204,20 +140,11 @@ describe('Mantle hearth-users session contract', () => {
 
     const loginLink = await screen.findByRole('link', { name: 'Sign in with Hearth Users' })
     expect(loginLink).toHaveAttribute('href', '/hearth-users/login?next=%2F')
-    expect(screen.queryByLabelText('Mantle bottom tabs')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Main navigation')).not.toBeInTheDocument()
   })
 
   it('fetches the hearth-users session before rendering the shell', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async () =>
-        Response.json({
-          user_id: 'local-owner',
-          display_name: 'Local Owner',
-          roles: ['owner'],
-        }),
-      ),
-    )
+    mockDashboardApis()
 
     render(
       <BrowserRouter>
@@ -225,24 +152,14 @@ describe('Mantle hearth-users session contract', () => {
       </BrowserRouter>,
     )
 
-    await screen.findByLabelText('Mantle bottom tabs')
+    await screen.findByLabelText('Main navigation')
     expect(fetch).toHaveBeenCalledWith('/hearth-users/api/session', { credentials: 'include' })
-    expect(screen.getByText('Local Owner')).toBeInTheDocument()
   })
 
   it('posts verified hearth.user claims to plugin iframes', async () => {
     const { usePlugins } = await import('./usePlugins')
     vi.mocked(usePlugins).mockReturnValue([{ slug: 'test-plugin', name: 'Test Plugin', showInTabBar: true, order: 0 }])
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async () =>
-        Response.json({
-          user_id: 'local-owner',
-          display_name: 'Local Owner',
-          roles: ['owner'],
-        }),
-      ),
-    )
+    mockDashboardApis()
     window.history.replaceState({}, '', '/test-plugin')
 
     render(

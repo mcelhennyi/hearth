@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock, patch
@@ -53,8 +54,8 @@ class TestKindlingNew:
         run_new("groceries-test", parent=tmp_path)
         tinder = tmp_path / "groceries-test" / "tinder.toml"
         assert tinder.is_file()
-        content = tinder.read_text()
-        assert 'slug = "groceries-test"' in content
+        content = tomllib.loads(tinder.read_text())
+        assert content["plugin"]["slug"] == "groceries-test"
 
     def test_new_creates_python_package(self, tmp_path: Path) -> None:
         run_new("groceries-test", parent=tmp_path)

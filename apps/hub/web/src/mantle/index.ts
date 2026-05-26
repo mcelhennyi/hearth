@@ -1,7 +1,7 @@
 export { isMantleEmbedMode } from './embedMode'
 export { PluginEmbedSurface } from './PluginEmbedSurface'
 export { PluginFrame } from './PluginFrame'
-export type { HearthUser, PluginFrameProps } from './PluginFrame'
+export type { PluginFrameProps } from './PluginFrame'
 export { InstallPrompt } from './InstallPrompt'
 export { MantleContext, useMantle, useMantleState } from './useMantle'
 export type { MantleContextValue } from './useMantle'

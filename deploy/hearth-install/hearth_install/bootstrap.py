@@ -76,11 +76,9 @@ def plan_bootstrap(
     else:
         lines.append("verify Docker Engine (docker info)")
         lines.append(
-            "run: docker compose "
-            f"-f {hearth / 'compose' / 'docker-compose.yml'} "
-            f"-f {hearth / 'compose' / 'overrides' / 'generated.plugins.yml'} "
-            "--project-name hearth --env-file "
-            f"{hearth / 'compose' / '.env'} up -d",
+            f"run: docker compose -f docker-compose.yml "
+            f"[-f overrides/generated.plugins.yml] --project-name hearth up -d "
+            f"(cwd {hearth / 'compose'})",
         )
     lines.append(
         "PATH: add hearth/bin to your shell profile, e.g. "
@@ -191,14 +189,14 @@ def run_compose_up(
 
     if dry_run:
         return 0
-    command = ["docker", "compose", "-f", str(compose_file.name)]
+    command = ["docker", "compose", "-f", compose_file.name]
     overrides = compose_file.parent / "overrides" / "generated.plugins.yml"
     if overrides.is_file():
-        command.extend(["-f", str(overrides)])
+        command.extend(["-f", "overrides/generated.plugins.yml"])
     env_file = compose_file.parent / ".env"
     command.extend(["--project-name", "hearth"])
     if env_file.is_file():
-        command.extend(["--env-file", str(env_file)])
+        command.extend(["--env-file", ".env"])
     command.extend(["up", "-d"])
     proc = runner(
         command,
