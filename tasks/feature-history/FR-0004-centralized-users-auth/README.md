@@ -1,12 +1,12 @@
 # FR-0004 — Centralized users auth (built-in plugin + gateway)
 
-**Status:** `in-progress`
+**Status:** `done`
 **Allocated:** 2026-05-17
 **Registry:** [`REGISTRY.md`](../REGISTRY.md)
 
 ## Resume status
 
-Implementation was parked until both gates below were **VAL-done** in [`tasks/ticket-progress.md`](../../ticket-progress.md). They are now satisfied, so FR-0004 may resume on **`feat/FR-0004-centralized-users-auth`** with **`T-FR-0004-02`** as the next implementation ticket after the 2026-05-26 design audit.
+Implementation is feature-complete on **`feat/FR-0004-centralized-users-auth`** as of 2026-05-26. The feature PR to **`main`** is pending. Closeout: [`90-closeout.md`](90-closeout.md).
 
 | Gate | Feature | Ticket(s) | What “done” means |
 |------|---------|-----------|-------------------|
@@ -30,6 +30,7 @@ Move login, session, and authorization for every plugin behind a **built-in Hear
 | Tickets (draft DAG) | [`20-tickets-dag.md`](20-tickets-dag.md) |
 | Tickets (canonical) | [`tickets.md`](tickets.md) |
 | Diary | [`serial-diary.md`](serial-diary.md) |
+| Closeout | [`90-closeout.md`](90-closeout.md) |
 
 ## Relationship to other FRs
 

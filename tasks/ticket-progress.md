@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0004-10` |
-| **Active phase** | TEST → DEV → VAL |
-| **Branch / worktree** | `feat/FR-0004-centralized-users-auth` @ `.worktrees/FR-0004-centralized-users-auth/feature/`; next worktree `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-10-plugin-trust-e2e/` |
-| **Session status** | `complete` |
-| **Next agent should** | Run `finish-feature` closeout for FR-0004: write `90-closeout.md`, update registry/current focus, and open the feature PR to `main`. |
+| **Active ticket** | `FR-0005` design tickets |
+| **Active phase** | planning |
+| **Branch / worktree** | default branch for design or a future `feat/FR-0005-remote-build-pi-deploy` worktree |
+| **Session status** | `handoff` |
+| **Next agent should** | Review/merge the pending FR-0004 feature PR, then start FR-0005 with `T-FR-0005-01` when ready. |
 
 ### Parallel streams
 
@@ -16,7 +16,7 @@
 
 **Kindling FR-0001** — merged [kindling PR #1](https://github.com/mcelhennyi/kindling/pull/1) @ `f64b6a1`; hearth submodule bumped on `feat/FR-0006-design-language` @ `df20872`.
 
-**FR-0004** feature-complete — `T-FR-0004-02` through `T-FR-0004-10` merged into `feat/FR-0004-centralized-users-auth`; finish-feature closeout is next.
+**FR-0004** feature-complete — `T-FR-0004-02` through `T-FR-0004-10` merged into `feat/FR-0004-centralized-users-auth`; PR to **`main`** pending. Closeout: [`FR-0004-centralized-users-auth/90-closeout.md`](feature-history/FR-0004-centralized-users-auth/90-closeout.md).
 
 ---
 
@@ -89,5 +89,5 @@
 
 1. **FR-0003** is **closed** on **`main`** — see [`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md).
 2. **FR-0001** is **done** on **`main`** — merged [PR #30](https://github.com/mcelhennyi/hearth/pull/30) @ `0811ed2`; [`90-closeout.md`](feature-history/FR-0001-hearth-platform/90-closeout.md).
-3. **FR-0004** is **`in-progress`** — staff **`T-FR-0004-10`** next, then run feature closeout if the §2d gate passes. **FR-0005** is **`design`** — start with [**Remote-build profile**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd) ([`T-FR-0005-01`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd)), then [**`hearth pwa publish`**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi) ([`T-FR-0005-02`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi)); home Pi **`192.168.1.62`**. See [`REGISTRY.md`](feature-history/REGISTRY.md).
+3. **FR-0004** is **feature-complete** with PR to **`main`** pending. **FR-0005** is **`design`** — start with [**Remote-build profile**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd) ([`T-FR-0005-01`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd)), then [**`hearth pwa publish`**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi) ([`T-FR-0005-02`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi)); home Pi **`192.168.1.62`**. See [`REGISTRY.md`](feature-history/REGISTRY.md).
 4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
