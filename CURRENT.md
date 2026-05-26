@@ -8,7 +8,7 @@ Status: finish-feature closeout is superseded by the multi-user correction. [PR 
 
 Current ticket branch:
 
-- `T-FR-0004-11` — Multi-user design amendment and migration plan.
+- `T-FR-0004-12` — Users plugin: multi-user schema, migration, and auth API. Ticket branch is complete and pushed as PR #60, awaiting merge into `feat/FR-0004-centralized-users-auth`.
 
 Completed:
 
@@ -75,4 +75,4 @@ Latest T-FR-0004-11 validation:
 
 Next action:
 
-- Run `/develop-frontier` for `T-FR-0004-12` after this branch is reviewed/merged into `feat/FR-0004-centralized-users-auth`.
+- Review/merge PR #60 (`T-FR-0004-12`) into `feat/FR-0004-centralized-users-auth`, then rerun `/identify-frontier`; the expected next FR-0004 wave is `T-FR-0004-13` and `T-FR-0004-14` once T12 is VAL-done on the feature branch.
