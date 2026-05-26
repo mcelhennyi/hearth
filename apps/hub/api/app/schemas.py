@@ -47,6 +47,7 @@ class PluginResponse(BaseModel):
     version: str
     kind: str
     state: str
+    builtin: bool = False
     installed_at: datetime
 
     model_config = {"from_attributes": True}

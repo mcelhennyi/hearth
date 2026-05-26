@@ -13,7 +13,7 @@ from __future__ import annotations
 import re
 from datetime import UTC, datetime
 
-from sqlalchemy import DateTime, String, Text
+from sqlalchemy import Boolean, DateTime, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, validates
 
 SLUG_RE = re.compile(r"^[a-z][a-z0-9-]{0,31}$")
@@ -43,6 +43,7 @@ class Plugin(Base):
     version: Mapped[str] = mapped_column(String(64), nullable=False)
     kind: Mapped[str] = mapped_column(String(16), nullable=False, default="app")
     state: Mapped[str] = mapped_column(String(16), nullable=False, default="disabled")
+    builtin: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     installed_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

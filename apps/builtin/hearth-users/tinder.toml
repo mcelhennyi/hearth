@@ -1,0 +1,21 @@
+[plugin]
+slug = "hearth-users"
+name = "Hearth Users"
+version = "0.1.0"
+hearth_min = "0.1.0"
+kind = "app"
+builtin = true
+description = "Built-in Hearth identity provider."
+
+[entrypoint]
+backend = { kind = "python", module = "hearth_users.app:create_app", port_env = "HEARTH_PLUGIN_PORT" }
+ui = { kind = "static", path = "web/dist" }
+
+[permissions]
+network = "loopback"
+
+[ui.nav]
+label = "Users"
+icon = "user-round"
+order = 5
+show_in_tab_bar = false

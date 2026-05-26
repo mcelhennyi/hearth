@@ -31,5 +31,6 @@ __pycache__/
 *.log
 
 # Runtime push state / generated VAPID secrets
+var/hearth/hearth.db
 var/hearth/push-subscriptions.json
 var/hearth/secrets/

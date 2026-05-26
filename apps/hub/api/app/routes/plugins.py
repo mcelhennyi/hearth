@@ -47,6 +47,7 @@ async def install_plugin(
     name = body.name
     version = body.version
     kind = body.kind
+    builtin = False
 
     if body.source is not None:
         manifest, errors = load_tinder(resolve_plugin_source_path(body.source))
@@ -66,6 +67,7 @@ async def install_plugin(
             name = manifest.plugin.name
             version = manifest.plugin.version
             kind = manifest.plugin.kind  # type: ignore[assignment]
+            builtin = manifest.plugin.builtin
 
     if not slug or not name or not version:
         raise HTTPException(
@@ -82,7 +84,8 @@ async def install_plugin(
         name=name,
         version=version,
         kind=kind,
-        state="disabled",
+        state="enabled" if builtin else "disabled",
+        builtin=builtin,
         installed_at=datetime.now(UTC),
     )
     session.add(plugin)
@@ -96,6 +99,7 @@ async def install_plugin(
         version=plugin.version,
         kind=plugin.kind,
         state=plugin.state,
+        builtin=plugin.builtin,
         installed_at=plugin.installed_at,
         validation_errors=validation_errors,
     )
@@ -150,6 +154,11 @@ async def uninstall_plugin(
     plugin = await session.get(Plugin, slug)
     if plugin is None:
         raise HTTPException(status_code=404, detail=f"Plugin '{slug}' not found.")
+    if plugin.builtin:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Plugin '{slug}' is built-in and cannot be uninstalled.",
+        )
 
     plugin.state = "uninstalled"
     session.add(AuditLog(action="uninstall", plugin_slug=slug))
