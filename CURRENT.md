@@ -1,43 +1,23 @@
-# FR-0004 / T-FR-0004-02 — hearth-users scaffold
+# FR-0004 — centralized users auth
 
-Branch: `feat/FR-0004-centralized-users-auth-T-FR-0004-02-hearth-users-scaffold`
+Branch: `feat/FR-0004-centralized-users-auth`
 
-Worktree: `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-02-hearth-users-scaffold/`
+Worktree: `.worktrees/FR-0004-centralized-users-auth/feature/`
 
-Feature base: merged `origin/feat/FR-0004-centralized-users-auth` at `5f461e4` (includes `.skeleton` `5a007a8` and the downstream compliance changelog rule in `docs/ai-context.md`).
+Status: `T-FR-0004-02` is merged into the feature branch. Skeleton sync is applied at `.skeleton` `5a007a8` and root `docs/ai-context.md` includes the downstream compliance changelog rule.
 
-Phase: VAL complete; ready to commit.
+Latest validation:
 
-Scope:
+- `./develop test tests/tinder/test_loader.py::TestValidManifest::test_hearth_users_builtin_manifest_loads tests/api/test_builtins.py tests/builtin/test_hearth_users.py` — 5 passed.
+- `./develop test` — 243 passed, 3 skipped, 1 warning.
 
-- Add the built-in `apps/builtin/hearth-users/` scaffold.
-- Validate `[plugin].builtin = true` in Tinder.
-- Register `hearth-users` as a built-in on first hub boot.
-- Keep built-ins from normal uninstall.
-- Make dev Compose expose `/hearth-users/` where feasible.
+Completed:
 
-TEST:
+- `T-FR-0004-01` — design amendments and 2026-05-26 audit.
+- `T-FR-0004-02` — built-in `hearth-users` scaffold, built-in registry support, Tinder `builtin` schema, uninstall guard, dev Caddy/Compose route, tests.
 
-- Added RED tests for the hearth-users Tinder manifest, built-in registration, uninstall guard, and `/health` plus placeholder UI.
-- Initial targeted `./develop test tests/tinder/test_loader.py::TestValidManifest::test_hearth_users_builtin_manifest_loads tests/api/test_builtins.py tests/builtin/test_hearth_users.py` failed at collection because `app.builtins` was not implemented yet.
+Next frontier:
 
-DEV:
-
-- Added `apps/builtin/hearth-users/` with a FastAPI `create_app`, `GET /health`, and Vite placeholder login UI.
-- Added `[plugin].builtin = true` schema support, registry storage, first-boot built-in registration, and uninstall protection.
-- Added dev Compose/Caddy wiring for `/hearth-users/`.
-- Targeted tests pass: 5 passed via `./develop test`.
-
-Next:
-
-- Commit and push this ticket branch.
-- Open a ticket PR against `feat/FR-0004-centralized-users-auth` if GitHub auth/network allows it.
-
-VAL:
-
-- Merged `origin/feat/FR-0004-centralized-users-auth` at `5f461e4`; conflict was limited to `CURRENT.md`.
-- `./develop test tests/tinder/test_loader.py::TestValidManifest::test_hearth_users_builtin_manifest_loads tests/api/test_builtins.py tests/builtin/test_hearth_users.py` passes: 5 tests.
-- `./develop test` passes: 243 passed, 3 skipped.
-- Dev Compose smoke passes through Caddy:
-  - `https://hearth.home.arpa/hearth-users/` returns HTTP 200 placeholder login HTML.
-  - `https://hearth.home.arpa/hearth-users/health` returns HTTP 200 `{"ok":true,"service":"hearth-users"}`.
+- `T-FR-0004-03` — Users plugin: password, session, verify API.
+- Ticket branch suggestion: `feat/FR-0004-centralized-users-auth-T-FR-0004-03-users-session-verify`.
+- Ticket worktree suggestion: `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-03-users-session-verify/`.
