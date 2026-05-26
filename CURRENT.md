@@ -1,14 +1,14 @@
 # FR-0004 — centralized users auth
 
-Branch: `feat/FR-0004-centralized-users-auth-T-FR-0004-13-first-admin-login-ui`
+Branch: `feat/FR-0004-centralized-users-auth`
 
-Worktree: `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-13-first-admin-login-ui/`
+Worktree: `.worktrees/FR-0004-centralized-users-auth/feature/`
 
 Status: finish-feature closeout is superseded by the multi-user correction. [PR #56](https://github.com/mcelhennyi/hearth/pull/56) is only a feature-branch preview until `T-FR-0004-11` through `T-FR-0004-16` land. Starting feature branch includes `T-FR-0004-02` through `T-FR-0004-10`.
 
 Current ticket branch:
 
-- `T-FR-0004-13` — Hearth Users UI: first admin setup and username login. TEST/DEV/VAL complete. RED coverage first failed on prefixed `/hearth-users/...` endpoint wiring and the static placeholder UI; implementation now provides prefix-aware setup/login routes and real bundled provider UI.
+- `T-FR-0004-15` — Admin user management API and settings UI. Ready for the next frontier after `T-FR-0004-13` and `T-FR-0004-14` were merged.
 
 Completed:
 
@@ -24,6 +24,8 @@ Completed:
 - `T-FR-0004-10` — capstone gateway identity contract: hub verify signs identity for the public plugin URI, Caddy passes original method/URI to plugins, and a generated Kindling plugin rejects direct calls but accepts verified gateway headers.
 - `T-FR-0004-11` — multi-user design/migration amendment: account schema, first-admin setup semantics, migration from the old local account, final-admin safety, classified single-user statements, and global DAG exposure for T12-T16.
 - `T-FR-0004-12` — users plugin multi-user implementation: SQLite migration from the old `local` row, opaque first-admin ids for new setup, username/password login, stored user claims in sessions/verify/Spark/audit, disabled-user fail-closed checks, and bootstrap password file compatibility as `local` / `Local user` admin.
+- `T-FR-0004-13` — first-admin setup/login UI: prefix-aware `/hearth-users/...` setup and login routes, username/display name/password setup form, username/password login form, local-only redirect handling, and clear duplicate/disabled/wrong-password/lockout errors.
+- `T-FR-0004-14` — real-user claim plumbing: two-user contract coverage across hub verify, Spark/session/audit, Mantle shell postMessage, `@kindling/mantle useUser()`, and Kindling trust paths; `@kindling/mantle` `UserInfo` exposes `roles?: string[]`.
 
 Latest T-FR-0004-08 validation:
 
@@ -76,7 +78,7 @@ Latest T-FR-0004-11 validation:
 
 Next action:
 
-- Continue the multi-user wave with `T-FR-0004-13` / `T-FR-0004-14` as the dependency graph allows.
+- Run `/identify-frontier` or `/develop-frontier` for `T-FR-0004-15`; `T-FR-0004-16` remains blocked until T15 is VAL-done. Do not treat PR #56 as feature-complete until `T-FR-0004-11` through `T-FR-0004-16` are done.
 
 Latest T-FR-0004-12 validation:
 
@@ -95,6 +97,14 @@ Latest T-FR-0004-13 validation:
 - `git diff --check` — passed.
 - Manual/Pi browser exception: no Pi or real browser target was available in this session; automated coverage verifies the HTML/API/static UI contract and local-only `next` handling.
 
-Next action:
+Latest T-FR-0004-14 validation:
 
-- Open the T13 PR against `feat/FR-0004-centralized-users-auth`; keep T14 isolated in its separate worktree.
+- RED: `./develop web sh -lc 'corepack enable && cd /workspace && corepack pnpm --filter @kindling/mantle test'` failed before DEV because `UserInfo` did not expose `roles?: string[]`.
+- `./develop test tests/builtin/test_hearth_users.py tests/api/test_auth_verify_alias.py tests/api/test_gateway_identity_contract.py tests/test_kindling_plugin_contract.py tests/spark/test_broker.py tests/proxy/test_caddy.py` — 83 passed, 1 skipped, 8 warnings.
+- `./develop web npm run test -- App.test.tsx` — 9 passed.
+- `./develop web sh -lc 'corepack enable && cd /workspace && corepack pnpm --filter @kindling/mantle test'` — 38 passed.
+- `./develop web npm run test` — 64 passed.
+- `./develop web npm run build` — passed.
+- `./develop web npx eslint src/App.test.tsx` — passed.
+- `git diff --check` — passed.
+- `./develop web npm run lint` — blocked by pre-existing non-T14 lint errors in dashboard/edit, shell chrome/frame hooks, SettingsContext, and ThemeProvider.

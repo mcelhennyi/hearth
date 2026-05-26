@@ -69,4 +69,10 @@ describe("@kindling/mantle package scaffold", () => {
     };
     expect(sample.kind).toBe("button");
   });
+
+  it("UserInfo type includes Hearth roles", () => {
+    const source = readFileSync(join(pkgRoot, "src", "types.ts"), "utf8");
+
+    expect(source).toContain("roles?: string[]");
+  });
 });

@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0004-13` Hearth Users UI: first admin setup and username login; `T-FR-0004-14` Session, Spark, gateway, and Mantle claims use real users |
+| **Active ticket** | `T-FR-0004-15` Admin user management API and settings UI |
 | **Active phase** | TEST → DEV → VAL |
-| **Branch / worktree** | `feat/FR-0004-centralized-users-auth` @ `.worktrees/FR-0004-centralized-users-auth/feature/`; child worktrees `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-13-first-admin-login-ui/` and `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-14-real-user-claims/` |
+| **Branch / worktree** | `feat/FR-0004-centralized-users-auth` @ `.worktrees/FR-0004-centralized-users-auth/feature/`; next child worktree `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-15-admin-user-management/` |
 | **Session status** | `developing` |
-| **Next agent should** | Run `T-FR-0004-13` and `T-FR-0004-14` in parallel child worktrees, update only owned progress rows, push ticket branches, and merge back to `feat/FR-0004-centralized-users-auth`. Do not treat PR #56 as feature-complete until `T-FR-0004-11` through `T-FR-0004-16` are done. |
+| **Next agent should** | Run `T-FR-0004-15` in its child worktree, update only that progress row, push the ticket branch, and merge back to `feat/FR-0004-centralized-users-auth`. Do not treat PR #56 as feature-complete until `T-FR-0004-11` through `T-FR-0004-16` are done. |
 
 ### Parallel streams
 
@@ -65,7 +65,7 @@
 | T-FR-0004-11 | Multi-user design amendment and migration plan | done | done | done | `FR-0004` multi-user extension. Design/migration amendment complete; global DAG exposes T12-T16. |
 | T-FR-0004-12 | Users plugin: multi-user schema, migration, and auth API | done | done | done | `FR-0004` multi-user extension. Multi-user users schema/migration, first-admin setup, username/password login, disabled-user fail-closed session checks, bootstrap admin compatibility, and stored claims/audit/session coverage. Validation: focused users 23 passed; adjacent auth/Spark slice 55 passed, 2 warnings. |
 | T-FR-0004-13 | Hearth Users UI: first admin setup and username login | done | done | done | `FR-0004` multi-user extension. First-admin setup/login UI now uses username/display name/password, existing-user login uses username/password, `/hearth-users/` prefixed routes post local-only JSON endpoints, and clear duplicate/disabled/wrong-password/lockout errors are covered. Validation: RED focused users suite failed as expected; focused users 27 passed; adjacent auth/Spark slice 59 passed, 3 warnings; full `./develop test` 341 passed, 3 skipped, 4 warnings; `git diff --check` passed. Real Pi/browser walkthrough documented as manual exception. |
-| T-FR-0004-14 | Session, Spark, gateway, and Mantle claims use real users | — | — | — | `FR-0004` multi-user extension. Deps: T-FR-0004-12. |
+| T-FR-0004-14 | Session, Spark, gateway, and Mantle claims use real users | done | done | done | `FR-0004` multi-user extension. Cross-contract real-user claims coverage added for users session/verify/Spark/audit, hub verify signing, gateway/Kindling trust, Mantle shell postMessage, and `@kindling/mantle useUser()` roles. Validation: focused backend 83 passed, 1 skipped; web 64 passed; web build passed; `@kindling/mantle` 38 passed; targeted App lint and `git diff --check` passed. Full web lint is blocked by pre-existing non-T14 lint errors in dashboard/edit, shell chrome/frame hooks, SettingsContext, and ThemeProvider. |
 | T-FR-0004-15 | Admin user management API and settings UI | — | — | — | `FR-0004` multi-user extension. Deps: T-FR-0004-12, T-FR-0004-14. |
 | T-FR-0004-16 | Multi-user E2E and compliance changelog refresh | — | — | — | `FR-0004` multi-user extension. Deps: T-FR-0004-13, T-FR-0004-14, T-FR-0004-15. |
 | T-FR-0005-01 | Remote-build profile in deployment.md | — | — | — | `FR-0005` **design**. |

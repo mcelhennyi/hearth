@@ -443,6 +443,69 @@ def test_spark_session_current_returns_claims_for_session_token(
     }
 
 
+def test_sessions_spark_and_audit_distinguish_multiple_users(
+    hearth_users: object, tmp_path: Path
+) -> None:
+    audit_log_path = tmp_path / "auth-session.jsonl"
+    store = hearth_users.UsersStore(tmp_path)
+    ada = store.create_user(
+        username="ada",
+        display_name="Ada Lovelace",
+        password="ada-password",
+        roles=["admin", "user"],
+    )
+    grace = store.create_user(
+        username="grace",
+        display_name="Grace Hopper",
+        password="grace-password",
+        roles=["user"],
+    )
+    ada_client = _client(hearth_users, tmp_path, audit_log_path)
+    grace_client = _client(hearth_users, tmp_path, audit_log_path)
+
+    ada_login = ada_client.post("/login", json={"username": "ada", "password": "ada-password"})
+    grace_login = grace_client.post(
+        "/login", json={"username": "grace", "password": "grace-password"}
+    )
+    ada_session = ada_client.get("/api/session")
+    grace_session = grace_client.get("/api/session")
+    ada_verify = ada_client.get("/api/verify")
+    grace_verify = grace_client.get("/api/verify")
+    ada_token = ada_login.cookies.get("hearth_session")
+    grace_token = grace_login.cookies.get("hearth_session")
+
+    assert ada_login.status_code == 200
+    assert grace_login.status_code == 200
+    assert ada_session.json() == ada
+    assert grace_session.json() == grace
+    assert ada_verify.json() == ada
+    assert grace_verify.json() == grace
+    assert ada_token and grace_token and ada_token != grace_token
+    assert hearth_users.spark_session_current(store, {"session_token": ada_token}) == {
+        "authenticated": True,
+        **ada,
+    }
+    assert hearth_users.spark_session_current(store, {"session_token": grace_token}) == {
+        "authenticated": True,
+        **grace,
+    }
+
+    grace_client.post("/logout")
+    records = [json.loads(line) for line in audit_log_path.read_text().splitlines()]
+    login_records = [record for record in records if record["action"] == "auth.login"]
+    logout_records = [record for record in records if record["action"] == "auth.logout"]
+    assert [record["topic"] for record in login_records] == [
+        "hearth-users.session.login",
+        "hearth-users.session.login",
+    ]
+    assert [record["user_id"] for record in login_records] == [
+        ada["user_id"],
+        grace["user_id"],
+    ]
+    assert logout_records[-1]["topic"] == "hearth-users.session.logout"
+    assert logout_records[-1]["user_id"] == grace["user_id"]
+
+
 def test_spark_session_current_returns_unauthenticated_without_session(
     hearth_users: object, tmp_path: Path
 ) -> None:

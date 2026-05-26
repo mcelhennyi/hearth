@@ -24,6 +24,7 @@ export interface ThemeTokens {
 export interface UserInfo {
   id: string;
   name?: string;
+  roles?: string[];
   avatarUrl?: string;
 }
 

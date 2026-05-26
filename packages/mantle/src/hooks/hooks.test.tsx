@@ -55,12 +55,18 @@ describe("mantle hooks", () => {
       wrapper: wrapper(bridge),
     });
 
-    deliverFromShell({ type: "hearth.user", user: { id: "u1", name: "Ada" } });
-    await waitFor(() => expect(result.current?.name).toBe("Ada"));
+    deliverFromShell({
+      type: "hearth.user",
+      user: { id: "user_ada_123", name: "Ada Lovelace", roles: ["admin", "user"] },
+    });
+    await waitFor(() => expect(result.current?.name).toBe("Ada Lovelace"));
+    expect(result.current?.id).toBe("user_ada_123");
+    expect(result.current?.name).toBe("Ada Lovelace");
+    expect(result.current?.roles).toEqual(["admin", "user"]);
 
     unmount();
     deliverFromShell({ type: "hearth.user", user: null });
-    expect(result.current?.name).toBe("Ada");
+    expect(result.current?.name).toBe("Ada Lovelace");
     bridge.destroy();
   });
 
