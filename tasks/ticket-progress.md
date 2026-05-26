@@ -57,7 +57,7 @@
 | T-FR-0004-03 | Users plugin: password, session, verify API | done | done | done | `FR-0004`. Plugin-owned SQLite, Argon2id setup, secure session cookie, login/logout, `/api/session`, and `/api/verify` claims implemented. Validation: `./develop test` 251 passed, 3 skipped; focused login-cookie/verify vectors 2 passed. PR #48. |
 | T-FR-0004-04 | Hub auth verify alias and provider settings | — | — | — | `FR-0004`. Deps: T-FR-0004-03. |
 | T-FR-0004-05 | Caddy auth_request and header injection | — | — | — | `FR-0004`. Deps: T-FR-0004-04. |
-| T-FR-0004-06 | Spark session capabilities and builtin registry rules | — | — | — | `FR-0004`. Deps: T-FR-0004-03. |
+| T-FR-0004-06 | Spark session capabilities and builtin registry rules | done | done | done | `FR-0004`. Spark `session.current` works for `hub` via permission-checked local handler; `hearth-users` declares session capability/events, auth/session audit JSONL, and builtin disable/uninstall are rejected pending T04 external-provider settings. Validation: `./develop test` 257 passed, 3 skipped. |
 | T-FR-0004-07 | Kindling template: trust middleware and no local login | — | — | — | `FR-0004`; every Kindling change must update child-repo compliance changelog. Deps: T-FR-0004-01, T-FR-0004-04. |
 | T-FR-0004-08 | Mantle shell: login via hearth-users and useUser contract | — | — | — | `FR-0004`. Deps: T-FR-0004-03, T-FR-0004-05. |
 | T-FR-0004-09 | External auth provider stub and operator settings UI | — | — | — | `FR-0004`. Deps: T-FR-0004-04. |

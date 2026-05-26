@@ -137,6 +137,14 @@ async def disable_plugin(
     plugin = await session.get(Plugin, slug)
     if plugin is None:
         raise HTTPException(status_code=404, detail=f"Plugin '{slug}' not found.")
+    if plugin.builtin:
+        raise HTTPException(
+            status_code=403,
+            detail=(
+                f"Plugin '{slug}' is built-in and cannot be disabled until an "
+                "external auth provider is configured and healthy."
+            ),
+        )
 
     plugin.state = "disabled"
     session.add(AuditLog(action="disable", plugin_slug=slug))

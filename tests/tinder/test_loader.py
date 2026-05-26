@@ -59,6 +59,9 @@ class TestValidManifest:
         assert manifest.plugin.slug == "hearth-users"
         assert manifest.plugin.builtin is True
         assert manifest.entrypoint.backend.module == "hearth_users.app:create_app"
+        assert manifest.capabilities["session"].methods == ["current"]
+        assert manifest.capabilities["session"].events == ["login", "logout"]
+        assert "hearth-users.*" in manifest.permissions.spark_publish
 
 
 class TestSlugValidation:

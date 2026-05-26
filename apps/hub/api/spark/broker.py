@@ -14,10 +14,12 @@ Phase 2 will add cross-host transport (Ember) without changing the client API.
 from __future__ import annotations
 
 import asyncio
+import inspect
 import json
 import logging
 import os
 import time
+from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Any
 
@@ -33,6 +35,8 @@ from spark.protocol import make_error, new_id, read_frame, write_frame
 logger = logging.getLogger(__name__)
 
 DEFAULT_TIMEOUT_MS = 5000
+
+SparkMethodHandler = Callable[[dict[str, Any]], dict[str, Any] | Awaitable[dict[str, Any]]]
 
 
 class _Connection:
@@ -67,12 +71,23 @@ class SparkBroker:
         self._connections: dict[str, _Connection] = {}
         # request id → asyncio.Future for pending calls
         self._pending: dict[str, asyncio.Future[dict[str, Any]]] = {}
+        # (slug, method) → in-process handler for hub-owned/built-in Spark surfaces
+        self._local_methods: dict[tuple[str, str], SparkMethodHandler] = {}
         self._server: asyncio.AbstractServer | None = None
         self._log_fh: Any = None
 
     def register_plugin(self, slug: str, perm: PluginPermissions) -> None:
         """Pre-register a plugin's permissions (called before it connects)."""
         self._permissions[slug] = perm
+
+    def register_method(self, slug: str, method: str, handler: SparkMethodHandler) -> None:
+        """Register an in-process Spark method handler.
+
+        Built-in platform capabilities can live in the hub process before they
+        have a long-running plugin socket client. Broker permission checks still
+        apply before the handler is invoked.
+        """
+        self._local_methods[(slug, method)] = handler
 
     async def serve_forever(self) -> None:
         sock = str(self._sock_path)
@@ -158,6 +173,11 @@ class SparkBroker:
         target_slug = frame.get("to", "")
         method = frame.get("method", "")
         timeout_ms = frame.get("timeout_ms", DEFAULT_TIMEOUT_MS)
+        local_handler = self._local_methods.get((target_slug, method))
+
+        if local_handler is not None:
+            await self._handle_local_call(frame, conn, perm, req_id, t0, local_handler)
+            return
 
         if target_slug not in self._connections:
             err = make_error(req_id, "UNKNOWN_PLUGIN", f"plugin '{target_slug}' not connected")
@@ -189,6 +209,64 @@ class SparkBroker:
             err = make_error(req_id, "TIMEOUT", tmsg)
             await write_frame(conn.writer, err)
             self._audit(frame, ok=False, latency_ms=(time.time() - t0) * 1000)
+
+    async def _handle_local_call(
+        self,
+        frame: dict[str, Any],
+        conn: _Connection,
+        perm: PluginPermissions,
+        req_id: str,
+        t0: float,
+        handler: SparkMethodHandler,
+    ) -> None:
+        target_slug = frame.get("to", "")
+        method = frame.get("method", "")
+
+        if not can_call(perm, target_slug, method):
+            msg = f"not allowed to call {target_slug}.{method}"
+            err = make_error(req_id, "PERMISSION_DENIED", msg)
+            await write_frame(conn.writer, err)
+            self._audit(
+                frame,
+                ok=False,
+                latency_ms=(time.time() - t0) * 1000,
+                local_handler=True,
+            )
+            return
+
+        params = frame.get("params", frame.get("body", {}))
+        if not isinstance(params, dict):
+            err = make_error(req_id, "INVALID_BODY", "Spark method params must be an object.")
+            await write_frame(conn.writer, err)
+            self._audit(
+                frame,
+                ok=False,
+                latency_ms=(time.time() - t0) * 1000,
+                local_handler=True,
+            )
+            return
+
+        try:
+            result = handler(params)
+            if inspect.isawaitable(result):
+                result = await result
+            await write_frame(conn.writer, {"v": 1, "id": req_id, "kind": "reply", "result": result})
+            self._audit(
+                frame,
+                ok=True,
+                latency_ms=(time.time() - t0) * 1000,
+                local_handler=True,
+            )
+        except Exception:
+            logger.exception("Spark local method failed: %s.%s", target_slug, method)
+            err = make_error(req_id, "INTERNAL", f"local method failed: {target_slug}.{method}")
+            await write_frame(conn.writer, err)
+            self._audit(
+                frame,
+                ok=False,
+                latency_ms=(time.time() - t0) * 1000,
+                local_handler=True,
+            )
 
     async def _handle_reply(self, frame: dict[str, Any], req_id: str, t0: float) -> None:
         fut = self._pending.pop(req_id, None)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sqlite3
 from pathlib import Path
 from unittest.mock import patch
@@ -31,8 +32,11 @@ def hearth_users() -> object:
     module._lockout.clear()
 
 
-def _client(module: object, data_dir: Path) -> TestClient:
-    return TestClient(module.create_app(data_dir=data_dir), base_url="https://testserver")
+def _client(module: object, data_dir: Path, audit_log_path: Path | None = None) -> TestClient:
+    kwargs = {"data_dir": data_dir}
+    if audit_log_path is not None:
+        kwargs["audit_log_path"] = audit_log_path
+    return TestClient(module.create_app(**kwargs), base_url="https://testserver")
 
 
 def test_hearth_users_health(tmp_path: Path) -> None:
@@ -106,6 +110,33 @@ def test_login_sets_session_cookie_and_session_returns_claims(
     }
 
 
+def test_spark_session_current_returns_claims_for_session_token(
+    hearth_users: object, tmp_path: Path
+) -> None:
+    store = hearth_users.UsersStore(tmp_path)
+    store.create_user("current-password")
+    token = store.create_session("local")
+
+    result = hearth_users.spark_session_current(store, {"session_token": token})
+
+    assert result == {
+        "authenticated": True,
+        "user_id": "local",
+        "display_name": "Local user",
+        "roles": ["user"],
+    }
+
+
+def test_spark_session_current_returns_unauthenticated_without_session(
+    hearth_users: object, tmp_path: Path
+) -> None:
+    store = hearth_users.UsersStore(tmp_path)
+
+    result = hearth_users.spark_session_current(store, {})
+
+    assert result == {"authenticated": False}
+
+
 def test_bad_password_and_lockout(hearth_users: object, tmp_path: Path) -> None:
     client = _client(hearth_users, tmp_path)
     client.post("/api/setup", json={"password": "right-password"})
@@ -129,6 +160,29 @@ def test_logout_clears_session_cookie(hearth_users: object, tmp_path: Path) -> N
 
     assert logout.status_code == 200
     assert session.status_code == 401
+
+
+def test_login_and_logout_write_session_audit_events(
+    hearth_users: object, tmp_path: Path
+) -> None:
+    audit_log_path = tmp_path / "auth-session.jsonl"
+    client = _client(hearth_users, tmp_path, audit_log_path)
+    client.post("/api/setup", json={"password": "audit-password"})
+
+    login = client.post("/login", json={"password": "audit-password"})
+    logout = client.post("/logout")
+
+    assert login.status_code == 200
+    assert logout.status_code == 200
+    records = [json.loads(line) for line in audit_log_path.read_text().splitlines()]
+    assert [record["action"] for record in records] == [
+        "auth.setup",
+        "auth.login",
+        "auth.logout",
+    ]
+    assert all(record["plugin_slug"] == "hearth-users" for record in records)
+    assert records[1]["topic"] == "hearth-users.session.login"
+    assert records[2]["topic"] == "hearth-users.session.logout"
 
 
 def test_verify_returns_401_without_session(hearth_users: object, tmp_path: Path) -> None:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import secrets
 import sqlite3
@@ -28,6 +29,7 @@ MAX_FAILED_ATTEMPTS = 5
 LOCAL_USER_ID = "local"
 LOCAL_DISPLAY_NAME = "Local user"
 LOCAL_ROLES = ["user"]
+PLUGIN_SLUG = "hearth-users"
 
 _password_hasher = PasswordHasher()
 _lockout: dict[str, tuple[int, float]] = {}
@@ -54,6 +56,37 @@ def _claims() -> dict[str, object]:
         "display_name": LOCAL_DISPLAY_NAME,
         "roles": LOCAL_ROLES,
     }
+
+
+def _default_audit_log_path(data_dir: Path) -> Path:
+    configured = os.getenv("HEARTH_USERS_AUDIT_LOG")
+    if configured:
+        return Path(configured)
+    return data_dir / "auth-session.jsonl"
+
+
+def _write_audit_event(
+    audit_log_path: Path,
+    *,
+    action: str,
+    claims: dict[str, object] | None = None,
+    topic: str | None = None,
+    ok: bool = True,
+) -> None:
+    audit_log_path.parent.mkdir(parents=True, exist_ok=True)
+    record: dict[str, object] = {
+        "ts": time.time(),
+        "plugin_slug": PLUGIN_SLUG,
+        "action": action,
+        "ok": ok,
+    }
+    if topic is not None:
+        record["topic"] = topic
+    if claims is not None:
+        record["user_id"] = claims.get("user_id", "")
+        record["roles"] = claims.get("roles", [])
+    with audit_log_path.open("a", encoding="utf-8") as log:
+        log.write(json.dumps(record, sort_keys=True) + "\n")
 
 
 def _hash_password(plain: str) -> str:
@@ -249,10 +282,25 @@ def _require_claims(store: UsersStore, request: Request) -> dict[str, object]:
     return claims
 
 
-def create_app(data_dir: Path | str | None = None) -> FastAPI:
+def spark_session_current(store: UsersStore, params: dict[str, Any]) -> dict[str, object]:
+    token = params.get("session_token")
+    claims = store.session_claims(token if isinstance(token, str) else None)
+    if claims is None:
+        return {"authenticated": False}
+    return {"authenticated": True, **claims}
+
+
+def create_app(
+    data_dir: Path | str | None = None,
+    audit_log_path: Path | str | None = None,
+) -> FastAPI:
     app = FastAPI(title="Hearth Users", docs_url=None, redoc_url=None)
     store = UsersStore(Path(data_dir) if data_dir is not None else _default_data_dir())
+    audit_path = (
+        Path(audit_log_path) if audit_log_path is not None else _default_audit_log_path(store.data_dir)
+    )
     app.state.users_store = store
+    app.state.audit_log_path = audit_path
 
     @app.get("/health")
     async def health() -> dict[str, object]:
@@ -266,6 +314,7 @@ def create_app(data_dir: Path | str | None = None) -> FastAPI:
         claims = store.create_user(password)
         token = store.create_session(LOCAL_USER_ID)
         _set_session_cookie(response, token)
+        _write_audit_event(audit_path, action="auth.setup", claims=claims)
         return claims
 
     @app.post("/login")
@@ -286,12 +335,26 @@ def create_app(data_dir: Path | str | None = None) -> FastAPI:
         _clear_lockout(client_key)
         token = store.create_session(LOCAL_USER_ID)
         _set_session_cookie(response, token)
-        return _claims()
+        claims = _claims()
+        _write_audit_event(
+            audit_path,
+            action="auth.login",
+            claims=claims,
+            topic="hearth-users.session.login",
+        )
+        return claims
 
     @app.post("/logout")
     async def logout(request: Request, response: Response) -> dict[str, str]:
+        claims = store.session_claims(request.cookies.get(SESSION_COOKIE))
         store.delete_session(request.cookies.get(SESSION_COOKIE))
         _delete_session_cookie(response)
+        _write_audit_event(
+            audit_path,
+            action="auth.logout",
+            claims=claims,
+            topic="hearth-users.session.logout",
+        )
         return {"status": "ok"}
 
     @app.get("/api/session")
@@ -313,8 +376,15 @@ def create_app(data_dir: Path | str | None = None) -> FastAPI:
     @app.get("/logout")
     async def logout_redirect(request: Request) -> RedirectResponse:
         response = RedirectResponse(url="/login", status_code=303)
+        claims = store.session_claims(request.cookies.get(SESSION_COOKIE))
         store.delete_session(request.cookies.get(SESSION_COOKIE))
         _delete_session_cookie(response)
+        _write_audit_event(
+            audit_path,
+            action="auth.logout",
+            claims=claims,
+            topic="hearth-users.session.logout",
+        )
         return response
 
     @app.get("/{_path:path}", response_class=HTMLResponse)

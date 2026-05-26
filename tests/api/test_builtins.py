@@ -48,3 +48,19 @@ def test_builtin_plugin_cannot_be_uninstalled(client: TestClient) -> None:
     uninstall = client.post("/api/plugins/hearth-users/uninstall")
     assert uninstall.status_code == 403
     assert "built-in" in uninstall.json()["detail"]
+
+
+def test_builtin_plugin_cannot_be_disabled_without_external_auth_provider(
+    client: TestClient,
+) -> None:
+    install = client.post(
+        "/api/plugins/install",
+        json={"source": "apps/builtin/hearth-users"},
+    )
+    assert install.status_code == 200
+    assert install.json()["state"] == "enabled"
+
+    disable = client.post("/api/plugins/hearth-users/disable")
+
+    assert disable.status_code == 403
+    assert "external auth provider" in disable.json()["detail"]
