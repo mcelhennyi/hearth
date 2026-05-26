@@ -2,7 +2,7 @@
 
 Branch: `feat/FR-0004-centralized-users-auth`
 
-Status: resumed after 2026-05-26 design audit. `T-FR-0004-01` remains complete; `T-FR-0004-02` is the active frontier ticket.
+Status: resumed after 2026-05-26 design audit. `T-FR-0004-01` remains complete; `T-FR-0004-02` is the active frontier ticket. Skeleton sync is applied at `.skeleton` `5a007a8` and root `docs/ai-context.md` now includes the downstream compliance changelog rule.
 
 Next:
 
