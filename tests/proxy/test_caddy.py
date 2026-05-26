@@ -44,7 +44,37 @@ class TestRenderFragment:
         plugins = [_plugin("groceries", host="groceries-app", port=8000)]
         result = render_fragment(plugins)
         assert "route /groceries/*" in result
+        assert "uri strip_prefix /groceries" in result
+        assert "request_header -X-Hearth-*" in result
+        assert "forward_auth @groceries_api hub:8200" in result
+        assert "forward_auth @groceries_html hub:8200" in result
+        assert "uri /api/auth/verify" in result
+        assert "copy_headers" in result
+        assert "X-Hearth-User-Id" in result
+        assert "X-Hearth-User-Ts" in result
+        assert "X-Hearth-User-Sig" in result
+        assert "X-Hearth-User-Name" in result
+        assert "X-Hearth-Roles" in result
+        assert "redir /hearth-users/login?next={http.request.orig_uri} 302" in result
         assert "reverse_proxy groceries-app:8000" in result
+
+    def test_api_and_html_auth_failures_are_split(self) -> None:
+        plugins = [_plugin("groceries", host="groceries-app", port=8000)]
+        result = render_fragment(plugins)
+
+        assert "@groceries_api path /api /api/*" in result
+        assert "@groceries_html {\n    not path /api /api/*\n  }" in result
+        assert "@groceries_unauth status 401" in result
+        assert "handle_response @groceries_unauth" in result
+
+    def test_inbound_hearth_headers_are_stripped_before_auth_copy(self) -> None:
+        plugins = [_plugin("groceries", host="groceries-app", port=8000)]
+        result = render_fragment(plugins)
+
+        strip_index = result.index("request_header -X-Hearth-*")
+        copy_index = result.index("copy_headers")
+        proxy_index = result.index("reverse_proxy groceries-app:8000")
+        assert strip_index < copy_index < proxy_index
 
     def test_disabled_plugin_is_excluded(self) -> None:
         plugins = [

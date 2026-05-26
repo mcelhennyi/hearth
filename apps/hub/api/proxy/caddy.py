@@ -35,6 +35,14 @@ _DEFAULT_CADDY_ADMIN_URL = os.getenv("HEARTH_CADDY_ADMIN_URL", "http://caddy:201
 # Path to the Caddyfile config used for `caddy reload` (fallback if admin API is unavailable).
 _DEFAULT_CADDYFILE = os.getenv("HEARTH_CADDYFILE_PATH", "/etc/caddy/Caddyfile")
 
+_HEARTH_AUTH_HEADERS = (
+    "X-Hearth-User-Id",
+    "X-Hearth-User-Ts",
+    "X-Hearth-User-Sig",
+    "X-Hearth-User-Name",
+    "X-Hearth-Roles",
+)
+
 
 # ---------------------------------------------------------------------------
 # Fragment renderer — pure, no I/O
@@ -47,6 +55,8 @@ def render_fragment(plugins: list[dict[str, Any]]) -> str:
     Each enabled plugin produces a block of the form::
 
         route /<slug>/* {
+          request_header -X-Hearth-*
+          forward_auth hub:8200 { ... }
           reverse_proxy <host>:<port>
         }
 
@@ -65,11 +75,47 @@ def render_fragment(plugins: list[dict[str, Any]]) -> str:
         slug = p["slug"]
         host = p["host"]
         port = p["port"]
-        lines.append(f"route /{slug}/* {{")
-        lines.append(f"  reverse_proxy {host}:{port}")
-        lines.append("}")
-        lines.append("")  # blank line between blocks
+        lines.extend(_render_plugin_route(slug=slug, upstream=f"{host}:{port}"))
     return "\n".join(lines)
+
+
+def _render_plugin_route(*, slug: str, upstream: str) -> list[str]:
+    matcher = slug.replace("-", "_")
+    lines = [
+        f"route /{slug}/* {{",
+        f"  uri strip_prefix /{slug}",
+        "  request_header -X-Hearth-*",
+        "",
+        f"  @{matcher}_api path /api /api/*",
+        f"  forward_auth @{matcher}_api hub:8200 {{",
+        "    uri /api/auth/verify",
+        *_copy_headers_lines(indent="    "),
+        "  }",
+        "",
+        f"  @{matcher}_html {{",
+        "    not path /api /api/*",
+        "  }",
+        f"  forward_auth @{matcher}_html hub:8200 {{",
+        "    uri /api/auth/verify",
+        *_copy_headers_lines(indent="    "),
+        f"    @{matcher}_unauth status 401",
+        f"    handle_response @{matcher}_unauth {{",
+        "      redir /hearth-users/login?next={http.request.orig_uri} 302",
+        "    }",
+        "  }",
+        "",
+        f"  reverse_proxy {upstream}",
+        "}",
+        "",
+    ]
+    return lines
+
+
+def _copy_headers_lines(*, indent: str) -> list[str]:
+    lines = [f"{indent}copy_headers {{"]
+    lines.extend(f"{indent}  {header}" for header in _HEARTH_AUTH_HEADERS)
+    lines.append(f"{indent}}}")
+    return lines
 
 
 # ---------------------------------------------------------------------------
