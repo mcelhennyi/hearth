@@ -15,6 +15,7 @@ SLUG_RE = re.compile(r"^[a-z][a-z0-9-]{0,31}$")
 
 PluginState = Literal["disabled", "enabled", "uninstalled", "error"]
 PluginKind = Literal["app", "widget", "service"]
+AuthProvider = Literal["builtin", "external"]
 
 
 class PluginInstallRequest(BaseModel):
@@ -63,13 +64,25 @@ class PluginInstallResponse(PluginResponse):
     validation_errors: list[str] = []
 
 
+class AuthSettings(BaseModel):
+    provider: AuthProvider = "builtin"
+    external_verify_url: str | None = None
+
+
+class AuthSettingsUpdate(BaseModel):
+    provider: AuthProvider | None = None
+    external_verify_url: str | None = None
+
+
 class SettingsResponse(BaseModel):
     theme: str
     hostname: str
     notification_channel: str
+    auth: AuthSettings
 
 
 class SettingsUpdateRequest(BaseModel):
     theme: str | None = None
     hostname: str | None = None
     notification_channel: str | None = None
+    auth: AuthSettingsUpdate | None = None

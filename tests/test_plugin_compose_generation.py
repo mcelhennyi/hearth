@@ -18,6 +18,11 @@ def test_generate_plugin_compose_matches_golden_yaml(tmp_path: Path) -> None:
     hearth = ensure_hearth_layout(tmp_path, hearth_ref="compose-test")
     for slug in ("groceries", "recipes", "disabled"):
         (hearth / "plugins" / slug).mkdir(parents=True)
+    (hearth / "var" / "secrets").mkdir(parents=True)
+    (hearth / "var" / "secrets" / "user-sig.key").write_text(
+        "compose-secret\n",
+        encoding="utf-8",
+    )
 
     registry = hearth / "state" / "plugins.yaml"
     registry.write_text(
@@ -61,6 +66,7 @@ services:
       HEARTH_HOME: /hearth
       HEARTH_PLUGIN_PORT: "8301"
       HEARTH_PLUGIN_SLUG: groceries
+      HEARTH_USER_SIG_SECRET: compose-secret
       HEARTH_VAR_DIR: /var/hearth
     volumes:
       - ../plugins/groceries:/app:ro
@@ -80,11 +86,34 @@ services:
       HEARTH_HOME: /hearth
       HEARTH_PLUGIN_PORT: "8302"
       HEARTH_PLUGIN_SLUG: recipes
+      HEARTH_USER_SIG_SECRET: compose-secret
       HEARTH_VAR_DIR: /var/hearth
     volumes:
       - ../plugins/recipes:/app:ro
       - ../var/plugins/recipes:/var/hearth/plugins/recipes
 """
+
+
+def test_generate_plugin_compose_creates_user_sig_secret(tmp_path: Path) -> None:
+    hearth = ensure_hearth_layout(tmp_path, hearth_ref="compose-secret-test")
+    (hearth / "plugins" / "groceries").mkdir(parents=True)
+    (hearth / "state" / "plugins.yaml").write_text(
+        """\
+schema: 1
+plugins:
+  - slug: groceries
+    source_git: https://example.test/groceries.git
+    enabled: true
+    image: ghcr.io/example/groceries:0.1.0
+""",
+        encoding="utf-8",
+    )
+
+    output = generate_plugin_compose(hearth)
+    secret = (hearth / "var" / "secrets" / "user-sig.key").read_text(encoding="utf-8").strip()
+
+    assert len(secret) >= 32
+    assert f"HEARTH_USER_SIG_SECRET: {secret}" in output.read_text(encoding="utf-8")
 
 
 def test_write_default_plugin_registry_is_idempotent(tmp_path: Path) -> None:
