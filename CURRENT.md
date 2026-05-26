@@ -4,7 +4,7 @@ Branch: `feat/FR-0004-centralized-users-auth`
 
 Worktree: `.worktrees/FR-0004-centralized-users-auth/feature/`
 
-Status: finish-feature closeout is drafted and FR-0004 satisfies the §2d feature-complete gate. Starting feature branch includes `T-FR-0004-02` through `T-FR-0004-10`.
+Status: finish-feature closeout is drafted and [PR #56](https://github.com/mcelhennyi/hearth/pull/56) is open to `main`. Starting feature branch includes `T-FR-0004-02` through `T-FR-0004-10`.
 
 Current ticket branch:
 
@@ -68,4 +68,4 @@ Combined feature validation after T10 merge:
 
 Next action:
 
-- Open the feature PR to `main`.
+- Review PR #56.

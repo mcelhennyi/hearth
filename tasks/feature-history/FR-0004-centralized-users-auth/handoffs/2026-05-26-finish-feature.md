@@ -4,6 +4,8 @@ Date: 2026-05-26
 
 Feature branch: `feat/FR-0004-centralized-users-auth`
 
+Feature PR: [PR #56](https://github.com/mcelhennyi/hearth/pull/56) → `main`
+
 ## Executive summary
 
 FR-0004 is feature-complete on the feature branch. It adds the built-in `hearth-users` identity provider, hub verify/signing, Caddy auth gates for plugin routes, Mantle login/session/user delivery, Kindling trust middleware, external verify URL settings, and a capstone test proving a generated plugin accepts only gateway-verified identity.
@@ -31,7 +33,7 @@ FR-0004 is feature-complete on the feature branch. It adds the built-in `hearth-
 
 ## Suggested next step
 
-Open the feature PR to `main`; the merger should remove repo-root `CURRENT.md` from `main` and refresh `90-closeout.md` with the merge SHA after landing.
+Review [PR #56](https://github.com/mcelhennyi/hearth/pull/56); the merger should remove repo-root `CURRENT.md` from `main` and refresh `90-closeout.md` with the merge SHA after landing.
 
 ## Options
 

@@ -6,7 +6,7 @@
 
 ## Resume status
 
-Implementation is feature-complete on **`feat/FR-0004-centralized-users-auth`** as of 2026-05-26. The feature PR to **`main`** is pending. Closeout: [`90-closeout.md`](90-closeout.md).
+Implementation is feature-complete on **`feat/FR-0004-centralized-users-auth`** as of 2026-05-26. [**PR #56**](https://github.com/mcelhennyi/hearth/pull/56) to **`main`** is pending. Closeout: [`90-closeout.md`](90-closeout.md).
 
 | Gate | Feature | Ticket(s) | What “done” means |
 |------|---------|-----------|-------------------|
