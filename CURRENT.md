@@ -8,7 +8,7 @@ Status: finish-feature closeout is superseded by the multi-user correction. [PR 
 
 Current ticket branch:
 
-- `T-FR-0004-12` — Users plugin: multi-user schema, migration, and auth API. Ticket branch is complete and pushed as PR #60, awaiting merge into `feat/FR-0004-centralized-users-auth`.
+- `T-FR-0004-12` — Users plugin: multi-user schema, migration, and auth API. Merged into `feat/FR-0004-centralized-users-auth`; next frontier is `T-FR-0004-13` / `T-FR-0004-14`.
 
 Completed:
 
@@ -23,6 +23,7 @@ Completed:
 - `T-FR-0004-09` — hub builtin-disabled fail-closed verify behavior, Settings route/provider form, external verify URL save flow, and custom user service follow-up note.
 - `T-FR-0004-10` — capstone gateway identity contract: hub verify signs identity for the public plugin URI, Caddy passes original method/URI to plugins, and a generated Kindling plugin rejects direct calls but accepts verified gateway headers.
 - `T-FR-0004-11` — multi-user design/migration amendment: account schema, first-admin setup semantics, migration from the old local account, final-admin safety, classified single-user statements, and global DAG exposure for T12-T16.
+- `T-FR-0004-12` — users plugin multi-user implementation: SQLite migration from the old `local` row, opaque first-admin ids for new setup, username/password login, stored user claims in sessions/verify/Spark/audit, disabled-user fail-closed checks, and bootstrap password file compatibility as `local` / `Local user` admin.
 
 Latest T-FR-0004-08 validation:
 
@@ -75,4 +76,12 @@ Latest T-FR-0004-11 validation:
 
 Next action:
 
-- Review/merge PR #60 (`T-FR-0004-12`) into `feat/FR-0004-centralized-users-auth`, then rerun `/identify-frontier`; the expected next FR-0004 wave is `T-FR-0004-13` and `T-FR-0004-14` once T12 is VAL-done on the feature branch.
+- Continue the multi-user wave with `T-FR-0004-13` / `T-FR-0004-14` as the dependency graph allows.
+
+Latest T-FR-0004-12 validation:
+
+- Rebasing note: ticket branch was rebased onto refreshed `origin/feat/FR-0004-centralized-users-auth` at `e3a7dc9` after `main` was merged into the feature branch.
+- RED phase: `./develop test tests/builtin/test_hearth_users.py` failed against the old single-user implementation with 12 expected failures covering setup, migration, username login, disabled users, lockout, and stored claims.
+- `./develop test tests/builtin/test_hearth_users.py` — 23 passed.
+- `./develop test tests/builtin/test_hearth_users.py tests/spark/test_broker.py tests/api/test_auth_verify_alias.py` — 55 passed, 2 warnings.
+- `git diff --check` — passed.
