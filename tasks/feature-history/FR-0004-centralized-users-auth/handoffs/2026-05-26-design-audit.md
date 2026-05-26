@@ -19,4 +19,4 @@ Eligible ticket: `T-FR-0004-02` — Built-in `hearth-users` plugin scaffold.
 
 Feature branch/worktree: `feat/FR-0004-centralized-users-auth` at `.worktrees/FR-0004-centralized-users-auth/feature/`.
 
-Ticket branch/worktree: `feat/FR-0004-centralized-users-auth/T-FR-0004-02-hearth-users-scaffold` at `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-02-hearth-users-scaffold/`.
+Ticket branch/worktree: `feat/FR-0004-centralized-users-auth-T-FR-0004-02-hearth-users-scaffold` at `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-02-hearth-users-scaffold/`.
