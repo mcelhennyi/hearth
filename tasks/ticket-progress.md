@@ -83,7 +83,7 @@
 | T-FR-0006-14 | @kindling/mantle vanilla bridge | done | done | done | `FR-0006`. [PR #36](https://github.com/mcelhennyi/hearth/pull/36). |
 | T-FR-0006-15 | @kindling/mantle package validation | done | done | done | `FR-0006`. [PR #45](https://github.com/mcelhennyi/hearth/pull/45); merged @ `110dd0a`. Public npm publish deferred; keep package private for now. |
 | T-FR-0007-01 | Contract and transition docs | done | done | done | `FR-0007` design. Kindling-owned Mantle source, transition status, Hearth consumption, plugin import rule, and compatibility contract documented. |
-| T-FR-0007-02 | Move Mantle package source to Kindling | — | — | — | `FR-0007`. Deps: T-FR-0007-01. |
+| T-FR-0007-02 | Move Mantle package source to Kindling | done | done | done | `FR-0007`. `@kindling/mantle` source moved to Kindling `mantle/`; Hearth `packages/mantle/` removed. |
 | T-FR-0007-03 | Rewire Hearth to consume Kindling Mantle | — | — | — | `FR-0007`. Deps: T-FR-0007-02. |
 | T-FR-0007-04 | Standalone Kindling app template support | — | — | — | `FR-0007`. Deps: T-FR-0007-02. |
 | T-FR-0007-05 | Mantle version compliance validation | — | — | — | `FR-0007`. Deps: T-FR-0007-01, T-FR-0007-04. |

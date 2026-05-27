@@ -26,12 +26,12 @@ Make Kindling the developer-facing source of truth for Mantle so plugin/app repo
 
 | Input | Output | Storage |
 |-------|--------|---------|
-| FR-0006 private Hearth package at `packages/mantle/` | Kindling-owned Mantle source and package release surface | Kindling repo, pinned by Hearth submodule or package lock |
+| FR-0006 private Hearth package at `packages/mantle/` | Kindling-owned Mantle source and package release surface at `kindling/mantle/` | Kindling repo, pinned by Hearth submodule or package lock |
 | Plugin repo dependency constraints | Compatibility pass/fail and standalone dev install | Plugin `package.json`, `tinder.toml`, lockfile |
 | Kindling changelog entry | Downstream migration checklist | Kindling `CHANGELOG.md`; optional Hearth handoff pointer |
 
 ## Open questions
 
 - Whether `@kindling/mantle` first becomes a private git/package dependency or is published publicly as part of this FR.
-- Whether Hearth keeps `packages/mantle/` as a temporary compatibility fixture for one release or removes it in the same migration.
+- Whether Hearth keeps `packages/mantle/` as a temporary compatibility fixture for one release or removes it in the same migration. **T-FR-0007-02 decision:** remove it when `kindling/mantle/` becomes authoritative; T-FR-0007-03 rewires Hearth consumption.
 - Exact package manager workspace shape once the Kindling submodule is initialized in the Hearth checkout.
