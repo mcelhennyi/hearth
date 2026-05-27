@@ -4,17 +4,19 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | grocery-list `T-FR-0001-01` → `T-FR-0001-04` (serialized) |
+| **Active ticket** | `T-FR-0007-01` |
 | **Active phase** | TEST → DEV → VAL |
-| **Branch / worktree** | `main` @ `25e3381`; grocery `feat/FR-0001-mvp-reference-plugin` @ `plugins/third-party/grocery-list/` |
+| **Branch / worktree** | `feat/FR-0007-kindling-mantle-migration` @ `.worktrees/FR-0007-kindling-mantle-migration/feature/`; ticket worktree `.worktrees/FR-0007-kindling-mantle-migration/T-FR-0007-01-contract-transition-docs/` |
 | **Session status** | `developing` |
-| **Next agent should** | FR-0006 is merged to `main` via [PR #46](https://github.com/mcelhennyi/hearth/pull/46) @ `25e3381`. Keep **`@kindling/mantle`** private for now, then staff grocery **FR-0002** Mantle UI using a local/private package path. Run `plugins/third-party/grocery-list/tests/smoke/e2e-hearth.sh` when hub is up. |
+| **Next agent should** | Complete **Contract and transition docs** (`T-FR-0007-01`) in its child worktree, update only its progress row, then merge to `feat/FR-0007-kindling-mantle-migration` and rerun `/identify-frontier`. |
 
 ### Parallel streams
 
 **FR-0006** done on **`main`** via [PR #46](https://github.com/mcelhennyi/hearth/pull/46) @ `25e3381`. [`90-closeout.md`](feature-history/FR-0006-design-language/90-closeout.md).
 
 **Kindling FR-0001** — merged [kindling PR #1](https://github.com/mcelhennyi/kindling/pull/1) @ `f64b6a1`; hearth submodule bumped on `feat/FR-0006-design-language` @ `df20872`.
+
+**FR-0007** developing — `T-FR-0007-01` active under `.worktrees/FR-0007-kindling-mantle-migration/`.
 
 ---
 
