@@ -1,6 +1,6 @@
 # Kindling — shared templates repo
 
-**Status:** design only. No code yet. Lives at the planned URL `git@github.com:mcelhennyi/kindling.git` and is consumed by Hearth as a submodule under `vendor/kindling/`.
+**Status:** real repo exists and is consumed by Hearth as a submodule, but some Kindling-owned product surface still has temporary Hearth-side source mirrors from earlier FRs.
 
 ## Bootstrap: skeleton first, then Hearth product surface
 
@@ -41,7 +41,23 @@ Kindling does for **Hearth plugin authors** what `.skeleton` does for **process 
 
 ## Usage from Hearth
 
-Hearth pulls Kindling in as a submodule at `vendor/kindling/`. The hub web app imports `@kindling/mantle` from the local checkout in dev (via `pnpm` workspace alias) and from a versioned npm-equivalent registry (or a tagged git URL) in CI/production.
+<!-- AMENDMENT: KINDLING-MANTLE-MIGRATION-0001 -->
+<!-- Author: Codex session -->
+<!-- Date: 2026-05-27 -->
+<!-- Reason: FR-0006 shipped a private Hearth-side @kindling/mantle package; FR-0007 makes Kindling the source owner so standalone app repos can depend on Kindling without a Hearth checkout. -->
+
+FR-0007 transitions Mantle from the temporary Hearth-authored package at `packages/mantle/` to a Kindling-owned package source. The target state is:
+
+- Kindling owns the `@kindling/mantle` source, tests, changelog, package metadata, and release path.
+- Hearth consumes `@kindling/mantle` from the Kindling submodule/workspace during local development and from a pinned package or tagged source in CI/production.
+- Plugin/app repositories depend on `@kindling/mantle`; they never import Mantle from a Hearth-relative path.
+- Plugin compliance is versioned: a plugin is compatible with a Hearth host when its declared Kindling/Mantle major range is accepted by that host.
+
+Until FR-0007 is complete, `packages/mantle/` is a transitional source location created by FR-0006 and should not be copied into plugin repos.
+
+<!-- /AMENDMENT -->
+
+Hearth pulls Kindling in as a submodule at `kindling/`. The hub web app imports `@kindling/mantle` from the local checkout in dev (via `pnpm` workspace alias) and from a versioned npm-equivalent registry (or a tagged git URL) in CI/production.
 
 Plugins under `apps/<slug>/` are **separate git repositories** (submodules in Hearth). Hearth does **not** ship plugin source. A new plugin is created by:
 

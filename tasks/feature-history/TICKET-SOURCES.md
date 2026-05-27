@@ -10,3 +10,5 @@ Canonical **`### T-FR-NNNN-xx`** sections live in the **`tickets.md`** files bel
 | `tasks/feature-history/FR-0003-hearth-pi-docker-cli/tickets.md` |
 | `tasks/feature-history/FR-0004-centralized-users-auth/tickets.md` |
 | `tasks/feature-history/FR-0005-remote-build-pi-deploy/tickets.md` |
+| `tasks/feature-history/FR-0006-design-language/tickets.md` |
+| `tasks/feature-history/FR-0007-kindling-mantle-migration/tickets.md` |

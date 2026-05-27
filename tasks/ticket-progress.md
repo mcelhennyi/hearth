@@ -80,6 +80,12 @@
 | T-FR-0006-13 | @kindling/mantle overlays | done | done | done | `FR-0006`. [PR #43](https://github.com/mcelhennyi/hearth/pull/43); merged @ `f861c57`. |
 | T-FR-0006-14 | @kindling/mantle vanilla bridge | done | done | done | `FR-0006`. [PR #36](https://github.com/mcelhennyi/hearth/pull/36). |
 | T-FR-0006-15 | @kindling/mantle package validation | done | done | done | `FR-0006`. [PR #45](https://github.com/mcelhennyi/hearth/pull/45); merged @ `110dd0a`. Public npm publish deferred; keep package private for now. |
+| T-FR-0007-01 | Contract and transition docs | — | — | — | `FR-0007` design. Clarify Kindling-owned Mantle source and compatibility contract. |
+| T-FR-0007-02 | Move Mantle package source to Kindling | — | — | — | `FR-0007`. Deps: T-FR-0007-01. |
+| T-FR-0007-03 | Rewire Hearth to consume Kindling Mantle | — | — | — | `FR-0007`. Deps: T-FR-0007-02. |
+| T-FR-0007-04 | Standalone Kindling app template support | — | — | — | `FR-0007`. Deps: T-FR-0007-02. |
+| T-FR-0007-05 | Mantle version compliance validation | — | — | — | `FR-0007`. Deps: T-FR-0007-01, T-FR-0007-04. |
+| T-FR-0007-06 | Downstream app proof and migration note | — | — | — | `FR-0007` capstone. Deps: T-FR-0007-03, T-FR-0007-04, T-FR-0007-05. |
 
 ---
 
@@ -87,5 +93,6 @@
 
 1. **FR-0003** is **closed** on **`main`** — see [`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md).
 2. **FR-0001** is **done** on **`main`** — merged [PR #30](https://github.com/mcelhennyi/hearth/pull/30) @ `0811ed2`; [`90-closeout.md`](feature-history/FR-0001-hearth-platform/90-closeout.md).
-3. **FR-0004** is **`parked`** — unblocked; set `in-progress` in `REGISTRY.md` when staffing **`T-FR-0004-02`**. **FR-0005** is **`design`** — start with [**Remote-build profile**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd) ([`T-FR-0005-01`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd)), then [**`hearth pwa publish`**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi) ([`T-FR-0005-02`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi)); home Pi **`192.168.1.62`**. See [`REGISTRY.md`](feature-history/REGISTRY.md).
-4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
+3. **FR-0004** is **`parked`** — unblocked; set `in-progress` in `REGISTRY.md` when staffing **`T-FR-0004-02`**. **FR-0005** is **`design`** — start with [**Remote-build profile**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd) ([`T-FR-0005-01`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd)), then [**`hearth pwa publish`**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi) ([`T-FR-0005-02`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi)); home Pi **`192.168.1.62`**.
+4. **FR-0007** is **`design`** — start with [**Contract and transition docs**](feature-history/FR-0007-kindling-mantle-migration/tickets.md#t-fr-0007-01--contract-and-transition-docs) ([`T-FR-0007-01`](feature-history/FR-0007-kindling-mantle-migration/tickets.md#t-fr-0007-01--contract-and-transition-docs)) so the Mantle ownership move is explicit before package files move.
+5. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.

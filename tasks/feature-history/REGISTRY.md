@@ -13,7 +13,8 @@
 | FR-0004 | `FR-0004-centralized-users-auth/` | `parked` | **`T-FR-0004-01`** … **`T-FR-0004-10`** in [`FR-0004-centralized-users-auth/tickets.md`](FR-0004-centralized-users-auth/tickets.md) | Built-in **`hearth-users`** + gateway auth. **Parked** — **FR-0001 merged** (2026-05-21); resume when staffed (`T-FR-0004-01` design done in feature tree). |
 | FR-0005 | `FR-0005-remote-build-pi-deploy/` | `design` | **`T-FR-0005-01`** … **`T-FR-0005-05`** in [`FR-0005-remote-build-pi-deploy/tickets.md`](FR-0005-remote-build-pi-deploy/tickets.md) | Mac builds Mantle PWA (optional hub image); **`hearth pwa publish`** rsync to Pi **`192.168.1.62`**; Pi skips on-device `npm`/vite for routine UI updates. |
 | FR-0006 | `FR-0006-design-language/` | `done` | **`T-FR-0006-01`** … **`T-FR-0006-15`** in [`FR-0006-design-language/tickets.md`](FR-0006-design-language/tickets.md) | **Merged to `main`** via [**PR #46**](https://github.com/mcelhennyi/hearth/pull/46) @ `25e3381` (2026-05-26). Closeout: [`FR-0006-design-language/90-closeout.md`](FR-0006-design-language/90-closeout.md). **`@kindling/mantle`** v0.1.0 remains private; public npm publish deferred. |
+| FR-0007 | `FR-0007-kindling-mantle-migration/` | `design` | **`T-FR-0007-01`** … **`T-FR-0007-06`** in [`FR-0007-kindling-mantle-migration/tickets.md`](FR-0007-kindling-mantle-migration/tickets.md) | Move Mantle package ownership into Kindling so Kindling-based apps can develop standalone and remain Hearth plugin-compliant by pinning a supported Kindling/Mantle version. |
 
-**next_id:** `7`
+**next_id:** `8`
 
 **Allocating a new `FR-NNNN`:** Create directory **`tasks/feature-history/FR-NNNN-<slug>/`**, add a row to the table, set **`next_id`** to **NNNN+1**, and add the ticket file path to **`TICKET-SOURCES.md`**.

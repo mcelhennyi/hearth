@@ -23,6 +23,7 @@
 | FR-0004 | `tasks/feature-history/FR-0004-centralized-users-auth/tickets.md` *(parked)* |
 | FR-0005 | `tasks/feature-history/FR-0005-remote-build-pi-deploy/tickets.md` *(design: Mac build → Pi `192.168.1.62`)* |
 | FR-0006 | `tasks/feature-history/FR-0006-design-language/tickets.md` *(design-language; in flight on `feat/FR-0006-design-language`)* |
+| FR-0007 | `tasks/feature-history/FR-0007-kindling-mantle-migration/tickets.md` *(design: Kindling-owned Mantle package)* |
 
 ---
 
@@ -161,6 +162,22 @@ graph LR
   TFR0006_12_VAL --> TFR0006_15_TEST
   TFR0006_13_VAL --> TFR0006_15_TEST
   TFR0006_14_VAL --> TFR0006_15_TEST
+
+  %% FR-0007 — Kindling-owned Mantle package
+  TFR0007_01_TEST --> TFR0007_01_DEV --> TFR0007_01_VAL
+  TFR0007_02_TEST --> TFR0007_02_DEV --> TFR0007_02_VAL
+  TFR0007_03_TEST --> TFR0007_03_DEV --> TFR0007_03_VAL
+  TFR0007_04_TEST --> TFR0007_04_DEV --> TFR0007_04_VAL
+  TFR0007_05_TEST --> TFR0007_05_DEV --> TFR0007_05_VAL
+  TFR0007_06_TEST --> TFR0007_06_DEV --> TFR0007_06_VAL
+  TFR0007_01_VAL --> TFR0007_02_TEST
+  TFR0007_02_VAL --> TFR0007_03_TEST
+  TFR0007_02_VAL --> TFR0007_04_TEST
+  TFR0007_01_VAL --> TFR0007_05_TEST
+  TFR0007_04_VAL --> TFR0007_05_TEST
+  TFR0007_03_VAL --> TFR0007_06_TEST
+  TFR0007_04_VAL --> TFR0007_06_TEST
+  TFR0007_05_VAL --> TFR0007_06_TEST
 
   class TFR0000_01_TEST,TFR0000_01_DEV,TFR0000_01_VAL triadDone
   class TFR0002_01_TEST,TFR0002_01_DEV,TFR0002_01_VAL triadDone
