@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0007-01` |
+| **Active ticket** | `T-FR-0007-02` |
 | **Active phase** | TEST → DEV → VAL |
-| **Branch / worktree** | `feat/FR-0007-kindling-mantle-migration` @ `.worktrees/FR-0007-kindling-mantle-migration/feature/`; ticket worktree `.worktrees/FR-0007-kindling-mantle-migration/T-FR-0007-01-contract-transition-docs/` |
+| **Branch / worktree** | `feat/FR-0007-kindling-mantle-migration` @ `.worktrees/FR-0007-kindling-mantle-migration/feature/`; next ticket worktree `.worktrees/FR-0007-kindling-mantle-migration/T-FR-0007-02-move-mantle-package-source/` |
 | **Session status** | `developing` |
-| **Next agent should** | Complete **Contract and transition docs** (`T-FR-0007-01`) in its child worktree, update only its progress row, then merge to `feat/FR-0007-kindling-mantle-migration` and rerun `/identify-frontier`. |
+| **Next agent should** | Start **Move Mantle package source to Kindling** (`T-FR-0007-02`) from the FR-0007 feature branch, update only its progress row, then merge to `feat/FR-0007-kindling-mantle-migration` and rerun `/identify-frontier`. |
 
 ### Parallel streams
 
@@ -16,7 +16,7 @@
 
 **Kindling FR-0001** — merged [kindling PR #1](https://github.com/mcelhennyi/kindling/pull/1) @ `f64b6a1`; hearth submodule bumped on `feat/FR-0006-design-language` @ `df20872`.
 
-**FR-0007** developing — `T-FR-0007-01` active under `.worktrees/FR-0007-kindling-mantle-migration/`.
+**FR-0007** developing — `T-FR-0007-01` merged; `T-FR-0007-02` is the next eligible ticket under `.worktrees/FR-0007-kindling-mantle-migration/`.
 
 ---
 
