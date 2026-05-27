@@ -4,7 +4,7 @@
 
 ## Executive summary
 
-FR-0006 unifies the Hearth dashboard and Mantle shell with the design docs and mockups: system tiles/strips and layout APIs, postMessage bridge, Settings modal, chrome slots, plugin frame states, dashboard grid with empty state and edit mode, and the publishable **`@kindling/mantle`** package (components, hooks, vanilla bridge, overlays, npm CI/publish workflows).
+FR-0006 unifies the Hearth dashboard and Mantle shell with the design docs and mockups: system tiles/strips and layout APIs, postMessage bridge, Settings modal, chrome slots, plugin frame states, dashboard grid with empty state and edit mode, and the private **`@kindling/mantle`** package (components, hooks, vanilla bridge, overlays, CI package validation).
 
 ## Delivered surfaces
 
@@ -15,7 +15,7 @@ FR-0006 unifies the Hearth dashboard and Mantle shell with the design docs and m
 | Mantle shell bridge + chrome | `apps/hub/web/src/shell/` |
 | Dashboard grid, empty state, edit mode | `apps/hub/web/src/dashboard/` |
 | `@kindling/mantle` package | `packages/mantle/` |
-| Mantle CI + publish workflows | `.github/workflows/kindling-mantle-*.yml` |
+| Mantle CI + package validation workflows | `.github/workflows/kindling-mantle-*.yml` |
 | Design docs + mocks | `docs/design/dashboard.md`, `mantle-ui.md`, `docs/design/mockups/` |
 
 ## Tickets
@@ -36,32 +36,33 @@ FR-0006 unifies the Hearth dashboard and Mantle shell with the design docs and m
 | T-FR-0006-12 | @kindling/mantle hooks | **done** |
 | T-FR-0006-13 | @kindling/mantle overlays | **done** |
 | T-FR-0006-14 | @kindling/mantle vanilla bridge | **done** |
-| T-FR-0006-15 | @kindling/mantle publish | **done** |
+| T-FR-0006-15 | @kindling/mantle package validation | **done** |
 
 ## Validation
 
 - `./develop test` — **287** pytest passed, 3 skipped (2026-05-26 conflict-fix rerun)
 - Hub web Vitest — **57** passed (14 files)
-- `@kindling/mantle` `pnpm test` — **37** passed (includes `npm publish --dry-run`)
+- `@kindling/mantle` `pnpm test` — **37** passed
 
 ## Deferred / follow-up
 
 | Item | Tracking |
 |------|----------|
-| First npm publish | Operator: GitHub secret **`NPM_TOKEN`**, tag **`kindling-mantle-v0.1.0`** |
+| Public npm publish | Explicitly deferred; do not configure **`NPM_TOKEN`** or push a publish tag until publish policy changes. |
 | Shell overlay rendering for `hearth.sheet` / `hearth.dialog` | v0 in-iframe fallback; follow-up shell ticket |
 | Settings chrome route (`RW-U2`) | REWORK-REQUIRED in `App.tsx` — modal-only v0 |
-| Partner repos: kindling FR-0001, grocery-list FR-0002 | Consume `@kindling/mantle@0.1.0` after publish |
+| Partner repos: kindling FR-0001, grocery-list FR-0002 | Consume the local/private Mantle package path until publish policy changes. |
 | Manual iPhone / Pi dashboard smoke | Operator VAL |
 
 ## Suggested next step
 
-Configure **`NPM_TOKEN`**, push tag **`kindling-mantle-v0.1.0`**, then run partner FRs in kindling and grocery-list.
+Keep **`@kindling/mantle`** private for now, then run partner FRs in kindling and grocery-list using a local/private package path.
 
 ## Options
 
 | Option | When |
 |--------|------|
+| Keep Mantle private | Default — continue local/private package consumption |
 | Staff FR-0004 auth | After merge if auth is next platform priority |
 | Staff FR-0005 remote-build | Parallel design track on `main` |
 

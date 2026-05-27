@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0005-01` Remote-build profile in deployment.md |
+| **Active ticket** | grocery-list `T-FR-0001-01` → `T-FR-0001-04` (serialized); `T-FR-0005-01` when remote-build deployment is prioritized |
 | **Active phase** | TEST → DEV → VAL |
-| **Branch / worktree** | `FR-0005` design branch/worktree not yet started; create under `.worktrees/FR-0005-remote-build-pi-deploy/` if prioritized. |
-| **Session status** | `handoff` |
-| **Next agent should** | PR-review/merge FR-0004 via PR #56, or start FR-0005 with `T-FR-0005-01` if remote-build deployment work is next. |
+| **Branch / worktree** | `main` @ `25e3381`; grocery `feat/FR-0001-mvp-reference-plugin` @ `plugins/third-party/grocery-list/` |
+| **Session status** | `developing` |
+| **Next agent should** | Review/merge FR-0004 via [PR #56](https://github.com/mcelhennyi/hearth/pull/56). For active follow-on work, keep **`@kindling/mantle`** private for now, then staff grocery **FR-0002** Mantle UI using a local/private package path; start `T-FR-0005-01` only if remote-build deployment is prioritized. |
 
 ### Parallel streams
 
@@ -87,7 +87,7 @@
 | T-FR-0006-12 | @kindling/mantle hooks | done | done | done | `FR-0006`. [PR #35](https://github.com/mcelhennyi/hearth/pull/35). |
 | T-FR-0006-13 | @kindling/mantle overlays | done | done | done | `FR-0006`. [PR #43](https://github.com/mcelhennyi/hearth/pull/43); merged @ `f861c57`. |
 | T-FR-0006-14 | @kindling/mantle vanilla bridge | done | done | done | `FR-0006`. [PR #36](https://github.com/mcelhennyi/hearth/pull/36). |
-| T-FR-0006-15 | @kindling/mantle publish | done | done | done | `FR-0006`. [PR #45](https://github.com/mcelhennyi/hearth/pull/45); merged @ `110dd0a`. **`NPM_TOKEN`** for first publish. |
+| T-FR-0006-15 | @kindling/mantle package validation | done | done | done | `FR-0006`. [PR #45](https://github.com/mcelhennyi/hearth/pull/45); merged @ `110dd0a`. Public npm publish deferred; keep package private for now. |
 
 ---
 
