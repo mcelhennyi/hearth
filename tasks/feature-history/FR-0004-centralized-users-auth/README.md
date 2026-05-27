@@ -1,18 +1,16 @@
 # FR-0004 — Centralized users auth (built-in plugin + gateway)
 
-**Status:** `in-progress` — reopened for multi-user correction
+**Status:** `done` — feature branch complete; PR #56 pending human merge
 **Allocated:** 2026-05-17
 **Registry:** [`REGISTRY.md`](../REGISTRY.md)
 
 ## Resume status
 
-Implementation was reopened by the 2026-05-26 multi-user correction. The first
-single-account slice is on **`feat/FR-0004-centralized-users-auth`** and
-[**PR #56**](https://github.com/mcelhennyi/hearth/pull/56), but that PR remains
-a preview until the multi-user extension tickets **`T-FR-0004-11`…`T-FR-0004-16`**
-are merged into the feature branch and parent `finish-feature` validation reruns.
-As of the T16 ticket branch, the remaining work is feature-branch merge,
-full-feature validation, and closeout.
+Implementation is complete on **`feat/FR-0004-centralized-users-auth`** and
+[**PR #56**](https://github.com/mcelhennyi/hearth/pull/56) is ready for human
+review/merge to **`main`**. The 2026-05-26 multi-user correction is included:
+`T-FR-0004-11`…`T-FR-0004-16` are merged, parent validation reran, and
+[`90-closeout.md`](90-closeout.md) records the final feature branch state.
 
 | Gate | Feature | Ticket(s) | What “done” means |
 |------|---------|-----------|-------------------|

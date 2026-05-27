@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0004-16` Multi-user E2E and compliance changelog refresh |
+| **Active ticket** | `T-FR-0005-01` Remote-build profile in deployment.md |
 | **Active phase** | TEST → DEV → VAL |
-| **Branch / worktree** | `feat/FR-0004-centralized-users-auth` @ `.worktrees/FR-0004-centralized-users-auth/feature/`; next child worktree `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-16-multi-user-e2e-compliance/` |
-| **Session status** | `developing` |
-| **Next agent should** | Run `T-FR-0004-16` in its child worktree, update only that progress row, push the ticket branch, and merge back to `feat/FR-0004-centralized-users-auth`. If T16 reaches VAL done, run `finish-feature` only after full feature validation confirms the §2d gate. |
+| **Branch / worktree** | `FR-0005` design branch/worktree not yet started; create under `.worktrees/FR-0005-remote-build-pi-deploy/` if prioritized. |
+| **Session status** | `handoff` |
+| **Next agent should** | PR-review/merge FR-0004 via PR #56, or start FR-0005 with `T-FR-0005-01` if remote-build deployment work is next. |
 
 ### Parallel streams
 
@@ -16,7 +16,7 @@
 
 **Kindling FR-0001** — merged [kindling PR #1](https://github.com/mcelhennyi/kindling/pull/1) @ `f64b6a1`; hearth submodule bumped on `feat/FR-0006-design-language` @ `df20872`.
 
-**FR-0004** reopened for multi-user — `T-FR-0004-02` through `T-FR-0004-10` merged into `feat/FR-0004-centralized-users-auth`, but product correction requires `T-FR-0004-11` through `T-FR-0004-16` before feature closeout. [PR #56](https://github.com/mcelhennyi/hearth/pull/56) should remain a feature-branch preview, not final merge, until the multi-user wave lands.
+**FR-0004** feature-complete — `T-FR-0004-01` through `T-FR-0004-16` merged into `feat/FR-0004-centralized-users-auth`; [PR #56](https://github.com/mcelhennyi/hearth/pull/56) is ready for human review/merge to `main`. [`90-closeout.md`](feature-history/FR-0004-centralized-users-auth/90-closeout.md).
 
 ---
 
@@ -95,5 +95,5 @@
 
 1. **FR-0003** is **closed** on **`main`** — see [`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md).
 2. **FR-0001** is **done** on **`main`** — merged [PR #30](https://github.com/mcelhennyi/hearth/pull/30) @ `0811ed2`; [`90-closeout.md`](feature-history/FR-0001-hearth-platform/90-closeout.md).
-3. **FR-0004** is **reopened for multi-user**. Run `/develop-frontier` from the FR-0004 feature worktree; the first eligible ticket is [`T-FR-0004-11`](feature-history/FR-0004-centralized-users-auth/tickets.md#t-fr-0004-11--multi-user-design-amendment-and-migration-plan). **FR-0005** remains **`design`** and should wait unless explicitly prioritized.
+3. **FR-0004** is **feature-complete** on `feat/FR-0004-centralized-users-auth`; review/merge [PR #56](https://github.com/mcelhennyi/hearth/pull/56). **FR-0005** is the next designed workstream; start [`T-FR-0005-01`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd) when remote-build deployment is prioritized.
 4. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.

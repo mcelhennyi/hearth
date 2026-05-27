@@ -2,12 +2,9 @@
 
 Date: 2026-05-26
 
-**Superseded 2026-05-26:** Product corrected FR-0004 to require multi-user
-local auth before closeout. Treat this handoff as the completed single-account
-slice only. **Do not merge PR #56 to `main` from this handoff.** Continue
-through `T-FR-0004-16`, merge that ticket into
-`feat/FR-0004-centralized-users-auth`, revalidate the feature branch, then rerun
-`finish-feature`.
+**Updated 2026-05-27:** Product corrected FR-0004 to require multi-user local
+auth before closeout. That multi-user wave is now complete through
+`T-FR-0004-16`; PR #56 is ready for human review/merge to `main`.
 
 Feature branch: `feat/FR-0004-centralized-users-auth`
 
@@ -15,12 +12,11 @@ Feature PR: [PR #56](https://github.com/mcelhennyi/hearth/pull/56) → `main`
 
 ## Executive summary
 
-FR-0004's first slice is complete on the feature branch. It adds the built-in
+FR-0004 is complete on the feature branch. It adds the built-in multi-user
 `hearth-users` identity provider, hub verify/signing, Caddy auth gates for
 plugin routes, Mantle login/session/user delivery, Kindling trust middleware,
-external verify URL settings, and a capstone test proving a generated plugin
-accepts only gateway-verified identity. It is not final FR-0004 closeout until
-the multi-user extension lands and parent validation passes.
+external verify URL settings, admin user management, and stitched E2E proof
+that a protected generated plugin sees the active user.
 
 ## Merged branches
 
@@ -35,24 +31,31 @@ the multi-user extension lands and parent validation passes.
 | `T-FR-0004-08` | `feat/FR-0004-centralized-users-auth-T-FR-0004-08-mantle-login-use-user` |
 | `T-FR-0004-09` | `feat/FR-0004-centralized-users-auth-T-FR-0004-09-external-auth-settings` |
 | `T-FR-0004-10` | `feat/FR-0004-centralized-users-auth-T-FR-0004-10-plugin-trust-e2e` |
+| `T-FR-0004-11` | `feat/FR-0004-centralized-users-auth-T-FR-0004-11-multi-user-design` |
+| `T-FR-0004-12` | `feat/FR-0004-centralized-users-auth-T-FR-0004-12-multi-user-auth-api` |
+| `T-FR-0004-13` | `feat/FR-0004-centralized-users-auth-T-FR-0004-13-first-admin-login-ui` |
+| `T-FR-0004-14` | `feat/FR-0004-centralized-users-auth-T-FR-0004-14-real-user-claims` |
+| `T-FR-0004-15` | `feat/FR-0004-centralized-users-auth-T-FR-0004-15-admin-user-management` |
+| `T-FR-0004-16` | `feat/FR-0004-centralized-users-auth-T-FR-0004-16-multi-user-e2e-compliance` |
 
 ## Validation
 
-- `./develop test` — 277 passed, 3 skipped, 4 warnings.
-- `./develop web npm run test` — 4 files passed, 12 tests passed.
+- `./develop test` — 351 passed, 3 skipped, 10 warnings.
+- `./develop web npm run test` — 15 files passed, 66 tests passed.
 - `./develop web npm run build` — passed.
-- `./develop web npm run lint` — passed.
+- `./install --skip-docker-check --skip-compose-up --hearth-ref T-FR-0004-16-smoke /private/tmp/hearth-t16-install-smoke-feature` — passed.
+- Full `./develop web npm run lint` remains blocked by pre-existing non-FR-0004 lint debt in FR-0006 dashboard/shell/theme files; no T16 web source files were touched.
 
 ## Suggested next step
 
-Hold [PR #56](https://github.com/mcelhennyi/hearth/pull/56) as a preview until
-`T-FR-0004-16` lands. The next finish-feature run should refresh `90-closeout.md`
-with final validation and only then open/update the default-branch PR.
+Review and merge [PR #56](https://github.com/mcelhennyi/hearth/pull/56). When
+it lands on `main`, remove repo-root `CURRENT.md` and refresh `90-closeout.md`
+with the merge SHA.
 
 ## Options
 
 | Option | When |
 |--------|------|
-| Hold PR #56 | Multi-user T16 is not merged and feature validation has not rerun. |
+| Merge PR #56 | Human review accepts the completed FR-0004 feature branch. |
 | Request changes | Review finds auth UX, trust header, or install-route concerns. |
 | Continue next FR | Start FR-0005 while FR-0004 waits in PR review. |

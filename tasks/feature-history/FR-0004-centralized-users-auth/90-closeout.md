@@ -1,11 +1,9 @@
 # FR-0004 closeout — Centralized users auth
 
-**Status update 2026-05-26:** This closeout remains a draft until the
-multi-user correction is integrated. [**PR #56**](https://github.com/mcelhennyi/hearth/pull/56)
-is a feature-branch preview only; FR-0004 should not merge to **`main`** until
-`T-FR-0004-11` through `T-FR-0004-16` are merged to
-`feat/FR-0004-centralized-users-auth`, full feature validation passes, and the
-parent orchestrator reruns `finish-feature`.
+**Status update 2026-05-27:** Feature branch implementation is complete.
+[**PR #56**](https://github.com/mcelhennyi/hearth/pull/56) is ready for human
+review/merge to **`main`**. When the PR lands, remove repo-root `CURRENT.md`
+from `main` and refresh the audit section below with the merge SHA.
 
 ## Executive summary
 
@@ -48,17 +46,14 @@ middleware, and Mantle plugin frames receive the same verified user through
 | `T-FR-0004-13` | First-admin setup and username login UI | TEST / DEV / VAL **done** |
 | `T-FR-0004-14` | Real-user claims through session, Spark, gateway, and Mantle | TEST / DEV / VAL **done** |
 | `T-FR-0004-15` | Admin user management API and settings UI | TEST / DEV / VAL **done** |
-| `T-FR-0004-16` | Multi-user E2E and compliance changelog refresh | TEST / DEV / VAL **done** in ticket branch; merge and parent validation pending |
+| `T-FR-0004-16` | Multi-user E2E and compliance changelog refresh | TEST / DEV / VAL **done** |
 
 ## Validation
 
-- Latest integrated feature validation before T16: `./develop test` — 349
-  passed, 3 skipped, 8 warnings; web test/build passed; targeted Settings lint
-  passed. Full web lint remains blocked by pre-existing non-FR-0004 lint debt
-  recorded in `tasks/ticket-progress.md`.
-- T16 ticket-branch validation: `./develop test` — 351 passed, 3 skipped, 10
-  warnings; `./develop web npm run test` — 15 files / 66 tests passed;
-  `./develop web npm run build` — passed; install-layout smoke passed.
+- Final feature-branch validation after T16 merge: `./develop test` — 351
+  passed, 3 skipped, 10 warnings; `./develop web npm run test` — 15 files / 66
+  tests passed; `./develop web npm run build` — passed; install-layout smoke
+  passed.
 - T16 adds a stitched multi-user E2E proof: first admin setup, second user
   creation, login as each user, hub verify/signing, and a generated Kindling
   protected route seeing the active user's id, display name, and roles.
@@ -77,21 +72,21 @@ middleware, and Mantle plugin frames receive the same verified user through
 
 ## Suggested next step
 
-Merge `T-FR-0004-16` into `feat/FR-0004-centralized-users-auth`, run full
-feature validation, then rerun `finish-feature` only if every FR-0004 ticket row
-is TEST / DEV / VAL **done**.
+Review and merge [PR #56](https://github.com/mcelhennyi/hearth/pull/56) to
+`main`, then refresh this closeout with the merge SHA and remove repo-root
+`CURRENT.md` from `main`.
 
 ## Options
 
 | Option | When |
 |--------|------|
-| Hold PR #56 | Use until the multi-user T16 branch is merged and feature validation passes. |
+| Merge PR #56 | Use when human review accepts the completed FR-0004 feature branch. |
 | Request changes | Use if real-device validation or operator UX wants another pass before `main`. |
 | Start FR-0005 | Use after PR review begins; FR-0005 remote-build work is already designed. |
 
 ## Audit
 
-- **Merge commit:** *pending*
-- **Feature branch:** `feat/FR-0004-centralized-users-auth` @ `d253d00` before PR URL refresh; retained on remote.
+- **Feature branch merge commit:** `a7b076b` (`merge T-FR-0004-16 multi-user e2e compliance`)
+- **Feature branch:** `feat/FR-0004-centralized-users-auth`; retained on remote with closeout refresh.
 - **Feature PR:** [PR #56](https://github.com/mcelhennyi/hearth/pull/56)
 - **Handoff:** [`handoffs/2026-05-26-finish-feature.md`](handoffs/2026-05-26-finish-feature.md)

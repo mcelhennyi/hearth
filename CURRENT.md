@@ -1,15 +1,15 @@
 # FR-0004 — centralized users auth
 
-Branch: `feat/FR-0004-centralized-users-auth-T-FR-0004-16-multi-user-e2e-compliance`
+Branch: `feat/FR-0004-centralized-users-auth`
 
-Worktree: `.worktrees/FR-0004-centralized-users-auth/T-FR-0004-16-multi-user-e2e-compliance/`
+Worktree: `.worktrees/FR-0004-centralized-users-auth/feature/`
 
-Status: finish-feature closeout is superseded by the multi-user correction. [PR #56](https://github.com/mcelhennyi/hearth/pull/56) is only a feature-branch preview until `T-FR-0004-11` through `T-FR-0004-16` land. Starting feature branch includes `T-FR-0004-02` through `T-FR-0004-10`.
+Status: feature branch complete; [PR #56](https://github.com/mcelhennyi/hearth/pull/56) is ready for human review/merge to `main`. Remove this repo-root `CURRENT.md` when PR #56 lands on `main`.
 
 Current ticket branch:
 
 - `T-FR-0004-16` — Multi-user E2E and compliance changelog refresh.
-- Phase: VAL complete; ready to push and open ticket PR to `feat/FR-0004-centralized-users-auth`.
+- Phase: VAL complete and merged into `feat/FR-0004-centralized-users-auth`.
 - RED: `./develop test tests/api/test_multi_user_e2e.py tests/test_kindling_plugin_contract.py` failed as expected because the Kindling compliance changelog lacked the T16 multi-user migration entry. The new stitched E2E check already passed.
 - DEV: added the stitched first-admin/second-user/plugin identity E2E, dense Kindling multi-user migration guidance, Pi first-admin/later-user operator instructions, generated install README notes, and stale PR #56 closeout/handoff corrections.
 - Scope: final proof and documentation refresh only; no production code hooks were needed.
