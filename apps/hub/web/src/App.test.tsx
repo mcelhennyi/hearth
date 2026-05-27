@@ -5,12 +5,25 @@ import 'fake-indexeddb/auto'
 import App from './App'
 import type { PluginNavEntry } from './usePlugins'
 
-function mockDashboardApis(): void {
+interface TestSessionPayload {
+  user_id: string
+  display_name: string
+  roles: string[]
+}
+
+const defaultSessionPayload: TestSessionPayload = {
+  user_id: 'user_ada_123',
+  display_name: 'Ada Lovelace',
+  roles: ['admin', 'user'],
+}
+
+function mockDashboardApis(session: TestSessionPayload = defaultSessionPayload): void {
   const payloads: Record<string, unknown> = {
     '/api/dashboard/layout': { version: 1, columns: 4, blocks: [] },
     '/api/system/tiles': { tiles: [] },
     '/api/system/strips': { strip: null },
     '/api/plugins': [],
+    '/hearth-users/api/session': session,
   }
   vi.stubGlobal(
     'fetch',
@@ -59,7 +72,7 @@ describe('Mantle layout breakpoint behavior', () => {
       </BrowserRouter>,
     )
 
-    expect(screen.getByLabelText('Main navigation')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Main navigation')).toBeInTheDocument()
     expect(screen.queryByLabelText('Mantle top bar')).not.toBeInTheDocument()
     await waitFor(() => {
       expect(screen.getByTestId('dashboard-view')).toBeInTheDocument()
@@ -74,7 +87,7 @@ describe('Mantle layout breakpoint behavior', () => {
       </BrowserRouter>,
     )
 
-    expect(screen.getByLabelText('Mantle top bar')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Mantle top bar')).toBeInTheDocument()
     expect(screen.getByLabelText('Main navigation')).toBeInTheDocument()
     await waitFor(() => {
       expect(screen.getByTestId('dashboard-view')).toBeInTheDocument()
@@ -100,7 +113,7 @@ describe('Mantle registry-driven navigation', () => {
       </BrowserRouter>,
     )
 
-    const bottomNav = screen.getByLabelText('Main navigation')
+    const bottomNav = await screen.findByLabelText('Main navigation')
     expect(bottomNav).toHaveTextContent('Home')
     expect(bottomNav.querySelectorAll('.nav-scroll .nav-tab')).toHaveLength(0)
   })
@@ -116,9 +129,110 @@ describe('Mantle registry-driven navigation', () => {
       </BrowserRouter>,
     )
 
-    const bottomNav = screen.getByLabelText('Main navigation')
+    const bottomNav = await screen.findByLabelText('Main navigation')
     expect(bottomNav).toHaveTextContent('Test Plugin')
     expect(bottomNav.querySelectorAll('.nav-scroll .nav-tab')).toHaveLength(1)
+  })
+})
+
+describe('Mantle hearth-users session contract', () => {
+  beforeEach(() => {
+    window.history.replaceState({}, '', '/')
+    setBreakpoint(390)
+  })
+
+  it('links unauthenticated users to hearth-users login with a next target', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('unauthorized', { status: 401 })))
+
+    render(
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>,
+    )
+
+    const loginLink = await screen.findByRole('link', { name: 'Sign in with Hearth Users' })
+    expect(loginLink).toHaveAttribute('href', '/hearth-users/login?next=%2F')
+    expect(screen.queryByLabelText('Main navigation')).not.toBeInTheDocument()
+  })
+
+  it('fetches the hearth-users session before rendering the shell', async () => {
+    mockDashboardApis()
+
+    render(
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>,
+    )
+
+    await screen.findByLabelText('Main navigation')
+    expect(fetch).toHaveBeenCalledWith('/hearth-users/api/session', { credentials: 'include' })
+  })
+
+  it('posts verified hearth.user claims to plugin iframes', async () => {
+    const { usePlugins } = await import('./usePlugins')
+    vi.mocked(usePlugins).mockReturnValue([{ slug: 'test-plugin', name: 'Test Plugin', showInTabBar: true, order: 0 }])
+    mockDashboardApis()
+    window.history.replaceState({}, '', '/test-plugin')
+
+    render(
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>,
+    )
+
+    const frame = (await screen.findByTitle('Test Plugin')) as HTMLIFrameElement
+    expect(frame.contentWindow).toBeTruthy()
+    const postMessage = vi.spyOn(frame.contentWindow!, 'postMessage')
+
+    frame.dispatchEvent(new Event('load'))
+
+    await waitFor(() => {
+      expect(postMessage).toHaveBeenCalledWith(
+        {
+          type: 'hearth.user',
+          user: { id: 'user_ada_123', name: 'Ada Lovelace', roles: ['admin', 'user'] },
+        },
+        window.location.origin,
+      )
+    })
+  })
+
+  it('posts the current real user when the authenticated session changes', async () => {
+    const { usePlugins } = await import('./usePlugins')
+    vi.mocked(usePlugins).mockReturnValue([{ slug: 'test-plugin', name: 'Test Plugin', showInTabBar: true, order: 0 }])
+
+    async function postedUserFor(session: TestSessionPayload) {
+      mockDashboardApis(session)
+      window.history.replaceState({}, '', '/test-plugin')
+      const rendered = render(
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>,
+      )
+      const frame = (await screen.findByTitle('Test Plugin')) as HTMLIFrameElement
+      expect(frame.contentWindow).toBeTruthy()
+      const postMessage = vi.spyOn(frame.contentWindow!, 'postMessage')
+      frame.dispatchEvent(new Event('load'))
+      await waitFor(() => expect(postMessage).toHaveBeenCalledWith(
+        {
+          type: 'hearth.user',
+          user: { id: session.user_id, name: session.display_name, roles: session.roles },
+        },
+        window.location.origin,
+      ))
+      rendered.unmount()
+    }
+
+    await postedUserFor({
+      user_id: 'user_ada_123',
+      display_name: 'Ada Lovelace',
+      roles: ['admin', 'user'],
+    })
+    await postedUserFor({
+      user_id: 'user_grace_456',
+      display_name: 'Grace Hopper',
+      roles: ['user'],
+    })
   })
 })
 

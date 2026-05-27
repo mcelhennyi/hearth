@@ -16,6 +16,21 @@ Heavy logic lives in `hearth_install.bootstrap`; the `./install` file is a thin 
 
 The generated **`hearth/compose/docker-compose.yml`** ships the **FR-0002** PWA prototype stack (Caddy `tls internal`, hub API, optional `ca-export` profile) plus `include` of plugin overrides. **`./install`** also writes **`compose/.env`** (`HEARTH_REPO_ROOT`) and copies **`compose/caddy/`** from the deploy checkout. Operators build the Mantle UI with **`hearth pwa build`** and plugin static UIs with **`hearth plugin build <slug>`** (both use Docker-hosted `npm`; see repo-root **`SETUP.md`**). Requires Compose **v2.20+** for the top-level **`include`** field.
 
+### Existing Install Refresh
+
+Re-run `./install` against the same install root after branch updates:
+
+```bash
+./install "$HEARTH_DEPLOY" --hearth-ref "$(git rev-parse --short HEAD)"
+```
+
+The bootstrap preserves `hearth/state/plugins.yaml`, regenerates `hearth/compose/overrides/generated.plugins.yml`, and runs Compose with the stable `hearth` project name plus the generated plugin override. If a previous refresh failed after adding a service, recover with:
+
+```bash
+hearth compose -- up -d <service>
+hearth restart caddy
+```
+
 ## Contents
 
 | Path | Role |

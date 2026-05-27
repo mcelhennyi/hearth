@@ -27,6 +27,19 @@ services:
       - PYTHONUNBUFFERED=1
       - HEARTH_REPO_ROOT=${HEARTH_REPO_ROOT:-}
 
+  hearth-users:
+    image: python:3.12-slim-bookworm
+    container_name: hearth-users
+    working_dir: /workspace/apps/builtin/hearth-users
+    command: >-
+      sh -lc "pip install -q fastapi uvicorn[standard] argon2-cffi &&
+      uvicorn hearth_users.app:create_app --factory --host 0.0.0.0 --port 8000 --reload"
+    volumes:
+      - ../../:/workspace
+    environment:
+      - PYTHONUNBUFFERED=1
+      - HEARTH_VAR_DIR=/workspace/var/hearth
+
   docs:
     profiles: ["docs"]
     image: squidfunk/mkdocs-material:9.7.1
@@ -70,10 +83,12 @@ services:
       - ../caddy/Caddyfile.dev:/etc/caddy/Caddyfile:ro
       - ../caddy/Caddyfile.plugins:/etc/caddy/Caddyfile.plugins:ro
       - ../static:/srv:ro
+      - ../../apps/builtin:/workspace/apps/builtin:ro
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
       - hub
+      - hearth-users
 
   ca-export:
     image: caddy:2.8-alpine

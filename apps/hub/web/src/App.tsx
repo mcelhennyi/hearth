@@ -15,6 +15,71 @@ import { SettingsProvider } from './shell/SettingsContext'
 import { useChromeSlotRegistry } from './shell/useChromeSlotRegistry'
 import { usePostMessageBridge } from './shell/usePostMessageBridge'
 import { ThemeProvider } from './theme/ThemeProvider'
+import type { UserInfo } from './shell/types'
+
+type SessionState =
+  | { status: 'loading'; user: null }
+  | { status: 'authenticated'; user: UserInfo }
+  | { status: 'unauthenticated'; user: null }
+  | { status: 'error'; user: null }
+
+interface HearthUsersSessionResponse {
+  user_id?: unknown
+  display_name?: unknown
+  roles?: unknown
+}
+
+function normalizeSessionUser(payload: HearthUsersSessionResponse): UserInfo | null {
+  if (typeof payload.user_id !== 'string' || payload.user_id.length === 0) {
+    return null
+  }
+  return {
+    id: payload.user_id,
+    name: typeof payload.display_name === 'string' && payload.display_name.length > 0 ? payload.display_name : undefined,
+    roles: Array.isArray(payload.roles) ? payload.roles.filter((role): role is string => typeof role === 'string') : [],
+  }
+}
+
+function useHearthUsersSession(): SessionState {
+  const [session, setSession] = useState<SessionState>({ status: 'loading', user: null })
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadSession(): Promise<void> {
+      try {
+        const response = await fetch('/hearth-users/api/session', { credentials: 'include' })
+        if (cancelled) return
+        if (response.status === 401) {
+          setSession({ status: 'unauthenticated', user: null })
+          return
+        }
+        if (!response.ok) {
+          setSession({ status: 'error', user: null })
+          return
+        }
+        const user = normalizeSessionUser((await response.json()) as HearthUsersSessionResponse)
+        setSession(user ? { status: 'authenticated', user } : { status: 'error', user: null })
+      } catch {
+        if (!cancelled) {
+          setSession({ status: 'error', user: null })
+        }
+      }
+    }
+
+    void loadSession()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  return session
+}
+
+function hearthUsersLoginHref(): string {
+  const next = `${window.location.pathname}${window.location.search}${window.location.hash}` || '/'
+  return `/hearth-users/login?next=${encodeURIComponent(next)}`
+}
 
 function useDesktopLayout(): boolean {
   return useSyncExternalStore(
@@ -34,11 +99,8 @@ function activePluginSlug(pathname: string, pluginSlugs: string[]): string | nul
   return pluginSlugs.includes(slug) ? slug : null
 }
 
-function App() {
-  if (isMantleEmbedMode()) {
-    return <MantleEmbedApp />
-  }
-
+function HearthShell() {
+  const session = useHearthUsersSession()
   const location = useLocation()
   const isDesktop = useDesktopLayout()
   const plugins = usePlugins()
@@ -50,16 +112,12 @@ function App() {
 
   const bridge = usePostMessageBridge()
   const chrome = useChromeSlotRegistry(bridge, activeSlug)
-  const [pluginTitle, setPluginTitle] = useState<string | null>(null)
-
-  useEffect(() => {
-    setPluginTitle(null)
-  }, [activeSlug])
+  const [pluginTitle, setPluginTitle] = useState<{ slug: string; title: string } | null>(null)
 
   useEffect(() => {
     const unsub = bridge.subscribe('hearth.title', (msg) => {
       document.title = `${msg.title} — Hearth`
-      if (activeSlug) setPluginTitle(msg.title)
+      if (activeSlug) setPluginTitle({ slug: activeSlug, title: msg.title })
     })
     return unsub
   }, [bridge, activeSlug])
@@ -77,7 +135,36 @@ function App() {
     .filter(Boolean)
     .join(' ')
 
-  const appBarTitle = pluginTitle ?? activePlugin?.name ?? activeSlug ?? 'Hearth'
+  const activePluginTitle = pluginTitle?.slug === activeSlug ? pluginTitle.title : null
+  const appBarTitle = activePluginTitle ?? activePlugin?.name ?? activeSlug ?? 'Hearth'
+
+  if (session.status === 'loading') {
+    return (
+      <main className="flex min-h-svh items-center justify-center bg-[var(--hearth-bg)] px-4 font-sans text-[var(--hearth-fg)]">
+        <p className="text-sm text-[var(--hearth-muted)]">Checking session...</p>
+      </main>
+    )
+  }
+
+  if (session.status !== 'authenticated') {
+    return (
+      <main className="flex min-h-svh items-center justify-center bg-[var(--hearth-bg)] px-4 font-sans text-[var(--hearth-fg)]">
+        <section className="w-full max-w-sm rounded-lg border border-[var(--hearth-surface)] bg-[var(--hearth-surface)] p-6 shadow-sm">
+          <img src="/logo.svg" alt="" className="h-8 w-8" />
+          <h1 className="mt-4 text-2xl font-semibold">Hearth</h1>
+          <p className="mt-2 text-sm text-[var(--hearth-muted)]">
+            {session.status === 'error' ? 'Session status is unavailable.' : 'Sign in once to use Hearth and its plugins.'}
+          </p>
+          <a
+            href={hearthUsersLoginHref()}
+            className="mt-5 inline-flex rounded-lg bg-[var(--hearth-accent)] px-4 py-2 text-sm font-medium text-[var(--hearth-bg)]"
+          >
+            Sign in with Hearth Users
+          </a>
+        </section>
+      </main>
+    )
+  }
 
   return (
     <SettingsProvider>
@@ -103,7 +190,7 @@ function App() {
                 <div className="top-bar__actions">
                   {isDashboard ? <EditChrome isDashboard={isDashboard} /> : null}
                   <button type="button" className="user-btn" aria-label="Account">
-                    User
+                    {session.user.name ?? session.user.id}
                   </button>
                   <SettingsTrigger variant="desktop-top" className="top-btn" />
                 </div>
@@ -134,6 +221,7 @@ function App() {
                     name={plugin.name}
                     active={activeSlug === plugin.slug}
                     bridge={bridge}
+                    user={session.user}
                   />
                 }
               />
@@ -157,6 +245,14 @@ function App() {
       </ThemeProvider>
     </SettingsProvider>
   )
+}
+
+function App() {
+  if (isMantleEmbedMode()) {
+    return <MantleEmbedApp />
+  }
+
+  return <HearthShell />
 }
 
 export default App

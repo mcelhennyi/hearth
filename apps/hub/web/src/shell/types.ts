@@ -31,6 +31,7 @@ export interface ThemeTokens {
 export interface UserInfo {
   id: string
   name?: string
+  roles?: string[]
   // Avatar URL is optional; plugins must not require it.
   avatarUrl?: string
 }
@@ -107,6 +108,10 @@ export interface InboundReadyMessage {
   type: 'hearth.ready'
 }
 
+export interface InboundUserRequestMessage {
+  type: 'hearth.user.request'
+}
+
 export interface InboundChromeMountMessage {
   type: 'hearth.chrome.mount'
   slot: ChromeSlot
@@ -128,6 +133,7 @@ export type InboundMessage =
   | InboundHapticMessage
   | InboundNotifyMessage
   | InboundReadyMessage
+  | InboundUserRequestMessage
   | InboundChromeMountMessage
   | InboundChromeUnmountMessage
 
@@ -223,6 +229,7 @@ export function isInboundMessage(value: unknown): value is InboundMessage {
     case 'hearth.haptic':
     case 'hearth.notify':
     case 'hearth.ready':
+    case 'hearth.user.request':
     case 'hearth.chrome.mount':
     case 'hearth.chrome.unmount':
       return true

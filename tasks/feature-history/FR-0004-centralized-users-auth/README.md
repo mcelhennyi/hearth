@@ -1,12 +1,16 @@
 # FR-0004 — Centralized users auth (built-in plugin + gateway)
 
-**Status:** `parked`
+**Status:** `done` — feature branch complete; PR #56 pending human merge
 **Allocated:** 2026-05-17
 **Registry:** [`REGISTRY.md`](../REGISTRY.md)
 
-## Parked until
+## Resume status
 
-Implementation and frontier work stay **paused** until both gates below are **VAL-done** in [`tasks/ticket-progress.md`](../../ticket-progress.md):
+Implementation is complete on **`feat/FR-0004-centralized-users-auth`** and
+[**PR #56**](https://github.com/mcelhennyi/hearth/pull/56) is ready for human
+review/merge to **`main`**. The 2026-05-26 multi-user correction is included:
+`T-FR-0004-11`…`T-FR-0004-16` are merged, parent validation reran, and
+[`90-closeout.md`](90-closeout.md) records the final feature branch state.
 
 | Gate | Feature | Ticket(s) | What “done” means |
 |------|---------|-----------|-------------------|
@@ -14,13 +18,11 @@ Implementation and frontier work stay **paused** until both gates below are **VA
 | | | [**Real-iPhone walkthrough + closeout report**](../FR-0002-iphone-pwa-prototype/tickets.md) (`T-FR-0002-04`) **VAL** | FR-0002 prototype closed; cert + install path validated on device |
 | **2. Initial platform UI** | **FR-0001** | [**Mantle PWA shell and iframe embed**](../FR-0001-hearth-platform/tickets.md) (`T-FR-0001-04`) **VAL** | Hub shell at `/` with Mantle chrome, plugin iframe, `useUser()` / postMessage contract (typically after reusing FR-0002 Mantle bones) |
 
-Until then: **no** `T-FR-0004-02`…`10` worktrees; design artifacts in this folder remain authoritative.
-
-**Design-only progress:** [**Design amendments: centralized auth architecture**](tickets.md) (`T-FR-0004-01`) — complete in feature history; re-run or commit `docs/design/` amendments on `main` when resuming if they are not already merged.
+**Design-only progress:** [**Design amendments: centralized auth architecture**](tickets.md) (`T-FR-0004-01`) — complete in feature history and refreshed by the 2026-05-26 audit. Implementation starts with the built-in provider scaffold.
 
 ## Charter (one sentence)
 
-Move login, session, and authorization for every plugin behind a **built-in Hearth users plugin** and a **single public gateway** (Caddy → hub-or-plugin routes), so new Kindling-scaffolded apps inherit the contract by default and operators can later swap in a custom user service.
+Move multi-user login, session, and authorization for every plugin behind a **built-in Hearth users plugin** and a **single public gateway** (Caddy → hub-or-plugin routes), so new Kindling-scaffolded apps inherit the contract by default and operators can later swap in a custom user service.
 
 ## Artifacts
 
@@ -32,6 +34,7 @@ Move login, session, and authorization for every plugin behind a **built-in Hear
 | Tickets (draft DAG) | [`20-tickets-dag.md`](20-tickets-dag.md) |
 | Tickets (canonical) | [`tickets.md`](tickets.md) |
 | Diary | [`serial-diary.md`](serial-diary.md) |
+| Closeout | [`90-closeout.md`](90-closeout.md) |
 
 ## Relationship to other FRs
 

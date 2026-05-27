@@ -4,10 +4,10 @@
 // Frame lifecycle overlays: shell/PluginFrameStates.tsx (T-FR-0006-05).
 // postMessage protocol: shell/usePostMessageBridge.ts (T-FR-0006-03).
 
-import { useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 import { PluginFrameStates } from '../shell/PluginFrameStates'
-import type { Bridge } from '../shell/types'
+import type { Bridge, UserInfo } from '../shell/types'
 import { usePluginFrameState } from '../shell/usePluginFrameState'
 
 export interface PluginFrameProps {
@@ -15,9 +15,10 @@ export interface PluginFrameProps {
   name: string
   active: boolean
   bridge: Bridge
+  user: UserInfo
 }
 
-export function PluginFrame({ slug, name, active, bridge }: PluginFrameProps) {
+export function PluginFrame({ slug, name, active, bridge, user }: PluginFrameProps) {
   const frameRef = useRef<HTMLIFrameElement>(null)
   const { state, errorDetail, showSlowReload, reload, tryAgain } = usePluginFrameState({
     slug,
@@ -26,6 +27,23 @@ export function PluginFrame({ slug, name, active, bridge }: PluginFrameProps) {
     bridge,
     active,
   })
+  const postUser = useCallback(() => {
+    const frame = frameRef.current
+    if (!frame) return
+    bridge.pushToPlugin(frame, { type: 'hearth.user', user })
+  }, [bridge, user])
+
+  useEffect(() => {
+    const frame = frameRef.current
+    if (!frame) return undefined
+    return bridge.subscribe(
+      'hearth.user.request',
+      () => {
+        postUser()
+      },
+      { frame },
+    )
+  }, [bridge, postUser])
 
   function openSettings() {
     window.dispatchEvent(new CustomEvent('hearth:open-settings'))
@@ -43,6 +61,7 @@ export function PluginFrame({ slug, name, active, bridge }: PluginFrameProps) {
           title={name}
           data-plugin-slug={slug}
           src={`/${slug}/?embed=1`}
+          onLoad={postUser}
           sandbox="allow-scripts allow-same-origin allow-forms"
           className="h-full w-full rounded-none border-0 bg-[var(--hearth-bg)] md:rounded-lg md:border md:border-[var(--hearth-surface)]"
         />

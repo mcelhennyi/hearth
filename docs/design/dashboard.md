@@ -183,7 +183,7 @@ Prefers-reduced-motion: jiggle is replaced with a 2 px dashed outline around eac
 
 ### Layout persistence
 
-Stored per user (MVP: single local user) in the hub DB.
+Stored per authenticated Hearth user in the hub DB.
 
 | Endpoint | Method | Body |
 |----------|--------|------|

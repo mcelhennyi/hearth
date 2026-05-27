@@ -63,7 +63,8 @@ graph TB
 
 | Component | Tech | Responsibility |
 |-----------|------|----------------|
-| **Hub API** (`apps/hub/api/`) | Python 3.12, FastAPI, SQLite, `uvicorn` | Plugin registry, lifecycle (`enable`, `disable`, `health`), nginx-config generation, dashboard data aggregation, settings CRUD, identity (single local user for MVP). |
+| **Hub API** (`apps/hub/api/`) | Python 3.12, FastAPI, SQLite, `uvicorn` | Plugin registry, lifecycle (`enable`, `disable`, `health`), Caddy config generation, dashboard data aggregation, settings CRUD, auth-provider verify alias. |
+| **Built-in platform plugins** (`apps/builtin/<slug>/`) | Same contracts as plugins, bundled with Hearth | Core services that need plugin boundaries without becoming hub monolith code; FR-0004 adds `hearth-users` for identity. |
 | **Mantle shell** (`apps/hub/web/`, package from Kindling) | React 18, TypeScript, Vite, Tailwind, shadcn/ui | The chrome — top nav, theme tokens, plugin frame, auth widget, notification slot. Plugins import the Mantle package for shared primitives. |
 | **Plugins** (`apps/<slug>/`) | Plugin's choice; default Python+React via Kindling | Self-contained app: own backend process, own UI, own data store. Declares routes + capabilities + permissions in `tinder.toml`. |
 | **Spark bus** (`apps/hub/api/spark/`) | Python `asyncio`, Unix domain sockets, length-prefixed JSON frames | Inter-plugin RPC + pub/sub. Sockets at `var/hearth/run/spark.sock` (broker) and `var/hearth/run/<slug>.sock` (per-plugin). |
@@ -135,21 +136,21 @@ Full schema and error envelope: [`docs/design/spark-api.md`](../spark-api.md).
 
 ```mermaid
 graph LR
-  Dev[Developer laptop] -- docker compose up --> Compose[Compose stack: nginx + hub + plugin sandboxes]
-  Pi[Pi/Mac mini bare metal] -- ./install.sh --> SystemD[systemd: nginx.service + hearth-hub.service + hearth-plugin@<slug>.service]
+  Dev[Developer laptop] -- docker compose up --> Compose[Compose stack: Caddy + hub + plugin sandboxes]
+  Pi[Pi/Mac mini bare metal] -- ./install.sh --> SystemD[systemd: caddy.service + hearth-hub.service + hearth-plugin@<slug>.service]
   Backup[Cloud storage<br/>Phase 2] -. ember-relay sync .- Pi
 ```
 
-- **Dev:** Docker Compose with hot-reload for hub, mounted plugin folders, single-process nginx. Plugins run as additional Compose services scaffolded by Kindling.
-- **Prod:** systemd units. nginx as a system package. Hub owns `var/hearth/` (data, sockets, generated nginx fragments). `install.sh` wires it up and prompts for the local user password.
+- **Dev:** Docker Compose with hot-reload for hub, mounted plugin folders, single-process Caddy. Plugins run as additional Compose services scaffolded by Kindling.
+- **Prod:** systemd units. Caddy as a system package. Hub owns `var/hearth/` (data, sockets, generated Caddy fragments). `install.sh` wires it up and sends the operator through `hearth-users` first-admin setup.
 - **Phase 2:** Ember relay (separate FR) speaks to the hub over an outbound persistent connection so users can reach `https://<id>.ember.example/` from anywhere with end-to-end encryption.
 
 ## 8. Identity (MVP)
 
 > REWORK-REQUIRED RW-I1 — This section describes hub-issued password sessions and **nginx** `auth_request`. **Intended state:** centralized auth via built-in **`hearth-users`** plugin, Caddy `auth_request` to hub verify, and `X-Hearth-User-*` trust headers per [`tasks/feature-history/FR-0004-centralized-users-auth/10-design-01-gateway-and-trust.md`](../../tasks/feature-history/FR-0004-centralized-users-auth/10-design-01-gateway-and-trust.md) (promote to `docs/design/` when FR-0004 resumes). Until rework lands, treat FR-0004 feature design as the implementation target for auth work.
 
-- **One local user**, local password (Argon2id), session cookie issued by hub.
-- Plugins do not implement their own login — they trust a signed `X-Hearth-User` header injected by nginx (set from a sub-request to the hub's `/auth/verify`).
+- **Multiple local users**, local passwords (Argon2id), session cookies issued by the built-in `hearth-users` plugin. First account is the local admin; additional accounts receive user-scoped identity claims through the same gateway trust contract.
+- Plugins do not implement their own login — they trust signed `X-Hearth-User-*` headers injected by Caddy after a sub-request to the hub's `/api/auth/verify` alias.
 - Phase 2: Ember relay issues device-bound tokens; same header contract on the inside.
 
 > DESIGN-GAP DG-I1 — **`HEARTH_TRUST_LAN=1`** bypass vs required auth on LAN: operator semantics and Caddy config are not fully specified for FR-0001 MVP if FR-0004 is still parked (see open Q4 in `tasks/feature-history/FR-0001-hearth-platform/10-design/open-questions.md`).
@@ -166,7 +167,7 @@ Backup strategy lives in [`docs/design/deployment.md`](../deployment.md). MVP ex
 
 ## 10. Non-goals (MVP)
 
-- Multi-user, role-based permissions.
+- Fine-grained per-plugin authorization beyond the baseline `admin` / `user` account roles.
 - Federation / clustering across multiple Hearth boxes.
 - A plugin marketplace, ratings, or paid plugins.
 - Realtime ML / heavy media transcode (the C++ door is open but unscaffolded).

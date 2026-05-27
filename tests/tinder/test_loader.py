@@ -13,6 +13,7 @@ from tinder.loader import load_tinder
 from tinder.schema import TinderManifest
 
 FIXTURES = Path(__file__).parent.parent / "fixtures" / "plugins"
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 class TestValidManifest:
@@ -50,6 +51,17 @@ class TestValidManifest:
         assert manifest.ui.nav is not None
         assert manifest.ui.nav.label == "Groceries"
         assert manifest.ui.nav.order == 30
+
+    def test_hearth_users_builtin_manifest_loads(self) -> None:
+        manifest, errors = load_tinder(REPO_ROOT / "apps" / "builtin" / "hearth-users")
+        assert errors == [], f"Unexpected errors: {errors}"
+        assert manifest is not None
+        assert manifest.plugin.slug == "hearth-users"
+        assert manifest.plugin.builtin is True
+        assert manifest.entrypoint.backend.module == "hearth_users.app:create_app"
+        assert manifest.capabilities["session"].methods == ["current"]
+        assert manifest.capabilities["session"].events == ["login", "logout"]
+        assert "hearth-users.*" in manifest.permissions.spark_publish
 
 
 class TestSlugValidation:

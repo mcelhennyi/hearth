@@ -97,8 +97,22 @@ This tree is the **bare-metal** layout: paths under `/opt`, `/etc`, and `/var` a
   plugins/<slug>/        (per-plugin data dirs)
   run/                   (Unix sockets — not backed up)
   log/
-  secrets/               (mode 0600 — VAPID keys, local user password hash, …)
+  secrets/               (mode 0600 — VAPID keys, auth bootstrap secrets, …)
 ```
+
+`hearth-users` owns local identity. On a fresh install the operator opens
+`/hearth-users/login` to create the first admin account with username, display
+name, and password. The first admin receives `admin,user` roles, can add later
+local users from Hearth Settings, and cannot disable or demote the final enabled
+admin. Later users sign in through the same `/hearth-users/login` route; plugins
+continue to receive identity only from the gateway trust headers and Mantle
+`useUser()` messages.
+
+`hearth-users` may bootstrap the first local admin account from an optional
+ignored file at `var/hearth/secrets/hearth-users-default-password` (or
+`$HEARTH_USERS_BOOTSTRAP_PASSWORD_FILE`). The file is read only when no local
+user exists; it does not reset an existing password on restart. Multi-user
+management after first setup happens through the built-in users provider.
 
 On macOS: prefix `/opt` and `/var` with `/usr/local` and `/etc` with `/usr/local/etc`. The install script abstracts this.
 
@@ -224,7 +238,7 @@ flowchart TD
   F --> G[Create /var/hearth and /etc/hearth]
   G --> H[Install systemd / launchd units]
   H --> I[Generate VAPID keypair for Web Push]
-  I --> J[Prompt for local user password]
+  I --> J[Start hearth-users first-admin setup]
   J --> K[Generate initial hearth.toml + Caddyfile]
   K --> L[Start hearth-hub + caddy]
   L --> M[Print: https://hearth.home.arpa/ and 'next: trust the local CA on your iPhone']

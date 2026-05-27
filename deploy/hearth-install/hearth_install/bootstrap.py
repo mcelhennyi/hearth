@@ -13,7 +13,6 @@ from typing import Callable, TextIO
 
 from hearth_install.layout import ensure_hearth_layout
 from hearth_install.plugin_compose import generate_plugin_compose
-from hearth_install.plugin_trees import sync_enabled_plugins_from_repo
 
 _DOCKER_HINT_PI = """\
 Docker Engine is required for the non-dry-run bootstrap.
@@ -66,7 +65,6 @@ def plan_bootstrap(
         f"write {hearth / 'compose' / '.env'} with HEARTH_REPO_ROOT={paths.repo_root}",
         f"copy Caddy configs to {hearth / 'compose' / 'caddy'}",
         f"ensure static publish dir at {hearth / 'compose' / 'static'}",
-        f"sync enabled plugins from repo into {hearth / 'plugins'} (symlink when stubs)",
         f"generate {hearth / 'compose' / 'overrides' / 'generated.plugins.yml'}",
         f"symlink {hearth / 'bin' / 'hearth'} -> {paths.repo_root / 'bin' / 'hearth'}",
     ]
@@ -182,34 +180,27 @@ def materialize_compose_assets(repo_root: Path, hearth: Path, *, dry_run: bool) 
 
 
 def run_compose_up(
-    hearth: Path,
+    compose_file: Path,
     *,
     dry_run: bool,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
 ) -> int:
-    """``docker compose up -d`` from ``hearth/compose`` (same flags as ``hearth start``)."""
+    """``docker compose up -d`` from ``hearth/compose``."""
 
     if dry_run:
         return 0
-    compose_dir = hearth / "compose"
-    compose_file = compose_dir / "docker-compose.yml"
-    overrides = compose_dir / "overrides" / "generated.plugins.yml"
-    command: list[str] = [
-        "docker",
-        "compose",
-        "-f",
-        compose_file.name,
-    ]
+    command = ["docker", "compose", "-f", compose_file.name]
+    overrides = compose_file.parent / "overrides" / "generated.plugins.yml"
     if overrides.is_file():
         command.extend(["-f", "overrides/generated.plugins.yml"])
+    env_file = compose_file.parent / ".env"
     command.extend(["--project-name", "hearth"])
-    env_file = compose_dir / ".env"
     if env_file.is_file():
         command.extend(["--env-file", ".env"])
     command.extend(["up", "-d"])
     proc = runner(
         command,
-        cwd=str(compose_dir),
+        cwd=str(compose_file.parent),
         check=False,
     )
     return int(proc.returncode)
@@ -296,7 +287,6 @@ def run_bootstrap(
     materialize_compose_template(hearth, dry_run=False)
     write_compose_env_file(hearth, repo_root, dry_run=False)
     materialize_compose_assets(repo_root, hearth, dry_run=False)
-    sync_enabled_plugins_from_repo(hearth, repo_root)
     generate_plugin_compose(hearth)
     launcher = repo_root / "bin" / "hearth"
     if not launcher.is_file():
@@ -313,7 +303,7 @@ def run_bootstrap(
         if not verify_docker_engine(stderr):
             return 1
 
-    code = run_compose_up(hearth, dry_run=False, runner=compose_runner)
+    code = run_compose_up(compose_file, dry_run=False, runner=compose_runner)
     if code != 0:
         print(f"bootstrap: docker compose up exited {code}", file=stderr)
     else:

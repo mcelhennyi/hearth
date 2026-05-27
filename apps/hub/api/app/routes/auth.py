@@ -8,9 +8,12 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException, Request, Response
+import httpx
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app import auth_verify
 from app.auth import (
     SESSION_COOKIE,
     SESSION_TTL_SECONDS,
@@ -24,6 +27,9 @@ from app.auth import (
     verify_password,
     verify_session_token,
 )
+from app.db import get_session
+from app.models import Plugin
+from app.routes.settings import _auth_settings, _load_settings
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -94,3 +100,37 @@ def setup(body: SetupRequest) -> dict[str, str]:
         raise HTTPException(status_code=400, detail="Password must be at least 8 characters.")
     save_password_hash(path, hash_password(body.password))
     return {"status": "ok"}
+
+
+@router.get("/verify")
+async def verify(request: Request, session: AsyncSession = Depends(get_session)) -> Response:
+    rows = await _load_settings(session)
+    auth_settings = _auth_settings(rows)
+    if auth_settings.provider == "builtin":
+        if not await _builtin_auth_provider_enabled(session):
+            raise HTTPException(status_code=503, detail="Built-in auth provider is disabled.")
+        provider_url = auth_verify.builtin_verify_url()
+    else:
+        provider_url = auth_settings.external_verify_url
+
+    if not provider_url:
+        raise HTTPException(status_code=503, detail="Auth provider is not configured.")
+
+    try:
+        provider = await auth_verify.fetch_provider_claims(provider_url, request)
+        if provider.status_code in {401, 403}:
+            raise HTTPException(status_code=provider.status_code, detail="Not authenticated.")
+        if provider.status_code != 200 or provider.claims is None:
+            raise HTTPException(status_code=503, detail="Auth provider unavailable.")
+        headers = auth_verify.normalized_user_headers(provider.claims, request)
+    except HTTPException:
+        raise
+    except (httpx.HTTPError, auth_verify.ProviderUnavailable) as exc:
+        raise HTTPException(status_code=503, detail="Auth provider unavailable.") from exc
+
+    return Response(status_code=200, headers=headers)
+
+
+async def _builtin_auth_provider_enabled(session: AsyncSession) -> bool:
+    plugin = await session.get(Plugin, "hearth-users")
+    return plugin is None or plugin.state == "enabled"

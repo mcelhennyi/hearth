@@ -2,7 +2,7 @@
 // Spec: docs/design/mantle-ui.md § Settings modal; mocks: docs/design/mockups/dashboard-*.html
 // Ticket: T-FR-0006-04.
 
-import { useEffect, useId, useRef, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
 
 import { useThemePreference } from '../theme/ThemeProvider'
 import type { ThemePreference } from '../theme/tokens'
@@ -10,11 +10,47 @@ import { useSettings, type SettingsTab } from './SettingsContext'
 
 const TABS: Array<{ id: SettingsTab; label: string }> = [
   { id: 'theme', label: 'Theme' },
+  { id: 'account', label: 'Account' },
   { id: 'plugins', label: 'Plugins' },
   { id: 'system-tiles', label: 'System tiles' },
   { id: 'diagnostics', label: 'Diagnostics' },
   { id: 'sign-out', label: 'Sign out' },
 ]
+
+type CurrentUser = {
+  user_id: string
+  display_name: string
+  roles: string[]
+}
+
+type ManagedUser = {
+  user_id: string
+  username: string
+  display_name: string
+  roles: string[]
+  disabled: boolean
+}
+
+async function jsonRequest<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(path, {
+    credentials: 'include',
+    ...init,
+    headers: init?.body
+      ? { 'content-type': 'application/json', ...init.headers }
+      : init?.headers,
+  })
+  if (!response.ok) {
+    let detail = 'Request failed.'
+    try {
+      const payload = (await response.json()) as { detail?: unknown }
+      if (typeof payload.detail === 'string') detail = payload.detail
+    } catch {
+      // Keep the generic message for non-JSON responses.
+    }
+    throw new Error(detail)
+  }
+  return (await response.json()) as T
+}
 
 function ThemeTab() {
   const { preference, setPreference } = useThemePreference()
@@ -38,6 +74,213 @@ function ThemeTab() {
         </label>
       ))}
     </fieldset>
+  )
+}
+
+function AccountTab() {
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
+  const [users, setUsers] = useState<ManagedUser[]>([])
+  const [message, setMessage] = useState('Loading account...')
+  const [isBusy, setIsBusy] = useState(false)
+
+  const isAdmin = currentUser?.roles.includes('admin') ?? false
+
+  async function loadUsers(): Promise<void> {
+    const payload = await jsonRequest<{ users: ManagedUser[] }>('/hearth-users/api/admin/users')
+    setUsers(payload.users)
+  }
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadAccount(): Promise<void> {
+      try {
+        const session = await jsonRequest<CurrentUser>('/hearth-users/api/session')
+        if (cancelled) return
+        setCurrentUser(session)
+        if (!session.roles.includes('admin')) {
+          setMessage('Admin role required.')
+          return
+        }
+        const payload = await jsonRequest<{ users: ManagedUser[] }>('/hearth-users/api/admin/users')
+        if (cancelled) return
+        setUsers(payload.users)
+        setMessage('')
+      } catch (error) {
+        if (!cancelled) {
+          setMessage(error instanceof Error ? error.message : 'Account settings unavailable.')
+        }
+      }
+    }
+
+    void loadAccount()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  async function createUser(event: FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault()
+    const form = event.currentTarget
+    const data = new FormData(form)
+    setIsBusy(true)
+    setMessage('Creating user...')
+    try {
+      await jsonRequest<ManagedUser>('/hearth-users/api/admin/users', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: data.get('username'),
+          display_name: data.get('display_name'),
+          password: data.get('password'),
+          roles: data.get('admin') === 'on' ? ['admin', 'user'] : ['user'],
+        }),
+      })
+      form.reset()
+      await loadUsers()
+      setMessage('')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Could not create user.')
+    } finally {
+      setIsBusy(false)
+    }
+  }
+
+  async function updateUser(user: ManagedUser, patch: Partial<ManagedUser>): Promise<void> {
+    setIsBusy(true)
+    setMessage('Updating user...')
+    try {
+      await jsonRequest<ManagedUser>(`/hearth-users/api/admin/users/${user.user_id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(patch),
+      })
+      await loadUsers()
+      setMessage('')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Could not update user.')
+    } finally {
+      setIsBusy(false)
+    }
+  }
+
+  async function resetPassword(user: ManagedUser): Promise<void> {
+    const password = window.prompt(`New password for ${user.display_name}`)
+    if (!password) return
+    setIsBusy(true)
+    setMessage('Resetting password...')
+    try {
+      await jsonRequest<ManagedUser>(`/hearth-users/api/admin/users/${user.user_id}/password`, {
+        method: 'POST',
+        body: JSON.stringify({ password }),
+      })
+      setMessage('')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Could not reset password.')
+    } finally {
+      setIsBusy(false)
+    }
+  }
+
+  if (!isAdmin) {
+    return <p className="text-sm text-[var(--hearth-muted)]">{message}</p>
+  }
+
+  return (
+    <div className="space-y-5">
+      <section className="space-y-3">
+        <h3 className="text-base font-semibold text-[var(--hearth-fg)]">User management</h3>
+        <form className="grid gap-3 md:grid-cols-2" onSubmit={(event) => void createUser(event)}>
+          <label className="grid gap-1 text-sm font-medium text-[var(--hearth-fg)]">
+            Username
+            <input
+              name="username"
+              required
+              className="rounded-md border border-[var(--hearth-muted)]/30 bg-[var(--hearth-bg)] px-3 py-2"
+            />
+          </label>
+          <label className="grid gap-1 text-sm font-medium text-[var(--hearth-fg)]">
+            Display name
+            <input
+              name="display_name"
+              required
+              className="rounded-md border border-[var(--hearth-muted)]/30 bg-[var(--hearth-bg)] px-3 py-2"
+            />
+          </label>
+          <label className="grid gap-1 text-sm font-medium text-[var(--hearth-fg)]">
+            Initial password
+            <input
+              name="password"
+              type="password"
+              minLength={8}
+              required
+              className="rounded-md border border-[var(--hearth-muted)]/30 bg-[var(--hearth-bg)] px-3 py-2"
+            />
+          </label>
+          <label className="flex items-center gap-2 self-end text-sm text-[var(--hearth-fg)]">
+            <input name="admin" type="checkbox" className="h-4 w-4 accent-[var(--hearth-accent)]" />
+            Admin
+          </label>
+          <button
+            type="submit"
+            disabled={isBusy}
+            className="rounded-lg bg-[var(--hearth-accent)] px-4 py-2 text-sm font-medium text-[var(--hearth-accent-fg)] disabled:opacity-60 md:col-span-2"
+          >
+            Create user
+          </button>
+        </form>
+      </section>
+
+      <section className="space-y-2">
+        {users.map((user) => {
+          const userIsAdmin = user.roles.includes('admin')
+          return (
+            <div
+              key={user.user_id}
+              className="grid gap-2 border-t border-[var(--hearth-muted)]/20 py-3 md:grid-cols-[1fr_auto]"
+            >
+              <div>
+                <p className="font-medium text-[var(--hearth-fg)]">{user.display_name}</p>
+                <p className="text-sm text-[var(--hearth-muted)]">
+                  {user.username} - {user.roles.join(', ')} -{' '}
+                  {user.disabled ? 'disabled' : 'enabled'}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  disabled={isBusy}
+                  onClick={() => void updateUser(user, { disabled: !user.disabled })}
+                  className="rounded-md bg-[var(--hearth-bg)] px-3 py-2 text-sm text-[var(--hearth-fg)] disabled:opacity-60"
+                >
+                  {user.disabled ? `Enable ${user.display_name}` : `Disable ${user.display_name}`}
+                </button>
+                <button
+                  type="button"
+                  disabled={isBusy}
+                  onClick={() =>
+                    void updateUser(user, {
+                      roles: userIsAdmin ? ['user'] : ['admin', 'user'],
+                    })
+                  }
+                  className="rounded-md bg-[var(--hearth-bg)] px-3 py-2 text-sm text-[var(--hearth-fg)] disabled:opacity-60"
+                >
+                  {userIsAdmin ? `Remove admin from ${user.display_name}` : `Make ${user.display_name} admin`}
+                </button>
+                <button
+                  type="button"
+                  disabled={isBusy}
+                  onClick={() => void resetPassword(user)}
+                  className="rounded-md bg-[var(--hearth-bg)] px-3 py-2 text-sm text-[var(--hearth-fg)] disabled:opacity-60"
+                >
+                  Reset password
+                </button>
+              </div>
+            </div>
+          )
+        })}
+      </section>
+
+      {message ? <p className="text-sm text-[var(--hearth-muted)]">{message}</p> : null}
+    </div>
   )
 }
 
@@ -93,6 +336,8 @@ function TabPanel({ tab }: { tab: SettingsTab }) {
   switch (tab) {
     case 'theme':
       return <ThemeTab />
+    case 'account':
+      return <AccountTab />
     case 'plugins':
       return <PluginsTab />
     case 'system-tiles':

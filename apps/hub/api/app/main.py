@@ -16,10 +16,17 @@ DB: async SQLite at HEARTH_VAR_DIR/hearth.db via db.py + Alembic migrations.
 from __future__ import annotations
 
 import os
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
+from sqlalchemy import text
 
+from . import auth_verify
+from .builtins import register_builtin_plugins
+from .db import _DEFAULT_VAR_DIR, _SessionFactory, engine
+from .models import Base
 from .push_service import PushConfig
 from .routes.auth import router as auth_router
 from .routes.dashboard import router as dashboard_router
@@ -42,7 +49,29 @@ DEFAULT_PUSH_CONFIG = PushConfig(
     ),
 )
 
-app = FastAPI(title="Hearth Hub API", docs_url="/api/docs", redoc_url="/api/redoc")
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    _DEFAULT_VAR_DIR.mkdir(parents=True, exist_ok=True)
+    auth_verify.load_or_create_user_sig_secret()
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+        columns = await conn.execute(text("PRAGMA table_info(plugins)"))
+        if "builtin" not in {row[1] for row in columns}:
+            await conn.execute(
+                text("ALTER TABLE plugins ADD COLUMN builtin BOOLEAN NOT NULL DEFAULT 0")
+            )
+    async with _SessionFactory() as session:
+        await register_builtin_plugins(session)
+    yield
+
+
+app = FastAPI(
+    title="Hearth Hub API",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    lifespan=lifespan,
+)
 app.state.push_config = DEFAULT_PUSH_CONFIG
 
 app.include_router(health_router)
