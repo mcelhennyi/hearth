@@ -4,16 +4,16 @@
 |-------|-------|
 | **FR** | `FR-0007` |
 | **Slug** | `FR-0007-kindling-mantle-migration` |
-| **Branch** | `feat/FR-0007-kindling-mantle-migration` |
-| **Role** | Feature integration branch |
+| **Branch** | `feat/FR-0007-kindling-mantle-migration-T-FR-0007-02-move-mantle-package-source` |
+| **Role** | Ticket branch for `T-FR-0007-02` |
 
 ## State
 
-`T-FR-0007-01` is merged and VAL-done. The Kindling satellite design and FR migration plan now state ownership, local and CI consumption, plugin import rules, compatibility declaration, and transitional `packages/mantle/` status.
+`T-FR-0007-02` completed TEST, DEV, and VAL. `@kindling/mantle` source, tests, README, changelog, package metadata, and build config now live in the Kindling submodule at `kindling/mantle/`; the Hearth-local `packages/mantle/` source tree has been removed.
 
 ## Next Action
 
-Run the next frontier ticket: **Move Mantle package source to Kindling** (`T-FR-0007-02`) in `.worktrees/FR-0007-kindling-mantle-migration/T-FR-0007-02-move-mantle-package-source/`, then merge it back here and rerun `/identify-frontier`.
+Merge this ticket branch back into `.worktrees/FR-0007-kindling-mantle-migration/feature/`, then rerun `/identify-frontier`. Expected next eligible tickets are **Rewire Hearth to consume Kindling Mantle** (`T-FR-0007-03`) and **Standalone Kindling app template support** (`T-FR-0007-04`).
 
 ## Links
 

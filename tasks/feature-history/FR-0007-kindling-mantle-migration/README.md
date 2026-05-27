@@ -15,7 +15,7 @@ Move Mantle package ownership out of Hearth and into Kindling so app/plugin repo
 
 ## Current state
 
-FR-0006 created a private `@kindling/mantle` package under Hearth at `packages/mantle/`. FR-0007 makes Kindling the package source of truth and changes Hearth, Kindling templates, and downstream plugin validation so standalone development no longer requires reaching into a Hearth checkout.
+FR-0006 created a private `@kindling/mantle` package under Hearth at `packages/mantle/`. FR-0007 moves that source into Kindling at `kindling/mantle/` and changes Hearth, Kindling templates, and downstream plugin validation so standalone development no longer requires reaching into a Hearth checkout.
 
 ## Suggested next step
 

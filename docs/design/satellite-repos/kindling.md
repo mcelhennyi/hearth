@@ -68,11 +68,11 @@ FR-0007 transitions Mantle from the temporary Hearth-authored package at `packag
 
 | State | Meaning | Allowed use |
 |-------|---------|-------------|
-| FR-0006 private package | `packages/mantle/` exists in Hearth as the private package proven by FR-0006. | Read-only source for the FR-0007 move. Do not copy it into plugin repos or document it as an app dependency. |
-| FR-0007 migration | Kindling Mantle source is being populated and Hearth is being rewired. | Hearth may keep a short-lived `packages/mantle/` mirror only as an explicit rollback/compatibility fixture while tickets complete. New templates and plugin docs still point at `@kindling/mantle`. |
-| Target state | Kindling owns Mantle; Hearth consumes the package. | `packages/mantle/` is removed, converted to tests/fixtures, or documented as non-authoritative. CI/production uses a pinned Kindling package or immutable tag. |
+| FR-0006 private package | `packages/mantle/` existed in Hearth as the private package proven by FR-0006. | Historical source for the FR-0007 move. Do not copy it into plugin repos or document it as an app dependency. |
+| FR-0007 migration | Kindling Mantle source is populated at `kindling/mantle/` and Hearth is being rewired. | Hearth no longer treats `packages/mantle/` as authoritative. New templates and plugin docs still point at `@kindling/mantle`. |
+| Target state | Kindling owns Mantle; Hearth consumes the package. | `packages/mantle/` is absent unless restored as an explicit temporary rollback fixture. CI/production uses a pinned Kindling package or immutable tag. |
 
-Until FR-0007 is complete, `packages/mantle/` is a transitional source location created by FR-0006 and should not be copied into plugin repos. Any temporary mirror must name the Kindling-owned end state in its README, changelog, or ticket diary and must be removed or downgraded to fixtures before FR-0007 closeout.
+As of T-FR-0007-02, `kindling/mantle/` is the package source location. Any temporary Hearth-side mirror restored during migration must name the Kindling-owned end state in its README, changelog, or ticket diary and must be removed or downgraded to fixtures before FR-0007 closeout.
 
 ### Downstream compatibility rule
 
