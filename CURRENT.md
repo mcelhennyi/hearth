@@ -4,16 +4,16 @@
 |-------|-------|
 | **FR** | `FR-0007` |
 | **Slug** | `FR-0007-kindling-mantle-migration` |
-| **Branch** | `feat/FR-0007-kindling-mantle-migration` |
-| **Role** | Feature integration branch |
+| **Branch** | `feat/FR-0007-kindling-mantle-migration-T-FR-0007-01-contract-transition-docs` |
+| **Role** | Ticket branch for `T-FR-0007-01` |
 
 ## State
 
-FR-0007 is starting implementation. The current frontier has one eligible ticket: **Contract and transition docs** (`T-FR-0007-01`).
+`T-FR-0007-01` completed TEST, DEV, and VAL for the Kindling-owned Mantle transition contract. The Kindling satellite design and FR migration plan now state ownership, local and CI consumption, plugin import rules, compatibility declaration, and transitional `packages/mantle/` status.
 
 ## Next Action
 
-Work `T-FR-0007-01` in child worktree `.worktrees/FR-0007-kindling-mantle-migration/T-FR-0007-01-contract-transition-docs/`, then merge it back here and rerun `/identify-frontier`.
+Commit and push this ticket branch, then merge it back into `.worktrees/FR-0007-kindling-mantle-migration/feature/` and rerun `/identify-frontier`.
 
 ## Links
 

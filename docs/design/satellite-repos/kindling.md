@@ -53,7 +53,30 @@ FR-0007 transitions Mantle from the temporary Hearth-authored package at `packag
 - Plugin/app repositories depend on `@kindling/mantle`; they never import Mantle from a Hearth-relative path.
 - Plugin compliance is versioned: a plugin is compatible with a Hearth host when its declared Kindling/Mantle major range is accepted by that host.
 
-Until FR-0007 is complete, `packages/mantle/` is a transitional source location created by FR-0006 and should not be copied into plugin repos.
+### Mantle ownership contract
+
+| Surface | Owner | Contract |
+|---------|-------|----------|
+| Mantle source and tests | Kindling | Authoritative source for `@kindling/mantle` lives under Kindling's `mantle/` package workspace, including component/hook/bridge implementation, styles, unit tests, type tests, package build config, and release fixtures. |
+| Package metadata | Kindling | `package.json`, package exports, dependency policy, version, publish/tag metadata, and package README/changelog are maintained with the Kindling Mantle source. |
+| Release path | Kindling | Kindling publishes or tags `@kindling/mantle` releases. Hearth pins a released package version or immutable tagged source for CI/production rather than treating a Hearth-local package tree as canonical. |
+| Local Hearth development | Hearth + Kindling | Hearth may mount the Kindling checkout as a submodule/workspace so local `apps/hub/web` work resolves `@kindling/mantle` without network publishing. This is a development convenience, not ownership. |
+| Plugin/app repos | Plugin maintainer + Kindling | Generated and downstream repos declare `@kindling/mantle` as a package dependency. They must not import from `hearth/packages/mantle`, `apps/hub/web/src`, or any other Hearth-relative Mantle path. |
+| Compatibility declaration | Hearth + Kindling | A plugin is compatible when its manifest/package metadata declares a supported Kindling/Mantle version range accepted by the target Hearth host. Hearth validation reports the accepted range when the declaration is missing or unsupported. |
+
+### Transition states
+
+| State | Meaning | Allowed use |
+|-------|---------|-------------|
+| FR-0006 private package | `packages/mantle/` exists in Hearth as the private package proven by FR-0006. | Read-only source for the FR-0007 move. Do not copy it into plugin repos or document it as an app dependency. |
+| FR-0007 migration | Kindling Mantle source is being populated and Hearth is being rewired. | Hearth may keep a short-lived `packages/mantle/` mirror only as an explicit rollback/compatibility fixture while tickets complete. New templates and plugin docs still point at `@kindling/mantle`. |
+| Target state | Kindling owns Mantle; Hearth consumes the package. | `packages/mantle/` is removed, converted to tests/fixtures, or documented as non-authoritative. CI/production uses a pinned Kindling package or immutable tag. |
+
+Until FR-0007 is complete, `packages/mantle/` is a transitional source location created by FR-0006 and should not be copied into plugin repos. Any temporary mirror must name the Kindling-owned end state in its README, changelog, or ticket diary and must be removed or downgraded to fixtures before FR-0007 closeout.
+
+### Downstream compatibility rule
+
+Kindling-based plugin/app repos declare the Mantle contract in package metadata and, when available, in Tinder compatibility metadata. The supported range is a Kindling/Mantle major range such as `^1` or `>=1 <2`, not a Hearth git path. Hearth hosts validate that declaration before install or release; Kindling templates stamp the current accepted range by default so standalone development and Hearth-hosted plugin mode use the same package surface.
 
 <!-- /AMENDMENT -->
 
