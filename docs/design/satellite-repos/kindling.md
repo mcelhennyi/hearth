@@ -74,6 +74,8 @@ FR-0007 transitions Mantle from the temporary Hearth-authored package at `packag
 
 As of T-FR-0007-02, `kindling/mantle/` is the package source location. Any temporary Hearth-side mirror restored during migration must name the Kindling-owned end state in its README, changelog, or ticket diary and must be removed or downgraded to fixtures before FR-0007 closeout.
 
+As of T-FR-0007-03, Hearth's hub web workspace includes `kindling/mantle/` and declares `@kindling/mantle` as a workspace dependency. Local development and CI builds resolve Mantle through the pinned Kindling submodule SHA; production/release builds may swap that workspace edge for the matching Kindling package artifact or immutable tag, but must keep package imports under `@kindling/mantle` rather than `packages/mantle/`.
+
 ### Downstream compatibility rule
 
 Kindling-based plugin/app repos declare the Mantle contract in package metadata and, when available, in Tinder compatibility metadata. The supported range is a Kindling/Mantle major range such as `^1` or `>=1 <2`, not a Hearth git path. Hearth hosts validate that declaration before install or release; Kindling templates stamp the current accepted range by default so standalone development and Hearth-hosted plugin mode use the same package surface.
