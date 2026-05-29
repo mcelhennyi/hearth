@@ -9,14 +9,14 @@
 
 ## State
 
-`T-FR-0007-01` and `T-FR-0007-02` are complete and merged. `@kindling/mantle` source, tests, README, changelog, package metadata, and build config now live in the Kindling submodule at `kindling/mantle/`; the Hearth-local `packages/mantle/` source tree has been removed.
+`T-FR-0007-01` through `T-FR-0007-04` are complete and merged. Hearth now consumes `@kindling/mantle` from the Kindling submodule workspace, and Kindling's React template can render standalone apps that install/build local Mantle without a Hearth checkout.
 
 ## Next Action
 
-Run the next frontier: **Rewire Hearth to consume Kindling Mantle** (`T-FR-0007-03`) and **Standalone Kindling app template support** (`T-FR-0007-04`) are dependency-eligible and may proceed in parallel from this feature branch.
+Run the next frontier ticket: **Mantle version compliance validation** (`T-FR-0007-05`) is dependency-eligible. `T-FR-0007-06` remains blocked until `T-FR-0007-05` is VAL-done.
 
 ## Links
 
 - `tasks/feature-history/FR-0007-kindling-mantle-migration/tickets.md`
-- `tasks/handoffs/2026-05-27-parallel-frontier-fr-0007-after-t02.md`
+- `tasks/handoffs/2026-05-29-parallel-frontier-fr-0007-after-t04.md`
 - `tasks/ticket-progress.md`

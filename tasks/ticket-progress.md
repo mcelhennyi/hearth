@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0007-03`, `T-FR-0007-04` |
+| **Active ticket** | `T-FR-0007-05` |
 | **Active phase** | TEST |
-| **Branch / worktree** | `feat/FR-0007-kindling-mantle-migration` @ `.worktrees/FR-0007-kindling-mantle-migration/feature/`; next ticket worktrees `.worktrees/FR-0007-kindling-mantle-migration/T-FR-0007-03-rewire-hearth-kindling-mantle/` and `.worktrees/FR-0007-kindling-mantle-migration/T-FR-0007-04-standalone-kindling-template/` |
+| **Branch / worktree** | `feat/FR-0007-kindling-mantle-migration` @ `.worktrees/FR-0007-kindling-mantle-migration/feature/`; next ticket worktree `.worktrees/FR-0007-kindling-mantle-migration/T-FR-0007-05-mantle-version-compliance/` |
 | **Session status** | `developing` |
-| **Next agent should** | Run `/develop-frontier` for **Rewire Hearth to consume Kindling Mantle** (`T-FR-0007-03`) and **Standalone Kindling app template support** (`T-FR-0007-04`) in separate child worktrees; keep all installs/tests inside the development container. |
+| **Next agent should** | Run `/develop-frontier` for **Mantle version compliance validation** (`T-FR-0007-05`); keep all installs/tests inside the development container. |
 
 ### Parallel streams
 
@@ -16,7 +16,7 @@
 
 **Kindling FR-0001** — merged [kindling PR #1](https://github.com/mcelhennyi/kindling/pull/1) @ `f64b6a1`; hearth submodule bumped on `feat/FR-0006-design-language` @ `df20872`.
 
-**FR-0007** developing — `T-FR-0007-01` and `T-FR-0007-02` merged; `T-FR-0007-03` and `T-FR-0007-04` are the next dependency-eligible tickets under `.worktrees/FR-0007-kindling-mantle-migration/`.
+**FR-0007** developing — `T-FR-0007-01` through `T-FR-0007-04` merged; `T-FR-0007-05` is the next dependency-eligible ticket under `.worktrees/FR-0007-kindling-mantle-migration/`.
 
 ---
 
@@ -85,7 +85,7 @@
 | T-FR-0007-01 | Contract and transition docs | done | done | done | `FR-0007` design. Kindling-owned Mantle source, transition status, Hearth consumption, plugin import rule, and compatibility contract documented. |
 | T-FR-0007-02 | Move Mantle package source to Kindling | done | done | done | `FR-0007`. `@kindling/mantle` source moved to Kindling `mantle/`; Hearth `packages/mantle/` removed. |
 | T-FR-0007-03 | Rewire Hearth to consume Kindling Mantle | done | done | done | `FR-0007`. Hub web resolves `@kindling/mantle/styles.css` from `kindling/mantle/` via pnpm workspace; install, tests, and build passed inside `./develop web`. |
-| T-FR-0007-04 | Standalone Kindling app template support | — | — | — | `FR-0007`. Deps: T-FR-0007-02. |
+| T-FR-0007-04 | Standalone Kindling app template support | done | done | done | `FR-0007`. React template renders `@kindling/mantle` from Kindling `mantle/`, imports Mantle CSS/components, and standalone install/typecheck/build pass in Docker. |
 | T-FR-0007-05 | Mantle version compliance validation | — | — | — | `FR-0007`. Deps: T-FR-0007-01, T-FR-0007-04. |
 | T-FR-0007-06 | Downstream app proof and migration note | — | — | — | `FR-0007` capstone. Deps: T-FR-0007-03, T-FR-0007-04, T-FR-0007-05. |
 
@@ -96,5 +96,5 @@
 1. **FR-0003** is **closed** on **`main`** — see [`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md).
 2. **FR-0001** is **done** on **`main`** — merged [PR #30](https://github.com/mcelhennyi/hearth/pull/30) @ `0811ed2`; [`90-closeout.md`](feature-history/FR-0001-hearth-platform/90-closeout.md).
 3. **FR-0004** is **`parked`** — unblocked; set `in-progress` in `REGISTRY.md` when staffing **`T-FR-0004-02`**. **FR-0005** is **`design`** — start with [**Remote-build profile**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd) ([`T-FR-0005-01`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd)), then [**`hearth pwa publish`**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi) ([`T-FR-0005-02`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi)); home Pi **`192.168.1.62`**.
-4. **FR-0007** is **`in-progress`** — next dependency-eligible tickets are [**Rewire Hearth to consume Kindling Mantle**](feature-history/FR-0007-kindling-mantle-migration/tickets.md#t-fr-0007-03--rewire-hearth-to-consume-kindling-mantle) ([`T-FR-0007-03`](feature-history/FR-0007-kindling-mantle-migration/tickets.md#t-fr-0007-03--rewire-hearth-to-consume-kindling-mantle)) and [**Standalone Kindling app template support**](feature-history/FR-0007-kindling-mantle-migration/tickets.md#t-fr-0007-04--standalone-kindling-app-template-support) ([`T-FR-0007-04`](feature-history/FR-0007-kindling-mantle-migration/tickets.md#t-fr-0007-04--standalone-kindling-app-template-support)).
+4. **FR-0007** is **`in-progress`** — next dependency-eligible ticket is [**Mantle version compliance validation**](feature-history/FR-0007-kindling-mantle-migration/tickets.md#t-fr-0007-05--mantle-version-compliance-validation) ([`T-FR-0007-05`](feature-history/FR-0007-kindling-mantle-migration/tickets.md#t-fr-0007-05--mantle-version-compliance-validation)).
 5. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
