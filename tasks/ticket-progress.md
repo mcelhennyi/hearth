@@ -4,11 +4,11 @@
 
 | Field | Value |
 |-------|--------|
-| **Active ticket** | `T-FR-0007-02` |
-| **Active phase** | TEST → DEV → VAL |
-| **Branch / worktree** | `feat/FR-0007-kindling-mantle-migration` @ `.worktrees/FR-0007-kindling-mantle-migration/feature/`; next ticket worktree `.worktrees/FR-0007-kindling-mantle-migration/T-FR-0007-02-move-mantle-package-source/` |
+| **Active ticket** | `T-FR-0007-03`, `T-FR-0007-04` |
+| **Active phase** | TEST |
+| **Branch / worktree** | `feat/FR-0007-kindling-mantle-migration` @ `.worktrees/FR-0007-kindling-mantle-migration/feature/`; next ticket worktrees `.worktrees/FR-0007-kindling-mantle-migration/T-FR-0007-03-rewire-hearth-kindling-mantle/` and `.worktrees/FR-0007-kindling-mantle-migration/T-FR-0007-04-standalone-kindling-template/` |
 | **Session status** | `developing` |
-| **Next agent should** | Start **Move Mantle package source to Kindling** (`T-FR-0007-02`) from the FR-0007 feature branch, update only its progress row, then merge to `feat/FR-0007-kindling-mantle-migration` and rerun `/identify-frontier`. |
+| **Next agent should** | Run `/develop-frontier` for **Rewire Hearth to consume Kindling Mantle** (`T-FR-0007-03`) and **Standalone Kindling app template support** (`T-FR-0007-04`) in separate child worktrees; keep all installs/tests inside the development container. |
 
 ### Parallel streams
 
@@ -16,7 +16,7 @@
 
 **Kindling FR-0001** — merged [kindling PR #1](https://github.com/mcelhennyi/kindling/pull/1) @ `f64b6a1`; hearth submodule bumped on `feat/FR-0006-design-language` @ `df20872`.
 
-**FR-0007** developing — `T-FR-0007-01` merged; `T-FR-0007-02` is the next eligible ticket under `.worktrees/FR-0007-kindling-mantle-migration/`.
+**FR-0007** developing — `T-FR-0007-01` and `T-FR-0007-02` merged; `T-FR-0007-03` and `T-FR-0007-04` are the next dependency-eligible tickets under `.worktrees/FR-0007-kindling-mantle-migration/`.
 
 ---
 
@@ -96,5 +96,5 @@
 1. **FR-0003** is **closed** on **`main`** — see [`90-closeout.md`](feature-history/FR-0003-hearth-pi-docker-cli/90-closeout.md).
 2. **FR-0001** is **done** on **`main`** — merged [PR #30](https://github.com/mcelhennyi/hearth/pull/30) @ `0811ed2`; [`90-closeout.md`](feature-history/FR-0001-hearth-platform/90-closeout.md).
 3. **FR-0004** is **`parked`** — unblocked; set `in-progress` in `REGISTRY.md` when staffing **`T-FR-0004-02`**. **FR-0005** is **`design`** — start with [**Remote-build profile**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd) ([`T-FR-0005-01`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-01--remote-build-profile-in-deploymentmd)), then [**`hearth pwa publish`**](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi) ([`T-FR-0005-02`](feature-history/FR-0005-remote-build-pi-deploy/tickets.md#t-fr-0005-02--hearth-pwa-publish-rsync-static-to-pi)); home Pi **`192.168.1.62`**.
-4. **FR-0007** is **`design`** — start with [**Contract and transition docs**](feature-history/FR-0007-kindling-mantle-migration/tickets.md#t-fr-0007-01--contract-and-transition-docs) ([`T-FR-0007-01`](feature-history/FR-0007-kindling-mantle-migration/tickets.md#t-fr-0007-01--contract-and-transition-docs)) so the Mantle ownership move is explicit before package files move.
+4. **FR-0007** is **`in-progress`** — next dependency-eligible tickets are [**Rewire Hearth to consume Kindling Mantle**](feature-history/FR-0007-kindling-mantle-migration/tickets.md#t-fr-0007-03--rewire-hearth-to-consume-kindling-mantle) ([`T-FR-0007-03`](feature-history/FR-0007-kindling-mantle-migration/tickets.md#t-fr-0007-03--rewire-hearth-to-consume-kindling-mantle)) and [**Standalone Kindling app template support**](feature-history/FR-0007-kindling-mantle-migration/tickets.md#t-fr-0007-04--standalone-kindling-app-template-support) ([`T-FR-0007-04`](feature-history/FR-0007-kindling-mantle-migration/tickets.md#t-fr-0007-04--standalone-kindling-app-template-support)).
 5. If **Session status** is `blocked`, resolve the blocker before starting new parallel batches.
