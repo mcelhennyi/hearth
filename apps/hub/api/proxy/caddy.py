@@ -54,7 +54,7 @@ def render_fragment(plugins: list[dict[str, Any]]) -> str:
 
     Each enabled plugin produces a block of the form::
 
-        route /<slug>/* {
+        handle /<slug>/* {
           request_header -X-Hearth-*
           forward_auth hub:8200 { ... }
           reverse_proxy <host>:<port>
@@ -82,7 +82,7 @@ def render_fragment(plugins: list[dict[str, Any]]) -> str:
 def _render_plugin_route(*, slug: str, upstream: str) -> list[str]:
     matcher = slug.replace("-", "_")
     lines = [
-        f"route /{slug}/* {{",
+        f"handle /{slug}/* {{",
         f"  uri strip_prefix /{slug}",
         "  request_header -X-Hearth-*",
         "",
