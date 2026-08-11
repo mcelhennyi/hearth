@@ -24,6 +24,7 @@ When the user asks to **create or update UI design** — screens, flows, layout,
 1. **HTML mock(s)** under **`docs/design/mockups/`**:
    - Self-contained **`.html`** files openable in a browser (no build step required).
    - Use **realistic copy** and representative data; avoid lorem-only wireframes when layout depends on content length.
+   - For additions or revisions to an existing UI, update the current UI as the example whenever possible: inspect/render the existing route or component, keep its real chrome/tokens/layout, and show the proposed change in place. If the current UI cannot be used, state the exception in the design diary/addendum.
    - Add **desktop and phone** variants when breakpoints, safe areas, or touch targets matter (`*-desktop.html`, `*-iphone.html`, or team-equivalent names).
    - Share CSS via a sibling **`.css`** file when multiple mocks reuse tokens (e.g. **`docs/design/mockups/<slug>-mock.css`**).
 2. **Design doc update:** link each mock from the authoritative **`docs/design/…`** doc (relative paths). State which mock is canonical per viewport.

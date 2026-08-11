@@ -9,11 +9,6 @@ Use this skill when the user asks to run the migrated source command `add-todo`.
 
 ## Command Template
 
-# Add Todo
+# /add-todo
 
-1. Read `tasks/todo.md`.
-2. Append the new item under **Active** using the format:
-   ```
-   - [ ] <task description>
-   ```
-3. Confirm to the user what was added.
+Follow the Cursor project skill **`.cursor/skills/add-todo/SKILL.md`**.

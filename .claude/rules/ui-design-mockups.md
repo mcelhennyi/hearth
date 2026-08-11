@@ -9,8 +9,9 @@ When the user asks to **create or update UI design** — screens, flows, layout,
 ### Deliverables
 
 1. **HTML** under **`docs/design/mockups/`** (browser-openable; desktop + phone variants when responsive behavior matters; shared **`.css`** when reused).
-2. **Link** mocks from the owning **`docs/design/…`** doc.
-3. Then tickets / implementation.
+2. For additions to an existing UI, update the current UI as the example when possible: keep its real chrome/tokens/layout and show the proposed change in place. Document the exception when the current UI cannot be used.
+3. **Link** mocks from the owning **`docs/design/…`** doc.
+4. Then tickets / implementation.
 
 ### Exemptions
 

@@ -17,6 +17,7 @@ End-to-end: discover parallel-capable tickets (**global** graph — may span **m
 - Load **`docs/ai-context.md`** (worktrees, ticket completion rules, **§1b** — parent stays thin; **one subagent per ticket** does the work; **§2d** — default-branch PR only after feature-complete gate).
 - **Feature-branch workflow:** feature integration branch **`feat/FR-NNNN-<slug>`** exists at **`.worktrees/FR-NNNN-<slug>/feature/`** (or will be created before ticket branches). **Direct-to-main:** integration checkout on the default branch is available for **`finish-frontier`**.
 - **Development commands:** build/test/lint/package-manager/dev-server/doc-build commands run in Docker / Docker Compose / Dev Container / CI images where possible. Use repo wrappers such as **`./develop run …`** or `docker compose run …`; document host-local exceptions in the ticket diary or handoff.
+- **Web UI validation:** any frontier ticket that creates or changes user-visible web UI must satisfy **`docs/ai-context.md` → Web UI validation** before **VAL** is marked `done`: scripted frontend checks plus rendered browser inspection using the project’s documented commands, local URL, browser-capable tool, and route/state matrix.
 
 ## 0 — Refresh the frontier
 
@@ -37,7 +38,7 @@ Each subagent must:
 - Work on one ticket (**`T-FR-NNNN-xx`**, title from **`tasks/feature-history/**/tickets.md`**).
 - Use only its child worktree (for example `.worktrees/FR-NNNN-<slug>/T-FR-NNNN-xx-short-name/`, branch `feat/FR-NNNN-<slug>/T-FR-NNNN-xx-short-name`).
 - Execute phases serially: **TEST → DEV → VAL** for that ticket (per its **`tickets.md`** section).
-- Run validation per **`docs/ai-context.md`** using Docker / Docker Compose / Dev Container / CI images where possible; document any host-local exception.
+- Run validation per **`docs/ai-context.md`** using Docker / Docker Compose / Dev Container / CI images where possible; for web UI tickets, include required scripted frontend checks plus rendered browser inspection. Document any host-local or browser-tool exception.
 - Update only its ticket row in **`tasks/ticket-progress.md`**.
 - On VAL done: update DAG, commit, push, and open **PR** per **`docs/ai-context.md` §7** — **base** **`feat/FR-NNNN-<slug>`** when using the feature-branch workflow (**§2d**), otherwise **base** default branch — unless publishing is held.
 

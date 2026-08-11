@@ -21,9 +21,11 @@ When a **top-level design doc** under **`docs/design/`** already exists, run **`
 
 - **Not** a replacement for `identify-frontier` / `develop-frontier` / `finish-feature` / `finish-frontier`.
 - A **product-sized** flow: **intake** → **interface-first design** (skeleton, then depth as needed) → **`20-tickets-dag.md`** (Jira/Asana-friendly markdown, Mermaid DAG) → **prompt** to implement → **`/develop-frontier`** when tickets (**`T-FR-NNNN-xx`**) are in the tracker → **prompt** to **`/finish-feature`** when **`docs/ai-context.md` §2d** **feature-complete gate** is met (or **`/finish-frontier`** if integrating straight to the default branch).
+- For additions to an already selected **`FR-NNNN`**, use **`/expand-feature`** instead of allocating a new feature id; simple UI tweaks use a worktree plus docs HTML mock, while larger additions write a **`30-expand-*`** addendum and append same-FR tickets.
 - For **large** features, use **subagents early** per **`docs/ai-context.md` §1b** (e.g. per subsystem design or codebase survey) before consolidating artifacts.
 - **Parallel features:** several **`FR-NNNN`** may be in flight; each has its own **`tasks/feature-history/FR-…/`** directory. **`/develop-frontier`** still batches tickets (**`T-FR-NNNN-xx`**) from the **global** graph — see **`docs/ai-context.md` §2c** and **`tasks/ticket-progress.md` → Parallel streams**.
 - **Human-readable naming:** In prompts, diaries, and handoffs, lead with each ticket’s **title** from **`tickets.md`**; use the **`T-FR-NNNN-xx`** id with a **link** to the canonical **`###`** section for detail (full rule in **`.cursor/skills/feature-request/SKILL.md` → Human-readable names vs ticket ids**).
+- **Plain-English ticket bodies:** New and not-yet-started tickets must include **In plain English**, **Why this exists**, **Out of scope**, and **Done when (plain English)** before technical acceptance criteria — **`.cursor/skills/feature-request/SKILL.md` → Plain-English ticket writing**.
 
 ## Compose with existing commands (do not fork behavior)
 
@@ -33,6 +35,8 @@ When a **top-level design doc** under **`docs/design/`** already exists, run **`
 4. **Integrate:** `/finish-feature` after **§2d** gate (default branch PR) or `/finish-frontier` (direct default branch)
 
 **Development commands:** during implementation, run build/test/lint/package-manager/doc/dev-server commands inside Docker / Docker Compose / Dev Container / CI images where possible. Use **`./develop run …`**, `docker compose run …`, or the configured Dev Container before host-local commands; document exceptions in feature diaries or handoffs.
+
+**Web UI validation:** for any ticket that creates or changes user-visible web UI, required **VAL** includes **`docs/ai-context.md` → Web UI validation**: scripted frontend checks plus rendered browser inspection. Use project overlays / stack conventions for commands, local URL, browser-capable tool, and route/state matrix; document exceptions in feature diaries or handoffs.
 
 **Doc site during design / VAL:** when **`docs/`** or **`mkdocs.yml`** change, use **`./develop help`** and run **`./develop up`** (Docker Compose) or **`./develop local`** (venv fallback; document why host-local was used); use **`./develop build`** for a static check. Optional **`develop.conf`**; see root **`README.md`** and **`.cursor/skills/feature-request/SKILL.md`** (local dev / Docker section).
 

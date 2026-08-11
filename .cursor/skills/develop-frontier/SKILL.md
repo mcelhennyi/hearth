@@ -21,6 +21,7 @@ End-to-end: **discover** parallel-capable tickets, ensure each owning feature ha
 - For feature-branch work, each owning feature branch **`feat/FR-NNNN-<slug>`** exists in **`.worktrees/FR-NNNN-<slug>/feature/`** (create it from `main` before launching ticket branches if needed).
 - **Parent session:** stay thin — **one subagent per ticket** (**`T-FR-NNNN-xx`**) implements it; the orchestrator merges to **`feat/FR-NNNN-<slug>`** and runs **`finish-feature`** (default-branch PR) **only** when **§2d** **feature-complete gate** is met, or runs **`finish-frontier`** when integrating straight to the default branch, per **`docs/ai-context.md` §1b**, **§2**, and **§2d**.
 - **Development commands:** inside each ticket worktree, run build/test/lint/package-manager/dev-server/doc-build commands through Docker / Docker Compose / Dev Container / CI images where possible (for example **`./develop run …`**, `docker compose run …`, or the configured Dev Container). Host-local commands are exceptions and must be noted in the ticket diary or handoff.
+- **Web UI validation:** any frontier ticket that creates or changes user-visible web UI must satisfy **`docs/ai-context.md` → Web UI validation** before **VAL** is marked `done`: scripted frontend checks plus rendered browser inspection using the project’s documented commands, local URL, browser-capable tool, and route/state matrix.
 
 ## 0 — Refresh the frontier
 
@@ -41,7 +42,7 @@ Each subagent prompt must include:
 | **Ticket** | **`T-FR-NNNN-xx`**, title from the owning **`tasks/feature-history/FR-NNNN-<slug>/tickets.md`**. |
 | **Worktree** | Feature branch at **`.worktrees/FR-NNNN-<slug>/feature/`**. Ticket/stage work in **`.worktrees/FR-NNNN-<slug>/T-FR-NNNN-xx-short-name/`**, branch e.g. **`feat/FR-NNNN-<slug>/T-FR-NNNN-xx-short-name`**, created from the feature branch. All phases **only** here. |
 | **Phase order** | **TEST → DEV → VAL** serially for that ticket (per section in that ticket’s **`tickets.md`**). |
-| **Validation** | Run ticket verification per **`docs/ai-context.md`** using Docker / Docker Compose / Dev Container / CI images where possible; document any host-local exception. |
+| **Validation** | Run ticket verification per **`docs/ai-context.md`** using Docker / Docker Compose / Dev Container / CI images where possible; for web UI tickets, include required scripted frontend checks plus rendered browser inspection. Document any host-local or browser-tool exception. |
 | **Progress** | Update **only** that ticket’s row in **`tasks/ticket-progress.md`**. |
 | **Completion** | VAL done → update DAG in **`docs/design/tickets-initial.md`** → commit → push → open **PR** whose **base** is **`feat/FR-NNNN-<slug>`** when using the **feature-branch workflow** (§2d), otherwise base **`main`** per **`docs/ai-context.md` §7**. |
 | **Branch state** | Create or refresh repo-root **`CURRENT.md`** on the ticket branch at stream start, after each phase (**TEST / DEV / VAL**), and before push/PR; parent updates **`feat/FR-NNNN-<slug>`**’s **`CURRENT.md`** after merges — **`feature-request`** skill **Branch state (`CURRENT.md`)**. |

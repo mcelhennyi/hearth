@@ -87,7 +87,7 @@ For each **major component** named in the top-level doc (store, engine, UI shell
 | **Testing** | How would VAL prove compliance (integration points, golden data, diagnostics)? |
 | **Dependencies** | Ordering between subsystems obvious for a ticket DAG? |
 | **Traceability** | **`@LZ-…`** or equivalent links present where the project requires them? |
-| **UI look and feel** (visible UI only) | Linked **HTML mocks** under **`docs/design/mockups/`** that match the spec, or documented waiver? |
+| **UI look and feel** (visible UI only) | Linked **HTML mocks** under **`docs/design/mockups/`** that match the spec, or documented waiver? For additions to existing UI, do mocks show the change in the current UI context when possible? |
 
 Mark each component: **Ready**, **Needs design work**, or **Unknown**. For **UI shell / screens**, missing mocks when layout is specified → **Needs design work** (often **Blocked** for ticketing).
 
